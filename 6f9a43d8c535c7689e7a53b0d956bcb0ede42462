@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_5144a773",
+        "filename": "version.properties",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2017-08-18T13:08:39Z",
+      "side": 1,
+      "message": "Just realized, on all these files, do we need license header?",
+      "revId": "6f9a43d8c535c7689e7a53b0d956bcb0ede42462",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
