@@ -35,7 +35,7 @@
 
 	<packaging>pom</packaging>
 
-	<name>Policy - PAP</name>
+	<name>policy-pap</name>
 	<description>Code that implements the Policy Administration Backend.</description>
 
 	<properties>
