@@ -1,0 +1,4 @@
+INSERT INTO `pdpgroupentity` (`groupId`, `groupName`, `groupVersion`, `pdpType`, `pdpServiceEndpoint`, `policySetId`) VALUES (1, 'droolsGroup', '1', 'DROOLS', 'http://blahblah', 1);
+INSERT INTO `policyentity` (`policyId`, `policyName`, `policyVersion`, `pdpType`, `policyMavenArtifact`) VALUES (1, 'amsterdam', '1', 'DROOLS', 'org.onap.policy.drools-applications:archetype-cl-amsterdam:1.1.3:'), (2, 'beijing', '1', 'DROOLS', 'org.onap.policy.drools-applications.controlloop.templates:archetype-cl-beijing:1.2.3:');
+INSERT INTO `policysetentity` (`policySetId`, `policySetName`, `policySetVersion`, `pdpType`, `pdpServiceEndpoint`) VALUES (1, 'droolsPolicySet', '1', 'DROOLS', 'http://blahblah');
+INSERT INTO `policysettopolicyentity` (`policySetId`, `policyId`) VALUES (1, 1), (1, 2);
