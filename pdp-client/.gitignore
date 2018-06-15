@@ -1,0 +1,12 @@
+*.class
+.settings
+.classpath
+.idea
+.checkstyle
+*.checkstyle
+*.iml
+*.log
+.mtj.tmp/
+**/target
+target
+build
