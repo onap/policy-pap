@@ -7,3 +7,6 @@
 target
 .metadata/
 /bin/
+*.checkstyle
+*.iml
+*.log
