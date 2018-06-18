@@ -25,6 +25,53 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_699427e8",
+        "filename": "pap-service/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2018-06-18T12:00:44Z",
+      "side": 1,
+      "message": "If we can avoid it, that would be great. Too many security issues with it.",
+      "parentUuid": "5a93c517_698e6729",
+      "range": {
+        "startLine": 69,
+        "startChar": 2,
+        "endLine": 73,
+        "endChar": 15
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e987d7b4",
+        "filename": "pap-service/src/main/java/io/swagger/configuration/CustomInstantDeserializer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2018-06-18T12:00:44Z",
+      "side": 1,
+      "message": "Who is Nick? We should remove his name from here.",
+      "range": {
+        "startLine": 49,
+        "startChar": 3,
+        "endLine": 49,
+        "endChar": 24
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_0939e33e",
         "filename": "pap-service/src/main/java/io/swagger/configuration/HomeController.java",
         "patchSetId": 3
@@ -232,6 +279,29 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_a991cff2",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/plugin/DummyPapPlugin.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2018-06-18T12:00:44Z",
+      "side": 1,
+      "message": "Use try-with-resources when possible. Sonar will complain - but I prefer that anyway.",
+      "range": {
+        "startLine": 88,
+        "startChar": 8,
+        "endLine": 92,
+        "endChar": 77
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_290b7f7e",
         "filename": "pap-service/src/main/java/org/onap/policy/pap/service/rest/PapRestApiController.java",
         "patchSetId": 3
@@ -271,6 +341,46 @@
         "startChar": 4,
         "endLine": 47,
         "endChar": 28
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_69bbc775",
+        "filename": "pdp-client/.gitignore",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2018-06-18T12:00:44Z",
+      "side": 1,
+      "message": "Can we move all possible .gitignore up to the root file? Easier to find and manage just the root .gitignore.",
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_89be5363",
+        "filename": "pdp-client/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2018-06-18T12:00:44Z",
+      "side": 1,
+      "message": "Same comment about once all is merged to check the CLM issues here. Also, since these are shared amongst 2 repositories, can this be declared up in policy/parent to manage consistency?",
+      "range": {
+        "startLine": 154,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 15
       },
       "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
