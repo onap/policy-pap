@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_0939e33e",
+        "filename": "pap-service/src/main/java/io/swagger/configuration/HomeController.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "this class can be removed no?",
+      "range": {
+        "startLine": 30,
+        "startChar": 13,
+        "endLine": 30,
+        "endChar": 27
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_89917348",
         "filename": "pap-service/src/main/java/io/swagger/configuration/HomeController.java",
         "patchSetId": 3
@@ -71,6 +94,29 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_a91eafb9",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/PapService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "use  @PersistenceContext to inject entity manager\n\nhttps://dzone.com/articles/accessing-the-entitymanager-from-spring-data-jpa",
+      "range": {
+        "startLine": 76,
+        "startChar": 3,
+        "endLine": 78,
+        "endChar": 79
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_499b6b66",
         "filename": "pap-service/src/main/java/org/onap/policy/pap/service/PapService.java",
         "patchSetId": 3
@@ -94,6 +140,144 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_a9478fbb",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/dao/PolicyDbDaoTransaction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "You don\u0027t need to manage transactions or timeout , spring manage it itself, use @Transactional annotation \n\nhttps://spring.io/guides/gs/managing-transactions/",
+      "range": {
+        "startLine": 65,
+        "startChar": 3,
+        "endLine": 107,
+        "endChar": 5
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c9421bab",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/dao/PolicyDbDaoTransaction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "use @Transactional to handle transactions",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 147,
+        "endChar": 5
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_691187ae",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/dao/PolicyDbDaoTransaction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "use entity manager locking",
+      "range": {
+        "startLine": 202,
+        "startChar": 22,
+        "endLine": 202,
+        "endChar": 28
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_891413a0",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/jpa/DatabaseLockEntity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "why create lock table for locking, use entitymanager to lock row or table in database",
+      "range": {
+        "startLine": 29,
+        "startChar": 5,
+        "endLine": 49,
+        "endChar": 1
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_290b7f7e",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/rest/PapRestApiController.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "spring handle and mange Servlet try to use it directly. i think you may be able to use @RestController instead of RestController\n\nhttp://websystique.com/spring-boot/spring-boot-rest-api-example/",
+      "range": {
+        "startLine": 51,
+        "startChar": 59,
+        "endLine": 51,
+        "endChar": 85
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_490e0b8e",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/rest/model/PdpStatusParameters.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "extract this to  its own class",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 28
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_49b28be6",
         "filename": "pdp-client/pom.xml",
         "patchSetId": 3
@@ -110,6 +294,29 @@
         "startChar": 0,
         "endLine": 183,
         "endChar": 34
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_092003f7",
+        "filename": "pdp-client/src/main/java/org/onap/policy/pap/pdpclient/JSON.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 3237
+      },
+      "writtenOn": "2018-06-18T10:42:24Z",
+      "side": 1,
+      "message": "i think, you may not need this spring boot can inject the gson serializer",
+      "range": {
+        "startLine": 41,
+        "startChar": 13,
+        "endLine": 41,
+        "endChar": 17
       },
       "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
