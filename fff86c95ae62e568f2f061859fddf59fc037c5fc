@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_698e6729",
+        "filename": "pap-service/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2018-06-18T08:24:57Z",
+      "side": 1,
+      "message": "I think usage of Jackson is discouraged",
+      "range": {
+        "startLine": 69,
+        "startChar": 2,
+        "endLine": 73,
+        "endChar": 15
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_89917348",
+        "filename": "pap-service/src/main/java/io/swagger/configuration/HomeController.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2018-06-18T08:24:57Z",
+      "side": 1,
+      "message": "Sonar will moan about this.",
+      "range": {
+        "startLine": 33,
+        "startChar": 8,
+        "endLine": 33,
+        "endChar": 14
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_29985f69",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/PapService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2018-06-18T08:24:57Z",
+      "side": 1,
+      "message": "Just wondering what sort of properties we\u0027re loading here? Maybe we should think about how we do properties and configuration.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 92
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_499b6b66",
+        "filename": "pap-service/src/main/java/org/onap/policy/pap/service/PapService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2018-06-18T08:24:57Z",
+      "side": 1,
+      "message": "Sonar will moan about this commented out code too.",
+      "range": {
+        "startLine": 149,
+        "startChar": 8,
+        "endLine": 152,
+        "endChar": 1
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_49b28be6",
+        "filename": "pdp-client/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2018-06-18T08:24:57Z",
+      "side": 1,
+      "message": "Any reason for Java 7?",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 34
+      },
+      "revId": "fff86c95ae62e568f2f061859fddf59fc037c5fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
