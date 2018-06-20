@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_18404b06",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2018-06-20T17:28:36Z",
+      "side": 1,
+      "message": "Remove newline here - these 3 items should be the last 3 lines of the message for tracking in JIRA.",
+      "revId": "c0ae690c16e9c6dd1fe69e6ef39d5c7fc7dc5000",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
