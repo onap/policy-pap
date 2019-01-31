@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_880b077c",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-01-31T13:44:39Z",
+      "side": 1,
+      "message": "Note to ourselves - this is the Casablanca release. Probably we should move to the 1.4.0-SNAPSHOT of policy/common for all these master branch repositorys. All the release jobs are turned off for now for master.",
+      "range": {
+        "startLine": 49,
+        "startChar": 31,
+        "endLine": 49,
+        "endChar": 36
+      },
+      "revId": "07b7ba00a053a26a5eef39070bff5297c630c5ce",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
