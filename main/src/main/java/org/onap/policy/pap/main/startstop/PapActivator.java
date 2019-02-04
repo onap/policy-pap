@@ -23,8 +23,9 @@ package org.onap.policy.pap.main.startstop;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.onap.policy.pap.main.rest.PapRestServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class wraps a distributor so that it can be activated as a complete service together with all its pap and
@@ -33,13 +34,12 @@ import org.slf4j.ext.XLoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapActivator {
-    // The logger for this class
-    private static final XLogger LOGGER = XLoggerFactory.getXLogger(PapActivator.class);
 
-    // The parameters of this policy pap activator
+    private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
+
     private final PapParameterGroup papParameterGroup;
-
     private static boolean alive = false;
+    private PapRestServer restServer;
 
     /**
      * Instantiate the activator for policy pap as a complete service.
@@ -58,6 +58,7 @@ public class PapActivator {
     public void initialize() throws PolicyPapException {
         try {
             LOGGER.debug("Policy pap starting as a service . . .");
+            startPapRestServer();
             registerToParameterService(papParameterGroup);
             PapActivator.setAlive(true);
             LOGGER.debug("Policy pap started as a service");
@@ -77,6 +78,8 @@ public class PapActivator {
             deregisterToParameterService(papParameterGroup);
             PapActivator.setAlive(false);
 
+            // Stop the pap rest server
+            restServer.stop();
         } catch (final Exception exp) {
             LOGGER.error("Policy pap service termination failed", exp);
             throw new PolicyPapException(exp.getMessage(), exp);
@@ -126,5 +129,18 @@ public class PapActivator {
      */
     public static void setAlive(final boolean status) {
         alive = status;
+    }
+
+    /**
+     * Starts the pap rest server using configuration parameters.
+     *
+     * @throws PolicyPapException if server start fails
+     */
+    private void startPapRestServer() throws PolicyPapException {
+        papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
+        restServer = new PapRestServer(papParameterGroup.getRestServerParameters());
+        if (!restServer.start()) {
+            throw new PolicyPapException("Failed to start pap rest server. Check log for more details...");
+        }
     }
 }

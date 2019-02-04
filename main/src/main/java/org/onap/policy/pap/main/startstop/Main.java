@@ -25,8 +25,8 @@ import java.util.Arrays;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class initiates ONAP Policy Framework PAP component.
@@ -34,7 +34,8 @@ import org.slf4j.ext.XLoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class Main {
-    private static final XLogger LOGGER = XLoggerFactory.getXLogger(Main.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     private PapActivator activator;
     private PapParameterGroup parameterGroup;

@@ -32,14 +32,17 @@ import org.onap.policy.common.utils.validation.ParameterValidationUtils;
  */
 public class PapParameterGroup implements ParameterGroup {
     private String name;
+    private RestServerParameters restServerParameters;
 
     /**
      * Create the pap parameter group.
      *
      * @param name the parameter group name
+     * @param restServerParameters the rest server parameters
      */
-    public PapParameterGroup(final String name) {
+    public PapParameterGroup(final String name, final RestServerParameters restServerParameters) {
         this.name = name;
+        this.restServerParameters = restServerParameters;
     }
 
     /**
@@ -63,6 +66,15 @@ public class PapParameterGroup implements ParameterGroup {
     }
 
     /**
+     * Return the restServerParameters of this parameter group instance.
+     *
+     * @return the restServerParameters
+     */
+    public RestServerParameters getRestServerParameters() {
+        return restServerParameters;
+    }
+
+    /**
      * Validate the parameter group.
      *
      * @return the result of the validation
@@ -72,6 +84,12 @@ public class PapParameterGroup implements ParameterGroup {
         final GroupValidationResult validationResult = new GroupValidationResult(this);
         if (!ParameterValidationUtils.validateStringParameter(name)) {
             validationResult.setResult("name", ValidationStatus.INVALID, "must be a non-blank string");
+        }
+        if (restServerParameters == null) {
+            validationResult.setResult("restServerParameters", ValidationStatus.INVALID,
+                    "must have restServerParameters to configure pap rest server");
+        } else {
+            validationResult.setResult("restServerParameters", restServerParameters.validate());
         }
         return validationResult;
     }
