@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1f274298_b007a642",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPapRestServer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-02-05T01:24:15Z",
+      "side": 1,
+      "message": "There is this NetworkUtil.isTcpPortOpen that could be used if you run into race conditions, if you can look into my comment in Chenfei\u0027s review.",
+      "revId": "9bce79d8b42308d927ce586b5bc9909e0afde295",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
