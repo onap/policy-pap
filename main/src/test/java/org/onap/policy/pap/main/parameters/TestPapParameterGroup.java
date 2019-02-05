@@ -33,18 +33,26 @@ import org.onap.policy.common.parameters.GroupValidationResult;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class TestPapParameterGroup {
+    CommonTestData commonTestData = new CommonTestData();
 
     @Test
     public void testPapParameterGroup() {
-        final PapParameterGroup papParameters = new PapParameterGroup(CommonTestData.PAP_GROUP_NAME);
+        final RestServerParameters restServerParameters = commonTestData.getRestServerParameters(false);
+        final PapParameterGroup papParameters =
+                new PapParameterGroup(CommonTestData.PAP_GROUP_NAME, restServerParameters);
         final GroupValidationResult validationResult = papParameters.validate();
         assertTrue(validationResult.isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, papParameters.getName());
+        assertEquals(restServerParameters.getHost(), papParameters.getRestServerParameters().getHost());
+        assertEquals(restServerParameters.getPort(), papParameters.getRestServerParameters().getPort());
+        assertEquals(restServerParameters.getUserName(), papParameters.getRestServerParameters().getUserName());
+        assertEquals(restServerParameters.getPassword(), papParameters.getRestServerParameters().getPassword());
     }
 
     @Test
     public void testPapParameterGroup_NullName() {
-        final PapParameterGroup papParameters = new PapParameterGroup(null);
+        final RestServerParameters restServerParameters = commonTestData.getRestServerParameters(false);
+        final PapParameterGroup papParameters = new PapParameterGroup(null, restServerParameters);
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertEquals(null, papParameters.getName());
@@ -54,7 +62,8 @@ public class TestPapParameterGroup {
 
     @Test
     public void testPapParameterGroup_EmptyName() {
-        final PapParameterGroup papParameters = new PapParameterGroup("");
+        final RestServerParameters restServerParameters = commonTestData.getRestServerParameters(false);
+        final PapParameterGroup papParameters = new PapParameterGroup("", restServerParameters);
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertEquals("", papParameters.getName());
@@ -64,10 +73,25 @@ public class TestPapParameterGroup {
 
     @Test
     public void testPapParameterGroup_SetName() {
-        final PapParameterGroup papParameters = new PapParameterGroup(CommonTestData.PAP_GROUP_NAME);
+        final RestServerParameters restServerParameters = commonTestData.getRestServerParameters(false);
+        final PapParameterGroup papParameters =
+                new PapParameterGroup(CommonTestData.PAP_GROUP_NAME, restServerParameters);
         papParameters.setName("PapNewGroup");
         final GroupValidationResult validationResult = papParameters.validate();
         assertTrue(validationResult.isValid());
         assertEquals("PapNewGroup", papParameters.getName());
+    }
+
+    @Test
+    public void testApiParameterGroup_EmptyRestServerParameters() {
+        final RestServerParameters restServerParameters = commonTestData.getRestServerParameters(true);
+
+        final PapParameterGroup papParameters =
+                new PapParameterGroup(CommonTestData.PAP_GROUP_NAME, restServerParameters);
+        final GroupValidationResult validationResult = papParameters.validate();
+        assertFalse(validationResult.isValid());
+        assertTrue(validationResult.getResult()
+                .contains("\"org.onap.policy.pap.main.parameters.RestServerParameters\" INVALID, "
+                        + "parameter group has status INVALID"));
     }
 }

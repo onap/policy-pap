@@ -28,8 +28,8 @@ import java.io.FileReader;
 import org.onap.policy.common.parameters.GroupValidationResult;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class handles reading, parsing and validating of policy pap parameters from JSON files.
@@ -37,7 +37,8 @@ import org.slf4j.ext.XLoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapParameterHandler {
-    private static final XLogger LOGGER = XLoggerFactory.getXLogger(PapParameterHandler.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PapParameterHandler.class);
 
     /**
      * Read the parameters from the parameter file.

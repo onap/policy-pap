@@ -27,6 +27,27 @@ package org.onap.policy.pap.main.parameters;
  */
 public class CommonTestData {
 
+    private static final String REST_SERVER_PASSWORD = "zb!XztG34";
+    private static final String REST_SERVER_USER = "healthcheck";
+    private static final int REST_SERVER_PORT = 6969;
+    private static final String REST_SERVER_HOST = "0.0.0.0";
     public static final String PAP_GROUP_NAME = "PapGroup";
+
+    /**
+     * Returns an instance of RestServerParameters for test cases.
+     *
+     * @param isEmpty boolean value to represent that object created should be empty or not
+     * @return the restServerParameters object
+     */
+    public RestServerParameters getRestServerParameters(final boolean isEmpty) {
+        final RestServerParameters restServerParameters;
+        if (!isEmpty) {
+            restServerParameters = new RestServerParameters(REST_SERVER_HOST, REST_SERVER_PORT, REST_SERVER_USER,
+                    REST_SERVER_PASSWORD);
+        } else {
+            restServerParameters = new RestServerParameters(null, 0, null, null);
+        }
+        return restServerParameters;
+    }
 
 }
