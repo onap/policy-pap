@@ -16,6 +16,24 @@
       "revId": "9bce79d8b42308d927ce586b5bc9909e0afde295",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5eb2b4b9_c2fcd4cd",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPapRestServer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-05T10:42:12Z",
+      "side": 1,
+      "message": "Thanks Jorge!!!\nIt works and is more simpler approach.",
+      "parentUuid": "1f274298_b007a642",
+      "revId": "9bce79d8b42308d927ce586b5bc9909e0afde295",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
