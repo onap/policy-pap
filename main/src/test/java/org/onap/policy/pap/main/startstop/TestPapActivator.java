@@ -22,12 +22,16 @@ package org.onap.policy.pap.main.startstop;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Test;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -37,18 +41,47 @@ import org.onap.policy.pap.main.parameters.PapParameterHandler;
  */
 public class TestPapActivator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestPapActivator.class);
+    private PapActivator activator;
+
+    /**
+     * Method for cleanup after each test.
+     */
+    @After
+    public void teardown() {
+        try {
+            if (activator != null) {
+                activator.terminate();
+            }
+        } catch (final PolicyPapException exp) {
+            LOGGER.error("teardown failed", exp);
+        }
+    }
+
     @Test
     public void testPapActivator() throws PolicyPapException {
         final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
-
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
+        activator = new PapActivator(parGroup);
+        try {
+            activator.initialize();
+            assertTrue(activator.getParameterGroup().isValid());
+            assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
+        } catch (final Exception exp) {
+            LOGGER.error("testPapActivator failed", exp);
+            fail("Test should not throw an exception");
+        }
+    }
 
-        final PapActivator activator = new PapActivator(parGroup);
+    @Test(expected = PolicyPapException.class)
+    public void testPapActivatorError() throws PolicyPapException {
+        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
+        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
+        final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
+        activator = new PapActivator(parGroup);
         activator.initialize();
         assertTrue(activator.getParameterGroup().isValid());
-        assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
-        activator.terminate();
+        activator.initialize();
     }
 }

@@ -127,7 +127,7 @@ public class PapActivator {
      *
      * @param status the status
      */
-    public static void setAlive(final boolean status) {
+    private static void setAlive(final boolean status) {
         alive = status;
     }
 

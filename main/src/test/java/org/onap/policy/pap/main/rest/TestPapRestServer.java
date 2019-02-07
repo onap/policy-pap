@@ -25,7 +25,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.Properties;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -34,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.junit.After;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.utils.network.NetworkUtil;
@@ -56,15 +65,37 @@ public class TestPapRestServer {
     private static final String ALIVE = "alive";
     private static final String SELF = "self";
     private static final String NAME = "Policy PAP";
+    private static final String HEALTHCHECK_ENDPOINT = "healthcheck";
+    private static final String STATISTICS_ENDPOINT = "statistics";
+    private static String KEYSTORE = System.getProperty("user.dir") + "/src/test/resources/ssl/policy-keystore";
+    private Main main;
+    private PapRestServer restServer;
+
+    /**
+     * Method for cleanup after each test.
+     */
+    @After
+    public void teardown() {
+        try {
+            if (NetworkUtil.isTcpPortOpen("localhost", 6969, 1, 1000L)) {
+                if (main != null) {
+                    stopPapService(main);
+                } else if (restServer != null) {
+                    restServer.stop();
+                }
+            }
+        } catch (InterruptedException | IOException | PolicyPapException exp) {
+            LOGGER.error("teardown failed", exp);
+        }
+    }
 
     @Test
-    public void testHealthCheckSuccess() throws PolicyPapException, InterruptedException {
-        final String reportString = "Report [name=Policy PAP, url=self, healthy=true, code=200, message=alive]";
+    public void testHealthCheckSuccess() {
         try {
-            final Main main = startPapService();
-            final HealthCheckReport report = performHealthCheck();
-            validateReport(NAME, SELF, true, 200, ALIVE, reportString, report);
-            stopPapService(main);
+            main = startPapService(true);
+            final Invocation.Builder invocationBuilder = sendHttpRequest(HEALTHCHECK_ENDPOINT);
+            final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+            validateHealthCheckReport(NAME, SELF, true, 200, ALIVE, report);
         } catch (final Exception exp) {
             LOGGER.error("testHealthCheckSuccess failed", exp);
             fail("Test should not throw an exception");
@@ -73,20 +104,108 @@ public class TestPapRestServer {
 
     @Test
     public void testHealthCheckFailure() throws InterruptedException, IOException {
-        final String reportString = "Report [name=Policy PAP, url=self, healthy=false, code=500, message=not alive]";
         final RestServerParameters restServerParams = new CommonTestData().getRestServerParameters(false);
         restServerParams.setName(CommonTestData.PAP_GROUP_NAME);
-        final PapRestServer restServer = new PapRestServer(restServerParams);
-        restServer.start();
-        final HealthCheckReport report = performHealthCheck();
-        validateReport(NAME, SELF, false, 500, NOT_ALIVE, reportString, report);
-        assertTrue(restServer.isAlive());
-        assertTrue(restServer.toString().startsWith("PapRestServer [servers="));
-        restServer.shutdown();
+        restServer = new PapRestServer(restServerParams);
+        try {
+            restServer.start();
+            final Invocation.Builder invocationBuilder = sendHttpRequest(HEALTHCHECK_ENDPOINT);
+            final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+            validateHealthCheckReport(NAME, SELF, false, 500, NOT_ALIVE, report);
+            assertTrue(restServer.isAlive());
+            assertTrue(restServer.toString().startsWith("PapRestServer [servers="));
+        } catch (final Exception exp) {
+            LOGGER.error("testHealthCheckFailure failed", exp);
+            fail("Test should not throw an exception");
+        }
     }
 
-    private Main startPapService() {
-        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
+    @Test
+    public void testHttpsHealthCheckSuccess() {
+        try {
+            main = startPapService(false);
+            final Invocation.Builder invocationBuilder = sendHttpsRequest(HEALTHCHECK_ENDPOINT);
+            final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+            validateHealthCheckReport(NAME, SELF, true, 200, ALIVE, report);
+        } catch (final Exception exp) {
+            LOGGER.error("testHttpsHealthCheckSuccess failed", exp);
+            fail("Test should not throw an exception");
+        }
+    }
+
+    @Test
+    public void testPapStatistics_200() {
+        try {
+            main = startPapService(true);
+            Invocation.Builder invocationBuilder = sendHttpRequest(STATISTICS_ENDPOINT);
+            StatisticsReport report = invocationBuilder.get(StatisticsReport.class);
+            validateStatisticsReport(report, 0, 200);
+            updateDistributionStatistics();
+            invocationBuilder = sendHttpRequest(STATISTICS_ENDPOINT);
+            report = invocationBuilder.get(StatisticsReport.class);
+            validateStatisticsReport(report, 1, 200);
+            PapStatisticsManager.resetAllStatistics();
+        } catch (final Exception exp) {
+            LOGGER.error("testPapStatistics_200 failed", exp);
+            fail("Test should not throw an exception");
+        }
+    }
+
+    @Test
+    public void testPapStatistics_500() {
+        final RestServerParameters restServerParams = new CommonTestData().getRestServerParameters(false);
+        restServerParams.setName(CommonTestData.PAP_GROUP_NAME);
+        restServer = new PapRestServer(restServerParams);
+        try {
+            restServer.start();
+            final Invocation.Builder invocationBuilder = sendHttpRequest(STATISTICS_ENDPOINT);
+            final StatisticsReport report = invocationBuilder.get(StatisticsReport.class);
+            validateStatisticsReport(report, 0, 500);
+            PapStatisticsManager.resetAllStatistics();
+        } catch (final Exception exp) {
+            LOGGER.error("testPapStatistics_500 failed", exp);
+            fail("Test should not throw an exception");
+        }
+    }
+
+    @Test
+    public void testHttpsPapStatistic() {
+        try {
+            main = startPapService(false);
+            final Invocation.Builder invocationBuilder = sendHttpsRequest(STATISTICS_ENDPOINT);
+            final StatisticsReport report = invocationBuilder.get(StatisticsReport.class);
+            validateStatisticsReport(report, 0, 200);
+        } catch (final Exception exp) {
+            LOGGER.error("testHttpsDistributionStatistic failed", exp);
+            fail("Test should not throw an exception");
+        }
+    }
+
+    @Test
+    public void testPapStatisticsConstructorIsPrivate() {
+        try {
+            final Constructor<PapStatisticsManager> constructor = PapStatisticsManager.class.getDeclaredConstructor();
+            assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+            constructor.setAccessible(true);
+            constructor.newInstance();
+        } catch (final Exception exp) {
+            assertTrue(exp.getCause().toString().contains("Instantiation of the class is not allowed"));
+        }
+    }
+
+    private Main startPapService(final boolean http) {
+        final String[] papConfigParameters = new String[2];
+        if (http) {
+            papConfigParameters[0] = "-c";
+            papConfigParameters[1] = "parameters/PapConfigParameters.json";
+        } else {
+            final Properties systemProps = System.getProperties();
+            systemProps.put("javax.net.ssl.keyStore", KEYSTORE);
+            systemProps.put("javax.net.ssl.keyStorePassword", "Pol1cy_0nap");
+            System.setProperties(systemProps);
+            papConfigParameters[0] = "-c";
+            papConfigParameters[1] = "parameters/PapConfigParameters_Https.json";
+        }
         return new Main(papConfigParameters);
     }
 
@@ -94,32 +213,86 @@ public class TestPapRestServer {
         main.shutdown();
     }
 
-    private HealthCheckReport performHealthCheck() throws InterruptedException, IOException {
-        HealthCheckReport response = null;
+    private Invocation.Builder sendHttpRequest(final String endpoint) throws Exception {
         final ClientConfig clientConfig = new ClientConfig();
 
         final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("healthcheck", "zb!XztG34");
         clientConfig.register(feature);
 
         final Client client = ClientBuilder.newClient(clientConfig);
-        final WebTarget webTarget = client.target("http://localhost:6969/healthcheck");
+        final WebTarget webTarget = client.target("http://localhost:6969/" + endpoint);
 
         final Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 
         if (!NetworkUtil.isTcpPortOpen("localhost", 6969, 6, 10000L)) {
             throw new IllegalStateException("cannot connect to port 6969");
         }
-        response = invocationBuilder.get(HealthCheckReport.class);
-        return response;
+        return invocationBuilder;
     }
 
-    private void validateReport(final String name, final String url, final boolean healthy, final int code,
-            final String message, final String reportString, final HealthCheckReport report) {
+    private Invocation.Builder sendHttpsRequest(final String endpoint) throws Exception {
+
+        final TrustManager[] noopTrustManager = new TrustManager[] { new X509TrustManager() {
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+
+            @Override
+            public void checkClientTrusted(final java.security.cert.X509Certificate[] certs, final String authType) {}
+
+            @Override
+            public void checkServerTrusted(final java.security.cert.X509Certificate[] certs, final String authType) {}
+        } };
+
+        final SSLContext sc = SSLContext.getInstance("TLSv1.2");
+        sc.init(null, noopTrustManager, new SecureRandom());
+        final ClientBuilder clientBuilder =
+                ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
+        final Client client = clientBuilder.build();
+        final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("healthcheck", "zb!XztG34");
+        client.register(feature);
+
+        final WebTarget webTarget = client.target("https://localhost:6969/" + endpoint);
+
+        final Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+
+        if (!NetworkUtil.isTcpPortOpen("localhost", 6969, 6, 10000L)) {
+            throw new IllegalStateException("cannot connect to port 6969");
+        }
+        return invocationBuilder;
+    }
+
+    private void updateDistributionStatistics() {
+        PapStatisticsManager.updateTotalPdpCount();
+        PapStatisticsManager.updateTotalPdpGroupCount();
+        PapStatisticsManager.updateTotalPolicyDeployCount();
+        PapStatisticsManager.updatePolicyDeploySuccessCount();
+        PapStatisticsManager.updatePolicyDeployFailureCount();
+        PapStatisticsManager.updateTotalPolicyDownloadCount();
+        PapStatisticsManager.updatePolicyDownloadSuccessCount();
+        PapStatisticsManager.updatePolicyDownloadFailureCount();
+    }
+
+    private void validateStatisticsReport(final StatisticsReport report, final int count, final int code) {
+        assertEquals(code, report.getCode());
+        assertEquals(count, report.getTotalPdpCount());
+        assertEquals(count, report.getTotalPdpGroupCount());
+        assertEquals(count, report.getTotalPolicyDeployCount());
+        assertEquals(count, report.getPolicyDeploySuccessCount());
+        assertEquals(count, report.getPolicyDeployFailureCount());
+        assertEquals(count, report.getTotalPolicyDownloadCount());
+        assertEquals(count, report.getPolicyDeploySuccessCount());
+        assertEquals(count, report.getPolicyDeployFailureCount());
+    }
+
+    private void validateHealthCheckReport(final String name, final String url, final boolean healthy, final int code,
+            final String message, final HealthCheckReport report) {
         assertEquals(name, report.getName());
         assertEquals(url, report.getUrl());
         assertEquals(healthy, report.isHealthy());
         assertEquals(code, report.getCode());
         assertEquals(message, report.getMessage());
-        assertEquals(reportString, report.toString());
     }
 }

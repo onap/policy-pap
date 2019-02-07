@@ -56,4 +56,13 @@ public class PapRestController {
     public Response healthcheck() {
         return Response.status(Response.Status.OK).entity(new HealthCheckProvider().performHealthCheck()).build();
     }
+
+    @GET
+    @Path("statistics")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Fetch current statistics", notes = "Provides current statistics of the Policy PAP component",
+            response = StatisticsReport.class)
+    public Response statistics() {
+        return Response.status(Response.Status.OK).entity(new StatisticsProvider().fetchCurrentStatistics()).build();
+    }
 }
