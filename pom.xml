@@ -51,6 +51,7 @@
 
     <modules>
         <module>main</module>
+        <module>packages</module>
     </modules>
 
     <dependencies>
