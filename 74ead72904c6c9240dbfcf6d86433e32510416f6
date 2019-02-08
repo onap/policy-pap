@@ -1,0 +1,11 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Jorge Hernandez <jorge.hernandez-herrero@att.com>
+Code-Review+1: Pamela Dragosh <pdragosh@research.att.com>
+Code-Review+1: Chenfei Gao <cgao@research.att.com>
+Code-Review+1: Michael Mokry <michael.mokry@att.com>
+Code-Review+2: Liam Fallon <liam.fallon@est.tech>
+Submitted-by: Liam Fallon <liam.fallon@est.tech>
+Submitted-at: Fri, 08 Feb 2019 17:00:06 +0000
+Reviewed-on: https://gerrit.onap.org/r/78092
+Project: policy/pap
+Branch: refs/heads/master
