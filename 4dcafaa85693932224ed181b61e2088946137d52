@@ -70,6 +70,47 @@
       "revId": "4dcafaa85693932224ed181b61e2088946137d52",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4968b74c_d4587919",
+        "filename": "packages/policy-pap-docker/src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-02-11T14:56:18Z",
+      "side": 1,
+      "message": "Probably best to move to 16.04.   I think 14.04 is reaching if it hasn\u0027t reached its EOL, that\u0027s the reason.   The version change is probably transparent.  We would have to do that in other images as well especially if we don\u0027t move to Alpine.",
+      "parentUuid": "89c5b89a_6d412ca0",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "4dcafaa85693932224ed181b61e2088946137d52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1419f6d0_f9d2058e",
+        "filename": "packages/policy-pap-tarball/src/main/package/tarball/assembly.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-02-11T14:56:18Z",
+      "side": 1,
+      "message": "Question: the \"/etc\" will not put it under \"/\" correct dir (owned by root).  I don\u0027t think so, but just checking.  I see in your tar command in Dockerfile you pass the install dir.   Just want to make sure.",
+      "revId": "4dcafaa85693932224ed181b61e2088946137d52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
