@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9aa6003_34a181ee",
+        "filename": "packages/policy-pap-docker/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 805
+      },
+      "writtenOn": "2019-02-11T18:01:05Z",
+      "side": 1,
+      "message": "Not a huge deal but I changed this property name to reflect the component.. pap.project.version ??  You can leave if you prefer, just a suggestion, I still approve.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 71
+      },
+      "revId": "d1a702ca63adfd763bcc2e0aa1f71131bbc73308",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
