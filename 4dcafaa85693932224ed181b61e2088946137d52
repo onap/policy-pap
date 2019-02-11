@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "c4a21ea6_f2c5ff0f",
+        "filename": "packages/policy-pap-docker/src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-11T15:21:07Z",
+      "side": 1,
+      "message": "Done. moved to 16.04 for now",
+      "parentUuid": "4968b74c_d4587919",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "4dcafaa85693932224ed181b61e2088946137d52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1419f6d0_f9d2058e",
         "filename": "packages/policy-pap-tarball/src/main/package/tarball/assembly.xml",
         "patchSetId": 1
@@ -108,6 +132,24 @@
       "writtenOn": "2019-02-11T14:56:18Z",
       "side": 1,
       "message": "Question: the \"/etc\" will not put it under \"/\" correct dir (owned by root).  I don\u0027t think so, but just checking.  I see in your tar command in Dockerfile you pass the install dir.   Just want to make sure.",
+      "revId": "4dcafaa85693932224ed181b61e2088946137d52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2df7d494_944a96b7",
+        "filename": "packages/policy-pap-tarball/src/main/package/tarball/assembly.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-11T15:21:07Z",
+      "side": 1,
+      "message": "The \"/etc\" folder will be inside the generated tar zip which is then copied in the install directory ${POLICY_PAP_HOME} using command in the Dockerfile. \nAnd the directory is recursively owned by \"policy\" user.\nThe files inside \"${POLICY_PAP_HOME}/etc\" are then used in the policy-pap.sh script to bootstrap the component. I think the flow will work.",
+      "parentUuid": "1419f6d0_f9d2058e",
       "revId": "4dcafaa85693932224ed181b61e2088946137d52",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
