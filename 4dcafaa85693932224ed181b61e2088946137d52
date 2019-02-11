@@ -46,6 +46,30 @@
       "revId": "4dcafaa85693932224ed181b61e2088946137d52",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "89c5b89a_6d412ca0",
+        "filename": "packages/policy-pap-docker/src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-02-11T14:47:17Z",
+      "side": 1,
+      "message": "OK.",
+      "parentUuid": "e23c517e_c89b2549",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "4dcafaa85693932224ed181b61e2088946137d52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
