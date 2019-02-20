@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "01643503_bf038a14",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-02-20T18:40:53Z",
+      "side": 1,
+      "message": "Is the Authorization header required, at least this Swagger UI tool that generates the GUI will prompt for credentials ..\n\nThe other comment is that when using AAF, it is not purely basic auth, and that could be a possibility.   I guess in case of doubt better to omit, if we can guarantee tooling works correctly.",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e25b333a_725027e8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-02-20T18:40:53Z",
+      "side": 1,
+      "message": "When using AAF, the jetty server will return 401 for authentication failure, and 403 for authorization failure.",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "77c25470_02646fbe",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-02-20T18:40:53Z",
+      "side": 1,
+      "message": "see some comments above ..",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
