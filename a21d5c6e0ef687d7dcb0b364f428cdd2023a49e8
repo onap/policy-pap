@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "89c16b30_fae8a2ac",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-20T19:16:06Z",
+      "side": 1,
+      "message": "I tried removing the authorization header and then loading the Swagger UI, yes we get a popup for entering user/password but only when we try executing the API.\nInstead if you have the headers then the UI itself will show that the API needs user/password authentication. Also provide facility to login/logout once for all the API\u0027s. To me it looks more informative and easy to play with.\nAnd we can have multiple authorization schemes.\n\nAgree AAF is the unknown part here. Even I don\u0027t know about it.\n\nIf you want I can remove the headers?",
+      "parentUuid": "01643503_bf038a14",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e25b333a_725027e8",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-02-20T18:40:53Z",
       "side": 1,
       "message": "When using AAF, the jetty server will return 401 for authentication failure, and 403 for authorization failure.",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dec071d4_1cc249e0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-20T19:16:06Z",
+      "side": 1,
+      "message": "OK, I will update the error codes.",
+      "parentUuid": "e25b333a_725027e8",
       "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
