@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5afadf9b_6036c6e1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1441
+      },
+      "writtenOn": "2019-02-20T22:03:54Z",
+      "side": 0,
+      "message": "If we add more endpoints to this controller and some need @Consumes JSON, how does each @ApiOperation know when to @Produces and when to @Consumes. Maybe we still need to add it on @ApiOperation level as well?",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 37
+      },
+      "revId": "d1a702ca63adfd763bcc2e0aa1f71131bbc73308",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
