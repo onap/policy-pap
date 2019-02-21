@@ -220,7 +220,7 @@ public class TestPapRestServer {
         clientConfig.register(feature);
 
         final Client client = ClientBuilder.newClient(clientConfig);
-        final WebTarget webTarget = client.target("http://localhost:6969/" + endpoint);
+        final WebTarget webTarget = client.target("http://localhost:6969/policy/pap/v1/" + endpoint);
 
         final Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 
@@ -248,13 +248,13 @@ public class TestPapRestServer {
 
         final SSLContext sc = SSLContext.getInstance("TLSv1.2");
         sc.init(null, noopTrustManager, new SecureRandom());
-        final ClientBuilder clientBuilder =
-                ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
+        final ClientBuilder clientBuilder = ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host,
+                session) -> true);
         final Client client = clientBuilder.build();
         final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("healthcheck", "zb!XztG34");
         client.register(feature);
 
-        final WebTarget webTarget = client.target("https://localhost:6969/" + endpoint);
+        final WebTarget webTarget = client.target("https://localhost:6969/policy/pap/v1/" + endpoint);
 
         final Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 

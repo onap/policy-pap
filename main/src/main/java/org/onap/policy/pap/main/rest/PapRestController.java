@@ -22,7 +22,12 @@ package org.onap.policy.pap.main.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.BasicAuthDefinition;
 import io.swagger.annotations.Info;
+import io.swagger.annotations.SecurityDefinition;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 
@@ -39,29 +44,42 @@ import org.onap.policy.common.endpoints.report.HealthCheckReport;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@Path("/")
-@Api
+@Path("/policy/pap/v1")
+@Api(value = "Policy Administration (PAP) API")
 @Produces(MediaType.APPLICATION_JSON)
-@SwaggerDefinition(info = @Info(description = "Policy Pap Service", version = "v1.0", title = "Policy Pap"),
-        consumes = { MediaType.APPLICATION_JSON }, produces = { MediaType.APPLICATION_JSON },
-        schemes = { SwaggerDefinition.Scheme.HTTP },
-        tags = { @Tag(name = "policy-pap", description = "Policy Pap Service Operations") })
+@SwaggerDefinition(info = @Info(
+        description = "Policy Administration is responsible for the deployment life cycle of policies as well as "
+                + "interworking with the mechanisms required to orchestrate the nodes and containers on which "
+                + "policies run. It is also responsible for the administration of policies at run time;"
+                + " ensuring that policies are available to users, that policies are executing correctly,"
+                + " and that the state and status of policies is monitored",
+        version = "v1.0", title = "Policy Administration"), consumes = { MediaType.APPLICATION_JSON },
+        produces = { MediaType.APPLICATION_JSON },
+        schemes = { SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS },
+        tags = { @Tag(name = "policy-administration", description = "Policy Administration Service Operations") },
+        securityDefinition = @SecurityDefinition(basicAuthDefinitions = { @BasicAuthDefinition(key = "basicAuth") }))
 public class PapRestController {
 
     @GET
     @Path("healthcheck")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Perform a system healthcheck", notes = "Provides healthy status of the Policy Pap component",
-            response = HealthCheckReport.class)
+    @ApiOperation(value = "Perform healthcheck",
+            notes = "Returns healthy status of the Policy Administration component", response = HealthCheckReport.class,
+            authorizations = @Authorization(value = "basicAuth"))
+    @ApiResponses(value = { @ApiResponse(code = 401, message = "Authentication Error"),
+        @ApiResponse(code = 403, message = "Authorization Error"),
+        @ApiResponse(code = 500, message = "Internal Server Error") })
     public Response healthcheck() {
         return Response.status(Response.Status.OK).entity(new HealthCheckProvider().performHealthCheck()).build();
     }
 
     @GET
     @Path("statistics")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Fetch current statistics", notes = "Provides current statistics of the Policy PAP component",
-            response = StatisticsReport.class)
+    @ApiOperation(value = "Fetch current statistics",
+            notes = "Returns current statistics of the Policy Administration component",
+            response = StatisticsReport.class, authorizations = @Authorization(value = "basicAuth"))
+    @ApiResponses(value = { @ApiResponse(code = 401, message = "Authentication Error"),
+        @ApiResponse(code = 403, message = "Authorization Error"),
+        @ApiResponse(code = 500, message = "Internal Server Error") })
     public Response statistics() {
         return Response.status(Response.Status.OK).entity(new StatisticsProvider().fetchCurrentStatistics()).build();
     }
