@@ -22,6 +22,30 @@
       "revId": "d1a702ca63adfd763bcc2e0aa1f71131bbc73308",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "50d9ce12_8d9de0bf",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-21T11:51:44Z",
+      "side": 0,
+      "message": "In general, the practice is to add @Produces \u0026 @Consumes at the class level to inform the jaxrs implementation (example - jersey) about what format of input/output is supported by the controller (example - json, xml) . And then that gets applied to appropriate API (GET, POST, PUT, DELETE) by the jaxrs implementation.",
+      "parentUuid": "5afadf9b_6036c6e1",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 37
+      },
+      "revId": "d1a702ca63adfd763bcc2e0aa1f71131bbc73308",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }

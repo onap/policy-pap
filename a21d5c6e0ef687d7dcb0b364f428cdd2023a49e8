@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "bcec5576_0b67bc1f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-21T11:51:44Z",
+      "side": 1,
+      "message": "Thanks Jorge!!!",
+      "parentUuid": "bb95c9fe_2ac7101a",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e25b333a_725027e8",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
         "patchSetId": 1
@@ -90,6 +108,24 @@
     },
     {
       "key": {
+        "uuid": "d9f75e31_3608dac7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-21T11:51:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dec071d4_1cc249e0",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "77c25470_02646fbe",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
         "patchSetId": 1
@@ -101,6 +137,24 @@
       "writtenOn": "2019-02-20T18:40:53Z",
       "side": 1,
       "message": "see some comments above ..",
+      "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "be0ed806_2984f1a0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-02-21T11:51:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77c25470_02646fbe",
       "revId": "a21d5c6e0ef687d7dcb0b364f428cdd2023a49e8",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
