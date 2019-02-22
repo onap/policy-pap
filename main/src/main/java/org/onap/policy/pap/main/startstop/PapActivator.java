@@ -38,7 +38,7 @@ public class PapActivator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
 
     private final PapParameterGroup papParameterGroup;
-    private static boolean alive = false;
+    private static volatile boolean alive = false;
     private PapRestServer restServer;
 
     /**
