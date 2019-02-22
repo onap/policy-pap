@@ -44,9 +44,12 @@ public class HealthCheckProvider {
         final HealthCheckReport report = new HealthCheckReport();
         report.setName(NAME);
         report.setUrl(URL);
-        report.setHealthy(PapActivator.isAlive());
-        report.setCode(PapActivator.isAlive() ? 200 : 500);
-        report.setMessage(PapActivator.isAlive() ? ALIVE : NOT_ALIVE);
+        
+        boolean alive = PapActivator.isAlive();
+        
+        report.setHealthy(alive);
+        report.setCode(alive ? 200 : 500);
+        report.setMessage(alive ? ALIVE : NOT_ALIVE);
         return report;
     }
 }
