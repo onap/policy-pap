@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +45,12 @@ public class HealthCheckProvider {
         final HealthCheckReport report = new HealthCheckReport();
         report.setName(NAME);
         report.setUrl(URL);
-        report.setHealthy(PapActivator.isAlive());
-        report.setCode(PapActivator.isAlive() ? 200 : 500);
-        report.setMessage(PapActivator.isAlive() ? ALIVE : NOT_ALIVE);
+
+        boolean alive = PapActivator.isAlive();
+
+        report.setHealthy(alive);
+        report.setCode(alive ? 200 : 500);
+        report.setMessage(alive ? ALIVE : NOT_ALIVE);
         return report;
     }
 }

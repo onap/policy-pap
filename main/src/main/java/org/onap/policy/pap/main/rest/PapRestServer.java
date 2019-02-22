@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +27,8 @@ import java.util.Properties;
 
 import org.onap.policy.common.capabilities.Startable;
 import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.properties.PolicyEndPointProperties;
+import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.pap.main.parameters.RestServerParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +41,6 @@ import org.slf4j.LoggerFactory;
 public class PapRestServer implements Startable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PapRestServer.class);
-
-    private static final String SEPARATOR = ".";
-    private static final String HTTP_SERVER_SERVICES = "http.server.services";
 
     private List<HttpServletServer> servers = new ArrayList<>();
 
@@ -82,23 +82,28 @@ public class PapRestServer implements Startable {
      */
     private Properties getServerProperties() {
         final Properties props = new Properties();
-        props.setProperty(HTTP_SERVER_SERVICES, restServerParameters.getName());
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".host",
-                restServerParameters.getHost());
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".port",
-                Integer.toString(restServerParameters.getPort()));
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".restClasses",
-                PapRestController.class.getCanonicalName());
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".managed", "false");
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".swagger", "true");
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".userName",
-                restServerParameters.getUserName());
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".password",
-                restServerParameters.getPassword());
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".https",
-                String.valueOf(restServerParameters.isHttps()));
-        props.setProperty(HTTP_SERVER_SERVICES + SEPARATOR + restServerParameters.getName() + ".aaf",
-                String.valueOf(restServerParameters.isAaf()));
+        props.setProperty(PolicyEndPointProperties.PROPERTY_HTTP_SERVER_SERVICES, restServerParameters.getName());
+
+        final String svcpfx =
+                        PolicyEndPointProperties.PROPERTY_HTTP_SERVER_SERVICES + "." + restServerParameters.getName();
+
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_HOST_SUFFIX, restServerParameters.getHost());
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_PORT_SUFFIX,
+                        Integer.toString(restServerParameters.getPort()));
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_REST_CLASSES_SUFFIX,
+                        PapRestController.class.getCanonicalName());
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_MANAGED_SUFFIX, "false");
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_SWAGGER_SUFFIX, "true");
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_AUTH_USERNAME_SUFFIX,
+                        restServerParameters.getUserName());
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_AUTH_PASSWORD_SUFFIX,
+                        restServerParameters.getPassword());
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_HTTPS_SUFFIX,
+                        String.valueOf(restServerParameters.isHttps()));
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_AAF_SUFFIX,
+                        String.valueOf(restServerParameters.isAaf()));
+        props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_SERIALIZATION_PROVIDER,
+                        GsonMessageBodyHandler.class.getName());
         return props;
     }
 
