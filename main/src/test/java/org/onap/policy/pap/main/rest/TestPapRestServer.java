@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +77,8 @@ public class TestPapRestServer {
      */
     @After
     public void teardown() {
+        PapStatisticsManager.getInstance().resetAllStatistics();
+
         try {
             if (NetworkUtil.isTcpPortOpen("localhost", 6969, 1, 1000L)) {
                 if (main != null) {
@@ -103,21 +106,16 @@ public class TestPapRestServer {
     }
 
     @Test
-    public void testHealthCheckFailure() throws InterruptedException, IOException {
+    public void testHealthCheckFailure() throws Exception {
         final RestServerParameters restServerParams = new CommonTestData().getRestServerParameters(false);
         restServerParams.setName(CommonTestData.PAP_GROUP_NAME);
         restServer = new PapRestServer(restServerParams);
-        try {
-            restServer.start();
-            final Invocation.Builder invocationBuilder = sendHttpRequest(HEALTHCHECK_ENDPOINT);
-            final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
-            validateHealthCheckReport(NAME, SELF, false, 500, NOT_ALIVE, report);
-            assertTrue(restServer.isAlive());
-            assertTrue(restServer.toString().startsWith("PapRestServer [servers="));
-        } catch (final Exception exp) {
-            LOGGER.error("testHealthCheckFailure failed", exp);
-            fail("Test should not throw an exception");
-        }
+        restServer.start();
+        final Invocation.Builder invocationBuilder = sendHttpRequest(HEALTHCHECK_ENDPOINT);
+        final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+        validateHealthCheckReport(NAME, SELF, false, 500, NOT_ALIVE, report);
+        assertTrue(restServer.isAlive());
+        assertTrue(restServer.toString().startsWith("PapRestServer [servers="));
     }
 
     @Test
@@ -144,7 +142,6 @@ public class TestPapRestServer {
             invocationBuilder = sendHttpRequest(STATISTICS_ENDPOINT);
             report = invocationBuilder.get(StatisticsReport.class);
             validateStatisticsReport(report, 1, 200);
-            PapStatisticsManager.resetAllStatistics();
         } catch (final Exception exp) {
             LOGGER.error("testPapStatistics_200 failed", exp);
             fail("Test should not throw an exception");
@@ -161,7 +158,6 @@ public class TestPapRestServer {
             final Invocation.Builder invocationBuilder = sendHttpRequest(STATISTICS_ENDPOINT);
             final StatisticsReport report = invocationBuilder.get(StatisticsReport.class);
             validateStatisticsReport(report, 0, 500);
-            PapStatisticsManager.resetAllStatistics();
         } catch (final Exception exp) {
             LOGGER.error("testPapStatistics_500 failed", exp);
             fail("Test should not throw an exception");
@@ -182,15 +178,9 @@ public class TestPapRestServer {
     }
 
     @Test
-    public void testPapStatisticsConstructorIsPrivate() {
-        try {
-            final Constructor<PapStatisticsManager> constructor = PapStatisticsManager.class.getDeclaredConstructor();
-            assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-            constructor.setAccessible(true);
-            constructor.newInstance();
-        } catch (final Exception exp) {
-            assertTrue(exp.getCause().toString().contains("Instantiation of the class is not allowed"));
-        }
+    public void testPapStatisticsConstructorIsProtected() throws Exception {
+        final Constructor<PapStatisticsManager> constructor = PapStatisticsManager.class.getDeclaredConstructor();
+        assertTrue(Modifier.isProtected(constructor.getModifiers()));
     }
 
     private Main startPapService(final boolean http) {
@@ -265,14 +255,16 @@ public class TestPapRestServer {
     }
 
     private void updateDistributionStatistics() {
-        PapStatisticsManager.updateTotalPdpCount();
-        PapStatisticsManager.updateTotalPdpGroupCount();
-        PapStatisticsManager.updateTotalPolicyDeployCount();
-        PapStatisticsManager.updatePolicyDeploySuccessCount();
-        PapStatisticsManager.updatePolicyDeployFailureCount();
-        PapStatisticsManager.updateTotalPolicyDownloadCount();
-        PapStatisticsManager.updatePolicyDownloadSuccessCount();
-        PapStatisticsManager.updatePolicyDownloadFailureCount();
+        PapStatisticsManager mgr = PapStatisticsManager.getInstance();
+
+        mgr.updateTotalPdpCount();
+        mgr.updateTotalPdpGroupCount();
+        mgr.updateTotalPolicyDeployCount();
+        mgr.updatePolicyDeploySuccessCount();
+        mgr.updatePolicyDeployFailureCount();
+        mgr.updateTotalPolicyDownloadCount();
+        mgr.updatePolicyDownloadSuccessCount();
+        mgr.updatePolicyDownloadFailureCount();
     }
 
     private void validateStatisticsReport(final StatisticsReport report, final int count, final int code) {
