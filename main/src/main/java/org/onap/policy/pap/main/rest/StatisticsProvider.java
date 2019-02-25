@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,15 +37,18 @@ public class StatisticsProvider {
      */
     public StatisticsReport fetchCurrentStatistics() {
         final StatisticsReport report = new StatisticsReport();
-        report.setCode(PapActivator.isAlive() ? 200 : 500);
-        report.setTotalPdpCount(PapStatisticsManager.getTotalPdpCount());
-        report.setTotalPdpGroupCount(PapStatisticsManager.getTotalPdpGroupCount());
-        report.setTotalPolicyDownloadCount(PapStatisticsManager.getTotalPolicyDownloadCount());
-        report.setPolicyDownloadSuccessCount(PapStatisticsManager.getPolicyDownloadSuccessCount());
-        report.setPolicyDownloadFailureCount(PapStatisticsManager.getPolicyDownloadFailureCount());
-        report.setTotalPolicyDeployCount(PapStatisticsManager.getTotalPolicyDeployCount());
-        report.setPolicyDeploySuccessCount(PapStatisticsManager.getPolicyDeploySuccessCount());
-        report.setPolicyDeployFailureCount(PapStatisticsManager.getPolicyDeployFailureCount());
+        report.setCode(PapActivator.getCurrent().isAlive() ? 200 : 500);
+
+        PapStatisticsManager mgr = PapStatisticsManager.getInstance();
+        report.setTotalPdpCount(mgr.getTotalPdpCount());
+        report.setTotalPdpGroupCount(mgr.getTotalPdpGroupCount());
+        report.setTotalPolicyDownloadCount(mgr.getTotalPolicyDownloadCount());
+        report.setPolicyDownloadSuccessCount(mgr.getPolicyDownloadSuccessCount());
+        report.setPolicyDownloadFailureCount(mgr.getPolicyDownloadFailureCount());
+        report.setTotalPolicyDeployCount(mgr.getTotalPolicyDeployCount());
+        report.setPolicyDeploySuccessCount(mgr.getPolicyDeploySuccessCount());
+        report.setPolicyDeployFailureCount(mgr.getPolicyDeployFailureCount());
+
         return report;
     }
 }

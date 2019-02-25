@@ -21,6 +21,8 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
@@ -39,7 +41,19 @@ public class PapActivator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
 
     private final PapParameterGroup papParameterGroup;
-    private static volatile boolean alive = false;
+
+    /**
+     * The current activator. This is initialized to a dummy instance used until the real
+     * one has been configured.
+     */
+    @Getter
+    @Setter
+    private static volatile PapActivator current = new PapActivator(null);
+
+    @Getter
+    @Setter(lombok.AccessLevel.PRIVATE)
+    private volatile boolean alive = false;
+
     private PapRestServer restServer;
 
     /**
@@ -61,7 +75,7 @@ public class PapActivator {
             LOGGER.debug("Policy pap starting as a service . . .");
             startPapRestServer();
             registerToParameterService(papParameterGroup);
-            PapActivator.setAlive(true);
+            setAlive(true);
             LOGGER.debug("Policy pap started as a service");
         } catch (final Exception exp) {
             LOGGER.error("Policy pap service startup failed", exp);
@@ -77,7 +91,7 @@ public class PapActivator {
     public void terminate() throws PolicyPapException {
         try {
             deregisterToParameterService(papParameterGroup);
-            PapActivator.setAlive(false);
+            setAlive(false);
 
             // Stop the pap rest server
             restServer.stop();
@@ -112,24 +126,6 @@ public class PapActivator {
      */
     public void deregisterToParameterService(final PapParameterGroup papParameterGroup) {
         ParameterService.deregister(papParameterGroup.getName());
-    }
-
-    /**
-     * Returns the alive status of pap service.
-     *
-     * @return the alive
-     */
-    public static boolean isAlive() {
-        return alive;
-    }
-
-    /**
-     * Change the alive status of pap service.
-     *
-     * @param status the status
-     */
-    private static void setAlive(final boolean status) {
-        alive = status;
     }
 
     /**

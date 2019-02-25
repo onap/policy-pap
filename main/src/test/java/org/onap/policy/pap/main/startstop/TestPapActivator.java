@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +22,14 @@
 package org.onap.policy.pap.main.startstop;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
@@ -45,6 +50,18 @@ public class TestPapActivator {
     private PapActivator activator;
 
     /**
+     * Initializes an activator.
+     * @throws Exception if an error occurs
+     */
+    @Before
+    public void setUp() throws Exception {
+        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
+        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
+        final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
+        activator = new PapActivator(parGroup);
+    }
+
+    /**
      * Method for cleanup after each test.
      */
     @After
@@ -60,12 +77,10 @@ public class TestPapActivator {
 
     @Test
     public void testPapActivator() throws PolicyPapException {
-        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
-        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-        final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
-        activator = new PapActivator(parGroup);
         try {
+            assertFalse(activator.isAlive());
             activator.initialize();
+            assertTrue(activator.isAlive());
             assertTrue(activator.getParameterGroup().isValid());
             assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
         } catch (final Exception exp) {
@@ -76,12 +91,17 @@ public class TestPapActivator {
 
     @Test(expected = PolicyPapException.class)
     public void testPapActivatorError() throws PolicyPapException {
-        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
-        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-        final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
-        activator = new PapActivator(parGroup);
         activator.initialize();
         assertTrue(activator.getParameterGroup().isValid());
         activator.initialize();
+    }
+
+    @Test
+    public void testGetCurrent_testSetCurrent() {
+        assertNotNull(PapActivator.getCurrent());
+
+        PapActivator.setCurrent(activator);
+
+        assertSame(activator, PapActivator.getCurrent());
     }
 }
