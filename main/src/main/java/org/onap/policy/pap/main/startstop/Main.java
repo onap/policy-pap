@@ -75,6 +75,7 @@ public class Main {
 
         // Now, create the activator for the policy pap service
         activator = new PapActivator(parameterGroup);
+        PapActivator.setInstance(activator);
 
         // Start the activator
         try {

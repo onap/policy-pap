@@ -46,7 +46,7 @@ public class HealthCheckProvider {
         report.setName(NAME);
         report.setUrl(URL);
 
-        boolean alive = PapActivator.isAlive();
+        boolean alive = PapActivator.getInstance().isAlive();
 
         report.setHealthy(alive);
         report.setCode(alive ? 200 : 500);

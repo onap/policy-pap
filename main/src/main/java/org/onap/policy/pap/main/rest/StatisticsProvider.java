@@ -36,15 +36,18 @@ public class StatisticsProvider {
      */
     public StatisticsReport fetchCurrentStatistics() {
         final StatisticsReport report = new StatisticsReport();
-        report.setCode(PapActivator.isAlive() ? 200 : 500);
-        report.setTotalPdpCount(PapStatisticsManager.getTotalPdpCount());
-        report.setTotalPdpGroupCount(PapStatisticsManager.getTotalPdpGroupCount());
-        report.setTotalPolicyDownloadCount(PapStatisticsManager.getTotalPolicyDownloadCount());
-        report.setPolicyDownloadSuccessCount(PapStatisticsManager.getPolicyDownloadSuccessCount());
-        report.setPolicyDownloadFailureCount(PapStatisticsManager.getPolicyDownloadFailureCount());
-        report.setTotalPolicyDeployCount(PapStatisticsManager.getTotalPolicyDeployCount());
-        report.setPolicyDeploySuccessCount(PapStatisticsManager.getPolicyDeploySuccessCount());
-        report.setPolicyDeployFailureCount(PapStatisticsManager.getPolicyDeployFailureCount());
+        report.setCode(PapActivator.getInstance().isAlive() ? 200 : 500);
+
+        PapStatisticsManager mgr = PapStatisticsManager.getInstance();
+        report.setTotalPdpCount(mgr.getTotalPdpCount());
+        report.setTotalPdpGroupCount(mgr.getTotalPdpGroupCount());
+        report.setTotalPolicyDownloadCount(mgr.getTotalPolicyDownloadCount());
+        report.setPolicyDownloadSuccessCount(mgr.getPolicyDownloadSuccessCount());
+        report.setPolicyDownloadFailureCount(mgr.getPolicyDownloadFailureCount());
+        report.setTotalPolicyDeployCount(mgr.getTotalPolicyDeployCount());
+        report.setPolicyDeploySuccessCount(mgr.getPolicyDeploySuccessCount());
+        report.setPolicyDeployFailureCount(mgr.getPolicyDeployFailureCount());
+
         return report;
     }
 }

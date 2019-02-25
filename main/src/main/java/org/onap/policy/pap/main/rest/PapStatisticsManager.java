@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 
 /**
@@ -30,24 +31,22 @@ import lombok.Getter;
 public class PapStatisticsManager {
 
     @Getter
-    private static long totalPdpCount;
-    @Getter
-    private static long totalPdpGroupCount;
-    @Getter
-    private static long totalPolicyDeployCount;
-    @Getter
-    private static long policyDeploySuccessCount;
-    @Getter
-    private static long policyDeployFailureCount;
-    @Getter
-    private static long totalPolicyDownloadCount;
-    @Getter
-    private static long policyDownloadSuccessCount;
-    @Getter
-    private static long policyDownloadFailureCount;
+    private static final PapStatisticsManager instance = new PapStatisticsManager();
 
-    private PapStatisticsManager() {
-        throw new IllegalStateException("Instantiation of the class is not allowed");
+    private final AtomicLong totalPdpCount = new AtomicLong(0);
+    private final AtomicLong totalPdpGroupCount = new AtomicLong(0);
+    private final AtomicLong totalPolicyDeployCount = new AtomicLong(0);
+    private final AtomicLong policyDeploySuccessCount = new AtomicLong(0);
+    private final AtomicLong policyDeployFailureCount = new AtomicLong(0);
+    private final AtomicLong totalPolicyDownloadCount = new AtomicLong(0);
+    private final AtomicLong policyDownloadSuccessCount = new AtomicLong(0);
+    private final AtomicLong policyDownloadFailureCount = new AtomicLong(0);
+
+    /**
+     * Constructs the object.
+     */
+    protected PapStatisticsManager() {
+        super();
     }
 
     /**
@@ -55,8 +54,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of totalPdpCount
      */
-    public static long updateTotalPdpCount() {
-        return ++totalPdpCount;
+    public long updateTotalPdpCount() {
+        return totalPdpCount.incrementAndGet();
     }
 
     /**
@@ -64,8 +63,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of totalPdpGroupCount
      */
-    public static long updateTotalPdpGroupCount() {
-        return ++totalPdpGroupCount;
+    public long updateTotalPdpGroupCount() {
+        return totalPdpGroupCount.incrementAndGet();
     }
 
     /**
@@ -73,8 +72,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of totalPolicyDeployCount
      */
-    public static long updateTotalPolicyDeployCount() {
-        return ++totalPolicyDeployCount;
+    public long updateTotalPolicyDeployCount() {
+        return totalPolicyDeployCount.incrementAndGet();
     }
 
     /**
@@ -82,8 +81,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of policyDeploySuccessCount
      */
-    public static long updatePolicyDeploySuccessCount() {
-        return ++policyDeploySuccessCount;
+    public long updatePolicyDeploySuccessCount() {
+        return policyDeploySuccessCount.incrementAndGet();
     }
 
     /**
@@ -91,8 +90,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of policyDeployFailureCount
      */
-    public static long updatePolicyDeployFailureCount() {
-        return ++policyDeployFailureCount;
+    public long updatePolicyDeployFailureCount() {
+        return policyDeployFailureCount.incrementAndGet();
     }
 
     /**
@@ -100,8 +99,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of totalPolicyDownloadCount
      */
-    public static long updateTotalPolicyDownloadCount() {
-        return ++totalPolicyDownloadCount;
+    public long updateTotalPolicyDownloadCount() {
+        return totalPolicyDownloadCount.incrementAndGet();
     }
 
     /**
@@ -109,8 +108,8 @@ public class PapStatisticsManager {
      *
      * @return the updated value of policyDownloadSuccessCount
      */
-    public static long updatePolicyDownloadSuccessCount() {
-        return ++policyDownloadSuccessCount;
+    public long updatePolicyDownloadSuccessCount() {
+        return policyDownloadSuccessCount.incrementAndGet();
     }
 
     /**
@@ -118,21 +117,53 @@ public class PapStatisticsManager {
      *
      * @return the updated value of policyDownloadFailureCount
      */
-    public static long updatePolicyDownloadFailureCount() {
-        return ++policyDownloadFailureCount;
+    public long updatePolicyDownloadFailureCount() {
+        return policyDownloadFailureCount.incrementAndGet();
     }
 
     /**
      * Reset all the statistics counts to 0.
      */
-    public static void resetAllStatistics() {
-        totalPdpCount = 0L;
-        totalPdpGroupCount = 0L;
-        totalPolicyDeployCount = 0L;
-        policyDeploySuccessCount = 0L;
-        policyDeployFailureCount = 0L;
-        totalPolicyDownloadCount = 0L;
-        policyDownloadSuccessCount = 0L;
-        policyDownloadFailureCount = 0L;
+    public void resetAllStatistics() {
+        totalPdpCount.set(0L);
+        totalPdpGroupCount.set(0L);
+        totalPolicyDeployCount.set(0L);
+        policyDeploySuccessCount.set(0L);
+        policyDeployFailureCount.set(0L);
+        totalPolicyDownloadCount.set(0L);
+        policyDownloadSuccessCount.set(0L);
+        policyDownloadFailureCount.set(0L);
+    }
+
+    public long getTotalPdpCount() {
+        return totalPdpCount.get();
+    }
+
+    public long getTotalPdpGroupCount() {
+        return totalPdpGroupCount.get();
+    }
+
+    public long getTotalPolicyDeployCount() {
+        return totalPolicyDeployCount.get();
+    }
+
+    public long getPolicyDeploySuccessCount() {
+        return policyDeploySuccessCount.get();
+    }
+
+    public long getPolicyDeployFailureCount() {
+        return policyDeployFailureCount.get();
+    }
+
+    public long getTotalPolicyDownloadCount() {
+        return totalPolicyDownloadCount.get();
+    }
+
+    public long getPolicyDownloadSuccessCount() {
+        return policyDownloadSuccessCount.get();
+    }
+
+    public long getPolicyDownloadFailureCount() {
+        return policyDownloadFailureCount.get();
     }
 }
