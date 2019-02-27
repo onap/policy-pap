@@ -21,7 +21,6 @@
 
 package org.onap.policy.pap.main.parameters;
 
-
 import java.io.File;
 import org.onap.policy.common.parameters.GroupValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
