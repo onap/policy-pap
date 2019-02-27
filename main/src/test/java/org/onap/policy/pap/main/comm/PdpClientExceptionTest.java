@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.onap.policy.common.utils.test.ExceptionsTester;
+import org.onap.policy.pap.main.comm.PdpClientException;
 
 public class PdpClientExceptionTest {
 
