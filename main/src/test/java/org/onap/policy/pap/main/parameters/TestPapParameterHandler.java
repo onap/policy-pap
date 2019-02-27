@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.nio.file.NoSuchFileException;
 import org.junit.Test;
+import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
 
@@ -46,7 +49,7 @@ public class TestPapParameterHandler {
             new PapParameterHandler().getParameters(noArguments);
             fail("test should throw an exception here");
         } catch (final Exception e) {
-            assertTrue(e.getMessage().contains("FileNotFoundException"));
+            assertTrue(e.getCause() instanceof NoSuchFileException);
         }
     }
 
@@ -76,9 +79,9 @@ public class TestPapParameterHandler {
             new PapParameterHandler().getParameters(invalidArguments);
             fail("test should throw an exception here");
         } catch (final Exception e) {
-            assertEquals("error reading parameters from \"parameters/InvalidParameters.json\"\n"
-                    + "(JsonSyntaxException):java.lang.IllegalStateException: "
-                    + "Expected a string but was BEGIN_ARRAY at line 2 column 15 path $.name", e.getMessage());
+            assertTrue(e.getMessage().startsWith(
+                            "error reading parameters from \"parameters/InvalidParameters.json\""));
+            assertTrue(e.getCause() instanceof CoderException);
         }
     }
 

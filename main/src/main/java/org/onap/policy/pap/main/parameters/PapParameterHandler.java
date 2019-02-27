@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +21,15 @@
 
 package org.onap.policy.pap.main.parameters;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import java.io.FileReader;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.onap.policy.common.parameters.GroupValidationResult;
+import org.onap.policy.common.utils.coder.Coder;
+import org.onap.policy.common.utils.coder.CoderException;
+import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
 import org.slf4j.Logger;
@@ -40,6 +44,8 @@ public class PapParameterHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PapParameterHandler.class);
 
+    private static final Coder CODER = new StandardCoder();
+
     /**
      * Read the parameters from the parameter file.
      *
@@ -52,11 +58,11 @@ public class PapParameterHandler {
 
         // Read the parameters
         try {
-            // Read the parameters from JSON using Gson
-            final Gson gson = new GsonBuilder().create();
-            papParameterGroup =
-                    gson.fromJson(new FileReader(arguments.getFullConfigurationFilePath()), PapParameterGroup.class);
-        } catch (final Exception e) {
+            byte[] data = Files.readAllBytes(new File(arguments.getFullConfigurationFilePath()).toPath());
+            String json = new String(data, StandardCharsets.UTF_8);
+            // Read the parameters from JSON
+            papParameterGroup = CODER.decode(json, PapParameterGroup.class);
+        } catch (final IOException | CoderException e) {
             final String errorMessage = "error reading parameters from \"" + arguments.getConfigurationFilePath()
                     + "\"\n" + "(" + e.getClass().getSimpleName() + "):" + e.getMessage();
             LOGGER.error(errorMessage, e);
