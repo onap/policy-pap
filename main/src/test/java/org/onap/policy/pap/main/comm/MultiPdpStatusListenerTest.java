@@ -32,63 +32,64 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.pap.main.comm.MultiPdpStatusListener;
+import org.onap.policy.pdp.common.models.PdpResponseDetails;
 import org.onap.policy.pdp.common.models.PdpStatus;
 
 public class MultiPdpStatusListenerTest {
     private static final CommInfrastructure INFRA = CommInfrastructure.NOOP;
     private static final String TOPIC = "my-topic";
-    private static final String NAME1 = "pdp_1";
-    private static final String NAME2 = "pdp_2";
-    private static final List<String> NAME_LIST = Arrays.asList(NAME1, NAME2);
+    private static final String ID1 = "request-1";
+    private static final String ID2 = "request-2";
+    private static final List<String> ID_LIST = Arrays.asList(ID1, ID2);
 
     private MultiPdpStatusListener listener;
     private PdpStatus status;
 
     @Test
     public void testMultiPdpStatusListenerString() throws Exception {
-        listener = new MultiPdpStatusListener(NAME1);
-        assertEquals(Arrays.asList(NAME1).toString(), listener.getUnseenPdpNames().toString());
+        listener = new MultiPdpStatusListener(ID1);
+        assertEquals(Arrays.asList(ID1).toString(), listener.getUnseenIds().toString());
 
-        // a name is in the queue - not done yet
+        // an ID is in the queue - not done yet
         assertFalse(doWait(0));
     }
 
     @Test
     public void testMultiPdpStatusListenerCollectionOfString() throws Exception {
-        List<String> lst = NAME_LIST;
+        List<String> lst = ID_LIST;
 
         listener = new MultiPdpStatusListener(lst);
-        assertEquals(lst.toString(), listener.getUnseenPdpNames().toString());
+        assertEquals(lst.toString(), listener.getUnseenIds().toString());
 
-        // a name is in the queue - not done yet
+        // an ID is in the queue - not done yet
         assertFalse(doWait(0));
 
         /*
          * Try with an empty list - should already be complete.
          */
         listener = new MultiPdpStatusListener(new LinkedList<>());
-        assertTrue(listener.getUnseenPdpNames().isEmpty());
+        assertTrue(listener.getUnseenIds().isEmpty());
         assertTrue(doWait(0));
     }
 
     @Test
-    public void testGetUnseenPdpNames() {
-        List<String> lst = NAME_LIST;
+    public void testGetUnseenIds() {
+        List<String> lst = ID_LIST;
 
         listener = new MultiPdpStatusListener(lst);
-        assertEquals(lst.toString(), listener.getUnseenPdpNames().toString());
+        assertEquals(lst.toString(), listener.getUnseenIds().toString());
 
         // receive message from one PDP
         status = new PdpStatus();
-        status.setName(NAME2);
+        status.setResponse(makeResponse(ID2));
         listener.onTopicEvent(INFRA, TOPIC, status);
-        assertEquals(Arrays.asList(NAME1).toString(), listener.getUnseenPdpNames().toString());
+        assertEquals(Arrays.asList(ID1).toString(), listener.getUnseenIds().toString());
 
         // receive message from the other PDP
         status = new PdpStatus();
-        status.setName(NAME1);
+        status.setResponse(makeResponse(ID1));
         listener.onTopicEvent(INFRA, TOPIC, status);
-        assertTrue(listener.getUnseenPdpNames().isEmpty());
+        assertTrue(listener.getUnseenIds().isEmpty());
     }
 
     @Test
@@ -98,12 +99,12 @@ public class MultiPdpStatusListenerTest {
         assertTrue(doWait(0));
 
         // try it with something in the list
-        listener = new MultiPdpStatusListener(NAME_LIST);
+        listener = new MultiPdpStatusListener(ID_LIST);
         assertFalse(doWait(0));
 
         // process a message from one PDP - wait should block the entire time
         status = new PdpStatus();
-        status.setName(NAME1);
+        status.setResponse(makeResponse(ID1));
         listener.onTopicEvent(INFRA, TOPIC, status);
         long tbeg = System.currentTimeMillis();
         assertFalse(doWait(50));
@@ -111,7 +112,7 @@ public class MultiPdpStatusListenerTest {
 
         // process a message from the other PDP - wait should NOT block
         status = new PdpStatus();
-        status.setName(NAME2);
+        status.setResponse(makeResponse(ID2));
         listener.onTopicEvent(INFRA, TOPIC, status);
         tbeg = System.currentTimeMillis();
         assertTrue(doWait(4000));
@@ -120,26 +121,26 @@ public class MultiPdpStatusListenerTest {
 
     @Test
     public void testOnTopicEvent() throws Exception {
-        listener = new MultiPdpStatusListener(NAME_LIST);
+        listener = new MultiPdpStatusListener(ID_LIST);
 
         // not done yet
         assertFalse(doWait(0));
 
-        // process a message - still not done as have another name to go
+        // process a message - still not done as have another ID to go
         status = new PdpStatus();
-        status.setName(NAME1);
+        status.setResponse(makeResponse(ID1));
         listener.onTopicEvent(INFRA, TOPIC, status);
         assertFalse(doWait(0));
 
         // process a message from the same PDP - still not done
         status = new PdpStatus();
-        status.setName(NAME1);
+        status.setResponse(makeResponse(ID1));
         listener.onTopicEvent(INFRA, TOPIC, status);
         assertFalse(doWait(0));
 
         // process another message - now we're done
         status = new PdpStatus();
-        status.setName(NAME2);
+        status.setResponse(makeResponse(ID2));
         listener.onTopicEvent(INFRA, TOPIC, status);
         assertTrue(doWait(0));
     }
@@ -173,5 +174,17 @@ public class MultiPdpStatusListenerTest {
         thread.interrupt();
 
         return done.get();
+    }
+
+    /**
+     * Makes a response for the given request ID.
+     * @param id ID of the request
+     * @return a new response
+     */
+    private PdpResponseDetails makeResponse(String id) {
+        PdpResponseDetails resp = new PdpResponseDetails();
+        resp.setResponseTo(id);
+
+        return resp;
     }
 }

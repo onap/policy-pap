@@ -43,40 +43,40 @@ public class MultiPdpStatusListener implements TypedMessageListener<PdpStatus> {
     private final CountDownLatch allSeen = new CountDownLatch(1);
 
     /**
-     * PDPs from which no message has been received yet.
+     * IDs for which no message has been received yet.
      */
-    private final Set<String> unseenPdpNames = ConcurrentHashMap.newKeySet();
+    private final Set<String> unseenIds = ConcurrentHashMap.newKeySet();
 
     /**
      * Constructs the object.
      *
-     * @param pdpName name of the PDP for which to wait
+     * @param id ID for which to wait
      */
-    public MultiPdpStatusListener(String pdpName) {
-        unseenPdpNames.add(pdpName);
+    public MultiPdpStatusListener(String id) {
+        unseenIds.add(id);
     }
 
     /**
      * Constructs the object.
      *
-     * @param pdpNames names of the PDP for which to wait
+     * @param ids IDs for which to wait
      */
-    public MultiPdpStatusListener(Collection<String> pdpNames) {
-        if (pdpNames.isEmpty()) {
+    public MultiPdpStatusListener(Collection<String> ids) {
+        if (ids.isEmpty()) {
             allSeen.countDown();
 
         } else {
-            unseenPdpNames.addAll(pdpNames);
+            unseenIds.addAll(ids);
         }
     }
 
     /**
-     * Gets the set of names for which messages have not yet been received.
+     * Gets the set of IDs for which messages have not yet been received.
      *
-     * @return the names of the PDPs that have not been seen yet
+     * @return the IDs that have not been seen yet
      */
-    public SortedSet<String> getUnseenPdpNames() {
-        return new TreeSet<>(unseenPdpNames);
+    public SortedSet<String> getUnseenIds() {
+        return new TreeSet<>(unseenIds);
     }
 
     /**
@@ -100,9 +100,13 @@ public class MultiPdpStatusListener implements TypedMessageListener<PdpStatus> {
      */
     @Override
     public void onTopicEvent(CommInfrastructure infra, String topic, PdpStatus message) {
-        unseenPdpNames.remove(message.getName());
+        if (message.getResponse() == null) {
+            return;
+        }
 
-        if (unseenPdpNames.isEmpty()) {
+        unseenIds.remove(message.getResponse().getResponseTo());
+
+        if (unseenIds.isEmpty()) {
             allSeen.countDown();
         }
     }
