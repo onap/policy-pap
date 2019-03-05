@@ -91,7 +91,8 @@ public class PapRestServer implements Startable {
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_PORT_SUFFIX,
                         Integer.toString(restServerParameters.getPort()));
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_REST_CLASSES_SUFFIX,
-                        PapRestController.class.getCanonicalName());
+                        String.join(",", HealthCheckRestControllerV1.class.getCanonicalName(),
+                                        StatisticsRestControllerV1.class.getCanonicalName()));
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_MANAGED_SUFFIX, "false");
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_SWAGGER_SUFFIX, "true");
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_AUTH_USERNAME_SUFFIX,
