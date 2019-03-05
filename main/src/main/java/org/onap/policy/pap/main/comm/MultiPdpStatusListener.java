@@ -30,12 +30,15 @@ import java.util.concurrent.TimeUnit;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
 import org.onap.policy.pdp.common.models.PdpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Listener for PDP Status messages expected to be received from multiple PDPs. The
  * listener "completes" once a message has been seen from all of the PDPs.
  */
-public class MultiPdpStatusListener implements TypedMessageListener<PdpStatus> {
+public abstract class MultiPdpStatusListener implements TypedMessageListener<PdpStatus> {
+    private static final Logger logger = LoggerFactory.getLogger(MultiPdpStatusListener.class);
 
     /**
      * This is decremented once a message has been received from every PDP.
@@ -43,40 +46,40 @@ public class MultiPdpStatusListener implements TypedMessageListener<PdpStatus> {
     private final CountDownLatch allSeen = new CountDownLatch(1);
 
     /**
-     * PDPs from which no message has been received yet.
+     * IDs for which no message has been received yet.
      */
-    private final Set<String> unseenPdpNames = ConcurrentHashMap.newKeySet();
+    private final Set<String> unseenIds = ConcurrentHashMap.newKeySet();
 
     /**
      * Constructs the object.
      *
-     * @param pdpName name of the PDP for which to wait
+     * @param id ID for which to wait
      */
-    public MultiPdpStatusListener(String pdpName) {
-        unseenPdpNames.add(pdpName);
+    public MultiPdpStatusListener(String id) {
+        unseenIds.add(id);
     }
 
     /**
      * Constructs the object.
      *
-     * @param pdpNames names of the PDP for which to wait
+     * @param ids IDs for which to wait
      */
-    public MultiPdpStatusListener(Collection<String> pdpNames) {
-        if (pdpNames.isEmpty()) {
+    public MultiPdpStatusListener(Collection<String> ids) {
+        if (ids.isEmpty()) {
             allSeen.countDown();
 
         } else {
-            unseenPdpNames.addAll(pdpNames);
+            unseenIds.addAll(ids);
         }
     }
 
     /**
-     * Gets the set of names for which messages have not yet been received.
+     * Gets the set of IDs for which messages have not yet been received.
      *
-     * @return the names of the PDPs that have not been seen yet
+     * @return the IDs that have not been seen yet
      */
-    public SortedSet<String> getUnseenPdpNames() {
-        return new TreeSet<>(unseenPdpNames);
+    public SortedSet<String> getUnseenIds() {
+        return new TreeSet<>(unseenIds);
     }
 
     /**
@@ -93,17 +96,37 @@ public class MultiPdpStatusListener implements TypedMessageListener<PdpStatus> {
     }
 
     /**
-     * Indicates that a message was received for a PDP. Triggers completion of
-     * {@link #await(long, TimeUnit)} if all PDPs have received a message. Threads may
-     * override this method to process a message. However, they should still invoke this
-     * method so that PDPs can be properly tracked.
+     * After giving the event to the subclass via
+     * {@link #handleEvent(CommInfrastructure, String, PdpStatus)}, this triggers
+     * completion of {@link #await(long, TimeUnit)}, if all PDPs have received a message.
      */
     @Override
-    public void onTopicEvent(CommInfrastructure infra, String topic, PdpStatus message) {
-        unseenPdpNames.remove(message.getName());
+    public final void onTopicEvent(CommInfrastructure infra, String topic, PdpStatus message) {
+        String id = null;
+        try {
+            id = handleEvent(infra, topic, message);
+        } catch (RuntimeException e) {
+            logger.warn("handleEvent failed due to: {}", e.getMessage(), e);
+        }
 
-        if (unseenPdpNames.isEmpty()) {
+        if (id == null) {
+            return;
+        }
+
+        unseenIds.remove(id);
+
+        if (unseenIds.isEmpty()) {
             allSeen.countDown();
         }
     }
+
+    /**
+     * Indicates that a message was received for a PDP.
+     *
+     * @param infra infrastructure with which the message was received
+     * @param topic topic on which the message was received
+     * @param message message that was received
+     * @return the ID extracted from the message, or {@code null} if it cannot be extracted
+     */
+    protected abstract String handleEvent(CommInfrastructure infra, String topic, PdpStatus message);
 }
