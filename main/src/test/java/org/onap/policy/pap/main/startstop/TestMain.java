@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.startstop;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Test;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
@@ -33,40 +34,58 @@ import org.onap.policy.pap.main.parameters.CommonTestData;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class TestMain {
+    private Main main;
+
+    /**
+     * Shuts "main" down.
+     * @throws Exception if an error occurs
+     */
+    @After
+    public void tearDown() throws Exception {
+        // if started via main(), then shut down activator
+        PapActivator activator = PapActivator.getCurrent();
+        if (activator != null && activator.isAlive()) {
+            activator.terminate();
+        }
+    }
 
     @Test
     public void testMain() throws PolicyPapException {
-        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
-        final Main main = new Main(papConfigParameters);
+        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        main = new Main(papConfigParameters);
         assertTrue(main.getParameters().isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, main.getParameters().getName());
-        main.shutdown();
+
+        Main main2 = main;
+        main = null;
+
+        main2.shutdown();
     }
 
     @Test
     public void testMain_NoArguments() {
         final String[] papConfigParameters = {};
-        final Main main = new Main(papConfigParameters);
+        main = new Main(papConfigParameters);
         assertTrue(main.getParameters() == null);
     }
 
     @Test
     public void testMain_InvalidArguments() {
-        final String[] papConfigParameters = { "parameters/PapConfigParameters.json" };
-        final Main main = new Main(papConfigParameters);
+        final String[] papConfigParameters = {"parameters/PapConfigParameters.json"};
+        main = new Main(papConfigParameters);
         assertTrue(main.getParameters() == null);
     }
 
     @Test
     public void testMain_Help() {
-        final String[] papConfigParameters = { "-h" };
+        final String[] papConfigParameters = {"-h"};
         Main.main(papConfigParameters);
     }
 
     @Test
     public void testMain_InvalidParameters() {
-        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters_InvalidName.json" };
-        final Main main = new Main(papConfigParameters);
+        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters_InvalidName.json"};
+        main = new Main(papConfigParameters);
         assertTrue(main.getParameters() == null);
     }
 }

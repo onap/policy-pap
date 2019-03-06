@@ -23,10 +23,8 @@ package org.onap.policy.pap.main.startstop;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,8 +33,6 @@ import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -46,7 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 public class TestPapActivator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestPapActivator.class);
     private PapActivator activator;
 
     /**
@@ -63,45 +58,43 @@ public class TestPapActivator {
 
     /**
      * Method for cleanup after each test.
+     * @throws Exception if an error occurs
      */
     @After
-    public void teardown() {
-        try {
-            if (activator != null) {
-                activator.terminate();
-            }
-        } catch (final PolicyPapException exp) {
-            LOGGER.error("teardown failed", exp);
+    public void teardown() throws Exception {
+        if (activator != null && activator.isAlive()) {
+            activator.terminate();
         }
     }
 
     @Test
     public void testPapActivator() throws PolicyPapException {
-        try {
-            assertFalse(activator.isAlive());
-            activator.initialize();
-            assertTrue(activator.isAlive());
-            assertTrue(activator.getParameterGroup().isValid());
-            assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
-        } catch (final Exception exp) {
-            LOGGER.error("testPapActivator failed", exp);
-            fail("Test should not throw an exception");
-        }
-    }
-
-    @Test(expected = PolicyPapException.class)
-    public void testPapActivatorError() throws PolicyPapException {
+        assertFalse(activator.isAlive());
         activator.initialize();
+        assertTrue(activator.isAlive());
         assertTrue(activator.getParameterGroup().isValid());
+        assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
+
+        // ensure we can invoke initialize() again without changing anything
         activator.initialize();
+        assertTrue(activator.isAlive());
+        assertTrue(activator.getParameterGroup().isValid());
     }
 
     @Test
     public void testGetCurrent_testSetCurrent() {
-        assertNotNull(PapActivator.getCurrent());
-
         PapActivator.setCurrent(activator);
-
         assertSame(activator, PapActivator.getCurrent());
+    }
+
+    @Test
+    public void testTerminate() throws Exception {
+        activator.initialize();
+        activator.terminate();
+        assertFalse(activator.isAlive());
+
+        // ensure we can call it again
+        activator.terminate();
+        assertFalse(activator.isAlive());
     }
 }

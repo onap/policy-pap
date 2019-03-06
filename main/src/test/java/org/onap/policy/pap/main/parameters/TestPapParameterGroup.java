@@ -47,7 +47,7 @@ public class TestPapParameterGroup {
         assertEquals(restServerParameters.getPort(), papParameters.getRestServerParameters().getPort());
         assertEquals(restServerParameters.getUserName(), papParameters.getRestServerParameters().getUserName());
         assertEquals(restServerParameters.getPassword(), papParameters.getRestServerParameters().getPassword());
-        assertFalse(papParameters.getRestServerParameters().isHttps());
+        assertTrue(papParameters.getRestServerParameters().isHttps());
         assertFalse(papParameters.getRestServerParameters().isAaf());
     }
 
