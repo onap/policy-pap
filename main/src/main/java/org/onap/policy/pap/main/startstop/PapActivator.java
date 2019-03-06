@@ -71,6 +71,10 @@ public class PapActivator {
      * @throws PolicyPapException on errors in initializing the service
      */
     public void initialize() throws PolicyPapException {
+        if (isAlive()) {
+            return;
+        }
+
         try {
             LOGGER.debug("Policy pap starting as a service . . .");
             startPapRestServer();
@@ -89,6 +93,10 @@ public class PapActivator {
      * @throws PolicyPapException on errors in terminating the service
      */
     public void terminate() throws PolicyPapException {
+        if (!isAlive()) {
+            return;
+        }
+
         try {
             deregisterToParameterService(papParameterGroup);
             setAlive(false);
