@@ -1,7 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +27,26 @@ import io.swagger.annotations.SecurityDefinition;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
+import java.util.List;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
+import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
+import org.onap.policy.pap.main.comm.PdpClient;
+import org.onap.policy.pap.main.comm.PdpClientException;
+import org.onap.policy.pdp.common.enums.PdpMessageType;
+import org.onap.policy.pdp.common.models.PdpStatus;
 
 /**
  * Version v1 common superclass to provide REST endpoints for PAP component.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+// @formatter:off
 @Path("/policy/pap/v1")
 @Api(value = "Policy Administration (PAP) API")
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,7 +63,9 @@ import javax.ws.rs.core.MediaType;
     tags = {@Tag(name = "policy-administration", description = "Policy Administration Service Operations")},
     securityDefinition = @SecurityDefinition(
                     basicAuthDefinitions = {@BasicAuthDefinition(key = "basicAuth")}))
+// @formatter:on
 public class PapRestControllerV1 {
+    public static final String PDP_PAP_TOPIC = "POLICY-PDP-PAP";
 
     public static final String AUTHORIZATION_TYPE = "basicAuth";
 
@@ -64,4 +76,50 @@ public class PapRestControllerV1 {
     public static final String AUTHENTICATION_ERROR_MESSAGE = "Authentication Error";
     public static final String AUTHORIZATION_ERROR_MESSAGE = "Authorization Error";
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
+
+    private static final Object lockit = new Object();
+    private static RequestIdDispatcher<PdpStatus> dispatcher;
+    private static PdpClient client;
+
+    /**
+     * Gets the PDP client singleton.
+     *
+     * @return the PDP client singleton
+     * @throws PdpClientException if the client cannot be created
+     */
+    public static PdpClient getPdpClientInstance() throws PdpClientException {
+        synchronized (lockit) {
+            if (client == null) {
+                client = new PdpClient(PDP_PAP_TOPIC);
+            }
+
+            return client;
+        }
+    }
+
+    /**
+     * Gets the dispatcher singleton.
+     *
+     * @return the dispatcher singleton
+     * @throws PdpClientException if the dispatcher cannot be created
+     */
+    public static RequestIdDispatcher<PdpStatus> getRequestIdDispatcherInstance() throws PdpClientException {
+        synchronized (lockit) {
+            if (dispatcher == null) {
+                dispatcher = new RequestIdDispatcher<PdpStatus>(PdpStatus.class, "response", "responseTo");
+
+                MessageTypeDispatcher mtd = new MessageTypeDispatcher("messageName");
+                mtd.register(PdpMessageType.PDP_STATUS.name(), dispatcher);
+
+                List<TopicSource> sources = TopicEndpoint.manager.getTopicSources(Arrays.asList(PDP_PAP_TOPIC));
+                if (sources.isEmpty()) {
+                    throw new PdpClientException("no sources for topic: " + PDP_PAP_TOPIC);
+                }
+
+                sources.forEach(src -> src.register(mtd));
+            }
+
+            return dispatcher;
+        }
+    }
 }
