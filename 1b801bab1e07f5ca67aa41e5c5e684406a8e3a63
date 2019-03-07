@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7b1ed99c_ef18ab0e",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/CommonPapRestServer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-03-07T15:31:11Z",
+      "side": 1,
+      "message": "I think it will be good to move this to common utils, or utils-test.   There is a NetworkUtil as a possibility.",
+      "revId": "1b801bab1e07f5ca67aa41e5c5e684406a8e3a63",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e19a47b8_283e9bcc",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/CommonPapRestServer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-03-07T15:31:11Z",
+      "side": 1,
+      "message": "This anon class may be good to move it when somebody has time to common when somebody has a chance, we use it in quite a few places across projects.",
+      "revId": "1b801bab1e07f5ca67aa41e5c5e684406a8e3a63",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
