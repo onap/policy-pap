@@ -59,8 +59,7 @@ public class TestPapParameterGroup {
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertEquals(null, papParameters.getName());
-        assertTrue(validationResult.getResult().contains(
-                "field \"name\" type \"java.lang.String\" value \"null\" INVALID, " + "must be a non-blank string"));
+        assertTrue(validationResult.getResult().contains("is null"));
     }
 
     @Test

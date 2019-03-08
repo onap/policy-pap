@@ -24,17 +24,11 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -88,7 +82,7 @@ public class CommonPapRestServer {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        allocPort();
+        port = NetworkUtil.allocPort();
 
         httpsPrefix = "https://localhost:" + port + "/";
 
@@ -144,19 +138,6 @@ public class CommonPapRestServer {
         final String resp = invocationBuilder.get(String.class);
 
         assertTrue(resp.contains(ENDPOINT_PREFIX + endpoint + ":"));
-    }
-
-    /**
-     * Allocates a port for the server.
-     *
-     * @throws IOException if an error occurs
-     */
-    private static void allocPort() throws IOException {
-        ServerSocket socket = new ServerSocket();
-        socket.bind(new InetSocketAddress("localhost", 0));
-
-        port = socket.getLocalPort();
-        socket.close();
     }
 
     /**
@@ -249,29 +230,8 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected Invocation.Builder sendFqeRequest(final String fullyQualifiedEndpoint) throws Exception {
-
-        // @formatter:off
-        final TrustManager[] noopTrustManager = new TrustManager[] {
-            new X509TrustManager() {
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-
-                @Override
-                public void checkClientTrusted(final java.security.cert.X509Certificate[] certs,
-                                final String authType) {}
-
-                @Override
-                public void checkServerTrusted(final java.security.cert.X509Certificate[] certs,
-                                final String authType) {}
-            }
-        };
-        // @formatter:on
-
         final SSLContext sc = SSLContext.getInstance("TLSv1.2");
-        sc.init(null, noopTrustManager, new SecureRandom());
+        sc.init(null, NetworkUtil.getAlwaysTrustingManager(), new SecureRandom());
         final ClientBuilder clientBuilder =
                         ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
         final Client client = clientBuilder.build();
