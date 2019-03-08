@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ac3cd23d_a8df231b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/model/PdpGroupDeploymentResponse.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-08T17:25:04Z",
+      "side": 1,
+      "message": "Query - \nThe request for PDP Group deployment will go all the way to PDP through DMaaP. So the job of PAP will be just to create PDP_UPDATE message and put it on DMAAP topic. \nAt this point the request that came from REST API is done.\nAnd we won\u0027t have info to create this response object.\n\nHowever, the response from PDP side will come through PDP_STATUS message. Which will be handled by PAP to modify the DB.",
+      "range": {
+        "startLine": 34,
+        "startChar": 13,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "ce454885da7d458fa37572fb607fbaf3d4ef8696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ad6d36d9_7a0206a5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-08T17:25:04Z",
+      "side": 1,
+      "message": "I think we can delete this client and use the common TopicSinkClient from policy/endpoints",
+      "range": {
+        "startLine": 119,
+        "startChar": 24,
+        "endLine": 119,
+        "endChar": 54
+      },
+      "revId": "ce454885da7d458fa37572fb607fbaf3d4ef8696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
