@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f0351bc2_808e5a2f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/model/PdpGroupDeploymentResponse.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-11T04:17:49Z",
+      "side": 1,
+      "message": "I was imagining that PAP would wait for the PDP_STATUS replies from the PDPs and bundle them up into the response.  See Jorge\u0027s comments in one of the other reviews (or in the draft architecture?) about making the REST API calls synchronous, rather than requiring clients to query a second time for results.",
+      "parentUuid": "ac3cd23d_a8df231b",
+      "range": {
+        "startLine": 34,
+        "startChar": 13,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "ce454885da7d458fa37572fb607fbaf3d4ef8696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ad6d36d9_7a0206a5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2019-03-08T17:25:04Z",
       "side": 1,
       "message": "I think we can delete this client and use the common TopicSinkClient from policy/endpoints",
+      "range": {
+        "startLine": 119,
+        "startChar": 24,
+        "endLine": 119,
+        "endChar": 54
+      },
+      "revId": "ce454885da7d458fa37572fb607fbaf3d4ef8696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72d0762e_a92475c5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-11T04:17:49Z",
+      "side": 1,
+      "message": "Yep.  That code didn\u0027t exist when this was pushed up - thanks for the reminder.",
+      "parentUuid": "ad6d36d9_7a0206a5",
       "range": {
         "startLine": 119,
         "startChar": 24,
