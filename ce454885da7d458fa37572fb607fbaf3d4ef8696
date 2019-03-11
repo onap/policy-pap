@@ -49,6 +49,53 @@
     },
     {
       "key": {
+        "uuid": "06c8b875_a108d897",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/model/PdpGroupDeploymentResponse.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-11T10:34:44Z",
+      "side": 1,
+      "message": "I feel what we are trying is to synchronize the asynchronous call which can lead to long wait time for the API users. We don\u0027t know when the PDP\u0027s will respond back with PDP_STATUS reply. Also, we don\u0027t know how many PDP\u0027s are there behind the DMaaP Topic.\nMay be we can discuss this during scrum today :)",
+      "parentUuid": "f0351bc2_808e5a2f",
+      "range": {
+        "startLine": 34,
+        "startChar": 13,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "ce454885da7d458fa37572fb607fbaf3d4ef8696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1643edec_ddb7d47c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/model/PdpResponseStatus.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-11T10:34:44Z",
+      "side": 1,
+      "message": "Please use enum PdpResponseStatus defined in pdp-common.",
+      "range": {
+        "startLine": 26,
+        "startChar": 12,
+        "endLine": 26,
+        "endChar": 29
+      },
+      "revId": "ce454885da7d458fa37572fb607fbaf3d4ef8696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ad6d36d9_7a0206a5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
         "patchSetId": 2
