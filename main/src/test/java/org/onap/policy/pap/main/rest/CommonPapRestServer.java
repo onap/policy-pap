@@ -21,25 +21,22 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Function;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -88,7 +85,7 @@ public class CommonPapRestServer {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        allocPort();
+        port = NetworkUtil.allocPort();
 
         httpsPrefix = "https://localhost:" + port + "/";
 
@@ -140,23 +137,10 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected void testSwagger(final String endpoint) throws Exception {
-        final Invocation.Builder invocationBuilder = sendFqeRequest(httpsPrefix + "swagger.yaml");
+        final Invocation.Builder invocationBuilder = sendFqeRequest(httpsPrefix + "swagger.yaml", true);
         final String resp = invocationBuilder.get(String.class);
 
         assertTrue(resp.contains(ENDPOINT_PREFIX + endpoint + ":"));
-    }
-
-    /**
-     * Allocates a port for the server.
-     *
-     * @throws IOException if an error occurs
-     */
-    private static void allocPort() throws IOException {
-        ServerSocket socket = new ServerSocket();
-        socket.bind(new InetSocketAddress("localhost", 0));
-
-        port = socket.getLocalPort();
-        socket.close();
     }
 
     /**
@@ -165,16 +149,20 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     private static void makeConfigFile() throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("host", "0.0.0.0");
-        params.put("port", port);
-        params.put("userName", "healthcheck");
-        params.put("password", "zb!XztG34");
-        params.put("https", true);
+        Map<String, Object> restParams = new HashMap<>();
+        restParams.put("host", "0.0.0.0");
+        restParams.put("port", port);
+        restParams.put("userName", "healthcheck");
+        restParams.put("password", "zb!XztG34");
+        restParams.put("https", true);
+
+        Map<String, Object> pdpGroupDeploy = new HashMap<>();
+        pdpGroupDeploy.put("waitResponseMs", "0");
 
         Map<String, Object> config = new HashMap<>();
         config.put("name", "PapGroup");
-        config.put("restServerParameters", params);
+        config.put("restServerParameters", restParams);
+        config.put("pdpGroupDeploymentParameters", pdpGroupDeploy);
 
         File file = new File("src/test/resources/parameters/TestConfigParams.json");
         file.deleteOnExit();
@@ -198,9 +186,12 @@ public class CommonPapRestServer {
         systemProps.put("javax.net.ssl.keyStorePassword", "Pol1cy_0nap");
         System.setProperties(systemProps);
 
-        final String[] papConfigParameters = new String[2];
-        papConfigParameters[0] = "-c";
-        papConfigParameters[1] = "src/test/resources/parameters/TestConfigParams.json";
+        // @formatter:off
+        final String[] papConfigParameters = {
+            "-c", "src/test/resources/parameters/TestConfigParams.json",
+            "-p", "src/test/resources/parameters/topic.properties"
+        };
+        // @formatter:on
 
         main = new Main(papConfigParameters);
 
@@ -231,6 +222,19 @@ public class CommonPapRestServer {
     }
 
     /**
+     * Verifies that unauthorized requests fail.
+     *
+     * @param endpoint the target end point
+     * @param sender function that sends the requests to the target
+     * @throws Exception if an error occurs
+     */
+    protected void checkUnauthRequest(final String endpoint, Function<Invocation.Builder, Response> sender)
+                    throws Exception {
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+                        sender.apply(sendNoAuthRequest(endpoint)).getStatus());
+    }
+
+    /**
      * Sends a request to an endpoint.
      *
      * @param endpoint the target endpoint
@@ -238,45 +242,41 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected Invocation.Builder sendRequest(final String endpoint) throws Exception {
-        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint);
+        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, true);
+    }
+
+    /**
+     * Sends a request to an endpoint, without any authorization header.
+     *
+     * @param endpoint the target endpoint
+     * @return a request builder
+     * @throws Exception if an error occurs
+     */
+    protected Invocation.Builder sendNoAuthRequest(final String endpoint) throws Exception {
+        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, false);
     }
 
     /**
      * Sends a request to a fully qualified endpoint.
      *
+     * @param includeAuth if authorization header should be included
+     *
      * @param endpoint the fully qualified target endpoint
      * @return a request builder
      * @throws Exception if an error occurs
      */
-    protected Invocation.Builder sendFqeRequest(final String fullyQualifiedEndpoint) throws Exception {
-
-        // @formatter:off
-        final TrustManager[] noopTrustManager = new TrustManager[] {
-            new X509TrustManager() {
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-
-                @Override
-                public void checkClientTrusted(final java.security.cert.X509Certificate[] certs,
-                                final String authType) {}
-
-                @Override
-                public void checkServerTrusted(final java.security.cert.X509Certificate[] certs,
-                                final String authType) {}
-            }
-        };
-        // @formatter:on
-
+    protected Invocation.Builder sendFqeRequest(final String fullyQualifiedEndpoint, boolean includeAuth)
+                    throws Exception {
         final SSLContext sc = SSLContext.getInstance("TLSv1.2");
-        sc.init(null, noopTrustManager, new SecureRandom());
+        sc.init(null, NetworkUtil.getAlwaysTrustingManager(), new SecureRandom());
         final ClientBuilder clientBuilder =
                         ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
         final Client client = clientBuilder.build();
-        final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("healthcheck", "zb!XztG34");
-        client.register(feature);
+
+        if (includeAuth) {
+            final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("healthcheck", "zb!XztG34");
+            client.register(feature);
+        }
 
         final WebTarget webTarget = client.target(fullyQualifiedEndpoint);
 

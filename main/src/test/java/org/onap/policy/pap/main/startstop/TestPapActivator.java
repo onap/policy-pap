@@ -27,6 +27,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
+import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,14 +49,23 @@ public class TestPapActivator {
 
     /**
      * Initializes an activator.
+     *
      * @throws Exception if an error occurs
      */
     @Before
     public void setUp() throws Exception {
-        final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
+        final String[] papConfigParameters =
+            {"-c", "parameters/PapConfigParameters.json", "-p", "parameters/topic.properties"};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
-        activator = new PapActivator(parGroup);
+
+        Properties props = new Properties();
+        String propFile = arguments.getFullConfigurationFilePath();
+        try (FileInputStream stream = new FileInputStream(propFile)) {
+            props.load(stream);
+        }
+
+        activator = new PapActivator(parGroup, props);
     }
 
     /**
@@ -84,7 +95,6 @@ public class TestPapActivator {
 
     @Test
     public void testGetCurrent_testSetCurrent() {
-        PapActivator.setCurrent(activator);
         assertSame(activator, PapActivator.getCurrent());
     }
 

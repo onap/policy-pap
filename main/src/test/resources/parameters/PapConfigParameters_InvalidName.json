@@ -5,5 +5,8 @@
         "port":6969,
         "userName":"healthcheck",
         "password":"zb!XztG34"
+    },
+    "pdpGroupDeploymentParameters":{
+        "waitResponseMs":0
     }
 }

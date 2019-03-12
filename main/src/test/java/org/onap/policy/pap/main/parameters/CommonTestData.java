@@ -21,6 +21,13 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import java.util.Map;
+import java.util.TreeMap;
+import org.onap.policy.common.parameters.ParameterGroup;
+import org.onap.policy.common.utils.coder.Coder;
+import org.onap.policy.common.utils.coder.CoderException;
+import org.onap.policy.common.utils.coder.StandardCoder;
+
 /**
  * Class to hold/create all parameters for test cases.
  *
@@ -36,21 +43,70 @@ public class CommonTestData {
     private static final boolean REST_SERVER_AAF = false;
     public static final String PAP_GROUP_NAME = "PapGroup";
 
+    private static final Coder coder = new StandardCoder();
+
     /**
-     * Returns an instance of RestServerParameters for test cases.
+     * Converts the contents of a map to a parameter class.
      *
-     * @param isEmpty boolean value to represent that object created should be empty or not
-     * @return the restServerParameters object
+     * @param source property map
+     * @param clazz class of object to be created from the map
+     * @return a new object represented by the map
      */
-    public RestServerParameters getRestServerParameters(final boolean isEmpty) {
-        final RestServerParameters restServerParameters;
-        if (!isEmpty) {
-            restServerParameters = new RestServerParameters(REST_SERVER_HOST, REST_SERVER_PORT, REST_SERVER_USER,
-                    REST_SERVER_PASSWORD, REST_SERVER_HTTPS, REST_SERVER_AAF);
-        } else {
-            restServerParameters = new RestServerParameters(null, 0, null, null, REST_SERVER_HTTPS, REST_SERVER_AAF);
+    public <T extends ParameterGroup> T toObject(Map<String, Object> source, Class<T> clazz) {
+        try {
+            return coder.decode(coder.encode(source), clazz);
+
+        } catch (CoderException e) {
+            throw new RuntimeException("cannot create " + clazz.getName() + " from map", e);
         }
-        return restServerParameters;
     }
 
+    /**
+     * Returns a property map for a PapParameterGroup map for test cases.
+     * @param name name of the parameters
+     *
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String, Object> getPapParameterGroupMap(String name) {
+        Map<String,Object> map = new TreeMap<>();
+
+        map.put("name", name);
+        map.put("restServerParameters", getRestServerParametersMap(false));
+        map.put("pdpGroupDeploymentParameters", getPdpGroupDeploymentParametersMap());
+
+        return map;
+    }
+
+    /**
+     * Returns a property map for a RestServerParameters map for test cases.
+     *
+     * @param isEmpty boolean value to represent that object created should be empty or not
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String,Object> getRestServerParametersMap(final boolean isEmpty) {
+        Map<String,Object> map = new TreeMap<>();
+        map.put("https", REST_SERVER_HTTPS);
+        map.put("aaf", REST_SERVER_AAF);
+
+        if (!isEmpty) {
+            map.put("host", REST_SERVER_HOST);
+            map.put("port", REST_SERVER_PORT);
+            map.put("userName", REST_SERVER_USER);
+            map.put("password", REST_SERVER_PASSWORD);
+        }
+
+        return map;
+    }
+
+    /**
+     * Returns a property map for a PdpGroupDeploymentParameters map for test cases.
+     *
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String,Object> getPdpGroupDeploymentParametersMap() {
+        Map<String,Object> map = new TreeMap<>();
+        map.put("waitResponseMs", "1");
+
+        return map;
+    }
 }

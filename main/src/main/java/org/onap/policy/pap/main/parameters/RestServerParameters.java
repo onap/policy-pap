@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,144 +21,32 @@
 
 package org.onap.policy.pap.main.parameters;
 
-import org.onap.policy.common.parameters.GroupValidationResult;
-import org.onap.policy.common.parameters.ParameterGroup;
-import org.onap.policy.common.parameters.ValidationStatus;
-import org.onap.policy.common.utils.validation.ParameterValidationUtils;
+import lombok.Getter;
+import org.onap.policy.common.parameters.ParameterGroupImpl;
+import org.onap.policy.common.parameters.annotations.Min;
+import org.onap.policy.common.parameters.annotations.NotBlank;
+import org.onap.policy.common.parameters.annotations.NotNull;
 
 /**
  * Class to hold all parameters needed for pap rest server.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class RestServerParameters implements ParameterGroup {
-    private String name;
+@NotNull
+@NotBlank
+@Getter
+public class RestServerParameters extends ParameterGroupImpl {
     private String host;
+
+    @Min(value = 1)
     private int port;
+
     private String userName;
     private String password;
     private boolean https;
     private boolean aaf;
 
-    /**
-     * Constructor for instantiating RestServerParameters.
-     *
-     * @param host the host name
-     * @param port the port
-     * @param userName the user name
-     * @param password the password
-     * @param https the https flag
-     * @param aaf the aaf flag
-     */
-    public RestServerParameters(final String host, final int port, final String userName, final String password,
-            final boolean https, final boolean aaf) {
-        super();
-        this.host = host;
-        this.port = port;
-        this.userName = userName;
-        this.password = password;
-        this.https = https;
-        this.aaf = aaf;
-    }
-
-    /**
-     * Return the name of this RestServerParameters instance.
-     *
-     * @return name the name of this RestServerParameters
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Return the host of this RestServerParameters instance.
-     *
-     * @return the host
-     */
-    public String getHost() {
-        return host;
-    }
-
-    /**
-     * Return the port of this RestServerParameters instance.
-     *
-     * @return the port
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Return the user name of this RestServerParameters instance.
-     *
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
-
-    /**
-     * Return the password of this RestServerParameters instance.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Return the https flag of this RestServerParameters instance.
-     *
-     * @return the https flag
-     */
-    public boolean isHttps() {
-        return https;
-    }
-
-    /**
-     * Return the aaf flag of this RestServerParameters instance.
-     *
-     * @return the aaf flag
-     */
-    public boolean isAaf() {
-        return aaf;
-    }
-
-    /**
-     * Set the name of this RestServerParameters instance.
-     *
-     * @param name the name to set
-     */
-    @Override
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Validate the rest server parameters.
-     *
-     * @return the result of the validation
-     */
-    @Override
-    public GroupValidationResult validate() {
-        final GroupValidationResult validationResult = new GroupValidationResult(this);
-        if (!ParameterValidationUtils.validateStringParameter(host)) {
-            validationResult.setResult("host", ValidationStatus.INVALID,
-                    "must be a non-blank string containing hostname/ipaddress of the pap rest server");
-        }
-        if (!ParameterValidationUtils.validateStringParameter(userName)) {
-            validationResult.setResult("userName", ValidationStatus.INVALID,
-                    "must be a non-blank string containing userName for pap rest server credentials");
-        }
-        if (!ParameterValidationUtils.validateStringParameter(password)) {
-            validationResult.setResult("password", ValidationStatus.INVALID,
-                    "must be a non-blank string containing password for pap rest server credentials");
-        }
-        if (!ParameterValidationUtils.validateIntParameter(port)) {
-            validationResult.setResult("port", ValidationStatus.INVALID,
-                    "must be a positive integer containing port of the pap rest server");
-        }
-        return validationResult;
+    public RestServerParameters() {
+        super("RestServerParameters");
     }
 }

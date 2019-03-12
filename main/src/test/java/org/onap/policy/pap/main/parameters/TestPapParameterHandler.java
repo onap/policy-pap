@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -93,13 +94,7 @@ public class TestPapParameterHandler {
         final PapCommandLineArguments noArguments = new PapCommandLineArguments();
         noArguments.parse(noArgumentString);
 
-        try {
-            new PapParameterHandler().getParameters(noArguments);
-            fail("test should throw an exception here");
-        } catch (final Exception e) {
-            assertTrue(e.getMessage().contains(
-                    "field \"name\" type \"java.lang.String\" value \"null\" INVALID, must be a non-blank string"));
-        }
+        assertThatThrownBy(() -> new PapParameterHandler().getParameters(noArguments)).hasMessageContaining("is null");
     }
 
     @Test

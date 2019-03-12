@@ -21,8 +21,9 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import java.io.FileInputStream;
 import java.util.Arrays;
-
+import java.util.Properties;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -74,9 +75,20 @@ public class Main {
             return;
         }
 
+        // Read the properties
+        Properties props = new Properties();
+        try {
+            String propFile = arguments.getFullPropertyFilePath();
+            try (FileInputStream stream = new FileInputStream(propFile)) {
+                props.load(stream);
+            }
+        } catch (final Exception e) {
+            LOGGER.error("start of policy pap service failed", e);
+            return;
+        }
+
         // Now, create the activator for the policy pap service
-        activator = new PapActivator(parameterGroup);
-        PapActivator.setCurrent(activator);
+        activator = new PapActivator(parameterGroup, props);
 
         // Start the activator
         try {

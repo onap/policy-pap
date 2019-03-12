@@ -6,5 +6,8 @@
         "userName":"healthcheck",
         "password":"zb!XztG34",
         "https":true
+    },
+    "pdpGroupDeploymentParameters":{
+        "waitResponseMs":0
     }
 }

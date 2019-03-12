@@ -47,6 +47,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 
         <policy.common.version>1.4.0-SNAPSHOT</policy.common.version>
+        <policy.models.version>2.0.0-SNAPSHOT</policy.models.version>
     </properties>
 
     <modules>
