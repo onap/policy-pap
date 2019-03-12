@@ -52,7 +52,8 @@ public class TestMain {
 
     @Test
     public void testMain() throws PolicyPapException {
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        final String[] papConfigParameters =
+            {"-c", "parameters/PapConfigParameters.json", "-p", "parameters/topic.properties"};
         main = new Main(papConfigParameters);
         assertTrue(main.getParameters().isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, main.getParameters().getName());

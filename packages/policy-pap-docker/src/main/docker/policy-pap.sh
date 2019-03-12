@@ -2,6 +2,7 @@
 #
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 Nordix Foundation.
+#  Modifications Copyright (C) 2019 AT&T Intellectual Property.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,10 +28,16 @@ TRUSTSTORE="${POLICY_HOME}/etc/ssl/policy-truststore"
 TRUSTSTORE_PASSWD="Pol1cy_0nap"
 
 
-if [ "$#" -eq 1 ]; then
+if [ "$#" -ge 1 ]; then
     CONFIG_FILE=$1
 else
     CONFIG_FILE=${CONFIG_FILE}
+fi
+
+if [ "$#" -ge 2 ]; then
+    PROP_FILE=$2
+else
+    PROP_FILE=${PROP_FILE}
 fi
 
 if [ -z "$CONFIG_FILE" ]
@@ -38,6 +45,12 @@ if [ -z "$CONFIG_FILE" ]
     CONFIG_FILE="$POLICY_PAP_HOME/etc/defaultConfig.json"
 fi
 
-echo "Policy pap config file: $CONFIG_FILE"
+if [ -z "$PROP_FILE" ]
+  then
+    PROP_FILE="$POLICY_PAP_HOME/etc/topic.properties"
+fi
 
-$JAVA_HOME/bin/java -cp "$POLICY_PAP_HOME/etc:$POLICY_PAP_HOME/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE
+echo "Policy pap config file: $CONFIG_FILE"
+echo "Policy pap property file: $PROP_FILE"
+
+$JAVA_HOME/bin/java -cp "$POLICY_PAP_HOME/etc:$POLICY_PAP_HOME/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE -p $PROP_FILE

@@ -21,9 +21,13 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
 import org.onap.policy.common.parameters.ParameterService;
+import org.onap.policy.common.utils.services.ServiceManager;
+import org.onap.policy.common.utils.services.ServiceManagerException;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapRestServer;
@@ -31,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class wraps a distributor so that it can be activated as a complete service together with all its pap and
- * forwarding handlers.
+ * This class wraps a distributor so that it can be activated as a complete service
+ * together with all its pap and forwarding handlers.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
@@ -43,12 +47,15 @@ public class PapActivator {
     private final PapParameterGroup papParameterGroup;
 
     /**
-     * The current activator. This is initialized to a dummy instance used until the real
-     * one has been configured.
+     * The current activator.
      */
     @Getter
-    @Setter
-    private static volatile PapActivator current = new PapActivator(null);
+    private static volatile PapActivator current = null;
+
+    /**
+     * Used to stop the services.
+     */
+    private final ServiceManager manager;
 
     @Getter
     @Setter(lombok.AccessLevel.PRIVATE)
@@ -60,9 +67,31 @@ public class PapActivator {
      * Instantiate the activator for policy pap as a complete service.
      *
      * @param papParameterGroup the parameters for the pap service
+     * @param topicProperties properties used to configure the topics
      */
-    public PapActivator(final PapParameterGroup papParameterGroup) {
+    public PapActivator(final PapParameterGroup papParameterGroup, Properties topicProperties) {
+        TopicEndpoint.manager.addTopicSinks(topicProperties);
+        TopicEndpoint.manager.addTopicSources(topicProperties);
+
         this.papParameterGroup = papParameterGroup;
+
+        // @formatter:off
+        this.manager = new ServiceManager()
+                        .addAction("topics",
+                            () -> TopicEndpoint.manager.start(),
+                            () -> TopicEndpoint.manager.shutdown())
+                        .addAction("register parameters",
+                            () -> registerToParameterService(papParameterGroup),
+                            () -> deregisterToParameterService(papParameterGroup))
+                        .addAction("REST server",
+                            () -> startPapRestServer(),
+                            () -> restServer.stop())
+                        .addAction("set alive",
+                            () -> setAlive(true),
+                            () -> setAlive(false));
+        // @formatter:on
+
+        current = this;
     }
 
     /**
@@ -77,12 +106,10 @@ public class PapActivator {
 
         try {
             LOGGER.debug("Policy pap starting as a service . . .");
-            startPapRestServer();
-            registerToParameterService(papParameterGroup);
-            setAlive(true);
+            manager.start();
             LOGGER.debug("Policy pap started as a service");
-        } catch (final Exception exp) {
-            LOGGER.error("Policy pap service startup failed", exp);
+        } catch (final ServiceManagerException exp) {
+            LOGGER.error("Policy pap service startup failed");
             throw new PolicyPapException(exp.getMessage(), exp);
         }
     }
@@ -98,13 +125,9 @@ public class PapActivator {
         }
 
         try {
-            deregisterToParameterService(papParameterGroup);
-            setAlive(false);
-
-            // Stop the pap rest server
-            restServer.stop();
-        } catch (final Exception exp) {
-            LOGGER.error("Policy pap service termination failed", exp);
+            manager.stop();
+        } catch (final ServiceManagerException exp) {
+            LOGGER.error("Policy pap service termination failed");
             throw new PolicyPapException(exp.getMessage(), exp);
         }
     }

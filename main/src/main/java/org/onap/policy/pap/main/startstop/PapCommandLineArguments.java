@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +49,7 @@ public class PapCommandLineArguments {
 
     private final Options options;
     private String configurationFilePath = null;
+    private String propertyFilePath = null;
 
     /**
      * Construct the options for the CLI editor.
@@ -73,6 +75,15 @@ public class PapCommandLineArguments {
                         + "the configuration file must be a Json file containing the policy pap parameters")
                 .hasArg()
                 .argName("CONFIG_FILE")
+                .required(false)
+                .type(String.class)
+                .build());
+        options.addOption(Option.builder("p")
+                .longOpt("property-file")
+                .desc("the full path to the topic property file to use, "
+                        + "the property file contains the policy pap topic properties")
+                .hasArg()
+                .argName("PROP_FILE")
                 .required(false)
                 .type(String.class)
                 .build());
@@ -106,6 +117,7 @@ public class PapCommandLineArguments {
     public String parse(final String[] args) throws PolicyPapException {
         // Clear all our arguments
         setConfigurationFilePath(null);
+        setPropertyFilePath(null);
 
         CommandLine commandLine = null;
         try {
@@ -137,6 +149,10 @@ public class PapCommandLineArguments {
             setConfigurationFilePath(commandLine.getOptionValue('c'));
         }
 
+        if (commandLine.hasOption('p')) {
+            setPropertyFilePath(commandLine.getOptionValue('p'));
+        }
+
         return null;
     }
 
@@ -147,6 +163,7 @@ public class PapCommandLineArguments {
      */
     public void validate() throws PolicyPapException {
         validateReadableFile("policy pap configuration", configurationFilePath);
+        validateReadableFile("policy pap properties", propertyFilePath);
     }
 
     /**
@@ -210,6 +227,43 @@ public class PapCommandLineArguments {
      */
     public boolean checkSetConfigurationFilePath() {
         return configurationFilePath != null && configurationFilePath.length() > 0;
+    }
+
+    /**
+     * Gets the property file path.
+     *
+     * @return the property file path
+     */
+    public String getPropertyFilePath() {
+        return propertyFilePath;
+    }
+
+    /**
+     * Gets the full expanded property file path.
+     *
+     * @return the property file path
+     */
+    public String getFullPropertyFilePath() {
+        return ResourceUtils.getFilePath4Resource(getPropertyFilePath());
+    }
+
+    /**
+     * Sets the property file path.
+     *
+     * @param propertyFilePath the property file path
+     */
+    public void setPropertyFilePath(final String propertyFilePath) {
+        this.propertyFilePath = propertyFilePath;
+
+    }
+
+    /**
+     * Check set property file path.
+     *
+     * @return true, if check set property file path
+     */
+    public boolean checkSetPropertyFilePath() {
+        return propertyFilePath != null && propertyFilePath.length() > 0;
     }
 
     /**

@@ -46,6 +46,9 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
         validateHealthCheckReport(NAME, SELF, true, 200, ALIVE, report);
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(HEALTHCHECK_ENDPOINT, req -> req.get());
     }
 
     @Test

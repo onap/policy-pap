@@ -66,6 +66,9 @@ public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
         invocationBuilder = sendRequest(STATISTICS_ENDPOINT);
         report = invocationBuilder.get(StatisticsReport.class);
         validateStatisticsReport(report, 1, 200);
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(STATISTICS_ENDPOINT, req -> req.get());
     }
 
     @Test
