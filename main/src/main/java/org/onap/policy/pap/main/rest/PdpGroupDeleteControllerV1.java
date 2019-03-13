@@ -80,7 +80,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     public Response deleteGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") String groupName) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.delete(groupName, null);
+        Pair<Status, PdpGroupDeleteResponse> pair = provider.deleteGroup(groupName, null);
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();
@@ -124,7 +124,92 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") String groupName,
                     @ApiParam(value = "PDP Group Version", required = true) @PathParam("version") String version) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.delete(groupName, version);
+        Pair<Status, PdpGroupDeleteResponse> pair = provider.deleteGroup(groupName, version);
+
+        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
+                        .entity(pair.getRight()).build();
+    }
+
+    /**
+     * Deletes a PDP policy.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @param policyName name of the PDP Policy to be deleted
+     * @return a response
+     */
+    // @formatter:off
+    @DELETE
+    @Path("pdps/policies/{name}")
+    @ApiOperation(value = "Delete PDP Policy",
+        notes = "Deletes a PDP Policy, returning optional error details",
+        response = PdpGroupDeleteResponse.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response deletePolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+                    @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
+
+        Pair<Status, PdpGroupDeleteResponse> pair = provider.deletePolicy(policyName, null);
+
+        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
+                        .entity(pair.getRight()).build();
+    }
+
+    /**
+     * Deletes a PDP policy.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @param policyName name of the PDP Policy to be deleted
+     * @param version version to be deleted
+     * @return a response
+     */
+    // @formatter:off
+    @DELETE
+    @Path("pdps/policies/{name}/versions/{version}")
+    @ApiOperation(value = "Delete version of a PDP Policy",
+        notes = "Deletes a version of a PDP Policy, returning optional error details",
+        response = PdpGroupDeleteResponse.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response deletePoliciesVersion(
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+                    @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName,
+                    @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {
+
+        Pair<Status, PdpGroupDeleteResponse> pair = provider.deletePolicy(policyName, version);
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();

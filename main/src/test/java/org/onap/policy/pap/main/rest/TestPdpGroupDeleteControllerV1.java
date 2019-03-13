@@ -31,17 +31,21 @@ import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 
 public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
-    private static final String DELETE_ENDPOINT = "pdps/groups";
+    private static final String DELETE_GROUP_ENDPOINT = "pdps/groups";
+    private static final String DELETE_POLICIES_ENDPOINT = "pdps/policies";
 
     @Test
     public void testSwagger() throws Exception {
-        super.testSwagger(DELETE_ENDPOINT + "/{name}");
-        super.testSwagger(DELETE_ENDPOINT + "/{name}/versions/{version}");
+        super.testSwagger(DELETE_GROUP_ENDPOINT + "/{name}");
+        super.testSwagger(DELETE_GROUP_ENDPOINT + "/{name}/versions/{version}");
+
+        super.testSwagger(DELETE_POLICIES_ENDPOINT + "/{name}");
+        super.testSwagger(DELETE_POLICIES_ENDPOINT + "/{name}/versions/{version}");
     }
 
     @Test
     public void testDeleteGroup() throws Exception {
-        String uri = DELETE_ENDPOINT + "/my-name";
+        String uri = DELETE_GROUP_ENDPOINT + "/my-name";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();
@@ -60,7 +64,45 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testDeleteGroupVersion() throws Exception {
-        String uri = DELETE_ENDPOINT + "/my-name/versions/1.2.3";
+        String uri = DELETE_GROUP_ENDPOINT + "/my-name/versions/1.2.3";
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.delete();
+        PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertNull(resp.getErrorDetails());
+
+        rawresp = invocationBuilder.delete();
+        resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertNull(resp.getErrorDetails());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.delete());
+    }
+
+    @Test
+    public void testDeletePolicies() throws Exception {
+        String uri = DELETE_POLICIES_ENDPOINT + "/my-name";
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.delete();
+        PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertNull(resp.getErrorDetails());
+
+        rawresp = invocationBuilder.delete();
+        resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertNull(resp.getErrorDetails());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.delete());
+    }
+
+    @Test
+    public void testDeletePoliciesVersion() throws Exception {
+        String uri = DELETE_POLICIES_ENDPOINT + "/my-name/versions/3";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();

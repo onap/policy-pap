@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.pap.concepts.PdpGroup;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
+import org.onap.policy.models.pap.concepts.PdpPolicies;
 
 /**
  * Provider for PAP component to deploy PDP groups.
@@ -36,7 +37,32 @@ public class PdpGroupDeployProvider {
      * @param group PDP group configuration
      * @return a pair containing the status and the response
      */
-    public Pair<Response.Status, PdpGroupDeployResponse> deploy(PdpGroup group) {
+    public Pair<Response.Status, PdpGroupDeployResponse> deployGroup(PdpGroup group) {
+
+        /*
+         * TODO Lock for updates - return error if already locked.
+         */
+
+        /*
+         * TODO Make updates - sending initial messages to PDPs and arranging for
+         * listeners to complete the deployment actions (in the background). The final
+         * step for the listener is to unlock.
+         */
+
+        /*
+         * TODO Return error if unable to send updates to all PDPs.
+         */
+
+        return Pair.of(Response.Status.OK, new PdpGroupDeployResponse());
+    }
+
+    /**
+     * Deploys or updates PDP policies.
+     *
+     * @param policies PDP policies
+     * @return a pair containing the status and the response
+     */
+    public Pair<Response.Status, PdpGroupDeployResponse> deployPolicies(PdpPolicies policies) {
 
         /*
          * TODO Lock for updates - return error if already locked.

@@ -37,7 +37,34 @@ public class PdpGroupDeleteProvider {
      *        one version
      * @return a pair containing the status and the response
      */
-    public Pair<Response.Status, PdpGroupDeleteResponse> delete(String groupName, String version) {
+    public Pair<Response.Status, PdpGroupDeleteResponse> deleteGroup(String groupName, String version) {
+
+        /*
+         * TODO Lock for updates - return error if already locked.
+         */
+
+        /*
+         * TODO Make updates - sending initial messages to PDPs and arranging for
+         * listeners to complete the deletion actions (in the background). The final step
+         * for the listener is to unlock.
+         */
+
+        /*
+         * TODO Return error if unable to send updates to all PDPs.
+         */
+
+        return Pair.of(Response.Status.OK, new PdpGroupDeleteResponse());
+    }
+
+    /**
+     * Deletes a PDP group.
+     *
+     * @param policyId id of the policy to be deleted
+     * @param version group version to delete; may be {@code null} if the group has only
+     *        one version
+     * @return a pair containing the status and the response
+     */
+    public Pair<Response.Status, PdpGroupDeleteResponse> deletePolicy(String policyId, String version) {
 
         /*
          * TODO Lock for updates - return error if already locked.
