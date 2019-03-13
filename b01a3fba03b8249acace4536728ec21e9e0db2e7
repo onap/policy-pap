@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9b27665_630f39d1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-13T16:07:43Z",
+      "side": 1,
+      "message": "this is changed to \"org.onap.policy.models.pap.concepts.PdpGroup\"",
+      "range": {
+        "startLine": 36,
+        "startChar": 7,
+        "endLine": 36,
+        "endChar": 42
+      },
+      "revId": "b01a3fba03b8249acace4536728ec21e9e0db2e7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
