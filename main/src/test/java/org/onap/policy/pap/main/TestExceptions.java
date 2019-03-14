@@ -20,11 +20,10 @@
 
 package org.onap.policy.pap.main;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-
 import org.junit.Test;
+import org.onap.policy.common.utils.test.ExceptionsTester;
+import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 /**
  * Class to perform unit test of {@link PolicyPapException PolicyPapRuntimeException}}.
@@ -35,10 +34,7 @@ public class TestExceptions {
 
     @Test
     public void test() {
-        assertNotNull(new PolicyPapException("Message"));
-        assertNotNull(new PolicyPapException("Message", new IOException()));
-
-        assertNotNull(new PolicyPapRuntimeException("Message"));
-        assertNotNull(new PolicyPapRuntimeException("Message", new IOException()));
+        new ExceptionsTester().test(PolicyPapException.class);
+        new ExceptionsTester().test(PolicyPapRuntimeException.class);
     }
 }

@@ -60,7 +60,7 @@ public class TestPapActivator {
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
 
         Properties props = new Properties();
-        String propFile = arguments.getFullConfigurationFilePath();
+        String propFile = arguments.getFullPropertyFilePath();
         try (FileInputStream stream = new FileInputStream(propFile)) {
             props.load(stream);
         }

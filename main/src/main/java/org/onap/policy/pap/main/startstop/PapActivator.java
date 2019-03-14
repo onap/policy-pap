@@ -21,16 +21,25 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import java.util.Arrays;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.event.comm.client.TopicSinkClient;
+import org.onap.policy.common.endpoints.event.comm.client.TopicSinkClientException;
+import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
+import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.ServiceManager;
 import org.onap.policy.common.utils.services.ServiceManagerException;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapRestServer;
+import org.onap.policy.pdp.common.enums.PdpMessageType;
+import org.onap.policy.pdp.common.models.PdpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +52,10 @@ import org.slf4j.LoggerFactory;
 public class PapActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
+
+    private static final String POLICY_PDP_PAP = "POLICY-PDP-PAP";
+    private static final String[] MSG_TYPE_NAMES = {"messageName"};
+    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
 
     private final PapParameterGroup papParameterGroup;
 
@@ -64,6 +77,33 @@ public class PapActivator {
     private PapRestServer restServer;
 
     /**
+     * Publishes messages to PDPs.
+     */
+    @Getter
+    private final TopicSinkClient pdpPublisher;
+
+    /**
+     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message,
+     * and then dispatches them to {@link #reqIdDispatcher}.
+     */
+    private final MessageTypeDispatcher msgDispatcher;
+
+    /**
+     * Listens for {@link PdpStatus} messages and then routes them to the listener
+     * associated with the ID of the originating request.
+     */
+    @Getter
+    private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
+
+    /**
+     * Prevents more than one thread from updating the PDPs at the same time.
+     */
+    @Getter
+    private final Object pdpUpdateLock = new Object();
+
+    // TODO move the getters for the above methods to an interface
+
+    /**
      * Instantiate the activator for policy pap as a complete service.
      *
      * @param papParameterGroup the parameters for the pap service
@@ -73,10 +113,23 @@ public class PapActivator {
         TopicEndpoint.manager.addTopicSinks(topicProperties);
         TopicEndpoint.manager.addTopicSources(topicProperties);
 
-        this.papParameterGroup = papParameterGroup;
+        try {
+            this.papParameterGroup = papParameterGroup;
+            this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
+            this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
+            this.pdpPublisher = new TopicSinkClient(POLICY_PDP_PAP);
+
+        } catch (TopicSinkClientException e) {
+            throw new PolicyPapRuntimeException(e);
+        }
+
+        this.msgDispatcher.register(PdpMessageType.PDP_STATUS.toString(), this.reqIdDispatcher);
 
         // @formatter:off
         this.manager = new ServiceManager()
+                        .addAction("dispatcher",
+                            () -> registerDispatcher(),
+                            () -> deregisterDispatcher())
                         .addAction("topics",
                             () -> TopicEndpoint.manager.start(),
                             () -> TopicEndpoint.manager.shutdown())
@@ -139,6 +192,24 @@ public class PapActivator {
      */
     public PapParameterGroup getParameterGroup() {
         return papParameterGroup;
+    }
+
+    /**
+     * Registers the dispatcher with the topic source(s).
+     */
+    private void registerDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager.getTopicSources(Arrays.asList(POLICY_PDP_PAP))) {
+            source.register(msgDispatcher);
+        }
+    }
+
+    /**
+     * Unregisters the dispatcher from the topic source(s).
+     */
+    private void deregisterDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager.getTopicSources(Arrays.asList(POLICY_PDP_PAP))) {
+            source.unregister(msgDispatcher);
+        }
     }
 
     /**
