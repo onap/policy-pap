@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3d5a51bb_c42c737d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-15T18:21:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83bba7c5_064a1628",
+      "range": {
+        "startLine": 90,
+        "startChar": 7,
+        "endLine": 90,
+        "endChar": 26
+      },
+      "revId": "dddf89d93ba7482bbee05c6967e0065b9c4fbb0e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1d08b4c6_d2c6139d",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2019-03-15T15:15:49Z",
       "side": 1,
       "message": "\"deletePolicy\" sounds better as it will delete a policy.",
+      "range": {
+        "startLine": 165,
+        "startChar": 20,
+        "endLine": 165,
+        "endChar": 34
+      },
+      "revId": "dddf89d93ba7482bbee05c6967e0065b9c4fbb0e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ae712fc_71e830d6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-15T18:21:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d08b4c6_d2c6139d",
       "range": {
         "startLine": 165,
         "startChar": 20,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "bf9f8d87_7e0b9293",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-15T18:21:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b7938e5_d3378eb2",
+      "range": {
+        "startLine": 175,
+        "startChar": 7,
+        "endLine": 175,
+        "endChar": 27
+      },
+      "revId": "dddf89d93ba7482bbee05c6967e0065b9c4fbb0e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "134866ef_30d6d17a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2019-03-15T15:15:49Z",
       "side": 1,
       "message": "\"deletePolicyVersion\" sounds better.",
+      "range": {
+        "startLine": 207,
+        "startChar": 20,
+        "endLine": 207,
+        "endChar": 41
+      },
+      "revId": "dddf89d93ba7482bbee05c6967e0065b9c4fbb0e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b49a019f_4ec6ac5e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-15T18:21:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "134866ef_30d6d17a",
       "range": {
         "startLine": 207,
         "startChar": 20,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "6544563f_1e154b0f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-15T18:21:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8add5d42_fca3eb11",
+      "range": {
+        "startLine": 60,
+        "startChar": 7,
+        "endLine": 60,
+        "endChar": 27
+      },
+      "revId": "dddf89d93ba7482bbee05c6967e0065b9c4fbb0e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6f23e994_520d3f8c",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
         "patchSetId": 1
@@ -128,6 +248,30 @@
       "writtenOn": "2019-03-15T15:15:49Z",
       "side": 1,
       "message": "As per API wiki, this has to be list of PdpGroup.",
+      "range": {
+        "startLine": 82,
+        "startChar": 82,
+        "endLine": 82,
+        "endChar": 96
+      },
+      "revId": "dddf89d93ba7482bbee05c6967e0065b9c4fbb0e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9158cdc6_fed9765b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-15T18:21:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f23e994_520d3f8c",
       "range": {
         "startLine": 82,
         "startChar": 82,
