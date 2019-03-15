@@ -57,10 +57,10 @@ public class PdpGroupDeleteProvider {
     }
 
     /**
-     * Deletes a PDP group.
+     * Deletes a PDP policy.
      *
      * @param policyId id of the policy to be deleted
-     * @param version group version to delete; may be {@code null} if the group has only
+     * @param version policy version to delete; may be {@code null} if the policy has only
      *        one version
      * @return a pair containing the status and the response
      */

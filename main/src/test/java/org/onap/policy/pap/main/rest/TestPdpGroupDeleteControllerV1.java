@@ -82,7 +82,7 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeletePolicies() throws Exception {
+    public void testDeletePolicy() throws Exception {
         String uri = DELETE_POLICIES_ENDPOINT + "/my-name";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -101,7 +101,7 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeletePoliciesVersion() throws Exception {
+    public void testDeletePolicyVersion() throws Exception {
         String uri = DELETE_POLICIES_ENDPOINT + "/my-name/versions/3";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);

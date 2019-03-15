@@ -87,7 +87,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     }
 
     /**
-     * Deletes a PDP group.
+     * Deletes a particular version of a PDP group.
      *
      * @param requestId request ID used in ONAP logging
      * @param groupName name of the PDP group to be deleted
@@ -162,7 +162,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     // @formatter:on
 
-    public Response deletePolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+    public Response deletePolicy(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
 
         Pair<Status, PdpGroupDeleteResponse> pair = provider.deletePolicy(policyName, null);
@@ -172,7 +172,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     }
 
     /**
-     * Deletes a PDP policy.
+     * Deletes a specific version of a PDP policy.
      *
      * @param requestId request ID used in ONAP logging
      * @param policyName name of the PDP Policy to be deleted
@@ -204,7 +204,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     // @formatter:on
 
-    public Response deletePoliciesVersion(
+    public Response deletePolicyVersion(
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName,
                     @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {

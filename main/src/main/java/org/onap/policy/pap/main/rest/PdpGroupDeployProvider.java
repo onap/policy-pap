@@ -22,8 +22,8 @@ package org.onap.policy.pap.main.rest;
 
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
-import org.onap.policy.models.pap.concepts.PdpGroup;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
+import org.onap.policy.models.pap.concepts.PdpGroups;
 import org.onap.policy.models.pap.concepts.PdpPolicies;
 
 /**
@@ -34,10 +34,10 @@ public class PdpGroupDeployProvider {
     /**
      * Deploys or updates a PDP group.
      *
-     * @param group PDP group configuration
+     * @param groups PDP group configuration
      * @return a pair containing the status and the response
      */
-    public Pair<Response.Status, PdpGroupDeployResponse> deployGroup(PdpGroup group) {
+    public Pair<Response.Status, PdpGroupDeployResponse> deployGroup(PdpGroups groups) {
 
         /*
          * TODO Lock for updates - return error if already locked.
