@@ -35,8 +35,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
-import org.onap.policy.models.pap.concepts.PdpGroup;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
+import org.onap.policy.models.pap.concepts.PdpGroups;
 import org.onap.policy.models.pap.concepts.PdpPolicies;
 
 /**
@@ -50,13 +50,13 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      * Deploys or updates a PDP group.
      *
      * @param requestId request ID used in ONAP logging
-     * @param group PDP group configuration
+     * @param groups PDP group configuration
      * @return a response
      */
     // @formatter:off
     @POST
     @Path("pdps")
-    @ApiOperation(value = "Deploy or update PDP Group",
+    @ApiOperation(value = "Deploy or update PDP Groups",
         notes = "Deploys or updates a PDP Group, returning optional error details",
         response = PdpGroupDeployResponse.class,
         tags = {"Policy Administration (PAP) API"},
@@ -79,9 +79,9 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "PDP Group Configuration", required = true) PdpGroup group) {
+                    @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
-        Pair<Status, PdpGroupDeployResponse> pair = provider.deployGroup(group);
+        Pair<Status, PdpGroupDeployResponse> pair = provider.deployGroup(groups);
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();
