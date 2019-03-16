@@ -1,6 +1,7 @@
-/*-
+/*
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +36,15 @@ public class PolicyPapRuntimeException extends RuntimeException {
      */
     public PolicyPapRuntimeException(final String message) {
         super(message);
+    }
+
+    /**
+     * Instantiates a new policy pap runtime exception with a caused by exception.
+     *
+     * @param exp the exception that caused this exception to be thrown
+     */
+    public PolicyPapRuntimeException(final Exception exp) {
+        super(exp);
     }
 
     /**
