@@ -21,18 +21,23 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import java.util.Arrays;
 import java.util.Properties;
 import lombok.Getter;
-import lombok.Setter;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
+import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.ServiceManager;
-import org.onap.policy.common.utils.services.ServiceManagerException;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.onap.policy.pap.main.comm.PdpCommObjects;
+import org.onap.policy.pap.main.comm.PdpCommObjectsImpl;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapRestServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.onap.policy.pdp.common.enums.PdpMessageType;
+import org.onap.policy.pdp.common.models.PdpStatus;
 
 /**
  * This class wraps a distributor so that it can be activated as a complete service
@@ -41,8 +46,8 @@ import org.slf4j.LoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapActivator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
+    private static final String[] MSG_TYPE_NAMES = {"messageName"};
+    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
 
     private final PapParameterGroup papParameterGroup;
 
@@ -57,11 +62,35 @@ public class PapActivator {
      */
     private final ServiceManager manager;
 
-    @Getter
-    @Setter(lombok.AccessLevel.PRIVATE)
-    private volatile boolean alive = false;
-
+    /**
+     * The PAP REST API server.
+     */
     private PapRestServer restServer;
+
+    /**
+     * Objects used to communicate with the PDPs.
+     */
+    @Getter
+    private final PdpCommObjectsImpl pdpComm;
+
+    /**
+     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message,
+     * and then dispatches them to {@link #reqIdDispatcher}.
+     */
+    private final MessageTypeDispatcher msgDispatcher;
+
+    /**
+     * Listens for {@link PdpStatus} messages and then routes them to the listener
+     * associated with the ID of the originating request.
+     */
+    @Getter
+    private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
+
+    /**
+     * Prevents more than one thread from updating the PDPs at the same time.
+     */
+    @Getter
+    private final Object pdpUpdateLock = new Object();
 
     /**
      * Instantiate the activator for policy pap as a complete service.
@@ -73,10 +102,23 @@ public class PapActivator {
         TopicEndpoint.manager.addTopicSinks(topicProperties);
         TopicEndpoint.manager.addTopicSources(topicProperties);
 
-        this.papParameterGroup = papParameterGroup;
+        try {
+            this.papParameterGroup = papParameterGroup;
+            this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
+            this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
+            this.pdpComm = new PdpCommObjectsImpl(papParameterGroup.getPdpParameters(), reqIdDispatcher, pdpUpdateLock);
+
+        } catch (PolicyPapException e) {
+            throw new PolicyPapRuntimeException(e);
+        }
+
+        this.msgDispatcher.register(PdpMessageType.PDP_STATUS.toString(), this.reqIdDispatcher);
 
         // @formatter:off
-        this.manager = new ServiceManager()
+        this.manager = new ServiceManager("Policy PAP")
+                        .addAction("dispatcher",
+                            () -> registerDispatcher(),
+                            () -> deregisterDispatcher())
                         .addAction("topics",
                             () -> TopicEndpoint.manager.start(),
                             () -> TopicEndpoint.manager.shutdown())
@@ -85,13 +127,19 @@ public class PapActivator {
                             () -> deregisterToParameterService(papParameterGroup))
                         .addAction("REST server",
                             () -> startPapRestServer(),
-                            () -> restServer.stop())
-                        .addAction("set alive",
-                            () -> setAlive(true),
-                            () -> setAlive(false));
+                            () -> restServer.stop());
         // @formatter:on
 
         current = this;
+    }
+
+    /**
+     * Determines if this activator is alive.
+     *
+     * @return {@code true} if this activator is alive, {@code false} otherwise
+     */
+    public boolean isAlive() {
+        return manager.isAlive();
     }
 
     /**
@@ -100,18 +148,7 @@ public class PapActivator {
      * @throws PolicyPapException on errors in initializing the service
      */
     public void initialize() throws PolicyPapException {
-        if (isAlive()) {
-            throw new IllegalStateException("activator already initialized");
-        }
-
-        try {
-            LOGGER.debug("Policy pap starting as a service . . .");
-            manager.start();
-            LOGGER.debug("Policy pap started as a service");
-        } catch (final ServiceManagerException exp) {
-            LOGGER.error("Policy pap service startup failed");
-            throw new PolicyPapException(exp.getMessage(), exp);
-        }
+        manager.start();
     }
 
     /**
@@ -120,16 +157,7 @@ public class PapActivator {
      * @throws PolicyPapException on errors in terminating the service
      */
     public void terminate() throws PolicyPapException {
-        if (!isAlive()) {
-            throw new IllegalStateException("activator is not running");
-        }
-
-        try {
-            manager.stop();
-        } catch (final ServiceManagerException exp) {
-            LOGGER.error("Policy pap service termination failed");
-            throw new PolicyPapException(exp.getMessage(), exp);
-        }
+        manager.stop();
     }
 
     /**
@@ -139,6 +167,24 @@ public class PapActivator {
      */
     public PapParameterGroup getParameterGroup() {
         return papParameterGroup;
+    }
+
+    /**
+     * Registers the dispatcher with the topic source(s).
+     */
+    private void registerDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager.getTopicSources(Arrays.asList(PdpCommObjects.POLICY_PDP_PAP))) {
+            source.register(msgDispatcher);
+        }
+    }
+
+    /**
+     * Unregisters the dispatcher from the topic source(s).
+     */
+    private void deregisterDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager.getTopicSources(Arrays.asList(PdpCommObjects.POLICY_PDP_PAP))) {
+            source.unregister(msgDispatcher);
+        }
     }
 
     /**
