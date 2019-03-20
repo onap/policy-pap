@@ -34,7 +34,7 @@ import org.onap.policy.models.pap.concepts.PdpGroup;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pap.concepts.PdpPolicies;
 import org.onap.policy.models.pap.concepts.PdpSubGroup;
-import org.onap.policy.pdp.common.models.Policy;
+import org.onap.policy.models.pap.concepts.Policy;
 
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 

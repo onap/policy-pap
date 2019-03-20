@@ -22,6 +22,8 @@
 package org.onap.policy.pap.main.rest;
 
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.startstop.PapActivator;
 
 /**
@@ -46,7 +48,7 @@ public class HealthCheckProvider {
         report.setName(NAME);
         report.setUrl(URL);
 
-        boolean alive = PapActivator.getCurrent().isAlive();
+        boolean alive = Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive();
 
         report.setHealthy(alive);
         report.setCode(alive ? 200 : 500);

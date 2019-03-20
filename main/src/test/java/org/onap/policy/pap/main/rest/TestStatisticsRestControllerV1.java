@@ -29,6 +29,8 @@ import java.lang.reflect.Modifier;
 import javax.ws.rs.client.Invocation;
 import org.junit.Before;
 import org.junit.Test;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 
 /**
  * Class to perform unit test of {@link PapRestServer}.
@@ -38,18 +40,6 @@ import org.junit.Test;
 public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
 
     private static final String STATISTICS_ENDPOINT = "statistics";
-
-    /**
-     * Set up.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        PapStatisticsManager.getInstance().resetAllStatistics();
-    }
 
     @Test
     public void testSwagger() throws Exception {
@@ -76,21 +66,15 @@ public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
 
         markActivatorDead();
 
-        PapStatisticsManager.getInstance().resetAllStatistics();
+        Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class).resetAllStatistics();
 
         Invocation.Builder invocationBuilder = sendRequest(STATISTICS_ENDPOINT);
         StatisticsReport report = invocationBuilder.get(StatisticsReport.class);
         validateStatisticsReport(report, 0, 500);
     }
 
-    @Test
-    public void testPapStatisticsConstructorIsProtected() throws Exception {
-        final Constructor<PapStatisticsManager> constructor = PapStatisticsManager.class.getDeclaredConstructor();
-        assertTrue(Modifier.isProtected(constructor.getModifiers()));
-    }
-
     private void updateDistributionStatistics() {
-        PapStatisticsManager mgr = PapStatisticsManager.getInstance();
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
 
         mgr.updateTotalPdpCount();
         mgr.updateTotalPdpGroupCount();

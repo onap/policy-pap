@@ -21,18 +21,29 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
-import lombok.Setter;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
+import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.parameters.ParameterService;
-import org.onap.policy.common.utils.services.ServiceManager;
-import org.onap.policy.common.utils.services.ServiceManagerException;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.common.utils.services.ServiceManagerContainer;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.Publisher;
+import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.PapRestServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.onap.policy.pdp.common.enums.PdpMessageType;
+import org.onap.policy.pdp.common.models.PdpStatus;
 
 /**
  * This class wraps a distributor so that it can be activated as a complete service
@@ -40,28 +51,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class PapActivator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
+public class PapActivator extends ServiceManagerContainer {
+    private static final String[] MSG_TYPE_NAMES = {"messageName"};
+    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
 
     private final PapParameterGroup papParameterGroup;
 
     /**
-     * The current activator.
+     * The PAP REST API server.
      */
-    @Getter
-    private static volatile PapActivator current = null;
+    private PapRestServer restServer;
 
     /**
-     * Used to stop the services.
+     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message,
+     * and then dispatches them to {@link #reqIdDispatcher}.
      */
-    private final ServiceManager manager;
+    private final MessageTypeDispatcher msgDispatcher;
 
+    /**
+     * Listens for {@link PdpStatus} messages and then routes them to the listener
+     * associated with the ID of the originating request.
+     */
     @Getter
-    @Setter(lombok.AccessLevel.PRIVATE)
-    private volatile boolean alive = false;
-
-    private PapRestServer restServer;
+    private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
 
     /**
      * Instantiate the activator for policy pap as a complete service.
@@ -70,66 +82,110 @@ public class PapActivator {
      * @param topicProperties properties used to configure the topics
      */
     public PapActivator(final PapParameterGroup papParameterGroup, Properties topicProperties) {
+        super("Policy PAP");
+
         TopicEndpoint.manager.addTopicSinks(topicProperties);
         TopicEndpoint.manager.addTopicSources(topicProperties);
 
-        this.papParameterGroup = papParameterGroup;
+        try {
+            this.papParameterGroup = papParameterGroup;
+            this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
+            this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
+
+        } catch (RuntimeException e) {
+            throw new PolicyPapRuntimeException(e);
+        }
+
+        this.msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher);
+
+        PdpParameters pdpParams = papParameterGroup.getPdpParameters();
+
+        AtomicReference<Publisher> pdpPub = new AtomicReference<>();
+        AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
+        AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
 
         // @formatter:off
-        this.manager = new ServiceManager()
-                        .addAction("topics",
-                            () -> TopicEndpoint.manager.start(),
-                            () -> TopicEndpoint.manager.shutdown())
-                        .addAction("register parameters",
-                            () -> registerToParameterService(papParameterGroup),
-                            () -> deregisterToParameterService(papParameterGroup))
-                        .addAction("REST server",
-                            () -> startPapRestServer(),
-                            () -> restServer.stop())
-                        .addAction("set alive",
-                            () -> setAlive(true),
-                            () -> setAlive(false));
+        addAction("PAP parameters",
+            () -> registerToParameterService(papParameterGroup),
+            () -> unregisterToParameterService(papParameterGroup));
+
+        addAction("PDP parameters",
+            () -> Registry.register(PapConstants.REG_PDP_PARAMETERS, pdpParams),
+            () -> Registry.unregister(PapConstants.REG_PDP_PARAMETERS));
+
+        addAction("dispatcher",
+            () -> registerDispatcher(),
+            () -> unregisterDispatcher());
+
+        addAction("topics",
+            () -> TopicEndpoint.manager.start(),
+            () -> TopicEndpoint.manager.shutdown());
+
+        addAction("PDP response dispatcher",
+            () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
+            () -> Registry.unregister(PapConstants.REG_STATISTICS_MANAGER));
+
+        addAction("PDP publisher",
+            () -> {
+                pdpPub.set(new Publisher(PapConstants.TOPIC_POLICY_PDP_PAP));
+                Registry.register(PapConstants.REG_PDP_PUBLISHER, pdpPub.get());
+            },
+            () -> Registry.unregister(PapConstants.REG_PDP_PUBLISHER));
+
+        addAction("PDP publisher thread",
+            () -> startThread(pdpPub.get()),
+            () -> pdpPub.get().stop());
+
+        addAction("PDP update timers",
+            () -> {
+                pdpUpdTimers.set(new TimerManager("update", pdpParams.getUpdateParameters().getMaxWaitMs()));
+                Registry.register(PapConstants.REG_PDP_UPDATE_TIMERS, pdpUpdTimers.get());
+            },
+            () -> Registry.unregister(PapConstants.REG_PDP_UPDATE_TIMERS));
+
+        addAction("PDP update timers thread",
+            () -> startThread(pdpUpdTimers.get()),
+            () -> pdpUpdTimers.get().stop());
+
+        addAction("PDP state-change timers",
+            () -> {
+                pdpStChgTimers.set(new TimerManager("state-change", pdpParams.getUpdateParameters().getMaxWaitMs()));
+                Registry.register(PapConstants.REG_PDP_STATE_CHANGE_TIMERS, pdpStChgTimers.get());
+            },
+            () -> Registry.unregister(PapConstants.REG_PDP_STATE_CHANGE_TIMERS));
+
+        addAction("PDP state-change timers thread",
+            () -> startThread(pdpStChgTimers.get()),
+            () -> pdpStChgTimers.get().stop());
+
+        addAction("PDP response dispatcher",
+            () -> Registry.register(PapConstants.REG_PDP_RESPONSE_DISPATCHER, reqIdDispatcher),
+            () -> Registry.unregister(PapConstants.REG_PDP_RESPONSE_DISPATCHER));
+
+        addAction("PDP modification lock",
+            () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, new Object()),
+            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
+
+        addAction("PDP modification requests",
+            () -> Registry.register(PapConstants.REG_PDP_MODIFY_MAP, new PdpModifyRequestMap()),
+            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
+
+        addAction("REST server",
+            () -> startPapRestServer(),
+            () -> restServer.stop());
         // @formatter:on
-
-        current = this;
     }
 
     /**
-     * Initialize pap as a complete service.
+     * Starts a background thread.
      *
-     * @throws PolicyPapException on errors in initializing the service
+     * @param runner function to run in the background
      */
-    public void initialize() throws PolicyPapException {
-        if (isAlive()) {
-            throw new IllegalStateException("activator already initialized");
-        }
+    private void startThread(Runnable runner) {
+        Thread thread = new Thread(runner);
+        thread.setDaemon(true);
 
-        try {
-            LOGGER.debug("Policy pap starting as a service . . .");
-            manager.start();
-            LOGGER.debug("Policy pap started as a service");
-        } catch (final ServiceManagerException exp) {
-            LOGGER.error("Policy pap service startup failed");
-            throw new PolicyPapException(exp.getMessage(), exp);
-        }
-    }
-
-    /**
-     * Terminate policy pap.
-     *
-     * @throws PolicyPapException on errors in terminating the service
-     */
-    public void terminate() throws PolicyPapException {
-        if (!isAlive()) {
-            throw new IllegalStateException("activator is not running");
-        }
-
-        try {
-            manager.stop();
-        } catch (final ServiceManagerException exp) {
-            LOGGER.error("Policy pap service termination failed");
-            throw new PolicyPapException(exp.getMessage(), exp);
-        }
+        thread.start();
     }
 
     /**
@@ -139,6 +195,26 @@ public class PapActivator {
      */
     public PapParameterGroup getParameterGroup() {
         return papParameterGroup;
+    }
+
+    /**
+     * Registers the dispatcher with the topic source(s).
+     */
+    private void registerDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager
+                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+            source.register(msgDispatcher);
+        }
+    }
+
+    /**
+     * Unregisters the dispatcher from the topic source(s).
+     */
+    private void unregisterDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager
+                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+            source.unregister(msgDispatcher);
+        }
     }
 
     /**
@@ -155,7 +231,7 @@ public class PapActivator {
      *
      * @param papParameterGroup the pap parameter group
      */
-    public void deregisterToParameterService(final PapParameterGroup papParameterGroup) {
+    public void unregisterToParameterService(final PapParameterGroup papParameterGroup) {
         ParameterService.deregister(papParameterGroup.getName());
     }
 
