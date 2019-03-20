@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -45,7 +44,10 @@ import org.junit.BeforeClass;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.network.NetworkUtil;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.startstop.Main;
 import org.onap.policy.pap.main.startstop.PapActivator;
 import org.powermock.reflect.Whitebox;
@@ -119,7 +121,7 @@ public class CommonPapRestServer {
             startMain();
         }
 
-        activatorWasAlive = PapActivator.getCurrent().isAlive();
+        activatorWasAlive = Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive();
     }
 
     /**
@@ -127,7 +129,7 @@ public class CommonPapRestServer {
      */
     @After
     public void tearDown() {
-        Whitebox.setInternalState(PapActivator.getCurrent(), "alive", activatorWasAlive);
+        markActivator(activatorWasAlive);
     }
 
     /**
@@ -149,20 +151,11 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     private static void makeConfigFile() throws Exception {
-        Map<String, Object> restParams = new HashMap<>();
-        restParams.put("host", "0.0.0.0");
+        Map<String, Object> config = new CommonTestData().getPapParameterGroupMap("PapGroup");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> restParams = (Map<String, Object>) config.get("restServerParameters");
         restParams.put("port", port);
-        restParams.put("userName", "healthcheck");
-        restParams.put("password", "zb!XztG34");
-        restParams.put("https", true);
-
-        Map<String, Object> pdpGroupDeploy = new HashMap<>();
-        pdpGroupDeploy.put("waitResponseMs", "0");
-
-        Map<String, Object> config = new HashMap<>();
-        config.put("name", "PapGroup");
-        config.put("restServerParameters", restParams);
-        config.put("pdpGroupDeploymentParameters", pdpGroupDeploy);
 
         File file = new File("src/test/resources/parameters/TestConfigParams.json");
         file.deleteOnExit();
@@ -176,6 +169,8 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     private static void startMain() throws Exception {
+        Registry.newRegistry();
+
         // make sure port is available
         if (NetworkUtil.isTcpPortOpen("localhost", port, 1, 1L)) {
             throw new IllegalStateException("port " + port + " is still in use");
@@ -218,7 +213,13 @@ public class CommonPapRestServer {
      * Mark the activator as dead, but leave its REST server running.
      */
     protected void markActivatorDead() {
-        Whitebox.setInternalState(PapActivator.getCurrent(), "alive", false);
+        markActivator(false);
+    }
+
+    private void markActivator(boolean wasAlive) {
+        Object manager = Whitebox.getInternalState(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class),
+                        "serviceManager");
+        Whitebox.setInternalState(manager, "running", wasAlive);
     }
 
     /**

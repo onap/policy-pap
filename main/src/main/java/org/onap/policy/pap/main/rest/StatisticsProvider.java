@@ -21,6 +21,8 @@
 
 package org.onap.policy.pap.main.rest;
 
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.startstop.PapActivator;
 
 /**
@@ -37,9 +39,9 @@ public class StatisticsProvider {
      */
     public StatisticsReport fetchCurrentStatistics() {
         final StatisticsReport report = new StatisticsReport();
-        report.setCode(PapActivator.getCurrent().isAlive() ? 200 : 500);
+        report.setCode(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive() ? 200 : 500);
 
-        PapStatisticsManager mgr = PapStatisticsManager.getInstance();
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
         report.setTotalPdpCount(mgr.getTotalPdpCount());
         report.setTotalPdpGroupCount(mgr.getTotalPdpGroupCount());
         report.setTotalPolicyDownloadCount(mgr.getTotalPolicyDownloadCount());
