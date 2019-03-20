@@ -1,10 +1,20 @@
 {
-    "name":"PapGroup",
-    "restServerParameters":{
-        "host":"0.0.0.0",
-        "port":6969,
-        "userName":"healthcheck",
-        "password":"zb!XztG34",
-        "https":true
-    }
+	"name": "PapGroup",
+	"restServerParameters": {
+		"host": "0.0.0.0",
+		"port": 6969,
+		"userName": "healthcheck",
+		"password": "zb!XztG34",
+		"https": true
+	},
+	"pdpParameters": {
+		"updateParameters": {
+			"maxRetryCount": 1,
+			"maxWaitMs": 1
+		},
+		"stateChangeParameters": {
+			"maxRetryCount": 1,
+			"maxWaitMs": 1
+		}
+	}
 }
