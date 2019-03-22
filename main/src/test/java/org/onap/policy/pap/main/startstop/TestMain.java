@@ -25,7 +25,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 
@@ -38,15 +41,23 @@ public class TestMain {
     private Main main;
 
     /**
+     * Set up.
+     */
+    @Before
+    public void setUp() {
+        Registry.newRegistry();
+    }
+
+    /**
      * Shuts "main" down.
      * @throws Exception if an error occurs
      */
     @After
     public void tearDown() throws Exception {
         // shut down activator
-        PapActivator activator = PapActivator.getCurrent();
+        PapActivator activator = Registry.getOrDefault(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class, null);
         if (activator != null && activator.isAlive()) {
-            activator.terminate();
+            activator.stop();
         }
     }
 
