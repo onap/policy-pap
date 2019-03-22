@@ -21,8 +21,6 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
@@ -30,14 +28,7 @@ public class TestPapStatisticsManager {
 
     @Test
     public void test() {
-        PapStatisticsManager mgr = PapStatisticsManager.getInstance();
-        assertNotNull(mgr);
-
-        // should return the same manager
-        assertSame(mgr, PapStatisticsManager.getInstance());
-
-        // work with a new object so we don't have to worry about initial counts
-        mgr = new PapStatisticsManager();
+        PapStatisticsManager mgr = new PapStatisticsManager();
 
         // try each update
 
