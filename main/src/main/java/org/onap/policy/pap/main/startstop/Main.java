@@ -24,6 +24,8 @@ package org.onap.policy.pap.main.startstop;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Properties;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -89,12 +91,14 @@ public class Main {
 
         // Now, create the activator for the policy pap service
         activator = new PapActivator(parameterGroup, props);
+        Registry.register(PapConstants.REG_PAP_ACTIVATOR, activator);
 
         // Start the activator
         try {
-            activator.initialize();
-        } catch (final PolicyPapException e) {
+            activator.start();
+        } catch (final RuntimeException e) {
             LOGGER.error("start of policy pap service failed, used parameters are {}", Arrays.toString(args), e);
+            Registry.unregister(PapConstants.REG_PAP_ACTIVATOR);
             return;
         }
 
@@ -123,7 +127,7 @@ public class Main {
 
         // clear the pap activator
         if (activator != null) {
-            activator.terminate();
+            activator.stop();
         }
     }
 
@@ -140,8 +144,8 @@ public class Main {
         public void run() {
             try {
                 // Shutdown the policy pap service and wait for everything to stop
-                activator.terminate();
-            } catch (final PolicyPapException e) {
+                activator.stop();
+            } catch (final RuntimeException e) {
                 LOGGER.warn("error occured during shut down of the policy pap service", e);
             }
         }
