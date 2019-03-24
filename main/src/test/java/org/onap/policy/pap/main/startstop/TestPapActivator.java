@@ -24,7 +24,7 @@ package org.onap.policy.pap.main.startstop;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
@@ -32,10 +32,14 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.dao.PapDaoFactory;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
+import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 
 /**
@@ -54,13 +58,15 @@ public class TestPapActivator {
      */
     @Before
     public void setUp() throws Exception {
+        Registry.newRegistry();
+
         final String[] papConfigParameters =
             {"-c", "parameters/PapConfigParameters.json", "-p", "parameters/topic.properties"};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
 
         Properties props = new Properties();
-        String propFile = arguments.getFullConfigurationFilePath();
+        String propFile = arguments.getFullPropertyFilePath();
         try (FileInputStream stream = new FileInputStream(propFile)) {
             props.load(stream);
         }
@@ -75,37 +81,38 @@ public class TestPapActivator {
     @After
     public void teardown() throws Exception {
         if (activator != null && activator.isAlive()) {
-            activator.terminate();
+            activator.stop();
         }
     }
 
     @Test
     public void testPapActivator() throws PolicyPapException {
         assertFalse(activator.isAlive());
-        activator.initialize();
+        activator.start();
         assertTrue(activator.isAlive());
         assertTrue(activator.getParameterGroup().isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
 
+        // ensure items were added to the registry
+        assertNotNull(Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PapDaoFactory.class));
+        assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
+        assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
+        assertNotNull(Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PapDaoFactory.class));
+
         // repeat - should throw an exception
-        assertThatIllegalStateException().isThrownBy(() -> activator.initialize());
+        assertThatIllegalStateException().isThrownBy(() -> activator.start());
         assertTrue(activator.isAlive());
         assertTrue(activator.getParameterGroup().isValid());
     }
 
     @Test
-    public void testGetCurrent_testSetCurrent() {
-        assertSame(activator, PapActivator.getCurrent());
-    }
-
-    @Test
     public void testTerminate() throws Exception {
-        activator.initialize();
-        activator.terminate();
+        activator.start();
+        activator.stop();
         assertFalse(activator.isAlive());
 
         // repeat - should throw an exception
-        assertThatIllegalStateException().isThrownBy(() -> activator.terminate());
+        assertThatIllegalStateException().isThrownBy(() -> activator.stop());
         assertFalse(activator.isAlive());
     }
 }
