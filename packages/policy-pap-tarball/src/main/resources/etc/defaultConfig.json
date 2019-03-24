@@ -7,5 +7,15 @@
         "password": "zb!XztG34",
         "https": true,
         "aaf": false
+    },
+    "pdpParameters": {
+        "updateParameters": {
+            "maxRetryCount": 1,
+            "maxWaitMs": 1
+        },
+        "stateChangeParameters": {
+            "maxRetryCount": 1,
+            "maxWaitMs": 1
+        }
     }
 }
