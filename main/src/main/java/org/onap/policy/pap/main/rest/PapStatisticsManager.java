@@ -22,7 +22,6 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.Getter;
 
 /**
  * Class to hold statistical data for pap component.
@@ -30,9 +29,6 @@ import lombok.Getter;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapStatisticsManager {
-
-    @Getter
-    private static final PapStatisticsManager instance = new PapStatisticsManager();
 
     private final AtomicLong totalPdpCount = new AtomicLong(0);
     private final AtomicLong totalPdpGroupCount = new AtomicLong(0);
@@ -46,7 +42,7 @@ public class PapStatisticsManager {
     /**
      * Constructs the object.
      */
-    protected PapStatisticsManager() {
+    public PapStatisticsManager() {
         super();
     }
 

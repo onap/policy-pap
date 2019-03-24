@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
+import org.onap.policy.models.pdp.concepts.PdpResponseDetails;
+import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.comm.MultiPdpStatusListener;
-import org.onap.policy.pdp.common.models.PdpResponseDetails;
-import org.onap.policy.pdp.common.models.PdpStatus;
 
 public class MultiPdpStatusListenerTest {
     private static final CommInfrastructure INFRA = CommInfrastructure.NOOP;

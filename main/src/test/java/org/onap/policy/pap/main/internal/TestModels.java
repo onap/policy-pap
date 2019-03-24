@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,28 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.parameters;
+package org.onap.policy.pap.main.internal;
 
-import lombok.Getter;
-import org.onap.policy.common.parameters.ParameterGroupImpl;
-import org.onap.policy.common.parameters.annotations.NotBlank;
-import org.onap.policy.common.parameters.annotations.NotNull;
+import com.openpojo.reflection.filters.FilterPackageInfo;
+import com.openpojo.validation.Validator;
+import com.openpojo.validation.ValidatorBuilder;
+import com.openpojo.validation.test.impl.GetterTester;
+import com.openpojo.validation.test.impl.SetterTester;
+
+import org.junit.Test;
+import org.onap.policy.common.utils.validation.ToStringTester;
 
 /**
- * Class to hold all parameters needed for pap component.
+ * Class to perform unit testing of models.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@NotNull
-@NotBlank
-@Getter
-public class PapParameterGroup extends ParameterGroupImpl {
-    private RestServerParameters restServerParameters;
-    private PdpParameters pdpParameters;
+public class TestModels {
 
-    /**
-     * Create the pap parameter group.
-     *
-     * @param name the parameter group name
-     */
-    public PapParameterGroup(final String name) {
-        super(name);
+    @Test
+    public void testPapModels() {
+        final Validator validator = ValidatorBuilder.create().with(new ToStringTester()).with(new SetterTester())
+                .with(new GetterTester()).build();
+        validator.validate(TestModels.class.getPackage().getName(), new FilterPackageInfo());
     }
 }
