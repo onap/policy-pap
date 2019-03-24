@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -75,6 +77,7 @@ public class TestPapActivator {
 
     /**
      * Method for cleanup after each test.
+     *
      * @throws Exception if an error occurs
      */
     @After
@@ -95,6 +98,7 @@ public class TestPapActivator {
         // ensure items were added to the registry
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
         assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
+        assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.start());
@@ -107,6 +111,11 @@ public class TestPapActivator {
         activator.start();
         activator.stop();
         assertFalse(activator.isAlive());
+
+        // ensure items have been removed from the registry
+        assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_LOCK, Object.class, null));
+        assertNull(Registry.getOrDefault(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class, null));
+        assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class, null));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.stop());

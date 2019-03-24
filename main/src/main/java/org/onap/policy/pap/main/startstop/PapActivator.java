@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
@@ -33,8 +34,14 @@ import org.onap.policy.common.utils.services.ServiceManagerContainer;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpMessageType;
 import org.onap.policy.pap.main.PapConstants;
+import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.Publisher;
+import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
+import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.PapRestServer;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
@@ -81,8 +88,6 @@ public class PapActivator extends ServiceManagerContainer {
 
         try {
             this.papParameterGroup = papParameterGroup;
-            papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
-
             this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
 
@@ -92,12 +97,17 @@ public class PapActivator extends ServiceManagerContainer {
 
         this.msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher);
 
+        PdpParameters pdpParams = papParameterGroup.getPdpParameters();
+
         final Object pdpUpdateLock = new Object();
+        AtomicReference<Publisher> pdpPub = new AtomicReference<>();
+        AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
+        AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
 
         // @formatter:off
         addAction("PAP parameters",
-            () -> ParameterService.register(papParameterGroup),
-            () -> ParameterService.deregister(papParameterGroup.getName()));
+            () -> registerToParameterService(papParameterGroup),
+            () -> unregisterToParameterService(papParameterGroup));
 
         addAction("dispatcher",
             () -> registerDispatcher(),
@@ -111,18 +121,58 @@ public class PapActivator extends ServiceManagerContainer {
             () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
             () -> Registry.unregister(PapConstants.REG_STATISTICS_MANAGER));
 
+        addAction("PDP publisher",
+            () -> {
+                pdpPub.set(new Publisher(PapConstants.TOPIC_POLICY_PDP_PAP));
+                startThread(pdpPub.get());
+            },
+            () -> pdpPub.get().stop());
+
+        addAction("PDP update timers",
+            () -> {
+                pdpUpdTimers.set(new TimerManager("update", pdpParams.getUpdateParameters().getMaxWaitMs()));
+                startThread(pdpUpdTimers.get());
+            },
+            () -> pdpUpdTimers.get().stop());
+
+        addAction("PDP state-change timers",
+            () -> {
+                pdpStChgTimers.set(new TimerManager("state-change", pdpParams.getUpdateParameters().getMaxWaitMs()));
+                startThread(pdpStChgTimers.get());
+            },
+            () -> pdpStChgTimers.get().stop());
+
         addAction("PDP modification lock",
             () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
 
-        addAction("REST server",
-            () -> restServer = new PapRestServer(papParameterGroup.getRestServerParameters()),
-            () -> { });
+        addAction("PDP modification requests",
+            () -> Registry.register(PapConstants.REG_PDP_MODIFY_MAP, new PdpModifyRequestMap(
+                            new PdpModifyRequestMapParams()
+                                    .setModifyLock(pdpUpdateLock)
+                                    .setParams(pdpParams)
+                                    .setPublisher(pdpPub.get())
+                                    .setResponseDispatcher(reqIdDispatcher)
+                                    .setStateChangeTimers(pdpStChgTimers.get())
+                                    .setUpdateTimers(pdpUpdTimers.get()))),
+            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
-        addAction("REST server thread",
-            () -> restServer.start(),
+        addAction("REST server",
+            () -> startPapRestServer(),
             () -> restServer.stop());
         // @formatter:on
+    }
+
+    /**
+     * Starts a background thread.
+     *
+     * @param runner function to run in the background
+     */
+    private void startThread(Runnable runner) {
+        Thread thread = new Thread(runner);
+        thread.setDaemon(true);
+
+        thread.start();
     }
 
     /**
@@ -151,6 +201,37 @@ public class PapActivator extends ServiceManagerContainer {
         for (TopicSource source : TopicEndpoint.manager
                         .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.unregister(msgDispatcher);
+        }
+    }
+
+    /**
+     * Method to register the parameters to Common Parameter Service.
+     *
+     * @param papParameterGroup the pap parameter group
+     */
+    public void registerToParameterService(final PapParameterGroup papParameterGroup) {
+        ParameterService.register(papParameterGroup);
+    }
+
+    /**
+     * Method to deregister the parameters from Common Parameter Service.
+     *
+     * @param papParameterGroup the pap parameter group
+     */
+    public void unregisterToParameterService(final PapParameterGroup papParameterGroup) {
+        ParameterService.deregister(papParameterGroup.getName());
+    }
+
+    /**
+     * Starts the pap rest server using configuration parameters.
+     *
+     * @throws PolicyPapException if server start fails
+     */
+    private void startPapRestServer() throws PolicyPapException {
+        papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
+        restServer = new PapRestServer(papParameterGroup.getRestServerParameters());
+        if (!restServer.start()) {
+            throw new PolicyPapException("Failed to start pap rest server. Check log for more details...");
         }
     }
 }
