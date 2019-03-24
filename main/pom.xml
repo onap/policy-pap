@@ -45,11 +45,6 @@
         </dependency>
         <dependency>
             <groupId>org.onap.policy.common</groupId>
-            <artifactId>pdp-common</artifactId>
-            <version>${policy.common.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.policy.common</groupId>
             <artifactId>utils</artifactId>
             <version>${policy.common.version}</version>
         </dependency>
@@ -65,7 +60,17 @@
         </dependency>
         <dependency>
             <groupId>org.onap.policy.models</groupId>
-            <artifactId>models-pap</artifactId>
+            <artifactId>policy-models-pap</artifactId>
+            <version>${policy.models.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.policy.models</groupId>
+            <artifactId>models-pdp</artifactId>
+            <version>${policy.models.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.policy.models</groupId>
+            <artifactId>policy-models-provider</artifactId>
             <version>${policy.models.version}</version>
         </dependency>
         <dependency>

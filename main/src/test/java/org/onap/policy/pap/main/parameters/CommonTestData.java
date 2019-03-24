@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import org.onap.policy.common.parameters.ParameterGroup;
@@ -72,7 +73,7 @@ public class CommonTestData {
 
         map.put("name", name);
         map.put("restServerParameters", getRestServerParametersMap(false));
-        map.put("pdpGroupDeploymentParameters", getPdpGroupDeploymentParametersMap());
+        map.put("pdpParameters", getPdpParametersMap());
 
         return map;
     }
@@ -94,6 +95,47 @@ public class CommonTestData {
             map.put("userName", REST_SERVER_USER);
             map.put("password", REST_SERVER_PASSWORD);
         }
+
+        return map;
+    }
+
+    /**
+     * Returns a property map for a PdpParameters map for test cases.
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String,Object> getPdpParametersMap() {
+        Map<String,Object> map = new TreeMap<>();
+
+        map.put("updateParameters", getPdpUpdateParametersMap());
+        map.put("stateChangeParameters", getPdpStateChangeParametersMap());
+
+        return map;
+    }
+
+    /**
+     * Returns a property map for a PdpUpdateParameters map for test cases.
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String,Object> getPdpUpdateParametersMap() {
+        return getPdpRequestParametersMap();
+    }
+
+    /**
+     * Returns a property map for a PdpStateChangeParameters map for test cases.
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String,Object> getPdpStateChangeParametersMap() {
+        return getPdpRequestParametersMap();
+    }
+
+    /**
+     * Returns a property map for a PdpParameters map for test cases.
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String,Object> getPdpRequestParametersMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("maxRetryCount", "1");
+        map.put("maxWaitMs", "2");
 
         return map;
     }
