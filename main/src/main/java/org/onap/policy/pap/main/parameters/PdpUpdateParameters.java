@@ -1,7 +1,8 @@
-/*-
+/*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ * ONAP PAP
+ * ================================================================================
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +15,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
  * ============LICENSE_END=========================================================
  */
 
 package org.onap.policy.pap.main.parameters;
 
 import lombok.Getter;
-import org.onap.policy.common.parameters.ParameterGroupImpl;
 import org.onap.policy.common.parameters.annotations.NotBlank;
 import org.onap.policy.common.parameters.annotations.NotNull;
 
 /**
- * Class to hold all parameters needed for pap component.
- *
- * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
+ * Parameters for PDP UPDATE requests.
  */
 @NotNull
 @NotBlank
 @Getter
-public class PapParameterGroup extends ParameterGroupImpl {
-    private RestServerParameters restServerParameters;
-    private PdpParameters pdpParameters;
+public class PdpUpdateParameters extends PdpRequestParameters {
 
     /**
-     * Create the pap parameter group.
-     *
-     * @param name the parameter group name
+     * Constructs the object.
      */
-    public PapParameterGroup(final String name) {
-        super(name);
+    public PdpUpdateParameters() {
+        super(PdpUpdateParameters.class.getSimpleName());
     }
 }

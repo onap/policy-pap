@@ -29,7 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
-import org.onap.policy.pdp.common.models.PdpStatus;
+import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
