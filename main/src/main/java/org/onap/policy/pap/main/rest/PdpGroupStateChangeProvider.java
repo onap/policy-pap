@@ -21,10 +21,9 @@
 package org.onap.policy.pap.main.rest;
 
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
-import org.onap.policy.pdp.common.enums.PdpState;
+import org.onap.policy.models.pdp.enums.PdpState;
 
 /**
  * Provider for PAP component to change state of PDP group.

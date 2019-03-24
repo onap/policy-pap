@@ -21,18 +21,22 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import java.util.Arrays;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
+import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.parameters.ParameterService;
-import org.onap.policy.common.utils.services.ServiceManager;
-import org.onap.policy.common.utils.services.ServiceManagerException;
-import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.common.utils.services.ServiceManagerContainer;
+import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.models.pdp.enums.PdpMessageType;
+import org.onap.policy.pap.main.PapConstants;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapRestServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 /**
  * This class wraps a distributor so that it can be activated as a complete service
@@ -40,28 +44,28 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class PapActivator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PapActivator.class);
+public class PapActivator extends ServiceManagerContainer {
+    private static final String[] MSG_TYPE_NAMES = {"messageName"};
+    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
 
     private final PapParameterGroup papParameterGroup;
 
     /**
-     * The current activator.
+     * The PAP REST API server.
      */
-    @Getter
-    private static volatile PapActivator current = null;
+    private PapRestServer restServer;
 
     /**
-     * Used to stop the services.
+     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message,
+     * and then dispatches them to {@link #reqIdDispatcher}.
      */
-    private final ServiceManager manager;
+    private final MessageTypeDispatcher msgDispatcher;
 
-    @Getter
-    @Setter(lombok.AccessLevel.PRIVATE)
-    private volatile boolean alive = false;
-
-    private PapRestServer restServer;
+    /**
+     * Listens for {@link PdpStatus} messages and then routes them to the listener
+     * associated with the ID of the originating request.
+     */
+    private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
 
     /**
      * Instantiate the activator for policy pap as a complete service.
@@ -70,66 +74,55 @@ public class PapActivator {
      * @param topicProperties properties used to configure the topics
      */
     public PapActivator(final PapParameterGroup papParameterGroup, Properties topicProperties) {
+        super("Policy PAP");
+
         TopicEndpoint.manager.addTopicSinks(topicProperties);
         TopicEndpoint.manager.addTopicSources(topicProperties);
 
-        this.papParameterGroup = papParameterGroup;
+        try {
+            this.papParameterGroup = papParameterGroup;
+            papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
+
+            this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
+            this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
+
+        } catch (RuntimeException e) {
+            throw new PolicyPapRuntimeException(e);
+        }
+
+        this.msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher);
+
+        final Object pdpUpdateLock = new Object();
 
         // @formatter:off
-        this.manager = new ServiceManager()
-                        .addAction("topics",
-                            () -> TopicEndpoint.manager.start(),
-                            () -> TopicEndpoint.manager.shutdown())
-                        .addAction("register parameters",
-                            () -> registerToParameterService(papParameterGroup),
-                            () -> deregisterToParameterService(papParameterGroup))
-                        .addAction("REST server",
-                            () -> startPapRestServer(),
-                            () -> restServer.stop())
-                        .addAction("set alive",
-                            () -> setAlive(true),
-                            () -> setAlive(false));
+        addAction("PAP parameters",
+            () -> ParameterService.register(papParameterGroup),
+            () -> ParameterService.deregister(papParameterGroup.getName()));
+
+        addAction("dispatcher",
+            () -> registerDispatcher(),
+            () -> unregisterDispatcher());
+
+        addAction("topics",
+            () -> TopicEndpoint.manager.start(),
+            () -> TopicEndpoint.manager.shutdown());
+
+        addAction("PAP statistics",
+            () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
+            () -> Registry.unregister(PapConstants.REG_STATISTICS_MANAGER));
+
+        addAction("PDP modification lock",
+            () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
+            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
+
+        addAction("REST server",
+            () -> restServer = new PapRestServer(papParameterGroup.getRestServerParameters()),
+            () -> { });
+
+        addAction("REST server thread",
+            () -> restServer.start(),
+            () -> restServer.stop());
         // @formatter:on
-
-        current = this;
-    }
-
-    /**
-     * Initialize pap as a complete service.
-     *
-     * @throws PolicyPapException on errors in initializing the service
-     */
-    public void initialize() throws PolicyPapException {
-        if (isAlive()) {
-            throw new IllegalStateException("activator already initialized");
-        }
-
-        try {
-            LOGGER.debug("Policy pap starting as a service . . .");
-            manager.start();
-            LOGGER.debug("Policy pap started as a service");
-        } catch (final ServiceManagerException exp) {
-            LOGGER.error("Policy pap service startup failed");
-            throw new PolicyPapException(exp.getMessage(), exp);
-        }
-    }
-
-    /**
-     * Terminate policy pap.
-     *
-     * @throws PolicyPapException on errors in terminating the service
-     */
-    public void terminate() throws PolicyPapException {
-        if (!isAlive()) {
-            throw new IllegalStateException("activator is not running");
-        }
-
-        try {
-            manager.stop();
-        } catch (final ServiceManagerException exp) {
-            LOGGER.error("Policy pap service termination failed");
-            throw new PolicyPapException(exp.getMessage(), exp);
-        }
     }
 
     /**
@@ -142,33 +135,22 @@ public class PapActivator {
     }
 
     /**
-     * Method to register the parameters to Common Parameter Service.
-     *
-     * @param papParameterGroup the pap parameter group
+     * Registers the dispatcher with the topic source(s).
      */
-    public void registerToParameterService(final PapParameterGroup papParameterGroup) {
-        ParameterService.register(papParameterGroup);
+    private void registerDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager
+                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+            source.register(msgDispatcher);
+        }
     }
 
     /**
-     * Method to deregister the parameters from Common Parameter Service.
-     *
-     * @param papParameterGroup the pap parameter group
+     * Unregisters the dispatcher from the topic source(s).
      */
-    public void deregisterToParameterService(final PapParameterGroup papParameterGroup) {
-        ParameterService.deregister(papParameterGroup.getName());
-    }
-
-    /**
-     * Starts the pap rest server using configuration parameters.
-     *
-     * @throws PolicyPapException if server start fails
-     */
-    private void startPapRestServer() throws PolicyPapException {
-        papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
-        restServer = new PapRestServer(papParameterGroup.getRestServerParameters());
-        if (!restServer.start()) {
-            throw new PolicyPapException("Failed to start pap rest server. Check log for more details...");
+    private void unregisterDispatcher() {
+        for (TopicSource source : TopicEndpoint.manager
+                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+            source.unregister(msgDispatcher);
         }
     }
 }
