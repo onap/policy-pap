@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "657ddc25_bcc06bb6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/internal/PdpGroup.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-25T12:04:17Z",
+      "side": 1,
+      "message": "Should we do this? \nI thought we agreed to have simple Pojo structure for the PAP REST API and then have a mapper to convert that to the JPA Entity model that we have in models-pdp. Which then is used for communication over Dmaap.",
+      "range": {
+        "startLine": 45,
+        "startChar": 22,
+        "endLine": 45,
+        "endChar": 45
+      },
+      "revId": "ca62a151fd887889cfef9c90f446327fff24b1d0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d619ef43_d4d68e9d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/internal/PdpSubGroup.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-25T12:04:17Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 41
+      },
+      "revId": "ca62a151fd887889cfef9c90f446327fff24b1d0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
