@@ -22,9 +22,11 @@
 package org.onap.policy.pap.main.parameters;
 
 import lombok.Getter;
+
 import org.onap.policy.common.parameters.ParameterGroupImpl;
 import org.onap.policy.common.parameters.annotations.NotBlank;
 import org.onap.policy.common.parameters.annotations.NotNull;
+import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 
 /**
  * Class to hold all parameters needed for pap component.
@@ -37,6 +39,7 @@ import org.onap.policy.common.parameters.annotations.NotNull;
 public class PapParameterGroup extends ParameterGroupImpl {
     private RestServerParameters restServerParameters;
     private PdpParameters pdpParameters;
+    private PolicyModelsProviderParameters databaseProviderParameters;
 
     /**
      * Create the pap parameter group.

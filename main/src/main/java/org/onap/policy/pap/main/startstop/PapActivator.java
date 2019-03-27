@@ -22,9 +22,9 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
@@ -34,7 +34,6 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.common.utils.services.ServiceManagerContainer;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpMessageType;
-import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
@@ -48,14 +47,14 @@ import org.onap.policy.pap.main.rest.PapRestServer;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 /**
- * This class wraps a distributor so that it can be activated as a complete service
- * together with all its pap and forwarding handlers.
+ * This class wraps a distributor so that it can be activated as a complete service together with all its pap and
+ * forwarding handlers.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapActivator extends ServiceManagerContainer {
-    private static final String[] MSG_TYPE_NAMES = {"messageName"};
-    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
+    private static final String[] MSG_TYPE_NAMES = { "messageName" };
+    private static final String[] REQ_ID_NAMES = { "response", "responseTo" };
 
     private final PapParameterGroup papParameterGroup;
 
@@ -65,14 +64,14 @@ public class PapActivator extends ServiceManagerContainer {
     private PapRestServer restServer;
 
     /**
-     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message,
-     * and then dispatches them to {@link #reqIdDispatcher}.
+     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message, and then dispatches them to
+     * {@link #reqIdDispatcher}.
      */
     private final MessageTypeDispatcher msgDispatcher;
 
     /**
-     * Listens for {@link PdpStatus} messages and then routes them to the listener
-     * associated with the ID of the originating request.
+     * Listens for {@link PdpStatus} messages and then routes them to the listener associated with the ID of the
+     * originating request.
      */
     private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
 
@@ -82,7 +81,7 @@ public class PapActivator extends ServiceManagerContainer {
      * @param papParameterGroup the parameters for the pap service
      * @param topicProperties properties used to configure the topics
      */
-    public PapActivator(final PapParameterGroup papParameterGroup, Properties topicProperties) {
+    public PapActivator(final PapParameterGroup papParameterGroup, final Properties topicProperties) {
         super("Policy PAP");
 
         TopicEndpoint.manager.addTopicSinks(topicProperties);
@@ -93,25 +92,18 @@ public class PapActivator extends ServiceManagerContainer {
             this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             throw new PolicyPapRuntimeException(e);
         }
 
         papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
 
-        // TODO add these to the json property file
-        PolicyModelsProviderParameters daoParams = new PolicyModelsProviderParameters();
-        daoParams.setDatabaseUrl("jdbc:h2:mem:testdb");
-        daoParams.setDatabaseUser("policy");
-        daoParams.setDatabasePassword(Base64.getEncoder().encodeToString("P01icY".getBytes()));
-        daoParams.setPersistenceUnit("ToscaConceptTest");
-
         final Object pdpUpdateLock = new Object();
-        PdpParameters pdpParams = papParameterGroup.getPdpParameters();
-        AtomicReference<Publisher> pdpPub = new AtomicReference<>();
-        AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
-        AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
-        AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
+        final PdpParameters pdpParams = papParameterGroup.getPdpParameters();
+        final AtomicReference<Publisher> pdpPub = new AtomicReference<>();
+        final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
+        final AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
+        final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
 
         // @formatter:off
         addAction("PAP parameters",
@@ -119,7 +111,8 @@ public class PapActivator extends ServiceManagerContainer {
             () -> ParameterService.deregister(papParameterGroup.getName()));
 
         addAction("DAO Factory",
-            () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(daoParams)),
+            () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(
+                                    papParameterGroup.getDatabaseProviderParameters())),
             () -> daoFactory.get().close());
 
         addAction("DAO Factory registration",
@@ -197,8 +190,8 @@ public class PapActivator extends ServiceManagerContainer {
      *
      * @param runner function to run in the background
      */
-    private void startThread(Runnable runner) {
-        Thread thread = new Thread(runner);
+    private void startThread(final Runnable runner) {
+        final Thread thread = new Thread(runner);
         thread.setDaemon(true);
 
         thread.start();
@@ -217,8 +210,8 @@ public class PapActivator extends ServiceManagerContainer {
      * Registers the dispatcher with the topic source(s).
      */
     private void registerMsgDispatcher() {
-        for (TopicSource source : TopicEndpoint.manager
-                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+        for (final TopicSource source : TopicEndpoint.manager
+                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.register(msgDispatcher);
         }
     }
@@ -227,8 +220,8 @@ public class PapActivator extends ServiceManagerContainer {
      * Unregisters the dispatcher from the topic source(s).
      */
     private void unregisterMsgDispatcher() {
-        for (TopicSource source : TopicEndpoint.manager
-                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+        for (final TopicSource source : TopicEndpoint.manager
+                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.unregister(msgDispatcher);
         }
     }

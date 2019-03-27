@@ -21,13 +21,16 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.onap.policy.common.parameters.ParameterGroup;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
+import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 
 /**
  * Class to hold/create all parameters for test cases.
@@ -53,27 +56,29 @@ public class CommonTestData {
      * @param clazz class of object to be created from the map
      * @return a new object represented by the map
      */
-    public <T extends ParameterGroup> T toObject(Map<String, Object> source, Class<T> clazz) {
+    public <T extends ParameterGroup> T toObject(final Map<String, Object> source, final Class<T> clazz) {
         try {
             return coder.decode(coder.encode(source), clazz);
 
-        } catch (CoderException e) {
+        } catch (final CoderException e) {
             throw new RuntimeException("cannot create " + clazz.getName() + " from map", e);
         }
     }
 
     /**
      * Returns a property map for a PapParameterGroup map for test cases.
+     *
      * @param name name of the parameters
      *
      * @return a property map suitable for constructing an object
      */
-    public Map<String, Object> getPapParameterGroupMap(String name) {
-        Map<String,Object> map = new TreeMap<>();
+    public Map<String, Object> getPapParameterGroupMap(final String name) {
+        final Map<String, Object> map = new TreeMap<>();
 
         map.put("name", name);
         map.put("restServerParameters", getRestServerParametersMap(false));
         map.put("pdpParameters", getPdpParametersMap());
+        map.put("databaseProviderParameters", getPolicyModelsProviderParametersMap());
 
         return map;
     }
@@ -84,8 +89,8 @@ public class CommonTestData {
      * @param isEmpty boolean value to represent that object created should be empty or not
      * @return a property map suitable for constructing an object
      */
-    public Map<String,Object> getRestServerParametersMap(final boolean isEmpty) {
-        Map<String,Object> map = new TreeMap<>();
+    public Map<String, Object> getRestServerParametersMap(final boolean isEmpty) {
+        final Map<String, Object> map = new TreeMap<>();
         map.put("https", REST_SERVER_HTTPS);
         map.put("aaf", REST_SERVER_AAF);
 
@@ -101,10 +106,11 @@ public class CommonTestData {
 
     /**
      * Returns a property map for a PdpParameters map for test cases.
+     *
      * @return a property map suitable for constructing an object
      */
-    public Map<String,Object> getPdpParametersMap() {
-        Map<String,Object> map = new TreeMap<>();
+    public Map<String, Object> getPdpParametersMap() {
+        final Map<String, Object> map = new TreeMap<>();
 
         map.put("updateParameters", getPdpUpdateParametersMap());
         map.put("stateChangeParameters", getPdpStateChangeParametersMap());
@@ -114,26 +120,29 @@ public class CommonTestData {
 
     /**
      * Returns a property map for a PdpUpdateParameters map for test cases.
+     *
      * @return a property map suitable for constructing an object
      */
-    public Map<String,Object> getPdpUpdateParametersMap() {
+    public Map<String, Object> getPdpUpdateParametersMap() {
         return getPdpRequestParametersMap();
     }
 
     /**
      * Returns a property map for a PdpStateChangeParameters map for test cases.
+     *
      * @return a property map suitable for constructing an object
      */
-    public Map<String,Object> getPdpStateChangeParametersMap() {
+    public Map<String, Object> getPdpStateChangeParametersMap() {
         return getPdpRequestParametersMap();
     }
 
     /**
      * Returns a property map for a PdpParameters map for test cases.
+     *
      * @return a property map suitable for constructing an object
      */
-    public Map<String,Object> getPdpRequestParametersMap() {
-        Map<String, Object> map = new HashMap<>();
+    public Map<String, Object> getPdpRequestParametersMap() {
+        final Map<String, Object> map = new HashMap<>();
         map.put("maxRetryCount", "1");
         map.put("maxWaitMs", "2");
 
@@ -145,9 +154,26 @@ public class CommonTestData {
      *
      * @return a property map suitable for constructing an object
      */
-    public Map<String,Object> getPdpGroupDeploymentParametersMap() {
-        Map<String,Object> map = new TreeMap<>();
+    public Map<String, Object> getPdpGroupDeploymentParametersMap() {
+        final Map<String, Object> map = new TreeMap<>();
         map.put("waitResponseMs", "1");
+
+        return map;
+    }
+
+    /**
+     * Returns a property map for a PolicyModelsProviderParameters map for test cases.
+     *
+     * @return a property map suitable for constructing an object
+     */
+    public Map<String, Object> getPolicyModelsProviderParametersMap() {
+        final Map<String, Object> map = new TreeMap<>();
+        map.put("name", PolicyModelsProviderParameters.class.getSimpleName());
+        map.put("implementation", REST_SERVER_HTTPS);
+        map.put("databaseUrl", "jdbc:h2:mem:testdb");
+        map.put("databaseUser", "policy");
+        map.put("databasePassword", Base64.getEncoder().encodeToString("P01icY".getBytes()));
+        map.put("persistenceUnit", "PdpGroupTest");
 
         return map;
     }
