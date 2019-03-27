@@ -22,6 +22,30 @@
       "revId": "d68a2bdaefe7f8fea2678d80f39ce944d97e5c1d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d389a695_0f81894b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-27T13:52:15Z",
+      "side": 1,
+      "message": "this is just a factory, not an actual provider, so close() doesn\u0027t really do anything yet.  If the provider used JPA, then close() would potentially close the entity manager factory",
+      "parentUuid": "b105a870_2a47aada",
+      "range": {
+        "startLine": 123,
+        "startChar": 18,
+        "endLine": 123,
+        "endChar": 44
+      },
+      "revId": "d68a2bdaefe7f8fea2678d80f39ce944d97e5c1d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
