@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b105a870_2a47aada",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-27T13:17:22Z",
+      "side": 1,
+      "message": "This will make the DB provider connection open until PAP is stopped. Does that mean we block the actual DB connection as well?",
+      "range": {
+        "startLine": 123,
+        "startChar": 18,
+        "endLine": 123,
+        "endChar": 44
+      },
+      "revId": "d68a2bdaefe7f8fea2678d80f39ce944d97e5c1d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
