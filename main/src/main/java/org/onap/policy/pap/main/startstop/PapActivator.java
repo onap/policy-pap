@@ -22,6 +22,7 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
@@ -33,7 +34,9 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.common.utils.services.ServiceManagerContainer;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpMessageType;
+import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.onap.policy.pap.main.PapConstants;
+import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.comm.Publisher;
@@ -96,16 +99,32 @@ public class PapActivator extends ServiceManagerContainer {
 
         papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
 
+        // TODO add these to the json property file
+        PolicyModelsProviderParameters daoParams = new PolicyModelsProviderParameters();
+        daoParams.setDatabaseUrl("jdbc:h2:mem:testdb");
+        daoParams.setDatabaseUser("policy");
+        daoParams.setDatabasePassword(Base64.getEncoder().encodeToString("P01icY".getBytes()));
+        daoParams.setPersistenceUnit("ToscaConceptTest");
+
         final Object pdpUpdateLock = new Object();
         PdpParameters pdpParams = papParameterGroup.getPdpParameters();
         AtomicReference<Publisher> pdpPub = new AtomicReference<>();
         AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
         AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
+        AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
 
         // @formatter:off
         addAction("PAP parameters",
             () -> ParameterService.register(papParameterGroup),
             () -> ParameterService.deregister(papParameterGroup.getName()));
+
+        addAction("DAO Factory",
+            () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(daoParams)),
+            () -> daoFactory.get().close());
+
+        addAction("DAO Factory registration",
+            () -> Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daoFactory.get()),
+            () -> Registry.unregister(PapConstants.REG_PAP_DAO_FACTORY));
 
         addAction("Request ID Dispatcher",
             () -> msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher),
