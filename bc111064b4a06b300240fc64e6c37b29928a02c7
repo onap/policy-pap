@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a497a60b_6d533d68",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/concepts/internal/PdpGroupDeleteResponse.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "I don\u0027t think we need Response classes for internal communication. These classes should be only for REST communication in PAP and created in Rest Providers while sending response back to the REST API caller.",
+      "range": {
+        "startLine": 35,
+        "startChar": 13,
+        "endLine": 35,
+        "endChar": 35
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e904e02c_60324599",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/concepts/internal/PdpGroupDeployResponse.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 35,
+        "startChar": 13,
+        "endLine": 35,
+        "endChar": 35
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "46684c8b_c4e5da57",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/concepts/internal/PdpGroupStateChangeResponse.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 35,
+        "startChar": 13,
+        "endLine": 35,
+        "endChar": 40
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "973cb41f_473831a5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/concepts/internal/SimpleResponse.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 35,
+        "startChar": 22,
+        "endLine": 35,
+        "endChar": 36
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "adb5a1a9_58119ed8",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/concepts/internal/MySimpleResponse.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 26,
+        "startChar": 13,
+        "endLine": 26,
+        "endChar": 29
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1524b2df_bd427fbd",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/concepts/internal/PdpGroupDeleteResponseTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 39
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a56bfbf6_e29ccc11",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/concepts/internal/PdpGroupDeployResponseTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 39
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1fd049f9_7c77f753",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/concepts/internal/PdpGroupStateChangeResponseTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 44
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d7886c0a_6433ad32",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/concepts/internal/SimpleResponseBase.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 36,
+        "startChar": 22,
+        "endLine": 36,
+        "endChar": 40
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cab97b04_d894414d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/concepts/internal/SimpleResponseTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-03-28T10:57:11Z",
+      "side": 1,
+      "message": "Same comment",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 31
+      },
+      "revId": "bc111064b4a06b300240fc64e6c37b29928a02c7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
