@@ -255,9 +255,8 @@ public class TimerManager implements Runnable {
          */
         public boolean cancel() {
 
-            AtomicBoolean wasPresent = new AtomicBoolean(false);
-
             synchronized (lockit) {
+                AtomicBoolean wasPresent = new AtomicBoolean(false);
 
                 name2timer.computeIfPresent(name, (key, val) -> {
 
@@ -266,6 +265,7 @@ public class TimerManager implements Runnable {
                         return null;
 
                     } else {
+                        // different timer is in the map - leave it
                         return val;
                     }
                 });

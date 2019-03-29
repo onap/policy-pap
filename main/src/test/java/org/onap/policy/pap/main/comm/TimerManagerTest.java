@@ -27,12 +27,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.policy.pap.main.comm.TimerManager.Timer;
 
@@ -48,8 +48,8 @@ public class TimerManagerTest extends Threaded {
     private MyManager mgr;
 
     /*
-     * This is a field to prevent checkstyle from complaining about the distance between
-     * its assignment and its use.
+     * This is a field rather than a local variable to prevent checkstyle from complaining
+     * about the distance between its assignment and its use.
      */
     private long tcur;
 
@@ -74,7 +74,7 @@ public class TimerManagerTest extends Threaded {
     protected void stopThread() throws Exception {
         if (mgr != null) {
             mgr.stop();
-            mgr.stopSleep();
+            mgr.allowSleep(10);
         }
     }
 
@@ -92,10 +92,10 @@ public class TimerManagerTest extends Threaded {
     @Test
     public void testRegister() throws Exception {
         mgr.register(NAME2, mgr::addToQueue);
-        mgr.register(NAME1, mgr::addToQueue);
+        mgr.registerNewTime(NAME1, mgr::addToQueue);
 
         // goes to the end of the queue
-        mgr.register(NAME2, mgr::addToQueue);
+        mgr.registerNewTime(NAME2, mgr::addToQueue);
 
         startThread(mgr);
 
@@ -118,7 +118,6 @@ public class TimerManagerTest extends Threaded {
         assertTrue(waitStop());
     }
 
-    @Ignore
     @Test
     public void testProcessTimers() throws Exception {
         startThread(mgr);
@@ -126,7 +125,7 @@ public class TimerManagerTest extends Threaded {
         mgr.awaitSleep();
         mgr.allowSleep(1);
 
-        mgr.register(NAME2, mgr::addToQueue);
+        mgr.registerNewTime(NAME2, mgr::addToQueue);
         mgr.awaitSleep();
 
         // tell it to stop before returning from "sleep"
@@ -139,7 +138,6 @@ public class TimerManagerTest extends Threaded {
         assertNull(mgr.pollResult());
     }
 
-    @Ignore
     @Test
     public void testGetNextTimer() throws Exception {
         startThread(mgr);
@@ -147,8 +145,7 @@ public class TimerManagerTest extends Threaded {
         mgr.awaitSleep();
         mgr.allowSleep(1);
 
-        mgr.register(NAME2, mgr::addToQueue);
-
+        mgr.registerNewTime(NAME2, mgr::addToQueue);
         mgr.awaitSleep();
     }
 
@@ -159,7 +156,7 @@ public class TimerManagerTest extends Threaded {
         mgr.awaitSleep();
         mgr.allowSleep(1);
 
-        mgr.register(NAME2, mgr::addToQueue);
+        mgr.registerNewTime(NAME2, mgr::addToQueue);
         mgr.awaitSleep();
 
         mgr.stop();
@@ -181,11 +178,11 @@ public class TimerManagerTest extends Threaded {
         timer.cancel();
         mgr.allowSleep(1);
 
-        mgr.register(NAME2, mgr::addToQueue);
+        mgr.registerNewTime(NAME2, mgr::addToQueue);
         mgr.awaitSleep();
         mgr.allowSleep(1);
 
-        mgr.register(NAME1, mgr::addToQueue);
+        mgr.registerNewTime(NAME1, mgr::addToQueue);
         mgr.awaitSleep();
 
         // should have fired timer 2, but not timer 1
@@ -195,16 +192,19 @@ public class TimerManagerTest extends Threaded {
 
     @Test
     public void testProcessTimer_TimerEx() throws Exception {
-        startThread(mgr);
+
         mgr.register(NAME1, name -> {
             throw new RuntimeException(EXPECTED_EXCEPTION);
         });
+
         mgr.register(NAME2, mgr::addToQueue);
+
+        // same times, so only need one sleep
+        startThread(mgr);
         mgr.awaitSleep();
+        mgr.allowSleep(1);
 
-        mgr.allowSleep(2);
-
-        mgr.register(NAME3, mgr::addToQueue);
+        mgr.registerNewTime(NAME3, mgr::addToQueue);
         mgr.awaitSleep();
 
         // timer 1 fired but threw an exception, so only timer 2 should be in the queue
@@ -215,7 +215,7 @@ public class TimerManagerTest extends Threaded {
     public void testTimerAwait() throws Exception {
         startThread(mgr);
 
-        // same times - only need one sleep
+        // same times - should only sleep once
         mgr.register(NAME1, mgr::addToQueue);
         mgr.register(NAME2, mgr::addToQueue);
         mgr.awaitSleep();
@@ -225,7 +225,7 @@ public class TimerManagerTest extends Threaded {
         mgr.allowSleep(1);
 
         // next one will have a new timeout, so expect to sleep
-        mgr.register(NAME3, mgr::addToQueue);
+        mgr.registerNewTime(NAME3, mgr::addToQueue);
         mgr.awaitSleep();
 
         long tcur2 = mgr.currentTimeMillis();
@@ -246,7 +246,7 @@ public class TimerManagerTest extends Threaded {
         // cancel while sleeping
         timer.cancel();
 
-        mgr.register(NAME2, mgr::addToQueue);
+        mgr.registerNewTime(NAME2, mgr::addToQueue);
 
         // allow it to sleep through both timers
         mgr.allowSleep(2);
@@ -263,7 +263,7 @@ public class TimerManagerTest extends Threaded {
         mgr.awaitSleep();
 
         // replace the timer while the background thread is sleeping
-        mgr.register(NAME1, name -> mgr.addToQueue("world"));
+        mgr.registerNewTime(NAME1, name -> mgr.addToQueue("world"));
 
         // allow it to sleep through both timers
         mgr.allowSleep(2);
@@ -276,6 +276,7 @@ public class TimerManagerTest extends Threaded {
     public void testTimerToString() {
         Timer timer = mgr.register(NAME1, mgr::addToQueue);
         assertNotNull(timer.toString());
+        assertTrue(timer.toString().contains(NAME1));
     }
 
     @Test
@@ -297,10 +298,16 @@ public class TimerManagerTest extends Threaded {
         assertTrue(tend >= tbeg + 10);
     }
 
+
+    /**
+     * Timer Manager whose notions of time are controlled here. It also overrides the
+     * {@link #sleep(long)} method so that the test thread can control when the background
+     * timer thread can finish sleeping.
+     */
     private static class MyManager extends TimerManager {
         private AtomicLong curTime = new AtomicLong(1000);
-        private LinkedBlockingQueue<Boolean> sleepEntered = new LinkedBlockingQueue<>();
-        private LinkedBlockingQueue<Boolean> shouldStop = new LinkedBlockingQueue<>();
+        private Semaphore sleepEntered = new Semaphore(0);
+        private Semaphore sleepsAllowed = new Semaphore(0);
         private LinkedBlockingQueue<String> results = new LinkedBlockingQueue<>();
 
         public MyManager(String name, long waitTimeMs) {
@@ -308,20 +315,12 @@ public class TimerManagerTest extends Threaded {
         }
 
         /**
-         * Registers a timer. Also increments {@link #curTime} so that every time has a
-         * different expiration time, which prevents some issue with the junit tests.
+         * Registers a timer. Also increments {@link #curTime} so that every timer has a
+         * different expiration time.
          */
-        @Override
-        public Timer register(String timerName, Consumer<String> action) {
+        public Timer registerNewTime(String timerName, Consumer<String> action) {
             curTime.addAndGet(1);
             return super.register(timerName, action);
-        }
-
-        /**
-         * Stops the "sleep".
-         */
-        public void stopSleep() {
-            shouldStop.add(true);
         }
 
         /**
@@ -330,9 +329,7 @@ public class TimerManagerTest extends Threaded {
          * @param ntimes the number of times the manager should sleep
          */
         public void allowSleep(int ntimes) {
-            for (int x = 0; x < ntimes; ++x) {
-                shouldStop.add(false);
-            }
+            sleepsAllowed.release(ntimes);
         }
 
         /**
@@ -342,7 +339,7 @@ public class TimerManagerTest extends Threaded {
          *         background thread to sleep
          */
         public void awaitSleep() throws InterruptedException {
-            if (sleepEntered.poll(MAX_WAIT_MS, TimeUnit.MILLISECONDS) == null) {
+            if (!sleepEntered.tryAcquire(MAX_WAIT_MS, TimeUnit.MILLISECONDS)) {
                 fail("background thread failed to sleep");
             }
         }
@@ -354,12 +351,10 @@ public class TimerManagerTest extends Threaded {
 
         @Override
         protected void sleep(long timeMs) throws InterruptedException {
-            sleepEntered.offer(true);
+            sleepEntered.release();
+            sleepsAllowed.acquire();
 
-            if (!shouldStop.take()) {
-                // test thread did not request that we stop
-                curTime.addAndGet(timeMs);
-            }
+            curTime.addAndGet(timeMs);
         }
 
         /**
