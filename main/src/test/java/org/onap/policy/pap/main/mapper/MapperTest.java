@@ -30,7 +30,6 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import org.junit.Test;
 import org.onap.policy.models.base.PfConceptKey;
-import org.onap.policy.models.pdp.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpInstanceDetails;
@@ -41,6 +40,7 @@ import org.onap.policy.models.pdp.concepts.PolicyTypeIdent;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.internal.PdpDeployPolicies;
 import org.powermock.reflect.Whitebox;
 
 public class MapperTest {

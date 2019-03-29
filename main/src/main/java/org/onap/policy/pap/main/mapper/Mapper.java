@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.onap.policy.models.pdp.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpInstanceDetails;
@@ -34,6 +33,7 @@ import org.onap.policy.models.pdp.concepts.PolicyIdent;
 import org.onap.policy.models.pdp.concepts.PolicyIdentOptVersion;
 import org.onap.policy.models.pdp.concepts.PolicyTypeIdent;
 import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.internal.PdpDeployPolicies;
 
 /**
  * Classes used to map internal PAP/PDP classes to/from external classes used by the PAP
