@@ -118,10 +118,8 @@ public class TimerManager implements Runnable {
 
             logger.info("{} timer registered {}", name, timer);
 
-            if (name2timer.size() == 1) {
-                // release the timer thread
-                sem.release();
-            }
+            // release the timer thread in case it's waiting
+            sem.release();
 
             return timer;
         }
@@ -197,7 +195,7 @@ public class TimerManager implements Runnable {
             return;
         }
 
-        if (!timer.cancel()) {
+        if (!timer.cancel("expired")) {
             // timer was cancelled while we were waiting
             return;
         }
@@ -205,7 +203,6 @@ public class TimerManager implements Runnable {
 
         // run the timer
         try {
-            logger.info("{} timer expired {}", TimerManager.this.name, timer);
             timer.runner.accept(timer.name);
         } catch (RuntimeException e) {
             logger.warn("{} timer threw an exception {}", TimerManager.this.name, timer, e);
@@ -254,10 +251,21 @@ public class TimerManager implements Runnable {
          *         not running
          */
         public boolean cancel() {
+            return cancel("cancelled");
+        }
 
-            AtomicBoolean wasPresent = new AtomicBoolean(false);
+        /**
+         * Cancels the timer.
+         *
+         * @param cancelMsg message to log if the timer is successfully
+         *        cancelled
+         * @return {@code true} if the timer was cancelled, {@code false} if the timer was
+         *         not running
+         */
+        private boolean cancel(String cancelMsg) {
 
             synchronized (lockit) {
+                AtomicBoolean wasPresent = new AtomicBoolean(false);
 
                 name2timer.computeIfPresent(name, (key, val) -> {
 
@@ -266,6 +274,7 @@ public class TimerManager implements Runnable {
                         return null;
 
                     } else {
+                        // different timer is in the map - leave it
                         return val;
                     }
                 });
@@ -276,7 +285,8 @@ public class TimerManager implements Runnable {
                     return false;
                 }
 
-                logger.debug("{} timer cancelled {}", TimerManager.this.name, this);
+                logger.debug("{} timer " + cancelMsg + " {}", TimerManager.this.name, this);
+
                 return true;
             }
         }
