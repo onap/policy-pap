@@ -46,6 +46,30 @@
       "revId": "e5db7b018d8d5e551b7ca0db648269813d342938",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd49154b_c4f28d0a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/mapper/IdentUtil.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-03-29T19:33:20Z",
+      "side": 1,
+      "message": "However, this utility class could go away once the Ident class no longer subclass from PfConceptKey.",
+      "parentUuid": "ed227793_75f1a374",
+      "range": {
+        "startLine": 29,
+        "startChar": 13,
+        "endLine": 29,
+        "endChar": 22
+      },
+      "revId": "e5db7b018d8d5e551b7ca0db648269813d342938",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
