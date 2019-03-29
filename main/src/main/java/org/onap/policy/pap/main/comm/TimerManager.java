@@ -118,10 +118,8 @@ public class TimerManager implements Runnable {
 
             logger.info("{} timer registered {}", name, timer);
 
-            if (name2timer.size() == 1) {
-                // release the timer thread
-                sem.release();
-            }
+            // release the timer thread in case it's waiting
+            sem.release();
 
             return timer;
         }
@@ -255,9 +253,8 @@ public class TimerManager implements Runnable {
          */
         public boolean cancel() {
 
-            AtomicBoolean wasPresent = new AtomicBoolean(false);
-
             synchronized (lockit) {
+                AtomicBoolean wasPresent = new AtomicBoolean(false);
 
                 name2timer.computeIfPresent(name, (key, val) -> {
 
@@ -266,6 +263,7 @@ public class TimerManager implements Runnable {
                         return null;
 
                     } else {
+                        // different timer is in the map - leave it
                         return val;
                     }
                 });
