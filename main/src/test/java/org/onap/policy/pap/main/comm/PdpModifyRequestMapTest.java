@@ -50,13 +50,12 @@ import org.mockito.stubbing.Answer;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
-import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap.ModifyReqData;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -288,7 +287,7 @@ public class PdpModifyRequestMapTest {
         map.addRequest(update);
 
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
-        policies.set(0, new ToscaPolicy(new PfConceptKey("policy-3-x", "2.0.0")));
+        policies.set(0, makePolicy("policy-3-x", "2.0.0"));
 
         PdpUpdate update2 = makeUpdate();
         update2.setPolicies(policies);
@@ -551,12 +550,25 @@ public class PdpModifyRequestMapTest {
         upd.setPdpSubgroup("sub1-a");
         upd.setPdpType("drools");
 
-        ToscaPolicy policy1 = new ToscaPolicy(new PfConceptKey("policy-1-a", "1.0.0"));
-        ToscaPolicy policy2 = new ToscaPolicy(new PfConceptKey("policy-2-a", "1.1.0"));
-
-        upd.setPolicies(Arrays.asList(policy1, policy2));
+        upd.setPolicies(Arrays.asList(makePolicy("policy-1-a", "1.0.0"), makePolicy("policy-2-a", "1.1.0")));
 
         return upd;
+    }
+
+    /**
+     * Creates a new policy.
+     *
+     * @param name policy name
+     * @param version policy version
+     * @return a new policy
+     */
+    private ToscaPolicy makePolicy(String name, String version) {
+        ToscaPolicy policy = new ToscaPolicy();
+
+        policy.setName(name);
+        policy.setVersion(version);
+
+        return policy;
     }
 
     /**
