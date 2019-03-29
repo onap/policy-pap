@@ -35,9 +35,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pap.concepts.PdpGroups;
-import org.onap.policy.models.pap.concepts.PdpPolicies;
 
 /**
  * Class to provide REST end points for PAP component to deploy a PDP group.
@@ -120,8 +120,8 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response deployPolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "PDP Policies; only the name and policyVersion are required",
-                                    required = true) PdpPolicies policies) {
+                    @ApiParam(value = "PDP Policies; only the name is required",
+                                    required = true) PdpDeployPolicies policies) {
 
         Pair<Status, PdpGroupDeployResponse> pair = provider.deployPolicies(policies);
 
