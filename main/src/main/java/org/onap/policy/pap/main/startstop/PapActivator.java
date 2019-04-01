@@ -37,6 +37,7 @@ import org.onap.policy.models.pdp.enums.PdpMessageType;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
@@ -76,6 +77,11 @@ public class PapActivator extends ServiceManagerContainer {
     private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
 
     /**
+     * Listener for anonymous {@link PdpStatus} messages either for registration or heartbeat.
+     */
+    private final PdpHeartbeatListener pdpHeartbeatListener;
+
+    /**
      * Instantiate the activator for policy pap as a complete service.
      *
      * @param papParameterGroup the parameters for the pap service
@@ -91,6 +97,7 @@ public class PapActivator extends ServiceManagerContainer {
             this.papParameterGroup = papParameterGroup;
             this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
+            this.pdpHeartbeatListener = new PdpHeartbeatListener();
 
         } catch (final RuntimeException e) {
             throw new PolicyPapRuntimeException(e);
@@ -118,6 +125,10 @@ public class PapActivator extends ServiceManagerContainer {
         addAction("DAO Factory registration",
             () -> Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daoFactory.get()),
             () -> Registry.unregister(PapConstants.REG_PAP_DAO_FACTORY));
+
+        addAction("Pdp Heartbeat Listener",
+            () -> reqIdDispatcher.register(pdpHeartbeatListener),
+            () -> reqIdDispatcher.unregister(pdpHeartbeatListener));
 
         addAction("Request ID Dispatcher",
             () -> msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher),
