@@ -1,8 +1,9 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2019 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +29,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpParameters;
@@ -57,8 +58,8 @@ public class UpdateDataTest {
     public void setUp() {
         timers = mock(TimerManager.class);
         response = new PdpStatus();
-        PdpParameters pdpParams = mock(PdpParameters.class);
-        PdpUpdateParameters stateParams = mock(PdpUpdateParameters.class);
+        final PdpParameters pdpParams = mock(PdpParameters.class);
+        final PdpUpdateParameters stateParams = mock(PdpUpdateParameters.class);
 
         when(stateParams.getMaxRetryCount()).thenReturn(RETRIES);
         when(pdpParams.getUpdateParameters()).thenReturn(stateParams);
@@ -120,8 +121,11 @@ public class UpdateDataTest {
 
     @Test
     public void testUpdateDataCheckResponse_MismatchedPolicies() {
-        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
-        policies.set(0, new ToscaPolicy(new PfConceptKey(DIFFERENT, "10.0.0")));
+        final ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
+        final ToscaPolicy policy = new ToscaPolicy();
+        policy.setType(DIFFERENT);
+        policy.setVersion("10.0.0");
+        policies.set(0, policy);
 
         response.setPolicies(policies);
 
@@ -134,7 +138,7 @@ public class UpdateDataTest {
      * @return a new update message
      */
     private PdpUpdate makeUpdate() {
-        PdpUpdate upd = new PdpUpdate();
+        final PdpUpdate upd = new PdpUpdate();
 
         upd.setDescription("update-description");
         upd.setName(MY_NAME);
@@ -142,8 +146,12 @@ public class UpdateDataTest {
         upd.setPdpSubgroup("sub1-a");
         upd.setPdpType("drools");
 
-        ToscaPolicy policy1 = new ToscaPolicy(new PfConceptKey("policy-1-a", "1.0.0"));
-        ToscaPolicy policy2 = new ToscaPolicy(new PfConceptKey("policy-2-a", "1.1.0"));
+        final ToscaPolicy policy1 = new ToscaPolicy();
+        policy1.setType("policy-1-a");
+        policy1.setVersion("1.0.0");
+        final ToscaPolicy policy2 = new ToscaPolicy();
+        policy1.setType("policy-2-a");
+        policy1.setVersion("1.1.0");
 
         upd.setPolicies(Arrays.asList(policy1, policy2));
 
@@ -152,12 +160,12 @@ public class UpdateDataTest {
 
     private class MyData extends UpdateData {
 
-        public MyData(PdpUpdate message) {
+        public MyData(final PdpUpdate message) {
             super(message, params);
         }
 
         @Override
-        public void mismatch(String reason) {
+        public void mismatch(final String reason) {
             // do nothing
         }
 
