@@ -65,11 +65,6 @@
         </dependency>
         <dependency>
             <groupId>org.onap.policy.models</groupId>
-            <artifactId>models-pdp</artifactId>
-            <version>${policy.models.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.policy.models</groupId>
             <artifactId>policy-models-provider</artifactId>
             <version>${policy.models.version}</version>
         </dependency>

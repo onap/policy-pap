@@ -1,20 +1,15 @@
 /*
- * ============LICENSE_START=======================================================
- * ONAP PAP
- * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * ============LICENSE_START======================================================= ONAP PAP
+ * ================================================================================ Copyright (C) 2019 AT&T Intellectual
+ * Property. All rights reserved. ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  * ============LICENSE_END=========================================================
  */
 
@@ -42,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.function.Consumer;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -50,13 +46,12 @@ import org.mockito.stubbing.Answer;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
-import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap.ModifyReqData;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -111,7 +106,7 @@ public class PdpModifyRequestMapTest {
 
         doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
                 queue.add(invocation.getArgumentAt(0, QueueToken.class));
                 return null;
             }
@@ -138,10 +133,10 @@ public class PdpModifyRequestMapTest {
         map = new PdpModifyRequestMap(makeParameters()) {
 
             @Override
-            protected ModifyReqData makeRequestData(PdpUpdate update, PdpStateChange stateChange) {
+            protected ModifyReqData makeRequestData(final PdpUpdate update, final PdpStateChange stateChange) {
                 return new ModifyReqData(update, stateChange) {
                     @Override
-                    protected void mismatch(String reason) {
+                    protected void mismatch(final String reason) {
                         mismatchReason = reason;
                         super.mismatch(reason);
                     }
@@ -205,7 +200,7 @@ public class PdpModifyRequestMapTest {
         // should be no exception
         state.setName(update.getName() + "X");
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state))
-                        .withMessageContaining("does not match");
+                .withMessageContaining("does not match");
     }
 
     @Test
@@ -214,7 +209,7 @@ public class PdpModifyRequestMapTest {
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update)).withMessageContaining("update");
 
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state))
-                        .withMessageContaining("update");
+                .withMessageContaining("update");
 
         // both names are null
         state.setName(null);
@@ -227,7 +222,7 @@ public class PdpModifyRequestMapTest {
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(state)).withMessageContaining("state");
 
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state))
-                        .withMessageContaining("state");
+                .withMessageContaining("state");
 
         // both names are null
         update.setName(null);
@@ -239,7 +234,7 @@ public class PdpModifyRequestMapTest {
         map.addRequest(update);
 
         // queue a similar request
-        PdpUpdate update2 = makeUpdate();
+        final PdpUpdate update2 = makeUpdate();
         map.addRequest(update2);
 
         // token should still have original message
@@ -250,7 +245,7 @@ public class PdpModifyRequestMapTest {
     public void testIsSamePdpUpdatePdpUpdate_DifferentPolicyCount() {
         map.addRequest(update);
 
-        PdpUpdate update2 = makeUpdate();
+        final PdpUpdate update2 = makeUpdate();
         update2.setPolicies(Arrays.asList(update.getPolicies().get(0)));
         map.addRequest(update2);
 
@@ -263,7 +258,7 @@ public class PdpModifyRequestMapTest {
         map.addRequest(update);
 
         // queue a similar request
-        PdpUpdate update2 = makeUpdate();
+        final PdpUpdate update2 = makeUpdate();
         update2.setPdpGroup(update.getPdpGroup() + DIFFERENT);
         map.addRequest(update2);
 
@@ -275,7 +270,7 @@ public class PdpModifyRequestMapTest {
     public void testIsSamePdpUpdatePdpUpdate_DifferentSubGroup() {
         map.addRequest(update);
 
-        PdpUpdate update2 = makeUpdate();
+        final PdpUpdate update2 = makeUpdate();
         update2.setPdpSubgroup(update.getPdpSubgroup() + DIFFERENT);
         map.addRequest(update2);
 
@@ -287,10 +282,13 @@ public class PdpModifyRequestMapTest {
     public void testIsSamePdpUpdatePdpUpdate_DifferentPolicies() {
         map.addRequest(update);
 
-        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
-        policies.set(0, new ToscaPolicy(new PfConceptKey("policy-3-x", "2.0.0")));
+        final ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
+        final ToscaPolicy policy = new ToscaPolicy();
+        policy.setType("policy-3-x");
+        policy.setVersion("2.0.0");
+        policies.set(0, policy);
 
-        PdpUpdate update2 = makeUpdate();
+        final PdpUpdate update2 = makeUpdate();
         update2.setPolicies(policies);
         map.addRequest(update2);
 
@@ -303,7 +301,7 @@ public class PdpModifyRequestMapTest {
         map.addRequest(state);
 
         // queue a similar request
-        PdpStateChange state2 = makeStateChange();
+        final PdpStateChange state2 = makeStateChange();
         map.addRequest(state2);
 
         // token should still have original message
@@ -315,7 +313,7 @@ public class PdpModifyRequestMapTest {
         map.addRequest(state);
 
         // queue a similar request
-        PdpStateChange state2 = makeStateChange();
+        final PdpStateChange state2 = makeStateChange();
         state2.setState(PdpState.TERMINATED);
         map.addRequest(state2);
 
@@ -382,7 +380,7 @@ public class PdpModifyRequestMapTest {
     @Test
     public void testUpdateDataGetMaxRetryCount() {
         map.addRequest(update);
-        ModifyReqData reqdata = getReqData(PDP1);
+        final ModifyReqData reqdata = getReqData(PDP1);
 
         for (int count = 0; count < UPDATE_RETRIES; ++count) {
             assertTrue("update bump " + count, reqdata.bumpRetryCount());
@@ -457,14 +455,14 @@ public class PdpModifyRequestMapTest {
      * @param testName the test name
      * @param messages messages that are expected in the queue
      */
-    private void assertQueueContains(String testName, PdpMessage... messages) {
+    private void assertQueueContains(final String testName, final PdpMessage... messages) {
         assertEquals(testName, messages.length, queue.size());
 
         int count = 0;
-        for (PdpMessage msg : messages) {
+        for (final PdpMessage msg : messages) {
             ++count;
 
-            QueueToken<PdpMessage> token = queue.remove();
+            final QueueToken<PdpMessage> token = queue.remove();
             assertSame(testName + "-" + count, msg, token.get());
         }
     }
@@ -476,7 +474,7 @@ public class PdpModifyRequestMapTest {
      */
     private PdpModifyRequestMapParams makeParameters() {
         return new PdpModifyRequestMapParams().setModifyLock(lock).setParams(pdpParams).setPublisher(pub)
-                        .setResponseDispatcher(disp).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
+                .setResponseDispatcher(disp).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
     }
 
     /**
@@ -487,14 +485,14 @@ public class PdpModifyRequestMapTest {
     @SuppressWarnings("unchecked")
     private TypedMessageListener<PdpStatus> invokeProcessResponse() {
         @SuppressWarnings("rawtypes")
-        ArgumentCaptor<TypedMessageListener> processResp = ArgumentCaptor.forClass(TypedMessageListener.class);
+        final ArgumentCaptor<TypedMessageListener> processResp = ArgumentCaptor.forClass(TypedMessageListener.class);
 
         // indicate that is has been published
         queue.remove().replaceItem(null);
 
         verify(disp).register(any(), processResp.capture());
 
-        TypedMessageListener<PdpStatus> func = processResp.getValue();
+        final TypedMessageListener<PdpStatus> func = processResp.getValue();
         func.onTopicEvent(CommInfrastructure.NOOP, PapConstants.TOPIC_POLICY_PDP_PAP, response);
 
         return func;
@@ -508,9 +506,9 @@ public class PdpModifyRequestMapTest {
      * @return the timeout handler
      */
     @SuppressWarnings("unchecked")
-    private void invokeTimeoutHandler(TimerManager timers, int ntimes) {
+    private void invokeTimeoutHandler(final TimerManager timers, final int ntimes) {
         @SuppressWarnings("rawtypes")
-        ArgumentCaptor<Consumer> timeoutHdlr = ArgumentCaptor.forClass(Consumer.class);
+        final ArgumentCaptor<Consumer> timeoutHdlr = ArgumentCaptor.forClass(Consumer.class);
 
         for (int count = 1; count <= ntimes; ++count) {
             // indicate that is has been published
@@ -519,9 +517,9 @@ public class PdpModifyRequestMapTest {
             verify(timers, times(count)).register(any(), timeoutHdlr.capture());
 
             @SuppressWarnings("rawtypes")
-            List<Consumer> lst = timeoutHdlr.getAllValues();
+            final List<Consumer> lst = timeoutHdlr.getAllValues();
 
-            Consumer<String> hdlr = lst.get(lst.size() - 1);
+            final Consumer<String> hdlr = lst.get(lst.size() - 1);
             hdlr.accept(PDP1);
         }
     }
@@ -532,8 +530,8 @@ public class PdpModifyRequestMapTest {
      * @param pdpName name of the PDP whose data is desired
      * @return the request data, or {@code null} if the PDP is not in the map
      */
-    private ModifyReqData getReqData(String pdpName) {
-        Map<String, ModifyReqData> name2data = Whitebox.getInternalState(map, "name2data");
+    private ModifyReqData getReqData(final String pdpName) {
+        final Map<String, ModifyReqData> name2data = Whitebox.getInternalState(map, "name2data");
         return name2data.get(pdpName);
     }
 
@@ -543,7 +541,7 @@ public class PdpModifyRequestMapTest {
      * @return a new update message
      */
     private PdpUpdate makeUpdate() {
-        PdpUpdate upd = new PdpUpdate();
+        final PdpUpdate upd = new PdpUpdate();
 
         upd.setDescription("update-description");
         upd.setName(PDP1);
@@ -551,8 +549,12 @@ public class PdpModifyRequestMapTest {
         upd.setPdpSubgroup("sub1-a");
         upd.setPdpType("drools");
 
-        ToscaPolicy policy1 = new ToscaPolicy(new PfConceptKey("policy-1-a", "1.0.0"));
-        ToscaPolicy policy2 = new ToscaPolicy(new PfConceptKey("policy-2-a", "1.1.0"));
+        final ToscaPolicy policy1 = new ToscaPolicy();
+        policy1.setType("policy-1-a");
+        policy1.setVersion("1.0.0");
+        final ToscaPolicy policy2 = new ToscaPolicy();
+        policy1.setType("policy-2-a");
+        policy1.setVersion("1.1.0");
 
         upd.setPolicies(Arrays.asList(policy1, policy2));
 
@@ -565,7 +567,7 @@ public class PdpModifyRequestMapTest {
      * @return a new state-change message
      */
     private PdpStateChange makeStateChange() {
-        PdpStateChange cng = new PdpStateChange();
+        final PdpStateChange cng = new PdpStateChange();
 
         cng.setName(PDP1);
         cng.setState(PdpState.SAFE);
