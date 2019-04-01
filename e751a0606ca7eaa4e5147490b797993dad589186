@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4514f742_d0796c49",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpModifyRequestMap.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-04-01T20:27:47Z",
+      "side": 1,
+      "message": "I believe those flag the source code formatter to not format the license. Otherwise it messes it up.",
+      "parentUuid": "e95a419b_606795f4",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2cea028_680fc7af",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -183,6 +201,29 @@
       "writtenOn": "2019-04-01T15:39:16Z",
       "side": 1,
       "message": "what if PDP no longer supports the required policy types?  need to remove it from the group, and maybe re-assign it to another group, if possible",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ec261da_60ee278c",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/msgdata/UpdateDataTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-04-01T20:27:47Z",
+      "side": 1,
+      "message": "Like here - the missing \u0027-\u0027 resulted in the auto format of this to get the license messed up.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 83
+      },
       "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
