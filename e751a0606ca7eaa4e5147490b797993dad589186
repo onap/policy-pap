@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e95a419b_606795f4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpModifyRequestMap.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "remove trailing \"-\" - not sure how these keep getting added",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a2cea028_680fc7af",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "should not call init().  If init() must be called, then it should be done by create() in the factory wrapper.",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e11c5b42_665f8cc6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "suggestion: remove space between two \"{}\"",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62f57479_a3bd312b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "not sure if provider expects \"\" or null - should probably check with Liam (maybe provider should use StringUtils.isBlank() so it works with either)",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "393c6297_bfa6aa37",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "shouldn\u0027t we check for active groups?\n\nsame PDP could support types in two different groups - how to pick which group to which it should be assigned?",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "666961ae_8cbe2fcb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "I think this may be backwards - should be:\n\nmessage.supportedTypes.containsAll(subgroup.supportedTypes)",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "56a3669d_2d308ba2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "what if PDP is already in the subgroup?  Don\u0027t need to do update or send UPDATE",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "130231b2_595e1e4c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "need to break out of both loops here - isn\u0027t it possible a PDP type appears in two different groups?",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f9e90127_14f807c7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "may want to reverse this test, unless we know that message.pdpGroup !\u003d null (fyi: I haven\u0027t put validation checks in the classes or the deploy code yet either - just letting it throw NPE for now)",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5edde555_5e93e80f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "what if it isn\u0027t found?",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "761ed0a0_09694989",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-01T15:39:16Z",
+      "side": 1,
+      "message": "what if PDP no longer supports the required policy types?  need to remove it from the group, and maybe re-assign it to another group, if possible",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
