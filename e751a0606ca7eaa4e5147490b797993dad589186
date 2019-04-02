@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "1dcec7ea_83daf761",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpModifyRequestMap.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "This is needed to avoid eclipse formatter screwing the license text.",
+      "parentUuid": "e95a419b_606795f4",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2cea028_680fc7af",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -66,6 +84,24 @@
       "writtenOn": "2019-04-01T15:39:16Z",
       "side": 1,
       "message": "should not call init().  If init() must be called, then it should be done by create() in the factory wrapper.",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "98aeb5c4_e84d65f3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2cea028_680fc7af",
       "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -89,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "26ee1113_20e14f38",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e11c5b42_665f8cc6",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62f57479_a3bd312b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -100,6 +154,24 @@
       "writtenOn": "2019-04-01T15:39:16Z",
       "side": 1,
       "message": "not sure if provider expects \"\" or null - should probably check with Liam (maybe provider should use StringUtils.isBlank() so it works with either)",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b804b015_b8addffa",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "The parameter has @NotNull annotation, can\u0027t pass null.",
+      "parentUuid": "62f57479_a3bd312b",
       "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -123,6 +195,24 @@
     },
     {
       "key": {
+        "uuid": "da646be8_1a7bf703",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "I am going with the assumption that we will only support 2 pre-created PdpGroups - \"ControlLoop\" \u0026 \"Monitoring\" in Dublin release.\n\nHence, not building logic for selecting groups and also for active/passive groups.",
+      "parentUuid": "393c6297_bfa6aa37",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "666961ae_8cbe2fcb",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -134,6 +224,24 @@
       "writtenOn": "2019-04-01T15:39:16Z",
       "side": 1,
       "message": "I think this may be backwards - should be:\n\nmessage.supportedTypes.containsAll(subgroup.supportedTypes)",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a275cdba_6519e122",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "666961ae_8cbe2fcb",
       "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -157,6 +265,24 @@
     },
     {
       "key": {
+        "uuid": "3de8cda9_9f6d3128",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Then it goes under handlePdpHeartbeat flow.",
+      "parentUuid": "56a3669d_2d308ba2",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "130231b2_595e1e4c",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -168,6 +294,24 @@
       "writtenOn": "2019-04-01T15:39:16Z",
       "side": 1,
       "message": "need to break out of both loops here - isn\u0027t it possible a PDP type appears in two different groups?",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6fe84b2d_c6657310",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "It is possible, xacml-pdp will be part of both PdpGroup - \"controloop\" \u0026 \"monitoring\".\nBut the supportedPolicyTypes will be different.",
+      "parentUuid": "130231b2_595e1e4c",
       "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -191,6 +335,24 @@
     },
     {
       "key": {
+        "uuid": "67f1769e_f1791b8a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9e90127_14f807c7",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5edde555_5e93e80f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -208,6 +370,24 @@
     },
     {
       "key": {
+        "uuid": "54201b06_cc827865",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Added code to handle the case :)",
+      "parentUuid": "5edde555_5e93e80f",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "761ed0a0_09694989",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -219,6 +399,24 @@
       "writtenOn": "2019-04-01T15:39:16Z",
       "side": 1,
       "message": "what if PDP no longer supports the required policy types?  need to remove it from the group, and maybe re-assign it to another group, if possible",
+      "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f0240413_cd3cae4e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-02T09:53:26Z",
+      "side": 1,
+      "message": "Based on earlier discussions, I thought PdpModifyRequestMap will have few retries and then set the Pdp to PASSIVE state.\nFor reassignment, I think the same can be handled when we support creating/deleting multiple PdpGroup\u0027s.",
+      "parentUuid": "761ed0a0_09694989",
       "revId": "e751a0606ca7eaa4e5147490b797993dad589186",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
