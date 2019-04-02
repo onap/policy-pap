@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f802f89_c47a488d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/PolicyModelsProviderFactoryWrapper.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-02T11:05:17Z",
+      "side": 1,
+      "message": "cannot do this using try-with-resources, as that will auto-close it before it\u0027s returned",
+      "revId": "aa71efcae7769dc249f955e3f4f4f45b8dc8b62f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1fc1f2dc_ccfe58e1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-02T11:05:17Z",
+      "side": 1,
+      "message": "forgot to mention earlier: should wrap this block inside:\n\n  synchronized(updateLock) { ... }\n\nthat should prevent CLAMP from making simultaneous DB updates",
+      "revId": "aa71efcae7769dc249f955e3f4f4f45b8dc8b62f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4f190cb_e830e320",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-02T11:05:17Z",
+      "side": 1,
+      "message": "can break out of the loop if found",
+      "revId": "aa71efcae7769dc249f955e3f4f4f45b8dc8b62f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
