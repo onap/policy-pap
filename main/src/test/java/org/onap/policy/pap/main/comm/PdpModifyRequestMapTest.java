@@ -548,7 +548,6 @@ public class PdpModifyRequestMapTest {
         upd.setName(PDP1);
         upd.setPdpGroup("group1-a");
         upd.setPdpSubgroup("sub1-a");
-        upd.setPdpType("drools");
 
         upd.setPolicies(Arrays.asList(makePolicy("policy-1-a", "1.0.0"), makePolicy("policy-2-a", "1.1.0")));
 

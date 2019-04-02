@@ -139,7 +139,6 @@ public class UpdateDataTest {
         upd.setName(MY_NAME);
         upd.setPdpGroup("group1-a");
         upd.setPdpSubgroup("sub1-a");
-        upd.setPdpType("drools");
 
         ToscaPolicy policy1 = makePolicy("policy-1-a", "1.0.0");
         ToscaPolicy policy2 = makePolicy("policy-2-a", "1.1.0");
