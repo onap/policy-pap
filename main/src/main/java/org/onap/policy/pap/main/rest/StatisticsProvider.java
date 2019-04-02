@@ -41,7 +41,7 @@ public class StatisticsProvider {
         final StatisticsReport report = new StatisticsReport();
         report.setCode(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive() ? 200 : 500);
 
-        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER);
         report.setTotalPdpCount(mgr.getTotalPdpCount());
         report.setTotalPdpGroupCount(mgr.getTotalPdpGroupCount());
         report.setTotalPolicyDownloadCount(mgr.getTotalPolicyDownloadCount());

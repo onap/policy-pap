@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeData;
 import org.onap.policy.pap.main.comm.msgdata.UpdateData;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;

@@ -30,10 +30,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpParameters;
@@ -121,7 +120,7 @@ public class UpdateDataTest {
     @Test
     public void testUpdateDataCheckResponse_MismatchedPolicies() {
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
-        policies.set(0, new ToscaPolicy(new PfConceptKey(DIFFERENT, "10.0.0")));
+        policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
 
         response.setPolicies(policies);
 
@@ -142,12 +141,28 @@ public class UpdateDataTest {
         upd.setPdpSubgroup("sub1-a");
         upd.setPdpType("drools");
 
-        ToscaPolicy policy1 = new ToscaPolicy(new PfConceptKey("policy-1-a", "1.0.0"));
-        ToscaPolicy policy2 = new ToscaPolicy(new PfConceptKey("policy-2-a", "1.1.0"));
+        ToscaPolicy policy1 = makePolicy("policy-1-a", "1.0.0");
+        ToscaPolicy policy2 = makePolicy("policy-2-a", "1.1.0");
 
         upd.setPolicies(Arrays.asList(policy1, policy2));
 
         return upd;
+    }
+
+    /**
+     * Creates a new policy.
+     *
+     * @param name policy name
+     * @param version policy version
+     * @return a new policy
+     */
+    private ToscaPolicy makePolicy(String name, String version) {
+        ToscaPolicy policy = new ToscaPolicy();
+
+        policy.setName(name);
+        policy.setVersion(version);
+
+        return policy;
     }
 
     private class MyData extends UpdateData {

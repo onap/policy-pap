@@ -20,10 +20,13 @@
 
 package org.onap.policy.pap.main;
 
+import java.util.List;
+import lombok.NonNull;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 
 /**
  * Wraps a {@link PolicyModelsProviderFactoryWrapper}.
@@ -57,7 +60,69 @@ public class PolicyModelsProviderFactoryWrapper implements AutoCloseable {
      * @return a new provider
      * @throws PfModelException if an error occurs
      */
+    public org.onap.policy.models.provider.PolicyModelsProvider createPapProvider() throws PfModelException {
+        /*
+         * TODO rename this method to create() once the provider in policy/models has been
+         * updated to use models-pdp instead of models-pap.
+         */
+
+        org.onap.policy.models.provider.PolicyModelsProvider dao = factory.createPolicyModelsProvider(params);
+        dao.init();
+
+        return dao;
+    }
+
+    /**
+     * Creates a provider.
+     *
+     * @return a new provider
+     * @throws PfModelException if an error occurs
+     */
     public PolicyModelsProvider create() throws PfModelException {
-        return factory.createPolicyModelsProvider(params);
+
+        return new PolicyModelsProvider() {
+
+            @Override
+            public void close() throws PfModelException {
+                // do nothing
+            }
+
+            @Override
+            public PdpGroup createPdpGroup(@NonNull PdpGroup pdpGroup) throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public PdpGroup updatePdpGroup(@NonNull PdpGroup pdpGroup) throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<ToscaPolicy> getPolicies(@NonNull String name, @NonNull String version)
+                            throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<PdpGroup> getPdpGroups(@NonNull String name, @NonNull String version) throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<PdpGroup> getActivePdpGroupsByPolicy(@NonNull String policyType,
+                            @NonNull String policyTypeVersion) throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public ToscaPolicy getPolicyMaxVersion(@NonNull String name) throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public PdpGroup getPdpGroupMaxVersion(@NonNull String name) throws PfModelException {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }

@@ -70,7 +70,7 @@ public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
     }
 
     private void updateDistributionStatistics() {
-        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER);
 
         mgr.updateTotalPdpCount();
         mgr.updateTotalPdpGroupCount();
