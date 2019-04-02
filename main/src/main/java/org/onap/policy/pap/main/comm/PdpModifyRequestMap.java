@@ -1,8 +1,9 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2019 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +24,11 @@ package org.onap.policy.pap.main.comm;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.tosca.simple.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.comm.PdpModifyRequestMap.ModifyReqData;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeData;
 import org.onap.policy.pap.main.comm.msgdata.UpdateData;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -36,8 +39,8 @@ import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 public class PdpModifyRequestMap {
 
     /**
-     * Maps a PDP name to its request data. An entry is removed once all of the requests
-     * within the data have been completed.
+     * Maps a PDP name to its request data. An entry is removed once all of the requests within the data have been
+     * completed.
      */
     private final Map<String, ModifyReqData> name2data = new HashMap<>();
 
@@ -128,7 +131,7 @@ public class PdpModifyRequestMap {
 
             if (stateChange != null && !pdpName.equals(stateChange.getName())) {
                 throw new IllegalArgumentException(
-                                "name " + stateChange.getName() + " does not match " + pdpName + " " + stateChange);
+                        "name " + stateChange.getName() + " does not match " + pdpName + " " + stateChange);
             }
 
         } else {
@@ -141,8 +144,7 @@ public class PdpModifyRequestMap {
     }
 
     /**
-     * Determines if two requests are the "same", which is does not necessarily mean
-     * "equals".
+     * Determines if two requests are the "same", which is does not necessarily mean "equals".
      *
      * @param first first request to check
      * @param second second request to check
@@ -169,8 +171,7 @@ public class PdpModifyRequestMap {
     }
 
     /**
-     * Determines if two requests are the "same", which is does not necessarily mean
-     * "equals".
+     * Determines if two requests are the "same", which is does not necessarily mean "equals".
      *
      * @param first first request to check
      * @param second second request to check
@@ -181,9 +182,9 @@ public class PdpModifyRequestMap {
     }
 
     /**
-     * Request data, which contains an UPDATE or a STATE-CHANGE request, or both. The
-     * UPDATE is always published before the STATE-CHANGE. In addition, both requests may
-     * be changed at any point, possibly triggering a restart of the publishing.
+     * Request data, which contains an UPDATE or a STATE-CHANGE request, or both. The UPDATE is always published before
+     * the STATE-CHANGE. In addition, both requests may be changed at any point, possibly triggering a restart of the
+     * publishing.
      */
     public class ModifyReqData extends RequestData {
 
@@ -238,8 +239,8 @@ public class PdpModifyRequestMap {
         }
 
         /**
-         * Adds an UPDATE to the request data, replacing any existing UPDATE, if
-         * appropriate. If the UPDATE is replaced, then publishing is restarted.
+         * Adds an UPDATE to the request data, replacing any existing UPDATE, if appropriate. If the UPDATE is replaced,
+         * then publishing is restarted.
          *
          * @param newRequest the new UPDATE request
          */
@@ -265,9 +266,8 @@ public class PdpModifyRequestMap {
         }
 
         /**
-         * Adds a STATE-CHANGE to the request data, replacing any existing UPDATE, if
-         * appropriate. If the STATE-CHANGE is replaced, and we're currently publishing
-         * the STATE-CHANGE, then publishing is restarted.
+         * Adds a STATE-CHANGE to the request data, replacing any existing UPDATE, if appropriate. If the STATE-CHANGE
+         * is replaced, and we're currently publishing the STATE-CHANGE, then publishing is restarted.
          *
          * @param newRequest the new STATE-CHANGE request
          */
@@ -301,6 +301,7 @@ public class PdpModifyRequestMap {
         /**
          * Indicates that the retry count was exhausted.
          */
+        @Override
         protected void retryCountExhausted() {
             // remove this request data from the PDP request map
             allCompleted();

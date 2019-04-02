@@ -20,7 +20,6 @@
 
 package org.onap.policy.pap.main;
 
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
@@ -37,7 +36,7 @@ public class PolicyModelsProviderFactoryWrapper implements AutoCloseable {
      *
      * @param params DAO configuration parameters
      */
-    public PolicyModelsProviderFactoryWrapper(PolicyModelsProviderParameters params) {
+    public PolicyModelsProviderFactoryWrapper(final PolicyModelsProviderParameters params) {
         this.params = params;
         this.factory = new PolicyModelsProviderFactory();
     }
@@ -45,9 +44,8 @@ public class PolicyModelsProviderFactoryWrapper implements AutoCloseable {
     @Override
     public void close() throws Exception {
         /*
-         * PolicyModelsProviderFactory should, in theory, implement AutoCloseable so it
-         * can close the entity manager factory and release all data. Since it doesn't
-         * this method does nothing for now.
+         * PolicyModelsProviderFactory should, in theory, implement AutoCloseable so it can close the entity manager
+         * factory and release all data. Since it doesn't this method does nothing for now.
          */
     }
 
@@ -55,9 +53,14 @@ public class PolicyModelsProviderFactoryWrapper implements AutoCloseable {
      * Creates a provider based on models-pap.
      *
      * @return a new provider
-     * @throws PfModelException if an error occurs
+     * @throws PolicyPapException in case of errors.
      */
-    public PolicyModelsProvider create() throws PfModelException {
-        return factory.createPolicyModelsProvider(params);
+    public PolicyModelsProvider create() throws PolicyPapException {
+        try (PolicyModelsProvider modelsProvider = factory.createPolicyModelsProvider(params)) {
+            modelsProvider.init();
+            return modelsProvider;
+        } catch (final Exception exp) {
+            throw new PolicyPapException(exp);
+        }
     }
 }
