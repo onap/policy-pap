@@ -23,8 +23,8 @@ package org.onap.policy.pap.main.rest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
-import org.onap.policy.models.pap.concepts.PdpPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 
 /**
@@ -63,7 +63,7 @@ public class PdpGroupDeployProvider {
      * @param policies PDP policies
      * @return a pair containing the status and the response
      */
-    public Pair<Response.Status, PdpGroupDeployResponse> deployPolicies(PdpPolicies policies) {
+    public Pair<Response.Status, PdpGroupDeployResponse> deployPolicies(PdpDeployPolicies policies) {
 
         /*
          * TODO Lock for updates - return error if already locked.

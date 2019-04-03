@@ -32,11 +32,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
+import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
-import org.onap.policy.models.pap.concepts.PdpPolicies;
-import org.onap.policy.models.pap.concepts.Policy;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifierOptVersion;
 
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
@@ -70,7 +70,7 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testDeployPolicies() throws Exception {
-        final Entity<PdpPolicies> entgrp = makePdpPoliciesEntity();
+        final Entity<PdpDeployPolicies> entgrp = makePdpPoliciesEntity();
 
         final Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
         Response rawresp = invocationBuilder.post(entgrp);
@@ -100,15 +100,15 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
         return Entity.entity(group, MediaType.APPLICATION_JSON);
     }
 
-    private Entity<PdpPolicies> makePdpPoliciesEntity() {
-        final Policy pol1 = new Policy();
+    private Entity<PdpDeployPolicies> makePdpPoliciesEntity() {
+        final ToscaPolicyIdentifierOptVersion pol1 = new ToscaPolicyIdentifierOptVersion();
         pol1.setName("policy-a");
-        pol1.setPolicyVersion("1");
+        pol1.setVersion("1");
 
-        final Policy pol2 = new Policy();
+        final ToscaPolicyIdentifierOptVersion pol2 = new ToscaPolicyIdentifierOptVersion();
         pol2.setName("policy-b");
 
-        final PdpPolicies policies = new PdpPolicies();
+        final PdpDeployPolicies policies = new PdpDeployPolicies();
         policies.setPolicies(Arrays.asList(pol1, pol2));
 
         return Entity.entity(policies, MediaType.APPLICATION_JSON);

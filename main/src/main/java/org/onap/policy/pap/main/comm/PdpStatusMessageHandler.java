@@ -22,6 +22,8 @@ package org.onap.policy.pap.main.comm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -30,12 +32,16 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.pdp.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -61,9 +67,6 @@ public class PdpStatusMessageHandler {
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
                 Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            // TODO: remove the init() call when PolicyModelProviderFactory changes to call init() before returning the
-            // object
-            databaseProvider.init();
             if (message.getPdpGroup().isEmpty() && message.getPdpSubgroup().isEmpty()) {
                 handlePdpRegistration(message, databaseProvider);
             } else {
@@ -99,7 +102,7 @@ public class PdpStatusMessageHandler {
                 if (!findPdpInstance(message, subGroup.get()).isPresent()) {
                     updatePdpSubGroup(pdpGroup, subGroup.get(), message, databaseProvider);
                 }
-                sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getInstance(), null);
+                sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getInstance(), null, databaseProvider);
                 pdpGroupFound = true;
                 break;
             }
@@ -145,7 +148,7 @@ public class PdpStatusMessageHandler {
             if (pdpSubgroup.isPresent()) {
                 pdpInstance = findPdpInstance(message, pdpSubgroup.get());
                 if (pdpInstance.isPresent()) {
-                    processPdpDetails(message, pdpSubgroup, pdpInstance, pdpGroup);
+                    processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider);
                     pdpInstanceFound = true;
                 }
             }
@@ -179,15 +182,16 @@ public class PdpStatusMessageHandler {
         return Optional.ofNullable(pdpInstance);
     }
 
-    private void processPdpDetails(final PdpStatus message, final Optional<PdpSubGroup> pdpSubgroup,
-            final Optional<Pdp> pdpInstance, final PdpGroup pdpGroup) {
-        if (validatePdpDetails(message, pdpGroup, pdpSubgroup.get(), pdpInstance.get())) {
-            LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance.get());
-            // TODO: details are correct save health & statistics details in DB
+    private void processPdpDetails(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
+            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+        if (validatePdpDetails(message, pdpGroup, pdpSubgroup, pdpInstance)) {
+            LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
+            updatePdpHealthStatus(message, pdpSubgroup, pdpInstance, pdpGroup, databaseProvider);
+            updatePdpStatistics(message, pdpSubgroup, pdpInstance, pdpGroup, databaseProvider);
         } else {
-            LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance.get());
-            sendPdpMessage(pdpGroup.getName(), pdpSubgroup.get(), pdpInstance.get().getInstanceId(),
-                    pdpInstance.get().getPdpState());
+            LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
+            sendPdpMessage(pdpGroup.getName(), pdpSubgroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
+                    databaseProvider);
         }
     }
 
@@ -201,9 +205,35 @@ public class PdpStatusMessageHandler {
                 && message.getPdpType().equals(subGroup.getPdpType());
     }
 
+    private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
+            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+        pdpInstance.setHealthy(message.getHealthy());
+        databaseProvider.updatePdp(pdpGroup.getName(), pdpGroup.getVersion(), pdpSubgroup.getPdpType(), pdpInstance);
+
+        LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
+    }
+
+    private void updatePdpStatistics(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
+            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+        final PdpStatistics pdpStatistics = new PdpStatistics();
+        pdpStatistics.setPdpInstanceId(message.getInstance());
+        pdpStatistics.setPolicyDeployCount(message.getStatistics().getPolicyDeployCount());
+        pdpStatistics.setPolicyDeploySuccessCount(message.getStatistics().getPolicyDeploySuccessCount());
+        pdpStatistics.setPolicyDeployFailCount(message.getStatistics().getPolicyDeployFailCount());
+        pdpStatistics.setPolicyExecutedCount(message.getStatistics().getPolicyExecutedCount());
+        pdpStatistics.setPolicyExecutedSuccessCount(message.getStatistics().getPolicyExecutedSuccessCount());
+        pdpStatistics.setPolicyExecutedFailCount(message.getStatistics().getPolicyExecutedFailCount());
+
+        databaseProvider.updatePdpStatistics(pdpGroup.getName(), pdpGroup.getVersion(), pdpSubgroup.getPdpType(),
+                pdpInstance.getInstanceId(), pdpStatistics);
+
+        LOGGER.debug("Updated PdpStatistics in DB - {}", pdpStatistics);
+    }
+
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
-            final PdpState pdpState) {
-        final PdpUpdate pdpUpdatemessage = createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId);
+            final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
+        final PdpUpdate pdpUpdatemessage =
+                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
         final PdpStateChange pdpStateChangeMessage =
                 createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         final PdpModifyRequestMap requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
@@ -213,16 +243,38 @@ public class PdpStatusMessageHandler {
     }
 
     private PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-            final String pdpInstanceId) {
+            final String pdpInstanceId, final PolicyModelsProvider databaseProvider) throws PfModelException {
 
         final PdpUpdate update = new PdpUpdate();
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
-        // TODO: create code for fetching ToscaPolicy from DB and setting here.
-        // update.setPolicies(subGroup.getPolicies());
+        update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
+
         LOGGER.debug("Created PdpUpdate message - {}", update);
         return update;
+    }
+
+    private List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup, final PolicyModelsProvider databaseProvider)
+            throws PfModelException {
+        final List<ToscaPolicy> policies = new ArrayList<>();
+        for (final ToscaPolicyIdentifier policyIdentifier : subGroup.getPolicies()) {
+            final ToscaServiceTemplate toscaTemplate =
+                    databaseProvider.getPolicies(policyIdentifier.getName(), policyIdentifier.getVersion());
+            final List<Map<String, ToscaPolicy>> policiesMapList =
+                    toscaTemplate.getToscaTopologyTemplate().getPolicies();
+            if (!policiesMapList.isEmpty()) {
+                for (final Map<String, ToscaPolicy> policiesMap : policiesMapList) {
+                    if (!policiesMap.isEmpty()) {
+                        for (final Entry<String, ToscaPolicy> entry : policiesMap.entrySet()) {
+                            policies.add(entry.getValue());
+                        }
+                    }
+                }
+            }
+        }
+        LOGGER.debug("Created ToscaPolicy list - {}", policies);
+        return policies;
     }
 
     private PdpStateChange createPdpStateChangeMessage(final String pdpGroupName, final PdpSubGroup subGroup,
