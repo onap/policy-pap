@@ -29,7 +29,6 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -91,20 +90,18 @@ public class PdpStatusMessageHandler {
         boolean pdpGroupFound = false;
         Optional<PdpSubGroup> subGroup = null;
         final List<Pair<String, String>> supportedPolicyTypesPair = createSupportedPolictTypesPair(message);
-        final PdpGroups pdpGroups =
+        final List<PdpGroup> pdpGroups =
                 databaseProvider.getFilteredPdpGroups(message.getPdpType(), supportedPolicyTypesPair);
-        for (final PdpGroup pdpGroup : pdpGroups.getGroups()) {
-            if (pdpGroup.getPdpGroupState().equals(PdpState.ACTIVE)) {
-                subGroup = findPdpSubGroup(message, pdpGroup);
-                if (subGroup.isPresent()) {
-                    LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", pdpGroup, message);
-                    if (!findPdpInstance(message, subGroup.get()).isPresent()) {
-                        updatePdpSubGroup(pdpGroup, subGroup.get(), message, databaseProvider);
-                    }
-                    sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getInstance(), null);
-                    pdpGroupFound = true;
-                    break;
+        for (final PdpGroup pdpGroup : pdpGroups) {
+            subGroup = findPdpSubGroup(message, pdpGroup);
+            if (subGroup.isPresent()) {
+                LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", pdpGroup, message);
+                if (!findPdpInstance(message, subGroup.get()).isPresent()) {
+                    updatePdpSubGroup(pdpGroup, subGroup.get(), message, databaseProvider);
                 }
+                sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getInstance(), null);
+                pdpGroupFound = true;
+                break;
             }
         }
         return pdpGroupFound;
@@ -141,14 +138,16 @@ public class PdpStatusMessageHandler {
         Optional<PdpSubGroup> pdpSubgroup = null;
         Optional<Pdp> pdpInstance = null;
 
-        final PdpGroups pdpGroups = databaseProvider.getLatestPdpGroups(message.getPdpGroup());
-        final PdpGroup pdpGroup = pdpGroups.getGroups().get(0);
-        pdpSubgroup = findPdpSubGroup(message, pdpGroup);
-        if (pdpSubgroup.isPresent()) {
-            pdpInstance = findPdpInstance(message, pdpSubgroup.get());
-            if (pdpInstance.isPresent()) {
-                processPdpDetails(message, pdpSubgroup, pdpInstance, pdpGroup);
-                pdpInstanceFound = true;
+        final List<PdpGroup> pdpGroups = databaseProvider.getLatestPdpGroups(message.getPdpGroup());
+        if (!pdpGroups.isEmpty()) {
+            final PdpGroup pdpGroup = pdpGroups.get(0);
+            pdpSubgroup = findPdpSubGroup(message, pdpGroup);
+            if (pdpSubgroup.isPresent()) {
+                pdpInstance = findPdpInstance(message, pdpSubgroup.get());
+                if (pdpInstance.isPresent()) {
+                    processPdpDetails(message, pdpSubgroup, pdpInstance, pdpGroup);
+                    pdpInstanceFound = true;
+                }
             }
         }
         if (!pdpInstanceFound) {
