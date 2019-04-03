@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.function.Consumer;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -54,6 +55,7 @@ import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
@@ -132,7 +134,7 @@ public class PdpModifyRequestMapTest {
         response.setState(PdpState.SAFE);
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
-        response.setPolicies(update.getPolicies());
+        response.setPolicies(convertToscaPolicyToToscaPolicyIndentifier());
 
         map = new PdpModifyRequestMap(makeParameters()) {
 
@@ -582,5 +584,19 @@ public class PdpModifyRequestMapTest {
         cng.setState(PdpState.SAFE);
 
         return cng;
+    }
+    
+    /**
+     * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
+     *
+     * @return the ToscaPolicyIdentifier list
+     */
+    private List<ToscaPolicyIdentifier> convertToscaPolicyToToscaPolicyIndentifier() {
+        final List<ToscaPolicy> toscaPolicies = update.getPolicies();
+        final List<ToscaPolicyIdentifier> toscaPolicyIdentifiers = new ArrayList<>();
+        for (final ToscaPolicy toscaPolicy : toscaPolicies) {
+            toscaPolicyIdentifiers.add(new ToscaPolicyIdentifier(toscaPolicy.getName(), toscaPolicy.getVersion()));
+        }
+        return toscaPolicyIdentifiers;
     }
 }

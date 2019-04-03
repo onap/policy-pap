@@ -27,7 +27,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.onap.policy.models.pap.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpGroups;
 
 /**
  * Class to perform unit test of {@link PdpGroupQueryControllerV1}.

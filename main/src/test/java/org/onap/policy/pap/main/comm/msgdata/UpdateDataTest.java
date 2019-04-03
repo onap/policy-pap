@@ -28,10 +28,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -69,7 +72,7 @@ public class UpdateDataTest {
         response.setName(MY_NAME);
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
-        response.setPolicies(update.getPolicies());
+        response.setPolicies(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
 
         data = new MyData(update);
     }
@@ -112,15 +115,16 @@ public class UpdateDataTest {
 
     @Test
     public void testUpdateDataCheckResponse_MismatchedPoliciesLength() {
-        response.setPolicies(Arrays.asList(update.getPolicies().get(0)));
+        response.setPolicies(convertToscaPolicyToToscaPolicyIndentifier(Arrays.asList(update.getPolicies().get(0))));
 
         assertEquals("policies do not match", data.checkResponse(response));
     }
 
     @Test
     public void testUpdateDataCheckResponse_MismatchedPolicies() {
-        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
-        policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
+        ArrayList<ToscaPolicyIdentifier> policies =
+                new ArrayList<>(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
+        policies.set(0, makePolicyIdentifier(DIFFERENT, "10.0.0"));
 
         response.setPolicies(policies);
 
@@ -179,5 +183,35 @@ public class UpdateDataTest {
         public void completed() {
             // do nothing
         }
+    }
+    
+    /**
+     * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
+     *
+     * @param toscaPolicies the list of ToscaPolicy
+     * @return the ToscaPolicyIdentifier list
+     */
+    private List<ToscaPolicyIdentifier> convertToscaPolicyToToscaPolicyIndentifier(List<ToscaPolicy> toscaPolicies) {
+        final List<ToscaPolicyIdentifier> toscaPolicyIdentifiers = new ArrayList<>();
+        for (final ToscaPolicy toscaPolicy : toscaPolicies) {
+            toscaPolicyIdentifiers.add(new ToscaPolicyIdentifier(toscaPolicy.getName(), toscaPolicy.getVersion()));
+        }
+        return toscaPolicyIdentifiers;
+    }
+    
+    /**
+     * Creates a new policy identifier.
+     *
+     * @param name policy name
+     * @param version policy version
+     * @return a new policy identifier
+     */
+    private ToscaPolicyIdentifier makePolicyIdentifier(String name, String version) {
+        ToscaPolicyIdentifier policyIdentifier = new ToscaPolicyIdentifier();
+
+        policyIdentifier.setName(name);
+        policyIdentifier.setVersion(version);
+
+        return policyIdentifier;
     }
 }

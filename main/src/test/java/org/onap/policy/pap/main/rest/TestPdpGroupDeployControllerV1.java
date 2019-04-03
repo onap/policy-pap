@@ -32,11 +32,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.onap.policy.models.pap.concepts.PdpGroup;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pap.concepts.PdpPolicies;
-import org.onap.policy.models.pap.concepts.PdpSubGroup;
 import org.onap.policy.models.pap.concepts.Policy;
+import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
