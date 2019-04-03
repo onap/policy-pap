@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d5ae1549_942a7769",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "As discussed, we will leave both in PdpStatus message as they are used in different context.",
+      "parentUuid": "d4a471fa_18702d4c",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a3e3bda5_57ebb951",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-04-02T18:38:57Z",
       "side": 1,
       "message": "I personally prefer to use \"\u003d\u003d\" when comparing enum values.  If not, then it should be reversed to: PdpState.ACTIVE.equals(...)\n\nFYI: I\u0027m sorry, I steered you wrong on this: getFilteredPdpGroups() should return only ACTIVE groups, so this test shouldn\u0027t be needed.\n\nQuestion: can a group/subgroup be active if it has no PDPs?  If not, then how does it become active?",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "56f27168_ab0589d7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "Removed the ACTIVE check.\nYes it is a valid question, adding it to the list of open questions.",
+      "parentUuid": "a3e3bda5_57ebb951",
       "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "0af73197_1bb0df63",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "Already verified before calling this method.\nSee line 101.",
+      "parentUuid": "f2dbffa1_1254a54e",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fe3bf751_e1b1b88f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2019-04-02T18:38:57Z",
       "side": 1,
       "message": "PLZ FIX: this is not guaranteed to be the active group, as client could choose to activate an older version of the group.\n(The deploy code assumes getLatestPdpGroups returns both active and inactive, because it needs the maximum version regardless of state).",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d5de35e1_a8bf000a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "As discussed, will ask Liam to provide the latest active version of PdpGroup for getLatestPdpGroups API.",
+      "parentUuid": "fe3bf751_e1b1b88f",
       "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "1badfe0e_0ea8e149",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10c0226c_c0d30ba9",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8afa2469_c0ac8528",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "04752d22_6c44338c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "Since I am calling the Registry only once per handler object so it\u0027s kind of same.",
+      "parentUuid": "8afa2469_c0ac8528",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "23c823b8_f35341c9",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -115,6 +223,24 @@
       "writtenOn": "2019-04-02T18:38:57Z",
       "side": 1,
       "message": "do we care about the description field?",
+      "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b828c122_3e95be9d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-03T14:10:29Z",
+      "side": 1,
+      "message": "will add it to open questions list.",
+      "parentUuid": "23c823b8_f35341c9",
       "revId": "a47c4b53211a4ad6a448b3f6b28b683189f88c80",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
