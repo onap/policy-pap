@@ -21,10 +21,11 @@
 package org.onap.policy.pap.main.rest;
 
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
-import org.onap.policy.models.pap.concepts.PdpGroups;
 import org.onap.policy.models.pap.concepts.PdpPolicies;
+import org.onap.policy.models.pdp.concepts.PdpGroups;
 
 /**
  * Provider for PAP component to deploy PDP groups.

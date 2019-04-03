@@ -33,7 +33,7 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.pdp.concepts.PolicyTypeIdent;
+import org.onap.policy.models.pdp.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
@@ -109,7 +109,7 @@ public class PdpStatusMessageHandler {
 
     private List<Pair<String, String>> createSupportedPolictTypesPair(final PdpStatus message) {
         final List<Pair<String, String>> supportedPolicyTypesPair = new ArrayList<>();
-        for (final PolicyTypeIdent policyTypeIdent : message.getSupportedPolicyTypes()) {
+        for (final ToscaPolicyTypeIdentifier policyTypeIdent : message.getSupportedPolicyTypes()) {
             supportedPolicyTypesPair.add(Pair.of(policyTypeIdent.getName(), policyTypeIdent.getVersion()));
         }
         return supportedPolicyTypesPair;
@@ -219,7 +219,8 @@ public class PdpStatusMessageHandler {
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
-        update.setPolicies(subGroup.getPolicies());
+        // TODO: create code for fetching ToscaPolicy from DB and setting here.
+        // update.setPolicies(subGroup.getPolicies());
         LOGGER.debug("Created PdpUpdate message - {}", update);
         return update;
     }
