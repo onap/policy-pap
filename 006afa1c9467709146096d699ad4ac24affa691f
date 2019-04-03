@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9ccbb9e_ef9ab7d7",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/msgdata/UpdateDataTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-03T17:00:50Z",
+      "side": 1,
+      "message": "don\u0027t need this - just use: new ToscaPolicyIdentifier(name, version)",
+      "revId": "006afa1c9467709146096d699ad4ac24affa691f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
