@@ -1,4 +1,4 @@
-/*-
+/*
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
@@ -19,24 +19,23 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.pdpgroup;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
-
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
-import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
@@ -51,18 +50,18 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testDeployGroup() throws Exception {
-        final Entity<PdpGroup> entgrp = makePdpGroupEntity();
+        Entity<PdpGroup> entgrp = makePdpGroupEntity();
 
-        final Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
+        Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
         Response rawresp = invocationBuilder.post(entgrp);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
 
         rawresp = invocationBuilder.post(entgrp);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(DEPLOY_GROUP_ENDPOINT, req -> req.post(entgrp));
@@ -70,28 +69,28 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testDeployPolicies() throws Exception {
-        final Entity<PdpDeployPolicies> entgrp = makePdpPoliciesEntity();
+        Entity<PdpDeployPolicies> entgrp = makePdpPoliciesEntity();
 
-        final Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
+        Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
         Response rawresp = invocationBuilder.post(entgrp);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
 
         rawresp = invocationBuilder.post(entgrp);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(DEPLOY_POLICIES_ENDPOINT, req -> req.post(entgrp));
     }
 
     private Entity<PdpGroup> makePdpGroupEntity() {
-        final PdpSubGroup subgrp = new PdpSubGroup();
+        PdpSubGroup subgrp = new PdpSubGroup();
         subgrp.setPdpType("drools");
 
-        final PdpGroup group = new PdpGroup();
+        PdpGroup group = new PdpGroup();
         group.setName("drools-group");
         group.setDescription("my description");
         group.setVersion("my-version");
@@ -101,14 +100,10 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
     }
 
     private Entity<PdpDeployPolicies> makePdpPoliciesEntity() {
-        final ToscaPolicyIdentifierOptVersion pol1 = new ToscaPolicyIdentifierOptVersion();
-        pol1.setName("policy-a");
-        pol1.setVersion("1");
+        ToscaPolicyIdentifierOptVersion pol1 = new ToscaPolicyIdentifierOptVersion("policy-a", "1");
+        ToscaPolicyIdentifierOptVersion pol2 = new ToscaPolicyIdentifierOptVersion("policy-b", null);
 
-        final ToscaPolicyIdentifierOptVersion pol2 = new ToscaPolicyIdentifierOptVersion();
-        pol2.setName("policy-b");
-
-        final PdpDeployPolicies policies = new PdpDeployPolicies();
+        PdpDeployPolicies policies = new PdpDeployPolicies();
         policies.setPolicies(Arrays.asList(pol1, pol2));
 
         return Entity.entity(policies, MediaType.APPLICATION_JSON);

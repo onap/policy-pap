@@ -1,0 +1,40 @@
+{
+    "groups": [
+        {
+            "name": "groupA",
+            "version": "200.2.3",
+            "pdpSubgroups": [
+                {
+                    "pdpType": "pdpTypeA",
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "typeA",
+                            "version": "100.2.3"
+                        }
+                    ],
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpA"
+                        }
+                    ],
+                    "policies": []
+                },
+                {
+                    "pdpType": "pdpTypeC",
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "typeC",
+                            "version": "100.2.3"
+                        }
+                    ],
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpC"
+                        }
+                    ],
+                    "policies": []
+                }
+            ]
+        }
+    ]
+}
