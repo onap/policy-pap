@@ -1,0 +1,28 @@
+{
+    "policies":  [
+        {
+            "name": "policyA",
+            "version": "0.0.0",
+            "type": "typeA",
+            "typeVersion": "100.2.3"
+        },
+        {
+            "name": "policyA",
+            "version": "1.2.3",
+            "type": "typeA",
+            "typeVersion": "100.2.3"
+        },
+        {
+            "name": "policyA",
+            "version": "0.0.1",
+            "type": "typeA",
+            "typeVersion": "100.2.3"
+        },
+        {
+            "name": "policyA",
+            "version": "non-numeric-version",
+            "type": "typeA",
+            "typeVersion": "100.2.3"
+        }
+    ]
+}
