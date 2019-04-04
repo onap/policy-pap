@@ -16,6 +16,24 @@
       "revId": "91ddfe4233def718e07c90c08c28f31e663fc856",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e962b8f3_5c37b344",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-04T08:58:29Z",
+      "side": 1,
+      "message": "Done.\nThanks Jim!",
+      "parentUuid": "d05738b4_05b60b81",
+      "revId": "91ddfe4233def718e07c90c08c28f31e663fc856",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
