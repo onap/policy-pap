@@ -28,15 +28,12 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
-
 import java.util.UUID;
-
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
@@ -123,7 +120,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response deployPolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "PDP Policies; only the name and policyVersion are required",
+                    @ApiParam(value = "PDP Policies; only the name is required",
                                     required = true) PdpDeployPolicies policies) {
 
         Pair<Status, PdpGroupDeployResponse> pair = provider.deployPolicies(policies);
