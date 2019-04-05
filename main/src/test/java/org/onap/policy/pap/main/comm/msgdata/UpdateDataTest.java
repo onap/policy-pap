@@ -29,13 +29,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpParameters;
@@ -123,7 +123,7 @@ public class UpdateDataTest {
     @Test
     public void testUpdateDataCheckResponse_MismatchedPolicies() {
         ArrayList<ToscaPolicyIdentifier> policies =
-                new ArrayList<>(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
+                        new ArrayList<>(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
         policies.set(0, new ToscaPolicyIdentifier(DIFFERENT, "10.0.0"));
 
         response.setPolicies(policies);
@@ -184,7 +184,7 @@ public class UpdateDataTest {
             // do nothing
         }
     }
-    
+
     /**
      * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
      *
@@ -192,10 +192,7 @@ public class UpdateDataTest {
      * @return the ToscaPolicyIdentifier list
      */
     private List<ToscaPolicyIdentifier> convertToscaPolicyToToscaPolicyIndentifier(List<ToscaPolicy> toscaPolicies) {
-        final List<ToscaPolicyIdentifier> toscaPolicyIdentifiers = new ArrayList<>();
-        for (final ToscaPolicy toscaPolicy : toscaPolicies) {
-            toscaPolicyIdentifiers.add(new ToscaPolicyIdentifier(toscaPolicy.getName(), toscaPolicy.getVersion()));
-        }
-        return toscaPolicyIdentifiers;
+        return toscaPolicies.stream().map(policy -> new ToscaPolicyIdentifier(policy.getName(), policy.getVersion()))
+                        .collect(Collectors.toList());
     }
 }

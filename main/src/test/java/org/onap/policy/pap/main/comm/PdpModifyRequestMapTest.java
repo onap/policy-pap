@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.function.Consumer;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -55,9 +54,9 @@ import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap.ModifyReqData;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -585,7 +584,7 @@ public class PdpModifyRequestMapTest {
 
         return cng;
     }
-    
+
     /**
      * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
      *

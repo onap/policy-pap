@@ -23,22 +23,22 @@ package org.onap.policy.pap.main.comm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.pdp.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -90,8 +90,10 @@ public class PdpStatusMessageHandler {
         boolean pdpGroupFound = false;
         Optional<PdpSubGroup> subGroup = null;
         final List<Pair<String, String>> supportedPolicyTypesPair = createSupportedPolictTypesPair(message);
+        final PdpGroupFilter filter = PdpGroupFilter.builder().pdpType(message.getPdpType()).build();
+        // TODO setSupportedTypes(supportedPolicyTypesPair)
         final List<PdpGroup> pdpGroups =
-                databaseProvider.getFilteredPdpGroups(message.getPdpType(), supportedPolicyTypesPair);
+                databaseProvider.getFilteredPdpGroups(filter);
         for (final PdpGroup pdpGroup : pdpGroups) {
             subGroup = findPdpSubGroup(message, pdpGroup);
             if (subGroup.isPresent()) {
@@ -99,7 +101,7 @@ public class PdpStatusMessageHandler {
                 if (!findPdpInstance(message, subGroup.get()).isPresent()) {
                     updatePdpSubGroup(pdpGroup, subGroup.get(), message, databaseProvider);
                 }
-                sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getInstance(), null, databaseProvider);
+                sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getName(), null, databaseProvider);
                 pdpGroupFound = true;
                 break;
             }
@@ -119,7 +121,7 @@ public class PdpStatusMessageHandler {
             final PolicyModelsProvider databaseProvider) throws PfModelException {
 
         final Pdp pdpInstance = new Pdp();
-        pdpInstance.setInstanceId(message.getInstance());
+        pdpInstance.setInstanceId(message.getName());
         pdpInstance.setPdpState(message.getState());
         pdpInstance.setHealthy(message.getHealthy());
         pdpInstance.setMessage(message.getDescription());
@@ -138,7 +140,9 @@ public class PdpStatusMessageHandler {
         Optional<PdpSubGroup> pdpSubgroup = null;
         Optional<Pdp> pdpInstance = null;
 
-        final List<PdpGroup> pdpGroups = databaseProvider.getLatestPdpGroups(message.getPdpGroup());
+        final PdpGroupFilter filter = PdpGroupFilter.builder().name(message.getPdpGroup()).build();
+        // TODO setLatestVersion()
+        final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
             final PdpGroup pdpGroup = pdpGroups.get(0);
             pdpSubgroup = findPdpSubGroup(message, pdpGroup);
@@ -171,7 +175,7 @@ public class PdpStatusMessageHandler {
     private Optional<Pdp> findPdpInstance(final PdpStatus message, final PdpSubGroup subGroup) {
         Pdp pdpInstance = null;
         for (final Pdp pdpInstanceDetails : subGroup.getPdpInstances()) {
-            if (message.getInstance().equals(pdpInstanceDetails.getInstanceId())) {
+            if (pdpInstanceDetails.getInstanceId().equals(message.getName())) {
                 pdpInstance = pdpInstanceDetails;
                 break;
             }
@@ -213,7 +217,7 @@ public class PdpStatusMessageHandler {
     private void updatePdpStatistics(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         final PdpStatistics pdpStatistics = new PdpStatistics();
-        pdpStatistics.setPdpInstanceId(message.getInstance());
+        pdpStatistics.setPdpInstanceId(message.getName());
         pdpStatistics.setPolicyDeployCount(message.getStatistics().getPolicyDeployCount());
         pdpStatistics.setPolicyDeploySuccessCount(message.getStatistics().getPolicyDeploySuccessCount());
         pdpStatistics.setPolicyDeployFailCount(message.getStatistics().getPolicyDeployFailCount());

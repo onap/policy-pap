@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.pdp.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 
 
@@ -76,7 +76,7 @@ public abstract class UpdateData extends MessageData {
 
         return null;
     }
-    
+
     /**
      * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
      *
