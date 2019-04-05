@@ -30,6 +30,7 @@ import org.onap.policy.common.endpoints.http.server.HttpServletServer;
 import org.onap.policy.common.endpoints.properties.PolicyEndPointProperties;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.pap.main.parameters.RestServerParameters;
+import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

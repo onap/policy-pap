@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -56,7 +57,6 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap.ModifyReqData;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -133,7 +133,8 @@ public class PdpModifyRequestMapTest {
         response.setState(PdpState.SAFE);
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
-        response.setPolicies(convertToscaPolicyToToscaPolicyIndentifier());
+        response.setPolicies(update.getPolicies().stream().map(ToscaPolicy::getIdentifier)
+                        .collect(Collectors.toList()));
 
         map = new PdpModifyRequestMap(makeParameters()) {
 
@@ -327,10 +328,13 @@ public class PdpModifyRequestMapTest {
     public void testModifyReqDataIsActive() {
         map.addRequest(update);
 
+        ModifyReqData reqdata = getReqData(PDP1);
+        assertNotNull(reqdata);
+
+        // this should remove it from the map
         invokeProcessResponse();
 
-        // name should have been removed
-        assertNull(getReqData(PDP1));
+        assertFalse(reqdata.isActive());
     }
 
     @Test
@@ -583,19 +587,5 @@ public class PdpModifyRequestMapTest {
         cng.setState(PdpState.SAFE);
 
         return cng;
-    }
-
-    /**
-     * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
-     *
-     * @return the ToscaPolicyIdentifier list
-     */
-    private List<ToscaPolicyIdentifier> convertToscaPolicyToToscaPolicyIndentifier() {
-        final List<ToscaPolicy> toscaPolicies = update.getPolicies();
-        final List<ToscaPolicyIdentifier> toscaPolicyIdentifiers = new ArrayList<>();
-        for (final ToscaPolicy toscaPolicy : toscaPolicies) {
-            toscaPolicyIdentifiers.add(new ToscaPolicyIdentifier(toscaPolicy.getName(), toscaPolicy.getVersion()));
-        }
-        return toscaPolicyIdentifiers;
     }
 }
