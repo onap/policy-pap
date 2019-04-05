@@ -149,8 +149,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        assertGroup(getGroupUpdates(1).get(0), GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(getGroupCreates(1).get(0), GROUP1_NAME, GROUP1_NEW_VERSION);
+        assertGroup(getGroupUpdates(), GROUP1_NAME, GROUP1_VERSION);
+        assertGroup(getGroupCreates(), GROUP1_NAME, GROUP1_NEW_VERSION);
 
         List<PdpUpdate> requests = getUpdateRequests(2);
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);

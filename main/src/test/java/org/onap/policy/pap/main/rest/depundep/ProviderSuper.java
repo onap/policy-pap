@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
@@ -125,27 +126,25 @@ public class ProviderSuper {
     /**
      * Gets the input to the method.
      *
-     * @param count the number of times the method is expected to have been called.
      * @return the input that was passed to the dao.createPdpGroups() method
      * @throws Exception if an error occurred
      */
-    protected List<List<PdpGroup>> getGroupCreates(int count) throws Exception {
-        verify(dao, times(count)).createPdpGroups(createCaptor.capture());
+    protected List<PdpGroup> getGroupCreates() throws Exception {
+        verify(dao).createPdpGroups(createCaptor.capture());
 
-        return copyLists(createCaptor.getAllValues());
+        return copyList(createCaptor.getValue());
     }
 
     /**
      * Gets the input to the method.
      *
-     * @param count the number of times the method is expected to have been called
      * @return the input that was passed to the dao.updatePdpGroups() method
      * @throws Exception if an error occurred
      */
-    protected List<List<PdpGroup>> getGroupUpdates(int count) throws Exception {
-        verify(dao, times(count)).updatePdpGroups(updateCaptor.capture());
+    protected List<PdpGroup> getGroupUpdates() throws Exception {
+        verify(dao).updatePdpGroups(updateCaptor.capture());
 
-        return copyLists(updateCaptor.getAllValues());
+        return copyList(updateCaptor.getValue());
     }
 
     /**
@@ -163,19 +162,15 @@ public class ProviderSuper {
     }
 
     /**
-     * Makes a partly deep copy of the list.
+     * Copies a list and sorts it by group name.
      *
      * @param source source list to copy
      * @return a copy of the source list
      */
-    private List<List<PdpGroup>> copyLists(List<List<PdpGroup>> source) {
-        List<List<PdpGroup>> target = new ArrayList<>(source.size());
-
-        for (List<PdpGroup> lst : source) {
-            target.add(new ArrayList<>(lst));
-        }
-
-        return target;
+    private List<PdpGroup> copyList(List<PdpGroup> source) {
+        List<PdpGroup> newlst = new ArrayList<>(source);
+        Collections.sort(newlst, (left, right) -> left.getName().compareTo(right.getName()));
+        return newlst;
     }
 
     /**
