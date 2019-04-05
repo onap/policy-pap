@@ -282,15 +282,17 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        List<List<PdpGroup>> creates = getGroupCreates(2);
-        assertGroup(creates.get(0), GROUP1_NAME, GROUP1_NEW_VERSION);
-        assertGroup(creates.get(1), GROUP2_NAME, "301.0.0");
+        // verify creates
+        List<List<PdpGroup>> changes = getGroupCreates(1);
+        List<PdpGroup> lst = changes.get(0);
+        assertGroup(lst, GROUP1_NAME, GROUP1_NEW_VERSION);
+        assertGroup(lst, GROUP2_NAME, "301.0.0");
 
-        List<List<PdpGroup>> updates = getGroupUpdates(4);
-        assertGroup(updates.get(0), GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(updates.get(1), GROUP2_NAME, "300.2.3");
-        assertGroup(updates.get(2), GROUP1_NAME, GROUP1_NEW_VERSION);
-        assertGroup(updates.get(3), GROUP1_NAME, GROUP1_NEW_VERSION);
+        // verify updates
+        changes = getGroupUpdates(1);
+        lst = changes.get(0);
+        assertGroup(lst, GROUP1_NAME, GROUP1_VERSION);
+        assertGroup(lst, GROUP2_NAME, "300.2.3");
 
         List<PdpUpdate> requests = getUpdateRequests(3);
         assertUpdateIgnorePolicy(requests, GROUP1_NAME, PDP1_TYPE, PDP1);

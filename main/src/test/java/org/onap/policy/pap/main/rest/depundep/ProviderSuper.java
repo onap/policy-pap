@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
@@ -163,7 +164,7 @@ public class ProviderSuper {
     }
 
     /**
-     * Makes a partly deep copy of the list.
+     * Makes a partly deep copy of the list. Also sorts each list in order by group name.
      *
      * @param source source list to copy
      * @return a copy of the source list
@@ -172,7 +173,9 @@ public class ProviderSuper {
         List<List<PdpGroup>> target = new ArrayList<>(source.size());
 
         for (List<PdpGroup> lst : source) {
-            target.add(new ArrayList<>(lst));
+            List<PdpGroup> newlst = new ArrayList<>(lst);
+            Collections.sort(newlst, (left, right) -> left.getName().compareTo(right.getName()));
+            target.add(newlst);
         }
 
         return target;
