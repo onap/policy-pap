@@ -21,16 +21,16 @@
 package org.onap.policy.pap.main.rest.depundep;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
+import org.onap.policy.common.utils.validation.Version;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
@@ -45,20 +45,32 @@ public class SessionData {
     private final PolicyModelsProvider dao;
 
     /**
-     * The names of newly created groups are added to this set to prevent the version
-     * number from being updated in case the group is re-used during the same REST call.
+     * Maps a group name to its group data. This accumulates the set of groups to be
+     * created and updated when the REST call completes.
      */
-    private final Set<String> newGroups;
+    private final Map<String, GroupData> groupCache = new HashMap<>();
+
+    /**
+     * Maps a policy type to the list of matching groups. Every group appearing within
+     * this map has a corresponding entry in {@link #groupCache}.
+     */
+    private final Map<ToscaPolicyTypeIdentifier, List<GroupData>> type2groups = new HashMap<>();
 
     /**
      * Maps a PDP name to its most recently generated update request.
      */
-    private final Map<String, PdpUpdate> updates;
+    private final Map<String, PdpUpdate> pdpUpdates = new HashMap<>();
 
     /**
      * Maps a policy's identifier to the policy.
      */
-    private final Map<ToscaPolicyIdentifier, ToscaPolicy> policyMap;
+    private final Map<ToscaPolicyIdentifier, ToscaPolicy> policyCache = new HashMap<>();
+
+    /**
+     * Maps a policy name to its latest policy. Every policy appearing within this map has
+     * a corresponding entry in {@link #policyCache}.
+     */
+    private final Map<String, ToscaPolicy> latestPolicy = new HashMap<>();
 
 
     /**
@@ -68,9 +80,6 @@ public class SessionData {
      */
     public SessionData(PolicyModelsProvider dao) {
         this.dao = dao;
-        this.newGroups = new HashSet<>();
-        this.updates = new HashMap<>();
-        this.policyMap = new HashMap<>();
     }
 
     /**
@@ -83,7 +92,7 @@ public class SessionData {
      */
     public ToscaPolicy getPolicy(ToscaPolicyIdentifier ident) {
 
-        return policyMap.computeIfAbsent(ident, key -> {
+        return policyCache.computeIfAbsent(ident, key -> {
 
             try {
                 List<ToscaPolicy> lst = dao.getPolicyList(ident.getName(), ident.getVersion());
@@ -114,7 +123,7 @@ public class SessionData {
      * @param update the update to be added
      */
     public void addUpdate(PdpUpdate update) {
-        updates.put(update.getName(), update);
+        pdpUpdates.put(update.getName(), update);
     }
 
     /**
@@ -122,8 +131,8 @@ public class SessionData {
      *
      * @return the UPDATE requests
      */
-    public Collection<PdpUpdate> getUpdates() {
-        return updates.values();
+    public Collection<PdpUpdate> getPdpUpdates() {
+        return pdpUpdates.values();
     }
 
     /**
@@ -133,7 +142,8 @@ public class SessionData {
      * @return {@code true} if the group has been newly created, {@code false} otherwise
      */
     public boolean isNewlyCreated(String group) {
-        return newGroups.contains(group);
+        GroupData data = groupCache.get(group);
+        return (data != null && data.isNew());
     }
 
     /**
@@ -144,34 +154,62 @@ public class SessionData {
      * @throws PfModelException if an error occurs
      */
     public ToscaPolicy getPolicyMaxVersion(String name) throws PfModelException {
-        ToscaPolicyFilter filter = ToscaPolicyFilter.builder().name(name).build();
-        // TODO setLatest, setActive?
+        ToscaPolicy policy = latestPolicy.get(name);
+        if (policy != null) {
+            return policy;
+        }
 
+        ToscaPolicyFilter filter =
+                        ToscaPolicyFilter.builder().name(name).version(ToscaPolicyFilter.LATEST_VERSION).build();
         List<ToscaPolicy> policies = dao.getFilteredPolicyList(filter);
         if (policies.isEmpty()) {
             throw new PolicyPapRuntimeException("cannot find policy: " + name);
         }
 
-        return policies.get(0);
+        policy = policies.get(0);
+        policyCache.put(policy.getIdentifier(), policy);
+        latestPolicy.put(name, policy);
+
+        return policy;
     }
 
     /**
-     * Gets the group having the given name and the maximum version.
+     * Adds a new version of a group to the cache.
      *
-     * @param name name of the desired group
-     * @return the desired group, or {@code null} if there is no group with given name
+     * @param newGroup the group to be added
+     * @throws IllegalStateException if the old group has not been loaded into the cache
+     *         yet
      * @throws PfModelException if an error occurs
      */
-    public PdpGroup getPdpGroupMaxVersion(String name) throws PfModelException {
-        PdpGroupFilter filter = PdpGroupFilter.builder().name(name).build();
-        // TODO setLatest
+    public void setNewGroup(PdpGroup newGroup) throws PfModelException {
+        String name = newGroup.getName();
+        GroupData data = groupCache.get(name);
+        if (data == null) {
+            throw new IllegalStateException("group not cached: " + name);
+        }
 
+        if (data.getLatestVersion() != null) {
+            // already have the latest version
+            data.setNewGroup(newGroup);
+            return;
+        }
+
+        // must determine the latest version of this group, regardless of its state
+        PdpGroupFilter filter = PdpGroupFilter.builder().name(name).version(PdpGroupFilter.LATEST_VERSION).build();
         List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
         if (groups.isEmpty()) {
             throw new PolicyPapRuntimeException("cannot find group: " + name);
         }
 
-        return groups.get(0);
+        PdpGroup group = groups.get(0);
+        Version vers = Version.makeVersion("PdpGroup", group.getName(), group.getVersion());
+        if (vers == null) {
+            // none of the versions are numeric - start with zero and increment from there
+            vers = new Version(0, 0, 0);
+        }
+
+        data.setLatestVersion(vers);
+        data.setNewGroup(newGroup);
     }
 
     /**
@@ -182,33 +220,53 @@ public class SessionData {
      * @throws PfModelException if an error occurs
      */
     public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaPolicyTypeIdentifier type) throws PfModelException {
+        List<GroupData> data = type2groups.get(type);
+        if (data != null) {
+            return data.stream().map(GroupData::getCurrentGroup).collect(Collectors.toList());
+        }
 
-        PdpGroupFilter filter = PdpGroupFilter.builder().policyType(type).build();
-        // TODO setActive, setHasPdps
+        PdpGroupFilter filter = PdpGroupFilter.builder().policyType(type).groupState(PdpState.ACTIVE).build();
 
-        return dao.getFilteredPdpGroups(filter);
+        List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
+
+        data = groups.stream().map(this::addGroup).collect(Collectors.toList());
+        type2groups.put(type, data);
+
+        return groups;
     }
 
     /**
-     * Creates a PDP group.
+     * Adds a group to the group cache, if it isn't already in the cache.
      *
-     * @param pdpGroup the group to be created
-     * @return the created group
-     * @throws PfModelException if an error occurs
+     * @param group the group to be added
+     * @return the cache entry
      */
-    public PdpGroup createPdpGroup(PdpGroup pdpGroup) throws PfModelException {
-        newGroups.add(pdpGroup.getName());
-        return dao.createPdpGroups(Collections.singletonList(pdpGroup)).get(0);
+    private GroupData addGroup(PdpGroup group) {
+        GroupData data = groupCache.get(group.getName());
+        if (data != null) {
+            return data;
+        }
+
+        data = new GroupData(group);
+        groupCache.put(group.getName(), data);
+
+        return data;
     }
 
     /**
-     * Updates a PDP group.
+     * Update the DB with the changes.
      *
-     * @param pdpGroup the group to be updated
-     * @return the updated group
      * @throws PfModelException if an error occurs
      */
-    public PdpGroup updatePdpGroup(PdpGroup pdpGroup) throws PfModelException {
-        return dao.updatePdpGroups(Collections.singletonList(pdpGroup)).get(0);
+    public void updateDb() throws PfModelException {
+        List<GroupData> updatedGroups =
+                        groupCache.values().stream().filter(GroupData::isNew).collect(Collectors.toList());
+        if (updatedGroups.isEmpty()) {
+            return;
+        }
+
+        // create new groups BEFORE we deactivate the old groups
+        dao.createPdpGroups(updatedGroups.stream().map(GroupData::getCurrentGroup).collect(Collectors.toList()));
+        dao.updatePdpGroups(updatedGroups.stream().map(GroupData::getOldGroup).collect(Collectors.toList()));
     }
 }

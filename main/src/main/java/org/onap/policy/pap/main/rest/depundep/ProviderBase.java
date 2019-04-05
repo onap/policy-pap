@@ -37,7 +37,6 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
@@ -111,7 +110,10 @@ public abstract class ProviderBase<R extends SimpleResponse> {
                 SessionData data = new SessionData(dao);
                 processor.accept(data, request);
 
-                requests = data.getUpdates();
+                // make all of the DB updates
+                data.updateDb();
+
+                requests = data.getPdpUpdates();
 
             } catch (PfModelException e) {
                 logger.warn(DEPLOY_FAILED, e);
@@ -128,9 +130,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
 
 
             // publish the requests
-            for (PdpUpdate req : requests) {
-                requestMap.addRequest(req);
-            }
+            requests.forEach(requestMap::addRequest);
         }
 
         return Pair.of(Response.Status.OK, makeResponse(null));
@@ -215,7 +215,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
     private Collection<PdpGroup> getGroups(SessionData data, ToscaPolicyTypeIdentifier policyType)
                     throws PfModelException {
         // build a map containing the group with the highest version for each name
-        Map<String, GroupData> name2data = new HashMap<>();
+        Map<String, GroupVersion> name2data = new HashMap<>();
 
         for (PdpGroup group : data.getActivePdpGroupsByPolicyType(policyType)) {
             Version vers = Version.makeVersion("PdpGroup", group.getName(), group.getVersion());
@@ -223,11 +223,11 @@ public abstract class ProviderBase<R extends SimpleResponse> {
                 continue;
             }
 
-            GroupData grpdata = name2data.get(group.getName());
+            GroupVersion grpdata = name2data.get(group.getName());
 
             if (grpdata == null) {
                 // not in the map yet
-                name2data.put(group.getName(), new GroupData(group, vers));
+                name2data.put(group.getName(), new GroupVersion(group, vers));
 
             } else if (vers.compareTo(grpdata.version) >= 0) {
                 // higher version
@@ -271,23 +271,9 @@ public abstract class ProviderBase<R extends SimpleResponse> {
         }
 
 
-        if (!updated) {
-            return;
-        }
-
-
-        // something changed
-
-        if (data.isNewlyCreated(newGroup.getName())) {
-            /*
-             * It's already in the list of new groups - update the policies, but not the
-             * version.
-             */
-            data.updatePdpGroup(newGroup);
-
-        } else {
-            // haven't seen this group before - update the version
-            upgradeGroupVersion(data, oldGroup, newGroup);
+        if (updated) {
+            // something changed
+            data.setNewGroup(newGroup);
         }
     }
 
@@ -314,49 +300,13 @@ public abstract class ProviderBase<R extends SimpleResponse> {
     }
 
     /**
-     * Upgrades a group's version. Updates the version in the new group, persists the new
-     * group, and deactivates the old group.
-     *
-     * @param data session data
-     * @param newGroup the new version of the group
-     * @param oldGroup the original group, to be updated
-     * @throws PfModelException if a DAO error occurred
-     */
-    private void upgradeGroupVersion(SessionData data, PdpGroup newGroup, PdpGroup oldGroup) throws PfModelException {
-
-        // change versions
-        newGroup.setVersion(makeNewVersion(data, oldGroup).toString());
-
-        // create it before we update the old group
-        newGroup = data.createPdpGroup(newGroup);
-
-        // deactivate the old group
-        oldGroup.setPdpGroupState(PdpState.PASSIVE);
-        oldGroup = data.updatePdpGroup(oldGroup);
-    }
-
-    /**
-     * Makes a new version for the PDP group.
-     *
-     * @param data session data
-     * @param group current group
-     * @return a new version
-     * @throws PfModelException if a DAO error occurred
-     */
-    private Version makeNewVersion(SessionData data, PdpGroup group) throws PfModelException {
-        PdpGroup group2 = data.getPdpGroupMaxVersion(group.getName());
-        Version vers = Version.makeVersion("PdpGroup", group2.getName(), group2.getVersion());
-        return vers.newVersion();
-    }
-
-    /**
      * Data associated with a group. Used to find the group with the maximum version.
      */
-    private static class GroupData {
+    private static class GroupVersion {
         private PdpGroup group;
         private Version version;
 
-        public GroupData(PdpGroup group, Version version) {
+        public GroupVersion(PdpGroup group, Version version) {
             this.group = group;
             this.version = version;
         }
