@@ -72,7 +72,7 @@ public class UpdateDataTest {
         response.setName(MY_NAME);
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
-        response.setPolicies(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
+        response.setPolicies(policyToIdent(update.getPolicies()));
 
         data = new MyData(update);
     }
@@ -114,21 +114,23 @@ public class UpdateDataTest {
     }
 
     @Test
-    public void testUpdateDataCheckResponse_MismatchedPoliciesLength() {
-        response.setPolicies(convertToscaPolicyToToscaPolicyIndentifier(Arrays.asList(update.getPolicies().get(0))));
+    public void testUpdateDataCheckResponse_MismatchedPolicies() {
+        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
+        policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
+
+        response.setPolicies(policyToIdent(policies));
 
         assertEquals("policies do not match", data.checkResponse(response));
     }
 
-    @Test
-    public void testUpdateDataCheckResponse_MismatchedPolicies() {
-        ArrayList<ToscaPolicyIdentifier> policies =
-                        new ArrayList<>(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
-        policies.set(0, new ToscaPolicyIdentifier(DIFFERENT, "10.0.0"));
-
-        response.setPolicies(policies);
-
-        assertEquals("policies do not match", data.checkResponse(response));
+    /**
+     * Converts a list of policies to their corresponding identifiers.
+     *
+     * @param policies policies to be converted
+     * @return a list of policy identifiers
+     */
+    private List<ToscaPolicyIdentifier> policyToIdent(List<ToscaPolicy> policies) {
+        return policies.stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList());
     }
 
     /**
@@ -183,16 +185,5 @@ public class UpdateDataTest {
         public void completed() {
             // do nothing
         }
-    }
-
-    /**
-     * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
-     *
-     * @param toscaPolicies the list of ToscaPolicy
-     * @return the ToscaPolicyIdentifier list
-     */
-    private List<ToscaPolicyIdentifier> convertToscaPolicyToToscaPolicyIndentifier(List<ToscaPolicy> toscaPolicies) {
-        return toscaPolicies.stream().map(policy -> new ToscaPolicyIdentifier(policy.getName(), policy.getVersion()))
-                        .collect(Collectors.toList());
     }
 }

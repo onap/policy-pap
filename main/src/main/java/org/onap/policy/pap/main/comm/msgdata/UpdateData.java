@@ -20,8 +20,8 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
@@ -62,32 +62,16 @@ public abstract class UpdateData extends MessageData {
         }
 
         // see if the other has any policies that this does not have
-        ArrayList<ToscaPolicyIdentifier> lst = new ArrayList<>(response.getPolicies());
-        List<ToscaPolicy> mypolicies = update.getPolicies();
+        Set<ToscaPolicyIdentifier> set = new HashSet<>(response.getPolicies());
 
-        if (mypolicies.size() != lst.size()) {
-            return "policies do not match";
+        for (ToscaPolicy policy : update.getPolicies()) {
+            set.remove(policy.getIdentifier());
         }
 
-        lst.removeAll(convertToscaPolicyToToscaPolicyIndentifier(update.getPolicies()));
-        if (!lst.isEmpty()) {
+        if (!set.isEmpty()) {
             return "policies do not match";
         }
 
         return null;
-    }
-
-    /**
-     * Converts a ToscaPolicy list to ToscaPolicyIdentifier list.
-     *
-     * @param toscaPolicies the list of ToscaPolicy
-     * @return the ToscaPolicyIdentifier list
-     */
-    private List<ToscaPolicyIdentifier> convertToscaPolicyToToscaPolicyIndentifier(List<ToscaPolicy> toscaPolicies) {
-        final List<ToscaPolicyIdentifier> toscaPolicyIdentifiers = new ArrayList<>();
-        for (final ToscaPolicy toscaPolicy : toscaPolicies) {
-            toscaPolicyIdentifiers.add(new ToscaPolicyIdentifier(toscaPolicy.getName(), toscaPolicy.getVersion()));
-        }
-        return toscaPolicyIdentifiers;
     }
 }
