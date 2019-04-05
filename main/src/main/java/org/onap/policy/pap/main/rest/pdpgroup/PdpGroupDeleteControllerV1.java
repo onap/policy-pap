@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.pdpgroup;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.pap.main.rest.PapRestControllerV1;
 
 /**
  * Class to provide REST end points for PAP component to delete a PDP group.

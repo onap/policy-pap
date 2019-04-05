@@ -18,16 +18,35 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.pdpgroup;
 
+import java.util.function.BiFunction;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provider for PAP component to delete PDP groups.
  */
-public class PdpGroupDeleteProvider {
+public class PdpGroupDeleteProvider extends ProviderBase<PdpGroupDeleteResponse> {
+    private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployProvider.class);
+
+
+    /**
+     * Constructs the object.
+     */
+    public PdpGroupDeleteProvider() {
+        super();
+    }
 
     /**
      * Deletes a PDP group.
@@ -66,20 +85,50 @@ public class PdpGroupDeleteProvider {
      */
     public Pair<Response.Status, PdpGroupDeleteResponse> deletePolicy(String policyId, String version) {
 
-        /*
-         * TODO Lock for updates - return error if already locked.
-         */
+        return process(new ToscaPolicyIdentifierOptVersion(policyId, version), this::deletePolicy);
+    }
 
-        /*
-         * TODO Make updates - sending initial messages to PDPs and arranging for
-         * listeners to complete the deletion actions (in the background). The final step
-         * for the listener is to unlock.
-         */
+    /**
+     * Deletes a policy from its groups.
+     *
+     * @param data session data
+     * @param ident identifier of the policy to be deleted
+     */
+    private void deletePolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) {
+        try {
+            processPolicy(data, ident);
 
-        /*
-         * TODO Return error if unable to send updates to all PDPs.
-         */
+        } catch (PfModelException e) {
+            // no need to log the error here, as it will be logged by the invoker
+            logger.warn("failed to deploy policy: {}", ident);
+            throw new PolicyPapRuntimeException(DB_ERROR_MSG, e);
 
-        return Pair.of(Response.Status.OK, new PdpGroupDeleteResponse());
+        } catch (RuntimeException e) {
+            // no need to log the error here, as it will be logged by the invoker
+            logger.warn("failed to deploy policy: {}", ident);
+            throw e;
+        }
+    }
+
+    @Override
+    public PdpGroupDeleteResponse makeResponse() {
+        return new PdpGroupDeleteResponse();
+    }
+
+    @Override
+    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
+        ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
+
+        return (group, subgroup) -> {
+            
+            if (!subgroup.getPolicies().contains(desiredIdent)) {
+                // doesn't have the policy
+                return false;
+            }
+
+            // remove the policy from the subgroup
+            subgroup.getPolicies().remove(desiredIdent);
+            return true;
+        };
     }
 }

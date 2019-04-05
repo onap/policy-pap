@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.pdpgroup;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -28,6 +28,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
 public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
