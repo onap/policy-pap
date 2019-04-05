@@ -17,5 +17,13 @@
             "maxRetryCount": 1,
             "maxWaitMs": 1
         }
+    },
+    "databaseProviderParameters": {
+        "name": "PolicyProviderParameterGroup",
+        "implementation": "org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl",
+        "databaseUrl": "jdbc:mariadb://127.0.0.1:3306/policy",
+        "databaseUser": "root",
+        "databasePassword": "cm9vdA==",
+        "persistenceUnit": "ToscaConceptMariaDBTest"
     }
 }
