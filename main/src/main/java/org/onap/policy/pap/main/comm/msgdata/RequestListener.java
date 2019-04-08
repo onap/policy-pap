@@ -20,38 +20,28 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
-import org.onap.policy.models.pdp.concepts.PdpStateChange;
-import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
-
 /**
- * Wraps a STATE-CHANGE.
+ * Listener for request events.
  */
-public abstract class StateChangeData extends MessageData {
-    private PdpStateChange stateChange;
+public interface RequestListener {
 
     /**
-     * Constructs the object.
+     * Indicates that an invalid response was received from a PDP.
      *
-     * @param message message to be wrapped by this
-     * @param params the parameters
+     * @param pdpName name of the PDP from which the response was received
+     * @param reason the reason for the mismatch
      */
-    public StateChangeData(PdpStateChange message, PdpModifyRequestMapParams params) {
-        super(message, params.getParams().getStateChangeParameters().getMaxRetryCount(), params.getStateChangeTimers());
+    public void failure(String pdpName, String reason);
 
-        stateChange = message;
-    }
+    /**
+     * Indicates that a successful response was received from a PDP.
+     *
+     * @param pdpName name of the PDP from which the response was received
+     */
+    public void success(String pdpName);
 
-    @Override
-    public String checkResponse(PdpStatus response) {
-        if (!stateChange.getName().equals(response.getName())) {
-            return "name does not match";
-        }
-
-        if (response.getState() != stateChange.getState()) {
-            return "state is " + response.getState() + ", but expected " + stateChange.getState();
-        }
-
-        return null;
-    }
+    /**
+     * Indicates that the retry count was exhausted.
+     */
+    public void retryCountExhausted();
 }

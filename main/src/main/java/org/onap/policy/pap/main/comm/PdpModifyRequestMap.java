@@ -20,26 +20,43 @@
 
 package org.onap.policy.pap.main.comm;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pdp.concepts.Pdp;
+import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.pap.main.comm.msgdata.StateChangeData;
-import org.onap.policy.pap.main.comm.msgdata.UpdateData;
+import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.comm.msgdata.Request;
+import org.onap.policy.pap.main.comm.msgdata.RequestListener;
+import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
+import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
+import org.onap.policy.pap.main.parameters.RequestParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Maps a PDP name to requests that modify PDPs.
  */
 public class PdpModifyRequestMap {
+    private static final Logger logger = LoggerFactory.getLogger(PdpModifyRequestMap.class);
+
+    private static final String UNEXPECTED_BROADCAST = "unexpected broadcast message: ";
 
     /**
-     * Maps a PDP name to its request data. An entry is removed once all of the requests
-     * within the data have been completed.
+     * Maps a PDP name to its outstanding requests.
      */
-    private final Map<String, ModifyReqData> name2data = new HashMap<>();
+    private final Map<String, PdpRequests> pdp2requests = new HashMap<>();
 
     /**
      * PDP modification lock.
@@ -52,7 +69,13 @@ public class PdpModifyRequestMap {
     private final PdpModifyRequestMapParams params;
 
     /**
-     * Constructs the data.
+     * Factory for PAP DAO.
+     */
+    private final PolicyModelsProviderFactoryWrapper daoFactory;
+
+
+    /**
+     * Constructs the object.
      *
      * @param params configuration parameters
      *
@@ -63,24 +86,21 @@ public class PdpModifyRequestMap {
 
         this.params = params;
         this.modifyLock = params.getModifyLock();
+        this.daoFactory = params.getDaoFactory();
     }
 
     /**
-     * Adds an UPDATE request to the map.
+     * Stops publishing requests to the given PDP.
      *
-     * @param update the UPDATE request or {@code null}
+     * @param pdpName PDP name
      */
-    public void addRequest(PdpUpdate update) {
-        addRequest(update, null);
-    }
-
-    /**
-     * Adds STATE-CHANGE request to the map.
-     *
-     * @param stateChange the STATE-CHANGE request or {@code null}
-     */
-    public void addRequest(PdpStateChange stateChange) {
-        addRequest(null, stateChange);
+    public void stopPublishing(String pdpName) {
+        synchronized (modifyLock) {
+            PdpRequests requests = pdp2requests.remove(pdpName);
+            if (requests != null) {
+                requests.stopPublishing();
+            }
+        }
     }
 
     /**
@@ -90,288 +110,248 @@ public class PdpModifyRequestMap {
      * @param stateChange the STATE-CHANGE request or {@code null}
      */
     public void addRequest(PdpUpdate update, PdpStateChange stateChange) {
-        if (update == null && stateChange == null) {
+        if (update == null) {
+            addRequest(stateChange);
+
+        } else {
+            synchronized (modifyLock) {
+                addRequest(update);
+                addRequest(stateChange);
+            }
+        }
+    }
+
+    /**
+     * Adds an UPDATE request to the map.
+     *
+     * @param update the UPDATE request or {@code null}
+     */
+    public void addRequest(PdpUpdate update) {
+        if (update == null) {
             return;
         }
 
+        if (isBroadcast(update)) {
+            throw new IllegalArgumentException(UNEXPECTED_BROADCAST + update);
+        }
+
+        // @formatter:off
+        RequestParams reqparams = new RequestParams()
+            .setMaxRetryCount(params.getParams().getUpdateParameters().getMaxRetryCount())
+            .setTimers(params.getUpdateTimers())
+            .setModifyLock(params.getModifyLock())
+            .setPublisher(params.getPublisher())
+            .setResponseDispatcher(params.getResponseDispatcher());
+        // @formatter:on
+
+        String name = update.getName() + " " + PdpUpdate.class.getSimpleName();
+        UpdateReq request = new UpdateReq(reqparams, name, update);
+
+        addSingleton(request);
+    }
+
+    /**
+     * Adds a STATE-CHANGE request to the map.
+     *
+     * @param stateChange the STATE-CHANGE request or {@code null}
+     */
+    public void addRequest(PdpStateChange stateChange) {
+        if (stateChange == null) {
+            return;
+        }
+
+        if (isBroadcast(stateChange)) {
+            throw new IllegalArgumentException(UNEXPECTED_BROADCAST + stateChange);
+        }
+
+        // @formatter:off
+        RequestParams reqparams = new RequestParams()
+            .setMaxRetryCount(params.getParams().getStateChangeParameters().getMaxRetryCount())
+            .setTimers(params.getStateChangeTimers())
+            .setModifyLock(params.getModifyLock())
+            .setPublisher(params.getPublisher())
+            .setResponseDispatcher(params.getResponseDispatcher());
+        // @formatter:on
+
+        String name = stateChange.getName() + " " + PdpStateChange.class.getSimpleName();
+        StateChangeReq request = new StateChangeReq(reqparams, name, stateChange);
+
+        addSingleton(request);
+    }
+
+    /**
+     * Determines if a message is a broadcast message.
+     *
+     * @param message the message to examine
+     * @return {@code true} if the message is a broadcast message, {@code false} if
+     *         destined for a single PDP
+     */
+    private boolean isBroadcast(PdpMessage message) {
+        return (message.getName() == null);
+    }
+
+    /**
+     * Configures and adds a request to the map.
+     *
+     * @param request the request to be added
+     */
+    private void addSingleton(Request request) {
+
         synchronized (modifyLock) {
-            String pdpName = getPdpName(update, stateChange);
+            PdpRequests requests = pdp2requests.computeIfAbsent(request.getMessage().getName(), this::makePdpRequests);
 
-            ModifyReqData data = name2data.get(pdpName);
-            if (data != null) {
-                // update the existing request
-                data.add(update);
-                data.add(stateChange);
-
-            } else {
-                data = makeRequestData(update, stateChange);
-                name2data.put(pdpName, data);
-                data.startPublishing();
-            }
+            request.setListener(new SingletonListener(requests, request));
+            requests.addSingleton(request);
         }
     }
 
     /**
-     * Gets the PDP name from two requests.
+     * Starts the next request associated with a PDP.
      *
-     * @param update the update request, or {@code null}
-     * @param stateChange the state-change request, or {@code null}
-     * @return the PDP name, or {@code null} if both requests are {@code null}
+     * @param requests current set of requests
+     * @param request the request that just completed
      */
-    private static String getPdpName(PdpUpdate update, PdpStateChange stateChange) {
-        String pdpName;
-
-        if (update != null) {
-            if ((pdpName = update.getName()) == null) {
-                throw new IllegalArgumentException("missing name in " + update);
-            }
-
-            if (stateChange != null && !pdpName.equals(stateChange.getName())) {
-                throw new IllegalArgumentException(
-                                "name " + stateChange.getName() + " does not match " + pdpName + " " + stateChange);
-            }
-
-        } else {
-            if ((pdpName = stateChange.getName()) == null) {
-                throw new IllegalArgumentException("missing name in " + stateChange);
-            }
+    private void startNextRequest(PdpRequests requests, Request request) {
+        if (!requests.startNextRequest(request)) {
+            pdp2requests.remove(requests.getPdpName(), requests);
         }
-
-        return pdpName;
     }
 
     /**
-     * Determines if two requests are the "same", which is does not necessarily mean
-     * "equals".
+     * Disables a PDP by removing it from its subgroup and then sending it a PASSIVE
+     * request.
      *
-     * @param first first request to check
-     * @param second second request to check
-     * @return {@code true} if the requests are the "same", {@code false} otherwise
+     * @param requests the requests associated with the PDP to be disabled
      */
-    protected static boolean isSame(PdpUpdate first, PdpUpdate second) {
-        if (first.getPolicies().size() != second.getPolicies().size()) {
-            return false;
+    private void disablePdp(PdpRequests requests) {
+
+        // remove the requests from the map
+        if (!pdp2requests.remove(requests.getPdpName(), requests)) {
+            // don't have the info we need to disable it
+            return;
         }
 
-        if (!first.getPdpGroup().equals(second.getPdpGroup())) {
-            return false;
+        requests.stopPublishing();
+
+        // don't do anything if we don't have a group
+        String name = requests.getLastGroupName();
+        if (name == null) {
+            return;
         }
 
-        if (!first.getPdpSubgroup().equals(second.getPdpSubgroup())) {
-            return false;
-        }
+        // remove the PDP from the group
+        removeFromGroup(requests.getPdpName(), name);
 
-        // see if the other has any policies that this does not have
-        ArrayList<ToscaPolicy> lst = new ArrayList<>(second.getPolicies());
-        lst.removeAll(first.getPolicies());
-
-        return lst.isEmpty();
+        // send the state change
+        PdpStateChange change = new PdpStateChange();
+        change.setName(requests.getPdpName());
+        change.setState(PdpState.PASSIVE);
+        addRequest(change);
     }
 
     /**
-     * Determines if two requests are the "same", which is does not necessarily mean
-     * "equals".
+     * Removes a PDP from its group.
      *
-     * @param first first request to check
-     * @param second second request to check
-     * @return {@code true} if this update subsumes the other, {@code false} otherwise
+     * @param pdpName name of the PDP to be removed
+     * @param groupName name of the group from which it should be removed
      */
-    protected static boolean isSame(PdpStateChange first, PdpStateChange second) {
-        return (first.getState() == second.getState());
-    }
+    private void removeFromGroup(String pdpName, String groupName) {
 
-    /**
-     * Request data, which contains an UPDATE or a STATE-CHANGE request, or both. The
-     * UPDATE is always published before the STATE-CHANGE. In addition, both requests may
-     * be changed at any point, possibly triggering a restart of the publishing.
-     */
-    public class ModifyReqData extends RequestData {
+        try (PolicyModelsProvider dao = daoFactory.create()) {
 
-        /**
-         * The UPDATE message to be published, or {@code null}.
-         */
-        private PdpUpdate update;
+            PdpGroupFilter filter = PdpGroupFilter.builder().name(groupName).groupState(PdpState.ACTIVE)
+                            .version(PdpGroupFilter.LATEST_VERSION).build();
 
-        /**
-         * The STATE-CHANGE message to be published, or {@code null}.
-         */
-        private PdpStateChange stateChange;
-
-
-        /**
-         * Constructs the object.
-         *
-         * @param newUpdate the UPDATE message to be sent, or {@code null}
-         * @param newState the STATE-CHANGE message to be sent, or {@code null}
-         */
-        public ModifyReqData(PdpUpdate newUpdate, PdpStateChange newState) {
-            super(params);
-
-            if (newUpdate != null) {
-                this.stateChange = newState;
-                setName(newUpdate.getName());
-                update = newUpdate;
-                configure(new ModUpdateData(newUpdate));
-
-            } else {
-                this.update = null;
-                setName(newState.getName());
-                stateChange = newState;
-                configure(new ModStateChangeData(newState));
-            }
-        }
-
-        /**
-         * Determines if this request is still in the map.
-         */
-        @Override
-        protected boolean isActive() {
-            return (name2data.get(getName()) == this);
-        }
-
-        /**
-         * Removes this request from the map.
-         */
-        @Override
-        protected void allCompleted() {
-            name2data.remove(getName(), this);
-        }
-
-        /**
-         * Adds an UPDATE to the request data, replacing any existing UPDATE, if
-         * appropriate. If the UPDATE is replaced, then publishing is restarted.
-         *
-         * @param newRequest the new UPDATE request
-         */
-        private void add(PdpUpdate newRequest) {
-            if (newRequest == null) {
+            List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
+            if (groups.isEmpty()) {
                 return;
             }
 
-            synchronized (modifyLock) {
-                if (update != null && isSame(update, newRequest)) {
-                    // already have this update - discard it
+            PdpGroup group = groups.get(0);
+
+            for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
+                if (removeFromSubgroup(pdpName, group, subgrp)) {
+                    dao.updatePdpGroups(Collections.singletonList(group));
                     return;
                 }
-
-                // must restart from scratch
-                stopPublishing();
-
-                update = newRequest;
-                configure(new ModUpdateData(newRequest));
-
-                startPublishing();
-            }
-        }
-
-        /**
-         * Adds a STATE-CHANGE to the request data, replacing any existing UPDATE, if
-         * appropriate. If the STATE-CHANGE is replaced, and we're currently publishing
-         * the STATE-CHANGE, then publishing is restarted.
-         *
-         * @param newRequest the new STATE-CHANGE request
-         */
-        private void add(PdpStateChange newRequest) {
-            if (newRequest == null) {
-                return;
             }
 
-            synchronized (modifyLock) {
-                if (stateChange != null && isSame(stateChange, newRequest)) {
-                    // already have this update - discard it
-                    return;
-                }
-
-                if (getWrapper() instanceof StateChangeData) {
-                    // we were publishing STATE-CHANGE, thus must restart it
-                    stopPublishing();
-
-                    stateChange = newRequest;
-                    configure(new ModStateChangeData(newRequest));
-
-                    startPublishing();
-
-                } else {
-                    // haven't started publishing STATE-CHANGE yet, just replace it
-                    stateChange = newRequest;
-                }
-            }
-        }
-
-        /**
-         * Indicates that the retry count was exhausted.
-         */
-        protected void retryCountExhausted() {
-            // remove this request data from the PDP request map
-            allCompleted();
-
-            // TODO what to do?
-        }
-
-        /**
-         * Indicates that a response did not match the data.
-         *
-         * @param reason the reason for the mismatch
-         */
-        protected void mismatch(String reason) {
-            // remove this request data from the PDP request map
-            allCompleted();
-
-            // TODO what to do?
-        }
-
-        /**
-         * Wraps an UPDATE.
-         */
-        private class ModUpdateData extends UpdateData {
-
-            public ModUpdateData(PdpUpdate message) {
-                super(message, params);
-            }
-
-            @Override
-            public void mismatch(String reason) {
-                ModifyReqData.this.mismatch(reason);
-            }
-
-            @Override
-            public void completed() {
-                if (stateChange == null) {
-                    // no STATE-CHANGE request - we're done
-                    allCompleted();
-
-                } else {
-                    // now process the STATE-CHANGE request
-                    configure(new ModStateChangeData(stateChange));
-                    startPublishing();
-                }
-            }
-        }
-
-        /**
-         * Wraps a STATE-CHANGE.
-         */
-        private class ModStateChangeData extends StateChangeData {
-
-            public ModStateChangeData(PdpStateChange message) {
-                super(message, params);
-            }
-
-            @Override
-            public void mismatch(String reason) {
-                ModifyReqData.this.mismatch(reason);
-            }
-
-            @Override
-            public void completed() {
-                allCompleted();
-            }
+        } catch (PfModelException e) {
+            logger.info("unable to remove PDP {} from subgroup", pdpName, e);
         }
     }
 
-    // these may be overridden by junit tests
+    /**
+     * Removes a PDP from a subgroup.
+     *
+     * @param pdpName name of the PDP to be removed
+     * @param group group from which to attempt to remove the PDP
+     * @param subgrp subgroup from which to attempt to remove the PDP
+     * @return {@code true} if the PDP was removed, {@code false} if the PDP was not in
+     *         the group
+     * @throws PfModelException if a DB error occurs
+     */
+    private boolean removeFromSubgroup(String pdpName, PdpGroup group, PdpSubGroup subgrp) throws PfModelException {
 
-    protected ModifyReqData makeRequestData(PdpUpdate update, PdpStateChange stateChange) {
-        return new ModifyReqData(update, stateChange);
+        Iterator<Pdp> iter = subgrp.getPdpInstances().iterator();
+
+        while (iter.hasNext()) {
+            Pdp instance = iter.next();
+
+            if (pdpName.equals(instance.getInstanceId())) {
+                iter.remove();
+                subgrp.setCurrentInstanceCount(subgrp.getPdpInstances().size());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Creates a new set of requests for a PDP. May be overridden by junit tests.
+     *
+     * @param pdpName PDP name
+     * @return a new set of requests
+     */
+    protected PdpRequests makePdpRequests(String pdpName) {
+        return new PdpRequests(pdpName);
+    }
+
+    /**
+     * Listener for singleton request events.
+     */
+    private class SingletonListener implements RequestListener {
+        private final PdpRequests requests;
+        private final Request request;
+
+        public SingletonListener(PdpRequests requests, Request request) {
+            this.requests = requests;
+            this.request = request;
+        }
+
+        @Override
+        public void failure(String pdpName, String reason) {
+            if (requests.getPdpName().equals(pdpName)) {
+                disablePdp(requests);
+            }
+        }
+
+        @Override
+        public void success(String pdpName) {
+            if (requests.getPdpName().equals(pdpName)) {
+                if (pdp2requests.get(requests.getPdpName()) == requests) {
+                    startNextRequest(requests, request);
+
+                } else {
+                    requests.stopPublishing();
+                }
+            }
+        }
+
+        @Override
+        public void retryCountExhausted() {
+            disablePdp(requests);
+        }
     }
 }

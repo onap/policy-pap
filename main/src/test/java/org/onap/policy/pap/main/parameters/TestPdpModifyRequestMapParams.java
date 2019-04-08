@@ -53,58 +53,59 @@ public class TestPdpModifyRequestMapParams {
         updTimers = mock(TimerManager.class);
         stateTimers = mock(TimerManager.class);
 
-        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp);
+        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp)
+                        .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
     }
 
     @Test
     public void testGettersSetters() {
-        assertSame(params, params.setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers));
-
-        assertSame(pdpParams, params.getParams());
-        assertSame(updTimers, params.getUpdateTimers());
-        assertSame(stateTimers, params.getStateChangeTimers());
-
-        // super class data should also be available
         assertSame(pub, params.getPublisher());
         assertSame(disp, params.getResponseDispatcher());
         assertSame(lock, params.getModifyLock());
+        assertSame(pdpParams, params.getParams());
+        assertSame(updTimers, params.getUpdateTimers());
+        assertSame(stateTimers, params.getStateChangeTimers());
     }
 
     @Test
     public void testValidate() {
         // no exception
-        params.setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers).validate();
+        params.validate();
+    }
+
+    @Test
+    public void testValidate_MissingPublisher() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setPublisher(null).validate())
+                        .withMessageContaining("publisher");
+    }
+
+    @Test
+    public void testValidate_MissingDispatcher() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setResponseDispatcher(null).validate())
+                        .withMessageContaining("Dispatch");
+    }
+
+    @Test
+    public void testValidate_MissingLock() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setModifyLock(null).validate())
+                        .withMessageContaining("Lock");
     }
 
     @Test
     public void testValidate_MissingPdpParams() {
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> params.setStateChangeTimers(stateTimers).setUpdateTimers(updTimers).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setParams(null).validate())
                         .withMessageContaining("PDP param");
     }
 
     @Test
     public void testValidate_MissingStateChangeTimers() {
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> params.setParams(pdpParams).setUpdateTimers(updTimers).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setStateChangeTimers(null).validate())
                         .withMessageContaining("state");
     }
 
     @Test
     public void testValidate_MissingUpdateTimers() {
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> params.setParams(pdpParams).setStateChangeTimers(stateTimers).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setUpdateTimers(null).validate())
                         .withMessageContaining("update");
-    }
-
-    @Test
-    public void testValidate_MissingSuperclassData() {
-        // leave out one of the superclass fields
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> new PdpModifyRequestMapParams()
-                        .setPublisher(pub)
-                        .setResponseDispatcher(disp).setParams(pdpParams).setStateChangeTimers(stateTimers)
-                        .setUpdateTimers(updTimers).validate()).withMessageContaining("Lock");
-
     }
 }
