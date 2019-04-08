@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.parameters;
 import lombok.Getter;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 
@@ -31,10 +32,14 @@ import org.onap.policy.pap.main.comm.TimerManager;
  * Parameters needed to create a {@link PdpModifyRequestMapParams}.
  */
 @Getter
-public class PdpModifyRequestMapParams extends RequestDataParams {
+public class PdpModifyRequestMapParams {
+    private Publisher publisher;
+    private RequestIdDispatcher<PdpStatus> responseDispatcher;
+    private Object modifyLock;
     private PdpParameters params;
     private TimerManager updateTimers;
     private TimerManager stateChangeTimers;
+    private PolicyModelsProviderFactoryWrapper daoFactory;
 
     public PdpModifyRequestMapParams setParams(PdpParameters params) {
         this.params = params;
@@ -51,27 +56,41 @@ public class PdpModifyRequestMapParams extends RequestDataParams {
         return this;
     }
 
-    @Override
+    public PdpModifyRequestMapParams setDaoFactory(PolicyModelsProviderFactoryWrapper daoFactory) {
+        this.daoFactory = daoFactory;
+        return this;
+    }
+
     public PdpModifyRequestMapParams setPublisher(Publisher publisher) {
-        super.setPublisher(publisher);
+        this.publisher = publisher;
         return this;
     }
 
-    @Override
     public PdpModifyRequestMapParams setResponseDispatcher(RequestIdDispatcher<PdpStatus> responseDispatcher) {
-        super.setResponseDispatcher(responseDispatcher);
+        this.responseDispatcher = responseDispatcher;
         return this;
     }
 
-    @Override
     public PdpModifyRequestMapParams setModifyLock(Object modifyLock) {
-        super.setModifyLock(modifyLock);
+        this.modifyLock = modifyLock;
         return this;
     }
 
-    @Override
+    /**
+     * Validates the parameters.
+     */
     public void validate() {
-        super.validate();
+        if (publisher == null) {
+            throw new IllegalArgumentException("missing publisher");
+        }
+
+        if (responseDispatcher == null) {
+            throw new IllegalArgumentException("missing responseDispatcher");
+        }
+
+        if (modifyLock == null) {
+            throw new IllegalArgumentException("missing modifyLock");
+        }
 
         if (params == null) {
             throw new IllegalArgumentException("missing PDP parameters");
