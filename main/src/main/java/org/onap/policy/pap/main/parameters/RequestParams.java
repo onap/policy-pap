@@ -24,30 +24,43 @@ import lombok.Getter;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.comm.Publisher;
-import org.onap.policy.pap.main.comm.RequestData;
+import org.onap.policy.pap.main.comm.TimerManager;
 
 
 /**
- * Parameters needed to create a {@link RequestData}.
+ * Parameters needed to create a Request.
  */
 @Getter
-public class RequestDataParams {
+public class RequestParams {
     private Publisher publisher;
     private RequestIdDispatcher<PdpStatus> responseDispatcher;
     private Object modifyLock;
+    private TimerManager timers;
+    private int maxRetryCount;
 
-    public RequestDataParams setPublisher(Publisher publisher) {
+
+    public RequestParams setPublisher(Publisher publisher) {
         this.publisher = publisher;
         return this;
     }
 
-    public RequestDataParams setResponseDispatcher(RequestIdDispatcher<PdpStatus> responseDispatcher) {
+    public RequestParams setResponseDispatcher(RequestIdDispatcher<PdpStatus> responseDispatcher) {
         this.responseDispatcher = responseDispatcher;
         return this;
     }
 
-    public RequestDataParams setModifyLock(Object modifyLock) {
+    public RequestParams setModifyLock(Object modifyLock) {
         this.modifyLock = modifyLock;
+        return this;
+    }
+
+    public RequestParams setTimers(TimerManager timers) {
+        this.timers = timers;
+        return this;
+    }
+
+    public RequestParams setMaxRetryCount(int maxRetryCount) {
+        this.maxRetryCount = maxRetryCount;
         return this;
     }
 
@@ -65,6 +78,10 @@ public class RequestDataParams {
 
         if (modifyLock == null) {
             throw new IllegalArgumentException("missing modifyLock");
+        }
+
+        if (timers == null) {
+            throw new IllegalArgumentException("missing timers");
         }
     }
 }
