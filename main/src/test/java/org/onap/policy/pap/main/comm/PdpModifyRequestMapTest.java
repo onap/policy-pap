@@ -22,570 +22,587 @@ package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
-import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
-import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pdp.concepts.Pdp;
+import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap.ModifyReqData;
+import org.onap.policy.pap.main.comm.msgdata.Request;
+import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
-import org.onap.policy.pap.main.parameters.PdpParameters;
-import org.onap.policy.pap.main.parameters.PdpStateChangeParameters;
-import org.onap.policy.pap.main.parameters.PdpUpdateParameters;
 import org.powermock.reflect.Whitebox;
 
-public class PdpModifyRequestMapTest {
-    private static final String DIFFERENT = "-diff";
-    private static final String PDP1 = "pdp_1";
+public class PdpModifyRequestMapTest extends CommonRequestBase {
+    private static final String MY_REASON = "my reason";
+    private static final String MY_VERSION = "1.2.3";
 
-    private static final int UPDATE_RETRIES = 2;
-    private static final int STATE_RETRIES = 1;
+    /**
+     * Used to capture input to dao.createPdpGroups().
+     */
+    @Captor
+    private ArgumentCaptor<List<PdpGroup>> createCaptor;
 
-    private PdpModifyRequestMap map;
-    private Publisher pub;
-    private RequestIdDispatcher<PdpStatus> disp;
-    private Object lock;
-    private TimerManager updTimers;
-    private TimerManager stateTimers;
-    private TimerManager.Timer timer;
-    private Queue<QueueToken<PdpMessage>> queue;
-    private PdpStatus response;
-    private PdpParameters pdpParams;
-    private PdpUpdateParameters updParams;
-    private PdpStateChangeParameters stateParams;
+
+    /**
+     * Used to capture input to dao.updatePdpGroups().
+     */
+    @Captor
+    private ArgumentCaptor<List<PdpGroup>> updateCaptor;
+
+    @Mock
+    private PdpRequests requests;
+
+    private MyMap map;
     private PdpUpdate update;
-    private PdpStateChange state;
-    private String mismatchReason;
+    private PdpStateChange change;
+    private PdpStatus response;
 
     /**
      * Sets up.
+     *
+     * @throws Exception if an error occurs
      */
     @Before
-    @SuppressWarnings("unchecked")
-    public void setUp() {
-        pub = mock(Publisher.class);
-        disp = mock(RequestIdDispatcher.class);
-        lock = new Object();
-        updTimers = mock(TimerManager.class);
-        stateTimers = mock(TimerManager.class);
-        timer = mock(TimerManager.Timer.class);
-        queue = new LinkedList<>();
+    public void setUp() throws Exception {
+        super.setUp();
+
+        MockitoAnnotations.initMocks(this);
+
         response = new PdpStatus();
-        pdpParams = mock(PdpParameters.class);
-        updParams = mock(PdpUpdateParameters.class);
-        stateParams = mock(PdpStateChangeParameters.class);
-        update = makeUpdate();
-        state = makeStateChange();
-        mismatchReason = null;
 
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                queue.add(invocation.getArgumentAt(0, QueueToken.class));
-                return null;
-            }
-        }).when(pub).enqueue(any());
+        update = makeUpdate(PDP1, MY_GROUP, MY_SUBGROUP);
+        change = makeStateChange(PDP1, MY_STATE);
 
-        when(updTimers.register(any(), any())).thenReturn(timer);
-        when(stateTimers.register(any(), any())).thenReturn(timer);
+        when(requests.getPdpName()).thenReturn(PDP1);
 
-        when(pdpParams.getUpdateParameters()).thenReturn(updParams);
-        when(pdpParams.getStateChangeParameters()).thenReturn(stateParams);
-
-        when(updParams.getMaxRetryCount()).thenReturn(UPDATE_RETRIES);
-        when(updParams.getMaxWaitMs()).thenReturn(1000L);
-
-        when(stateParams.getMaxRetryCount()).thenReturn(STATE_RETRIES);
-        when(stateParams.getMaxWaitMs()).thenReturn(1000L);
-
-        response.setName(PDP1);
-        response.setState(PdpState.SAFE);
+        response.setName(MY_NAME);
+        response.setState(MY_STATE);
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
-        response.setPolicies(update.getPolicies().stream().map(ToscaPolicy::getIdentifier)
-                        .collect(Collectors.toList()));
+        response.setPolicies(Collections.emptyList());
 
-        map = new PdpModifyRequestMap(makeParameters()) {
-
-            @Override
-            protected ModifyReqData makeRequestData(PdpUpdate update, PdpStateChange stateChange) {
-                return new ModifyReqData(update, stateChange) {
-                    @Override
-                    protected void mismatch(String reason) {
-                        mismatchReason = reason;
-                        super.mismatch(reason);
-                    }
-                };
-            }
-        };
-
-        map = spy(map);
+        map = new MyMap(mapParams);
     }
 
     @Test
-    public void testAdd_DifferentPdps() {
-        map.addRequest(update);
-
-        state.setName(DIFFERENT);
-        map.addRequest(state);
-
-        assertNotNull(getReqData(PDP1));
-        assertNotNull(getReqData(DIFFERENT));
-
-        assertQueueContains("testAdd_DifferentPdps", update, state);
+    public void testPdpModifyRequestMap() {
+        assertSame(mapParams, Whitebox.getInternalState(map, "params"));
+        assertSame(lock, Whitebox.getInternalState(map, "modifyLock"));
+        assertSame(daoFactory, Whitebox.getInternalState(map, "daoFactory"));
     }
 
     @Test
-    public void testAddRequestPdpUpdate() {
-        map.addRequest(update);
+    public void testStopPublishing() {
+        // try with non-existent PDP
+        map.stopPublishing(PDP1);
 
-        assertQueueContains("testAddRequestPdpUpdate", update);
-    }
+        // now start a PDP and try it
+        map.addRequest(change);
+        map.stopPublishing(PDP1);
+        verify(requests).stopPublishing();
 
-    @Test
-    public void testAddRequestPdpStateChange() {
-        map.addRequest(state);
-
-        assertQueueContains("testAddRequestPdpStateChange", state);
-    }
-
-    @Test
-    public void testAddRequestPdpUpdatePdpStateChange_Both() {
-        map.addRequest(update, state);
-
-        assertQueueContains("testAddRequestPdpUpdatePdpStateChange_Both", update);
+        // try again - it shouldn't stop publishing again
+        map.stopPublishing(PDP1);
+        verify(requests, times(1)).stopPublishing();
     }
 
     @Test
     public void testAddRequestPdpUpdatePdpStateChange_BothNull() {
+        // nulls should be ok
+        map.addRequest(null, null);
+    }
+
+    @Test
+    public void testAddRequestPdpUpdatePdpStateChange_NullUpdate() {
+        map.addRequest(null, change);
+
+        Request req = getSingletons(1).get(0);
+        assertSame(change, req.getMessage());
+        assertEquals("pdp_1 PdpStateChange", req.getName());
+    }
+
+    @Test
+    public void testAddRequestPdpUpdatePdpStateChange_NullStateChange() {
+        map.addRequest(update, null);
+
+        Request req = getSingletons(1).get(0);
+        assertSame(update, req.getMessage());
+        assertEquals("pdp_1 PdpUpdate", req.getName());
+    }
+
+    @Test
+    public void testAddRequestPdpUpdatePdpStateChange_BothProvided() {
+        map.addRequest(update, change);
+
+        // should have only allocated one request structure
+        assertEquals(1, map.nalloc);
+
+        // both requests should have been added
+        List<Request> values = getSingletons(2);
+
+        Request req = values.remove(0);
+        assertSame(update, req.getMessage());
+        assertEquals("pdp_1 PdpUpdate", req.getName());
+
+        req = values.remove(0);
+        assertSame(change, req.getMessage());
+        assertEquals("pdp_1 PdpStateChange", req.getName());
+    }
+
+    @Test
+    public void testAddRequestPdpUpdatePdpStateChange() {
+        // null should be ok
         map.addRequest(null, null);
 
-        // nothing should have been added to the queue
-        assertTrue(queue.isEmpty());
+        map.addRequest(change);
+
+        Request req = getSingletons(1).get(0);
+        assertSame(change, req.getMessage());
+        assertEquals("pdp_1 PdpStateChange", req.getName());
+
+        // broadcast should throw an exception
+        change.setName(null);
+        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(change))
+                        .withMessageStartingWith("unexpected broadcast message: PdpStateChange");
     }
 
     @Test
-    public void testGetPdpName_SameNames() {
-        // should be no exception
-        map.addRequest(update, state);
-    }
+    public void testAddRequestPdpUpdate() {
+        // null should be ok
+        map.addRequest((PdpUpdate) null);
 
-    @Test
-    public void testGetPdpName_DifferentNames() {
-        // should be no exception
-        state.setName(update.getName() + "X");
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state))
-                        .withMessageContaining("does not match");
-    }
+        map.addRequest(update);
 
-    @Test
-    public void testGetPdpName_NullUpdateName() {
+        Request req = getSingletons(1).get(0);
+        assertSame(update, req.getMessage());
+        assertEquals("pdp_1 PdpUpdate", req.getName());
+
+        // broadcast should throw an exception
         update.setName(null);
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update)).withMessageContaining("update");
-
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state))
-                        .withMessageContaining("update");
-
-        // both names are null
-        state.setName(null);
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state));
+        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update))
+                        .withMessageStartingWith("unexpected broadcast message: PdpUpdate");
     }
 
     @Test
-    public void testGetPdpName_NullStateName() {
-        state.setName(null);
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(state)).withMessageContaining("state");
+    public void testAddRequestPdpStateChange() {
+        // null should be ok
+        map.addRequest((PdpStateChange) null);
 
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state))
-                        .withMessageContaining("state");
+        map.addRequest(change);
 
-        // both names are null
-        update.setName(null);
-        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update, state));
+        Request req = getSingletons(1).get(0);
+        assertSame(change, req.getMessage());
+        assertEquals("pdp_1 PdpStateChange", req.getName());
+
+        // broadcast should throw an exception
+        change.setName(null);
+        assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(change))
+                        .withMessageStartingWith("unexpected broadcast message: PdpStateChange");
     }
 
     @Test
-    public void testIsSamePdpUpdatePdpUpdate() {
+    public void testAddSingleton() {
+        map.addRequest(change);
+        assertEquals(1, map.nalloc);
+
+        // should have one singleton
+        getSingletons(1);
+
+        // add another request with the same PDP
+        map.addRequest(makeStateChange(PDP1, MY_STATE));
+        assertEquals(1, map.nalloc);
+
+        // should now have another singleton
+        getSingletons(2);
+
+
+        // add another request with a different PDP
+        map.addRequest(makeStateChange(DIFFERENT, MY_STATE));
+
+        // should now have another allocation
+        assertEquals(2, map.nalloc);
+
+        // should now have another singleton
+        getSingletons(3);
+    }
+
+    @Test
+    public void testStartNextRequest_NoMore() {
+        map.addRequest(change);
+
+        // indicate success
+        getListener(getSingletons(1).get(0)).success(PDP1);
+
+        /*
+         * the above should have removed the requests so next time should allocate a new
+         * one
+         */
+        map.addRequest(change);
+        assertEquals(2, map.nalloc);
+    }
+
+    @Test
+    public void testStartNextRequest_HaveMore() {
+        map.addRequest(update);
+        map.addRequest(change);
+
+        Request updateReq = getSingletons(2).get(0);
+
+        // indicate success with the update
+        when(requests.startNextRequest(updateReq)).thenReturn(true);
+        getListener(updateReq).success(PDP1);
+
+        // should have started the next request
+        verify(requests).startNextRequest(updateReq);
+
+        /*
+         * requests should still be there, so adding another request should not allocate a
+         * new one
+         */
+        map.addRequest(update);
+        assertEquals(1, map.nalloc);
+    }
+
+    @Test
+    public void testDisablePdp() {
         map.addRequest(update);
 
-        // queue a similar request
-        PdpUpdate update2 = makeUpdate();
-        map.addRequest(update2);
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
 
-        // token should still have original message
-        assertQueueContains("testIsSamePdpUpdatePdpUpdate", update);
+        // indicate failure
+        invokeFailureHandler(1);
+
+        // should have stopped publishing
+        verify(requests).stopPublishing();
+
+        // should have published a new state-change
+        PdpMessage msg2 = getSingletons(2).get(1).getMessage();
+        assertNotNull(msg2);
+        assertTrue(msg2 instanceof PdpStateChange);
+
+        change = (PdpStateChange) msg2;
+        assertEquals(PDP1, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
     }
 
     @Test
-    public void testIsSamePdpUpdatePdpUpdate_DifferentPolicyCount() {
+    public void testDisablePdp_AlreadyRemoved() {
+        map.addRequest(change);
+        map.stopPublishing(PDP1);
+
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
+
+        invokeFailureHandler(1);
+
+        // should not have stopped publishing a second time
+        verify(requests, times(1)).stopPublishing();
+    }
+
+    @Test
+    public void testDisablePdp_NoGroup() {
+        map.addRequest(change);
+
+        invokeFailureHandler(1);
+
+        // should not have stopped publishing
+        verify(requests).stopPublishing();
+    }
+
+    @Test
+    public void testRemoveFromGroup() throws Exception {
+        map.addRequest(change);
+
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
+
+        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP + "a", PDP1 + "a"),
+                        makeSubGroup(MY_SUBGROUP, PDP1), makeSubGroup(MY_SUBGROUP + "c", PDP1 + "c")));
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        invokeFailureHandler(1);
+
+        // verify that the PDP was removed from the subgroup
+        List<PdpGroup> groups = getGroupUpdates();
+        assertEquals(1, groups.size());
+        assertSame(group, groups.get(0));
+
+        List<PdpSubGroup> subgroups = group.getPdpSubgroups();
+        assertEquals(3, subgroups.size());
+        assertEquals("[pdp_1a]", getPdpNames(subgroups.get(0)));
+        assertEquals("[]", getPdpNames(subgroups.get(1)));
+        assertEquals("[pdp_1c]", getPdpNames(subgroups.get(2)));
+    }
+
+    @Test
+    public void testRemoveFromGroup_DaoEx() throws Exception {
+        map.addRequest(change);
+
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
+
+        when(dao.getFilteredPdpGroups(any())).thenThrow(new PfModelException(Status.BAD_REQUEST, "expected exception"));
+
+        invokeFailureHandler(1);
+
+        // should still stop publishing
+        verify(requests).stopPublishing();
+
+        // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
-
-        PdpUpdate update2 = makeUpdate();
-        update2.setPolicies(Arrays.asList(update.getPolicies().get(0)));
-        map.addRequest(update2);
-
-        // should have replaced the message in the token
-        assertQueueContains("testIsSamePdpUpdatePdpUpdate_DifferentPolicyCount", update2);
+        assertEquals(2, map.nalloc);
     }
 
     @Test
-    public void testIsSamePdpUpdatePdpUpdate_DifferentGroup() {
+    public void testRemoveFromGroup_NoGroups() throws Exception {
+        map.addRequest(change);
+
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
+
+        invokeFailureHandler(1);
+
+        verify(dao, never()).updatePdpGroups(any());
+    }
+
+    @Test
+    public void testRemoveFromGroup_NoMatchingSubgroup() throws Exception {
+        map.addRequest(change);
+
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
+
+        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, DIFFERENT)));
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        invokeFailureHandler(1);
+
+        verify(dao, never()).updatePdpGroups(any());
+    }
+
+    @Test
+    public void testRemoveFromSubgroup() throws Exception {
+        map.addRequest(change);
+
+        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
+
+        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, PDP1 + "x", PDP1 + "y")));
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        invokeFailureHandler(1);
+
+        // verify that the PDP was removed from the subgroup
+        List<PdpGroup> groups = getGroupUpdates();
+        assertEquals(1, groups.size());
+        assertSame(group, groups.get(0));
+
+        assertEquals("[pdp_1x, pdp_1y]", getPdpNames(group.getPdpSubgroups().get(0)));
+    }
+
+    @Test
+    public void testMakePdpRequests() {
+        // this should invoke the real method without throwing an exception
+        new PdpModifyRequestMap(mapParams).addRequest(change);
+
+        QueueToken<PdpMessage> token = queue.poll();
+        assertNotNull(token);
+        assertSame(change, token.get());
+
+        verify(dispatcher).register(eq(change.getRequestId()), any());
+        verify(timers).register(eq(change.getRequestId()), any());
+    }
+
+    @Test
+    public void testSingletonListenerFailure() throws Exception {
+        map.addRequest(change);
+
+        // invoke the method
+        invokeFailureHandler(1);
+
+        verify(requests).stopPublishing();
+    }
+
+    @Test
+    public void testSingletonListenerFailure_WrongPdpName() throws Exception {
+        map.addRequest(change);
+
+        // invoke the method - has wrong PDP name
+        when(requests.getPdpName()).thenReturn(DIFFERENT);
+        invokeFailureHandler(1);
+
+        verify(requests, never()).stopPublishing();
+    }
+
+    @Test
+    public void testSingletonListenerSuccess_LastRequest() throws Exception {
+        map.addRequest(change);
+
+        // invoke the method
+        invokeSuccessHandler(1);
+
+        verify(requests, never()).stopPublishing();
+
+        // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
-
-        // queue a similar request
-        PdpUpdate update2 = makeUpdate();
-        update2.setPdpGroup(update.getPdpGroup() + DIFFERENT);
-        map.addRequest(update2);
-
-        // should have replaced the message in the token
-        assertQueueContains("testIsSamePdpUpdatePdpUpdate_DifferentGroup", update2);
+        assertEquals(2, map.nalloc);
     }
 
     @Test
-    public void testIsSamePdpUpdatePdpUpdate_DifferentSubGroup() {
+    public void testSingletonListenerSuccess_NameMismatch() throws Exception {
+        map.addRequest(change);
+
+        // invoke the method - with a different name
+        when(requests.getPdpName()).thenReturn(DIFFERENT);
+        invokeSuccessHandler(1);
+
+        verify(requests, never()).stopPublishing();
+
+        // no effect on the map
         map.addRequest(update);
-
-        PdpUpdate update2 = makeUpdate();
-        update2.setPdpSubgroup(update.getPdpSubgroup() + DIFFERENT);
-        map.addRequest(update2);
-
-        // should have replaced the message in the token
-        assertQueueContains("testIsSamePdpUpdatePdpUpdate_DifferentSubGroup", update2);
+        assertEquals(1, map.nalloc);
     }
 
     @Test
-    public void testIsSamePdpUpdatePdpUpdate_DifferentPolicies() {
+    public void testSingletonListenerSuccess_AlreadyStopped() throws Exception {
+        map.addRequest(change);
+
+        map.stopPublishing(PDP1);
+
+        // invoke the method
+        invokeSuccessHandler(1);
+
+        // should have called this a second time
+        verify(requests, times(2)).stopPublishing();
+
+        // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
-
-        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
-        policies.set(0, makePolicy("policy-3-x", "2.0.0"));
-
-        PdpUpdate update2 = makeUpdate();
-        update2.setPolicies(policies);
-        map.addRequest(update2);
-
-        // should have replaced the message in the token
-        assertQueueContains("testIsSamePdpUpdatePdpUpdate_DifferentPolicies", update2);
+        assertEquals(2, map.nalloc);
     }
 
     @Test
-    public void testIsSamePdpStateChangePdpStateChange() {
-        map.addRequest(state);
+    public void testSingletonListenerRetryCountExhausted() throws Exception {
+        map.addRequest(change);
 
-        // queue a similar request
-        PdpStateChange state2 = makeStateChange();
-        map.addRequest(state2);
+        // invoke the method
+        getListener(getSingletons(1).get(0)).retryCountExhausted();
 
-        // token should still have original message
-        assertQueueContains("testIsSamePdpStateChangePdpStateChange", state);
+        verify(requests).stopPublishing();
     }
 
-    @Test
-    public void testIsSamePdpStateChangePdpStateChange_DifferentState() {
-        map.addRequest(state);
 
-        // queue a similar request
-        PdpStateChange state2 = makeStateChange();
-        state2.setState(PdpState.TERMINATED);
-        map.addRequest(state2);
-
-        // should have replaced the message in the token
-        assertQueueContains("testIsSamePdpStateChangePdpStateChange_DifferentState", state2);
+    private String getPdpNames(PdpSubGroup subgroup) {
+        return subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toList()).toString();
     }
 
-    @Test
-    public void testModifyReqDataIsActive() {
-        map.addRequest(update);
-
-        ModifyReqData reqdata = getReqData(PDP1);
-        assertNotNull(reqdata);
-
-        // this should remove it from the map
-        invokeProcessResponse();
-
-        assertFalse(reqdata.isActive());
+    private void invokeSuccessHandler(int count) {
+        getListener(getSingletons(count).get(0)).success(PDP1);
     }
 
-    @Test
-    public void testModifyReqDataAddPdpUpdate() {
-        map.addRequest(state);
-
-        map.addRequest(update);
-
-        // update should have replaced the state-change in the queue
-        assertQueueContains("testModifyReqDataAddPdpUpdate", update);
+    private void invokeFailureHandler(int count) {
+        getListener(getSingletons(count).get(0)).failure(PDP1, MY_REASON);
     }
 
-    @Test
-    public void testModifyReqDataAddPdpStateChange() {
-        map.addRequest(update);
+    private List<Request> getSingletons(int count) {
+        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
 
-        map.addRequest(state);
-
-        // update should still be in the queue
-        assertQueueContains("testModifyReqDataAddPdpStateChange", update);
+        verify(requests, times(count)).addSingleton(captor.capture());
+        return captor.getAllValues();
     }
 
-    @Test
-    public void testModifyReqDataRetryCountExhausted() {
-        map.addRequest(state);
-
-        // timeout twice so that retry count is exhausted
-        invokeTimeoutHandler(stateTimers, STATE_RETRIES + 1);
-
-        // name should have been removed
-        assertNull(getReqData(PDP1));
+    private RequestListener getListener(Request request) {
+        return Whitebox.getInternalState(request, "listener");
     }
 
-    @Test
-    public void testModifyReqDataMismatch() {
-        map.addRequest(state);
+    private PdpGroup makeGroup(String name, String version) {
+        PdpGroup group = new PdpGroup();
 
-        // set up a response with incorrect info
-        response.setName(state.getName() + DIFFERENT);
+        group.setName(name);
+        group.setVersion(version);
 
-        invokeProcessResponse();
-
-        assertNotNull(mismatchReason);
-
-        // name should have been removed
-        assertNull(getReqData(PDP1));
+        return group;
     }
 
-    @Test
-    public void testUpdateDataGetMaxRetryCount() {
-        map.addRequest(update);
-        ModifyReqData reqdata = getReqData(PDP1);
+    private PdpSubGroup makeSubGroup(String pdpType, String... pdpNames) {
+        PdpSubGroup subgroup = new PdpSubGroup();
 
-        for (int count = 0; count < UPDATE_RETRIES; ++count) {
-            assertTrue("update bump " + count, reqdata.bumpRetryCount());
+        subgroup.setPdpType(pdpType);
+        subgroup.setPdpInstances(Arrays.asList(pdpNames).stream().map(this::makePdp).collect(Collectors.toList()));
+
+        return subgroup;
+    }
+
+    private Pdp makePdp(String pdpName) {
+        Pdp pdp = new Pdp();
+        pdp.setInstanceId(pdpName);
+
+        return pdp;
+    }
+
+    /**
+     * Gets the input to the method.
+     *
+     * @return the input that was passed to the dao.updatePdpGroups() method
+     * @throws Exception if an error occurred
+     */
+    private List<PdpGroup> getGroupUpdates() throws Exception {
+        verify(dao).updatePdpGroups(updateCaptor.capture());
+
+        return copyList(updateCaptor.getValue());
+    }
+
+    /**
+     * Copies a list and sorts it by group name.
+     *
+     * @param source source list to copy
+     * @return a copy of the source list
+     */
+    private List<PdpGroup> copyList(List<PdpGroup> source) {
+        List<PdpGroup> newlst = new ArrayList<>(source);
+        Collections.sort(newlst, (left, right) -> left.getName().compareTo(right.getName()));
+        return newlst;
+    }
+
+    private class MyMap extends PdpModifyRequestMap {
+        /**
+         * Number of times requests were allocated.
+         */
+        private int nalloc = 0;
+
+        public MyMap(PdpModifyRequestMapParams params) {
+            super(params);
         }
 
-        assertFalse("update bump final", reqdata.bumpRetryCount());
-    }
-
-    @Test
-    public void testUpdateDataMismatch() {
-        map.addRequest(update);
-
-        response.setName(DIFFERENT);
-        invokeProcessResponse();
-
-        assertNull(getReqData(PDP1));
-    }
-
-    @Test
-    public void testUpdateDataComplete() {
-        map.addRequest(update);
-
-        invokeProcessResponse();
-
-        assertNull(getReqData(PDP1));
-    }
-
-    @Test
-    public void testUpdateDataComplete_MoreToGo() {
-        map.addRequest(update, state);
-
-        invokeProcessResponse();
-
-        assertNotNull(getReqData(PDP1));
-
-        assertSame(state, queue.poll().get());
-    }
-
-    @Test
-    public void testStateChangeDataMismatch() {
-        map.addRequest(state);
-
-        response.setName(DIFFERENT);
-        invokeProcessResponse();
-
-        assertNull(getReqData(PDP1));
-    }
-
-    @Test
-    public void testStateChangeDataCompleted() {
-        map.addRequest(state);
-
-        invokeProcessResponse();
-
-        assertNull(getReqData(PDP1));
-    }
-
-    @Test
-    public void testMakeRequestData() {
-        // need a map that doesn't override the method
-        map = new PdpModifyRequestMap(makeParameters());
-
-        // this will invoke makeRequestData() - should not throw an exception
-        map.addRequest(update);
-
-        assertNotNull(getReqData(PDP1));
-    }
-
-    /**
-     * Asserts that the queue contains the specified messages.
-     *
-     * @param testName the test name
-     * @param messages messages that are expected in the queue
-     */
-    private void assertQueueContains(String testName, PdpMessage... messages) {
-        assertEquals(testName, messages.length, queue.size());
-
-        int count = 0;
-        for (PdpMessage msg : messages) {
-            ++count;
-
-            QueueToken<PdpMessage> token = queue.remove();
-            assertSame(testName + "-" + count, msg, token.get());
+        @Override
+        protected PdpRequests makePdpRequests(String pdpName) {
+            ++nalloc;
+            return requests;
         }
-    }
-
-    /**
-     * Makes parameters to configure a map.
-     *
-     * @return new parameters
-     */
-    private PdpModifyRequestMapParams makeParameters() {
-        return new PdpModifyRequestMapParams().setModifyLock(lock).setParams(pdpParams).setPublisher(pub)
-                        .setResponseDispatcher(disp).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
-    }
-
-    /**
-     * Gets the listener that was registered with the dispatcher and invokes it.
-     *
-     * @return the response processor
-     */
-    @SuppressWarnings("unchecked")
-    private TypedMessageListener<PdpStatus> invokeProcessResponse() {
-        @SuppressWarnings("rawtypes")
-        ArgumentCaptor<TypedMessageListener> processResp = ArgumentCaptor.forClass(TypedMessageListener.class);
-
-        // indicate that is has been published
-        queue.remove().replaceItem(null);
-
-        verify(disp).register(any(), processResp.capture());
-
-        TypedMessageListener<PdpStatus> func = processResp.getValue();
-        func.onTopicEvent(CommInfrastructure.NOOP, PapConstants.TOPIC_POLICY_PDP_PAP, response);
-
-        return func;
-    }
-
-    /**
-     * Gets the timeout handler that was registered with the timer manager and invokes it.
-     *
-     * @param timers the timer manager whose handler is to be invoked
-     * @param ntimes number of times to invoke the timeout handler
-     * @return the timeout handler
-     */
-    @SuppressWarnings("unchecked")
-    private void invokeTimeoutHandler(TimerManager timers, int ntimes) {
-        @SuppressWarnings("rawtypes")
-        ArgumentCaptor<Consumer> timeoutHdlr = ArgumentCaptor.forClass(Consumer.class);
-
-        for (int count = 1; count <= ntimes; ++count) {
-            // indicate that is has been published
-            queue.remove().replaceItem(null);
-
-            verify(timers, times(count)).register(any(), timeoutHdlr.capture());
-
-            @SuppressWarnings("rawtypes")
-            List<Consumer> lst = timeoutHdlr.getAllValues();
-
-            Consumer<String> hdlr = lst.get(lst.size() - 1);
-            hdlr.accept(PDP1);
-        }
-    }
-
-    /**
-     * Gets the request data from the map.
-     *
-     * @param pdpName name of the PDP whose data is desired
-     * @return the request data, or {@code null} if the PDP is not in the map
-     */
-    private ModifyReqData getReqData(String pdpName) {
-        Map<String, ModifyReqData> name2data = Whitebox.getInternalState(map, "name2data");
-        return name2data.get(pdpName);
-    }
-
-    /**
-     * Makes an update message.
-     *
-     * @return a new update message
-     */
-    private PdpUpdate makeUpdate() {
-        PdpUpdate upd = new PdpUpdate();
-
-        upd.setDescription("update-description");
-        upd.setName(PDP1);
-        upd.setPdpGroup("group1-a");
-        upd.setPdpSubgroup("sub1-a");
-
-        upd.setPolicies(Arrays.asList(makePolicy("policy-1-a", "1.0.0"), makePolicy("policy-2-a", "1.1.0")));
-
-        return upd;
-    }
-
-    /**
-     * Creates a new policy.
-     *
-     * @param name policy name
-     * @param version policy version
-     * @return a new policy
-     */
-    private ToscaPolicy makePolicy(String name, String version) {
-        ToscaPolicy policy = new ToscaPolicy();
-
-        policy.setName(name);
-        policy.setVersion(version);
-
-        return policy;
-    }
-
-    /**
-     * Makes a state-change message.
-     *
-     * @return a new state-change message
-     */
-    private PdpStateChange makeStateChange() {
-        PdpStateChange cng = new PdpStateChange();
-
-        cng.setName(PDP1);
-        cng.setState(PdpState.SAFE);
-
-        return cng;
     }
 }

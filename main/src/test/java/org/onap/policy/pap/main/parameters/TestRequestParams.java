@@ -21,6 +21,7 @@
 package org.onap.policy.pap.main.parameters;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
@@ -29,12 +30,16 @@ import org.junit.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.comm.Publisher;
+import org.onap.policy.pap.main.comm.TimerManager;
 
-public class TestRequestDataParams {
-    private RequestDataParams params;
+public class TestRequestParams {
+    private static final int RETRIES = 1;
+
+    private RequestParams params;
     private Publisher pub;
     private RequestIdDispatcher<PdpStatus> disp;
     private Object lock;
+    private TimerManager timers;
 
     /**
      * Sets up the objects and creates an empty {@link #params}.
@@ -45,8 +50,10 @@ public class TestRequestDataParams {
         pub = mock(Publisher.class);
         disp = mock(RequestIdDispatcher.class);
         lock = new Object();
+        timers = mock(TimerManager.class);
 
-        params = new RequestDataParams();
+        params = new RequestParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp).setTimers(timers)
+                        .setMaxRetryCount(RETRIES);
     }
 
     @Test
@@ -56,32 +63,37 @@ public class TestRequestDataParams {
         assertSame(pub, params.getPublisher());
         assertSame(disp, params.getResponseDispatcher());
         assertSame(lock, params.getModifyLock());
+        assertSame(timers, params.getTimers());
+        assertEquals(RETRIES, params.getMaxRetryCount());
     }
 
     @Test
     public void testValidate() {
         // no exception
-        params.setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp).validate();
+        params.validate();
     }
 
     @Test
     public void testValidate_MissingLock() {
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> params.setPublisher(pub).setResponseDispatcher(disp).validate())
-            .withMessageContaining("Lock");
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setModifyLock(null).validate())
+                        .withMessageContaining("Lock");
     }
 
     @Test
     public void testValidate_MissingDispatcher() {
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> params.setModifyLock(lock).setPublisher(pub).validate())
-            .withMessageContaining("Dispatcher");
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setResponseDispatcher(null).validate())
+                        .withMessageContaining("Dispatcher");
     }
 
     @Test
     public void testValidate_MissingPublisher() {
-        assertThatIllegalArgumentException().isThrownBy(
-            () -> params.setModifyLock(lock).setResponseDispatcher(disp).validate())
-            .withMessageContaining("publisher");
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setPublisher(null).validate())
+                        .withMessageContaining("publisher");
+    }
+
+    @Test
+    public void testValidate_MissingTimers() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setTimers(null).validate())
+                        .withMessageContaining("timer");
     }
 }
