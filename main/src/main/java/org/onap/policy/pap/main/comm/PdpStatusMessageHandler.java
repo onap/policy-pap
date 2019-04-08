@@ -140,8 +140,8 @@ public class PdpStatusMessageHandler {
         Optional<PdpSubGroup> pdpSubgroup = null;
         Optional<Pdp> pdpInstance = null;
 
-        final PdpGroupFilter filter = PdpGroupFilter.builder().name(message.getPdpGroup()).build();
-        // TODO setLatestVersion()
+        final PdpGroupFilter filter = PdpGroupFilter.builder().name(message.getPdpGroup())
+                        .version(PdpGroupFilter.LATEST_VERSION).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
             final PdpGroup pdpGroup = pdpGroups.get(0);
