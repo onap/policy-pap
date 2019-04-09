@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "e940c59d_8fd525f3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-09T19:37:34Z",
+      "side": 1,
+      "message": "Yes, correct",
+      "parentUuid": "34b1d9f4_714255a1",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f900e96_db8a485a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
         "patchSetId": 5
@@ -47,6 +65,24 @@
       "writtenOn": "2019-04-09T18:23:30Z",
       "side": 1,
       "message": "should probably do this once and store it in a field.\n\nfyi: the second argument to get() is typically not needed",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "903313c2_aeabb25e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-09T19:37:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f900e96_db8a485a",
       "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -70,6 +106,24 @@
     },
     {
       "key": {
+        "uuid": "814a8bb1_68ce3699",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-09T19:37:34Z",
+      "side": 1,
+      "message": "Don\u0027t expect too many Pdp\u0027s. Will leave it for now. Anyways this will change once PdpRequestMap supports broadcast.",
+      "parentUuid": "6f96cdc0_0771857f",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67b3b257_62f83547",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/SessionData.java",
         "patchSetId": 5
@@ -81,6 +135,24 @@
       "writtenOn": "2019-04-09T18:23:30Z",
       "side": 1,
       "message": "could combine these two lines using: Collections.singletonList(type)",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f6c1243f_f837dbe2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/SessionData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-09T19:37:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67b3b257_62f83547",
       "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -104,6 +176,24 @@
     },
     {
       "key": {
+        "uuid": "3984e3f6_ab9c5bfa",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/SessionData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-09T19:37:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "676a5607_fbdbd821",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "15100aaa_e07786ea",
         "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/CommonTestData.java",
         "patchSetId": 5
@@ -115,6 +205,24 @@
       "writtenOn": "2019-04-09T18:23:30Z",
       "side": 1,
       "message": "might open a JIRA to use json files to create these maps",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a3c03c15_f83c6666",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/CommonTestData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-09T19:37:34Z",
+      "side": 1,
+      "message": "Ok",
+      "parentUuid": "15100aaa_e07786ea",
       "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
