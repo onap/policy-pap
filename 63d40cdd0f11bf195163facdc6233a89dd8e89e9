@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc068120_8d301119",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "state(ACTIVE)?\nlastest-version?",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "34b1d9f4_714255a1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "I assume pdpGroups has only one item (because groupVersion!\u003dnull)",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1f900e96_db8a485a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "should probably do this once and store it in a field.\n\nfyi: the second argument to get() is typically not needed",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6f96cdc0_0771857f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "how many PDPs might we have in a subgroup?  May want to cache the list of policies",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "67b3b257_62f83547",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/SessionData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "could combine these two lines using: Collections.singletonList(type)",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "676a5607_fbdbd821",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/SessionData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "don\u0027t think we want an exact match here - the type list may be a subset of the types that a subgroup supports",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15100aaa_e07786ea",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/CommonTestData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T18:23:30Z",
+      "side": 1,
+      "message": "might open a JIRA to use json files to create these maps",
+      "revId": "63d40cdd0f11bf195163facdc6233a89dd8e89e9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
