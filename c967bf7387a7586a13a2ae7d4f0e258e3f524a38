@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2d1fbc01_43b839ea",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-09T23:14:03Z",
+      "side": 1,
+      "message": "fyi: can remove the second argument to get(), but this is perfectly fine, too",
+      "revId": "c967bf7387a7586a13a2ae7d4f0e258e3f524a38",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
