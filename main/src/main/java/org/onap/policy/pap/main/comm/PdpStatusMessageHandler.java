@@ -30,7 +30,6 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
-import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -55,23 +54,47 @@ public class PdpStatusMessageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpStatusMessageHandler.class);
 
     /**
+     * Lock used when updating PDPs.
+     */
+    private final Object updateLock;
+
+    /**
+     * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
+     */
+    private final PdpModifyRequestMap requestMap;
+
+    /**
+     * Factory for PAP DAO.
+     */
+    PolicyModelsProviderFactoryWrapper modelProviderWrapper;
+
+    /**
+     * Constructs the object.
+     */
+    public PdpStatusMessageHandler() {
+        modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+        updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
+        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
+    }
+
+    /**
      * Handles the PdpStatus message coming from various PDP's.
      *
      * @param message the PdpStatus message
      */
     public void handlePdpStatus(final PdpStatus message) {
-        final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            if (message.getPdpGroup() == null && message.getPdpSubgroup() == null) {
-                handlePdpRegistration(message, databaseProvider);
-            } else {
-                handlePdpHeartbeat(message, databaseProvider);
+        synchronized (updateLock) {
+            try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
+                if (message.getPdpGroup() == null && message.getPdpSubgroup() == null) {
+                    handlePdpRegistration(message, databaseProvider);
+                } else {
+                    handlePdpHeartbeat(message, databaseProvider);
+                }
+            } catch (final PolicyPapException exp) {
+                LOGGER.error("Operation Failed", exp);
+            } catch (final Exception exp) {
+                LOGGER.error("Failed connecting to database provider", exp);
             }
-        } catch (final PolicyPapException exp) {
-            LOGGER.error("Operation Failed", exp);
-        } catch (final Exception exp) {
-            LOGGER.error("Failed connecting to database provider", exp);
         }
     }
 
@@ -89,7 +112,8 @@ public class PdpStatusMessageHandler {
         boolean pdpGroupFound = false;
         Optional<PdpSubGroup> subGroup = null;
         final PdpGroupFilter filter = PdpGroupFilter.builder().pdpType(message.getPdpType())
-                .policyTypeList(message.getSupportedPolicyTypes()).matchPolicyTypesExactly(true).build();
+                .policyTypeList(message.getSupportedPolicyTypes()).matchPolicyTypesExactly(true)
+                .groupState(PdpState.ACTIVE).version(PdpGroupFilter.LATEST_VERSION).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         for (final PdpGroup pdpGroup : pdpGroups) {
             subGroup = findPdpSubGroup(message, pdpGroup);
@@ -130,7 +154,7 @@ public class PdpStatusMessageHandler {
         Optional<Pdp> pdpInstance = null;
 
         final PdpGroupFilter filter =
-                PdpGroupFilter.builder().name(message.getPdpGroup()).version(PdpGroupFilter.LATEST_VERSION).build();
+                PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
             final PdpGroup pdpGroup = pdpGroups.get(0);
@@ -175,7 +199,7 @@ public class PdpStatusMessageHandler {
     private void processPdpDetails(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         if (PdpState.TERMINATED.equals(message.getState())) {
-            processPdpTermination(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
+            processPdpTermination(pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
             LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
@@ -186,8 +210,8 @@ public class PdpStatusMessageHandler {
         }
     }
 
-    private void processPdpTermination(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+    private void processPdpTermination(final PdpSubGroup pdpSubGroup, final Pdp pdpInstance, final PdpGroup pdpGroup,
+            final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpSubGroup.getPdpInstances().remove(pdpInstance);
         pdpSubGroup.setCurrentInstanceCount(pdpSubGroup.getCurrentInstanceCount() - 1);
         databaseProvider.updatePdpSubGroup(pdpGroup.getName(), pdpGroup.getVersion(), pdpSubGroup);
@@ -220,7 +244,6 @@ public class PdpStatusMessageHandler {
                 createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
         final PdpStateChange pdpStateChangeMessage =
                 createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
-        final PdpModifyRequestMap requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
         LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
         LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);

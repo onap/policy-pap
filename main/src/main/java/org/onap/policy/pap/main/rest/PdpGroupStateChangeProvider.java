@@ -54,6 +54,19 @@ public class PdpGroupStateChangeProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeProvider.class);
 
+    /**
+     * Lock used when updating PDPs.
+     */
+    private final Object updateLock;
+
+    /**
+     * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
+     */
+    private final PdpModifyRequestMap requestMap;
+
+    /**
+     * Factory for PAP DAO.
+     */
     PolicyModelsProviderFactoryWrapper modelProviderWrapper;
 
     /**
@@ -61,6 +74,8 @@ public class PdpGroupStateChangeProvider {
      */
     public PdpGroupStateChangeProvider() {
         modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+        updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
+        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
     }
 
     /**
@@ -74,19 +89,20 @@ public class PdpGroupStateChangeProvider {
      */
     public Pair<Response.Status, PdpGroupStateChangeResponse> changeGroupState(final String groupName,
             final String groupVersion, final PdpState pdpGroupState) throws PfModelException {
-
-        switch (pdpGroupState) {
-            case ACTIVE:
-                handleActiveState(groupName, groupVersion);
-                break;
-            case PASSIVE:
-                handlePassiveState(groupName, groupVersion);
-                break;
-            default:
-                throw new PfModelException(Response.Status.BAD_REQUEST,
-                        "Only ACTIVE or PASSIVE state changes are allowed");
+        synchronized (updateLock) {
+            switch (pdpGroupState) {
+                case ACTIVE:
+                    handleActiveState(groupName, groupVersion);
+                    break;
+                case PASSIVE:
+                    handlePassiveState(groupName, groupVersion);
+                    break;
+                default:
+                    throw new PfModelException(Response.Status.BAD_REQUEST,
+                            "Only ACTIVE or PASSIVE state changes are allowed");
+            }
+            return Pair.of(Response.Status.OK, new PdpGroupStateChangeResponse());
         }
-        return Pair.of(Response.Status.OK, new PdpGroupStateChangeResponse());
     }
 
     private void handleActiveState(final String groupName, final String groupVersion) throws PfModelException {
@@ -95,13 +111,13 @@ public class PdpGroupStateChangeProvider {
             final List<PdpGroup> activePdpGroups = databaseProvider.getFilteredPdpGroups(filter);
             final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName, groupVersion);
             if (activePdpGroups.isEmpty() && !pdpGroups.isEmpty()) {
-                sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
                 updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.ACTIVE);
+                sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
             } else if (!pdpGroups.isEmpty() && !activePdpGroups.isEmpty()
                     && !pdpGroups.get(0).getVersion().equals(activePdpGroups.get(0).getVersion())) {
-                sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
                 updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.ACTIVE);
                 updatePdpGroup(databaseProvider, activePdpGroups, PdpState.PASSIVE);
+                sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
             }
         }
     }
@@ -110,8 +126,8 @@ public class PdpGroupStateChangeProvider {
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
             final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName, groupVersion);
             if (!pdpGroups.isEmpty() && !PdpState.PASSIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
-                sendPdpMessage(pdpGroups.get(0), PdpState.PASSIVE, databaseProvider);
                 updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.PASSIVE);
+                sendPdpMessage(pdpGroups.get(0), PdpState.PASSIVE, databaseProvider);
             }
         }
     }
@@ -146,8 +162,6 @@ public class PdpGroupStateChangeProvider {
                         createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider);
                 final PdpStateChange pdpStateChangeMessage =
                         createPdpStateChangeMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), pdpState);
-                final PdpModifyRequestMap requestMap =
-                        Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
                 requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
                 LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
