@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.rest.depundep;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -225,7 +226,11 @@ public class SessionData {
             return data.stream().map(GroupData::getCurrentGroup).collect(Collectors.toList());
         }
 
-        PdpGroupFilter filter = PdpGroupFilter.builder().policyType(type).groupState(PdpState.ACTIVE).build();
+        final List<ToscaPolicyTypeIdentifier> policyTypeList = new ArrayList<>(1);
+        policyTypeList.add(type);
+
+        PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(policyTypeList).matchPolicyTypesExactly(true)
+                .groupState(PdpState.ACTIVE).build();
 
         List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
 

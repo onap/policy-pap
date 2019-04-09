@@ -28,7 +28,9 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+
 import java.util.UUID;
+
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -36,7 +38,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.enums.PdpState;
 
@@ -89,9 +93,14 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "PDP Group Version", required = true) @PathParam("version") final String version,
             @ApiParam(value = "PDP Group State", required = true) @QueryParam("state") final PdpState state) {
 
-        final Pair<Status, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, version, state);
-
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                .entity(pair.getRight()).build();
+        try {
+            final Pair<Status, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, version, state);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
+                    .entity(pair.getRight()).build();
+        } catch (final PfModelException exp) {
+            return addLoggingHeaders(
+                    addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
+                            .entity(exp.getErrorResponse()).build();
+        }
     }
 }
