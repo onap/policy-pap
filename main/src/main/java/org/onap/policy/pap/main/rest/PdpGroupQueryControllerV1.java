@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 
 /**
@@ -83,9 +84,14 @@ public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
     public Response queryGroupDetails(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
-        final Pair<Status, PdpGroups> pair = provider.fetchPdpGroupDetails();
-
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                .entity(pair.getRight()).build();
+        try {
+            final Pair<Status, PdpGroups> pair = provider.fetchPdpGroupDetails();
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
+                    .entity(pair.getRight()).build();
+        } catch (final PfModelException exp) {
+            return addLoggingHeaders(
+                    addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
+                            .entity(exp.getErrorResponse()).build();
+        }
     }
 }
