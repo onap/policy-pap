@@ -31,6 +31,7 @@ import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
+import org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl;
 
 /**
  * Class to hold/create all parameters for test cases.
@@ -169,11 +170,11 @@ public class CommonTestData {
     public Map<String, Object> getPolicyModelsProviderParametersMap() {
         final Map<String, Object> map = new TreeMap<>();
         map.put("name", PolicyModelsProviderParameters.class.getSimpleName());
-        map.put("implementation", REST_SERVER_HTTPS);
+        map.put("implementation", DatabasePolicyModelsProviderImpl.class.getCanonicalName());
         map.put("databaseUrl", "jdbc:h2:mem:testdb");
         map.put("databaseUser", "policy");
         map.put("databasePassword", Base64.getEncoder().encodeToString("P01icY".getBytes()));
-        map.put("persistenceUnit", "PdpGroupTest");
+        map.put("persistenceUnit", "ToscaConceptTest");
 
         return map;
     }
