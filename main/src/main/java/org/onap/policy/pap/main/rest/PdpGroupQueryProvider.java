@@ -23,7 +23,14 @@ package org.onap.policy.pap.main.rest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.pap.main.PapConstants;
+import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provider for PAP component to query details of all PDP groups.
@@ -32,17 +39,23 @@ import org.onap.policy.models.pdp.concepts.PdpGroups;
  */
 public class PdpGroupQueryProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryProvider.class);
+
     /**
      * Queries details of all PDP groups.
      *
      * @return a pair containing the status and the response
+     * @throws PfModelException in case of errors
      */
-    public Pair<Response.Status, PdpGroups> fetchPdpGroupDetails() {
+    public Pair<Response.Status, PdpGroups> fetchPdpGroupDetails() throws PfModelException {
 
-        /*
-         * TODO Fetch all the details from DB and create the PdpGroups object.
-         */
-
-        return Pair.of(Response.Status.OK, new PdpGroups());
+        final PdpGroups pdpGroups = new PdpGroups();
+        final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
+                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
+            pdpGroups.setGroups(databaseProvider.getPdpGroups(null, null));
+        }
+        LOGGER.debug("PdpGroup Query Response - {}", pdpGroups);
+        return Pair.of(Response.Status.OK, pdpGroups);
     }
 }
