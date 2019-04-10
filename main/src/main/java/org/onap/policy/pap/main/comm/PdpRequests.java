@@ -22,7 +22,6 @@ package org.onap.policy.pap.main.comm;
 
 import lombok.Getter;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
-import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,12 +54,6 @@ public class PdpRequests {
      */
     private Request[] singletons = new Request[MAX_PRIORITY];
 
-    /**
-     * Last group name to which the associated PDP was assigned.
-     */
-    @Getter
-    private String lastGroupName;
-
 
     /**
      * Constructs the object.
@@ -69,18 +62,6 @@ public class PdpRequests {
      */
     public PdpRequests(String pdpName) {
         this.pdpName = pdpName;
-    }
-
-    /**
-     * Records the group information from the request.
-     *
-     * @param request the request from which to extract the group information
-     */
-    private void recordGroup(Request request) {
-        PdpMessage message = request.getMessage();
-        if (message instanceof PdpUpdate) {
-            lastGroupName = message.getPdpGroup();
-        }
     }
 
     /**
@@ -93,8 +74,6 @@ public class PdpRequests {
         if (request.getMessage().getName() == null) {
             throw new IllegalArgumentException("unexpected broadcast for " + pdpName);
         }
-
-        recordGroup(request);
 
         if (checkExisting(request)) {
             // have an existing request that's similar - discard this request
