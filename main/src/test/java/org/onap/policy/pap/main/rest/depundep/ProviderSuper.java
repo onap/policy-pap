@@ -42,6 +42,7 @@ import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
@@ -91,7 +92,7 @@ public class ProviderSuper {
 
         lockit = new Object();
         daofact = mock(PolicyModelsProviderFactoryWrapper.class);
-        policy1 = loadFile("policy.json", ToscaPolicy.class);
+        policy1 = loadPolicy("policy.json");
 
         when(daofact.create()).thenReturn(dao);
 
@@ -180,7 +181,17 @@ public class ProviderSuper {
      * @return a list of groups
      */
     protected List<PdpGroup> loadGroups(String fileName) {
-        return loadFile(fileName, org.onap.policy.models.pdp.concepts.PdpGroups.class).getGroups();
+        return loadFile(fileName, PdpGroups.class).getGroups();
+    }
+
+    /**
+     * Loads a group.
+     *
+     * @param fileName name of the file from which to load
+     * @return a group
+     */
+    protected PdpGroup loadGroup(String fileName) {
+        return loadFile(fileName, PdpGroup.class);
     }
 
     /**
@@ -191,6 +202,16 @@ public class ProviderSuper {
      */
     protected List<ToscaPolicy> loadPolicies(String fileName) {
         return loadFile(fileName, PolicyList.class).policies;
+    }
+
+    /**
+     * Loads a policy.
+     *
+     * @param fileName name of the file from which to load
+     * @return a policy
+     */
+    protected ToscaPolicy loadPolicy(String fileName) {
+        return loadFile(fileName, ToscaPolicy.class);
     }
 
     /**

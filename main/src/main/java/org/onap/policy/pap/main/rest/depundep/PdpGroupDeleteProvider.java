@@ -58,7 +58,10 @@ public class PdpGroupDeleteProvider extends ProviderBase<PdpGroupDeleteResponse>
      */
     public Pair<Response.Status, PdpGroupDeleteResponse> deleteGroup(String groupName, String version) {
 
-        return Pair.of(Response.Status.OK, new PdpGroupDeleteResponse());
+        PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
+        resp.setErrorDetails("not implemented yet");
+
+        return Pair.of(Response.Status.INTERNAL_SERVER_ERROR, resp);
     }
 
     /**
@@ -107,14 +110,8 @@ public class PdpGroupDeleteProvider extends ProviderBase<PdpGroupDeleteResponse>
 
         return (group, subgroup) -> {
 
-            if (!subgroup.getPolicies().contains(desiredIdent)) {
-                // doesn't have the policy
-                return false;
-            }
-
             // remove the policy from the subgroup
-            subgroup.getPolicies().remove(desiredIdent);
-            return true;
+            return subgroup.getPolicies().remove(desiredIdent);
         };
     }
 }
