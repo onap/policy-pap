@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "97b7ef41_609a1fe7",
+        "filename": "main/src/main/resources/META-INF/persistence.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-04-10T11:48:35Z",
+      "side": 1,
+      "message": "We will need to add a JpaStatistics class later.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 77
+      },
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "70d4f4d9_01ebda9a",
         "filename": "main/src/main/resources/META-INF/persistence.xml",
         "patchSetId": 2
@@ -18,6 +41,53 @@
         "startChar": 63,
         "endLine": 41,
         "endChar": 86
+      },
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "27f0eb9a_a7a5b6c1",
+        "filename": "main/src/main/resources/META-INF/persistence.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-04-10T11:48:35Z",
+      "side": 1,
+      "message": "https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_ddl_generation.htm\n\nI think this is the correct setting.",
+      "parentUuid": "70d4f4d9_01ebda9a",
+      "range": {
+        "startLine": 41,
+        "startChar": 63,
+        "endLine": 41,
+        "endChar": 86
+      },
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6f9c78bc_15c7f4d0",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-04-10T11:48:35Z",
+      "side": 1,
+      "message": "We need to change the production properties for all components that use the DB to these values.",
+      "range": {
+        "startLine": 25,
+        "startChar": 8,
+        "endLine": 28,
+        "endChar": 5
       },
       "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
