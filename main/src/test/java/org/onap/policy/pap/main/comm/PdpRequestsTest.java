@@ -23,7 +23,6 @@ package org.onap.policy.pap.main.comm;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
@@ -57,27 +56,6 @@ public class PdpRequestsTest extends CommonRequestBase {
     @Test
     public void testPdpRequests_testGetLastGroupName() {
         assertEquals(PDP1, data.getPdpName());
-    }
-
-    @Test
-    public void testRecordGroup_testGetLatestGroupXxx() {
-        assertNull(data.getLastGroupName());
-
-        data.addSingleton(update);
-        assertEquals(MY_GROUP, data.getLastGroupName());
-
-        UpdateReq req = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
-        req.getMessage().setPdpGroup(DIFFERENT);
-        data.addSingleton(req);
-        assertEquals(DIFFERENT, data.getLastGroupName());
-
-        // doesn't record info from other message types
-        StateChangeReq req2 = change;
-        req2.getMessage().setPdpGroup(MY_GROUP);
-        data.addSingleton(req2);
-
-        // should be unchanged
-        assertEquals(DIFFERENT, data.getLastGroupName());
     }
 
     @Test

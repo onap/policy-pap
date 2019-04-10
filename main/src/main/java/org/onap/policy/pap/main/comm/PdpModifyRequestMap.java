@@ -20,7 +20,7 @@
 
 package org.onap.policy.pap.main.comm;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -236,15 +236,8 @@ public class PdpModifyRequestMap {
 
         requests.stopPublishing();
 
-        // don't do anything if we don't have a group
-        String name = requests.getLastGroupName();
-        if (name == null) {
-            logger.warn("no group with which to disable {}", requests.getPdpName());
-            return;
-        }
-
         // remove the PDP from the group
-        removeFromGroup(requests.getPdpName(), name);
+        removeFromGroups(requests.getPdpName());
 
         // send the state change
         PdpStateChange change = new PdpStateChange();
@@ -254,35 +247,49 @@ public class PdpModifyRequestMap {
     }
 
     /**
-     * Removes a PDP from its group.
+     * Removes a PDP from all active groups.
      *
      * @param pdpName name of the PDP to be removed
-     * @param groupName name of the group from which it should be removed
      */
-    private void removeFromGroup(String pdpName, String groupName) {
+    public void removeFromGroups(String pdpName) {
 
         try (PolicyModelsProvider dao = daoFactory.create()) {
 
-            PdpGroupFilter filter = PdpGroupFilter.builder().name(groupName).groupState(PdpState.ACTIVE)
-                            .version(PdpGroupFilter.LATEST_VERSION).build();
-
+            PdpGroupFilter filter = PdpGroupFilter.builder().groupState(PdpState.ACTIVE).build();
             List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
-            if (groups.isEmpty()) {
-                return;
+            List<PdpGroup> updates = new ArrayList<>(1);
+
+            for (PdpGroup group : groups) {
+                if (removeFromGroup(pdpName, group)) {
+                    updates.add(group);
+                }
             }
 
-            PdpGroup group = groups.get(0);
-
-            for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
-                if (removeFromSubgroup(pdpName, group, subgrp)) {
-                    dao.updatePdpGroups(Collections.singletonList(group));
-                    return;
-                }
+            if (!updates.isEmpty()) {
+                dao.updatePdpGroups(updates);
             }
 
         } catch (PfModelException e) {
             logger.info("unable to remove PDP {} from subgroup", pdpName, e);
         }
+    }
+
+    /**
+     * Removes a PDP from a group.
+     *
+     * @param pdpName name of the PDP to be removed
+     * @param group group from which it should be removed
+     * @return {@code true} if the PDP was removed from the, {@code false} if it was not
+     *         assigned to the group
+     */
+    private boolean removeFromGroup(String pdpName, PdpGroup group) {
+        for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
+            if (removeFromSubgroup(pdpName, group, subgrp)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -293,9 +300,8 @@ public class PdpModifyRequestMap {
      * @param subgrp subgroup from which to attempt to remove the PDP
      * @return {@code true} if the PDP was removed, {@code false} if the PDP was not in
      *         the group
-     * @throws PfModelException if a DB error occurs
      */
-    private boolean removeFromSubgroup(String pdpName, PdpGroup group, PdpSubGroup subgrp) throws PfModelException {
+    private boolean removeFromSubgroup(String pdpName, PdpGroup group, PdpSubGroup subgrp) {
 
         Iterator<Pdp> iter = subgrp.getPdpInstances().iterator();
 

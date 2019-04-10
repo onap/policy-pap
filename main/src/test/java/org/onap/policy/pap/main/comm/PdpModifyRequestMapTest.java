@@ -293,8 +293,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testDisablePdp() {
         map.addRequest(update);
 
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
-
         // indicate failure
         invokeFailureHandler(1);
 
@@ -316,8 +314,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         map.addRequest(change);
         map.stopPublishing(PDP1);
 
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
-
         invokeFailureHandler(1);
 
         // should not have stopped publishing a second time
@@ -337,8 +333,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testRemoveFromGroup() throws Exception {
         map.addRequest(change);
-
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
 
         PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP + "a", PDP1 + "a"),
@@ -364,8 +358,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromGroup_DaoEx() throws Exception {
         map.addRequest(change);
 
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
-
         when(dao.getFilteredPdpGroups(any())).thenThrow(new PfModelException(Status.BAD_REQUEST, "expected exception"));
 
         invokeFailureHandler(1);
@@ -382,8 +374,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromGroup_NoGroups() throws Exception {
         map.addRequest(change);
 
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
-
         invokeFailureHandler(1);
 
         verify(dao, never()).updatePdpGroups(any());
@@ -392,8 +382,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testRemoveFromGroup_NoMatchingSubgroup() throws Exception {
         map.addRequest(change);
-
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
 
         PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, DIFFERENT)));
@@ -408,8 +396,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testRemoveFromSubgroup() throws Exception {
         map.addRequest(change);
-
-        when(requests.getLastGroupName()).thenReturn(MY_GROUP);
 
         PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, PDP1 + "x", PDP1 + "y")));
