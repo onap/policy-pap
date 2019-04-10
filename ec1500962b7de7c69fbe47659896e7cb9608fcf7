@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "70d4f4d9_01ebda9a",
+        "filename": "main/src/main/resources/META-INF/persistence.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-04-10T11:43:40Z",
+      "side": 1,
+      "message": "Is this correct? We don\u0027t want to create if already created right?",
+      "range": {
+        "startLine": 41,
+        "startChar": 63,
+        "endLine": 41,
+        "endChar": 86
+      },
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
