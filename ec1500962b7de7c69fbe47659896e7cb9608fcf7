@@ -96,6 +96,40 @@
     },
     {
       "key": {
+        "uuid": "cdef473b_516ed424",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-04-10T14:36:49Z",
+      "side": 1,
+      "message": "I guess I need to look at the OOM and see what is configured in a lab installation.   I don\u0027t recall how this file comes into play at install time.  One comment in the URL, not sure if it is good to have \"policy\" as the DB name, pretty much each component uses its own, and all of them are policy, may be better to have a more bounded name for it.",
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c193c889_f0cfdc29",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-04-10T14:36:49Z",
+      "side": 1,
+      "message": "How did you come up with the password below?",
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6f9c78bc_15c7f4d0",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 2
