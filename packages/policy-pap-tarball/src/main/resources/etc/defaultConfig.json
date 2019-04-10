@@ -11,19 +11,19 @@
     "pdpParameters": {
         "updateParameters": {
             "maxRetryCount": 1,
-            "maxWaitMs": 1
+            "maxWaitMs": 30000
         },
         "stateChangeParameters": {
             "maxRetryCount": 1,
-            "maxWaitMs": 1
+            "maxWaitMs": 30000
         }
     },
     "databaseProviderParameters": {
         "name": "PolicyProviderParameterGroup",
         "implementation": "org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl",
-        "databaseUrl": "jdbc:mariadb://127.0.0.1:3306/policy",
-        "databaseUser": "root",
-        "databasePassword": "cm9vdA==",
-        "persistenceUnit": "ToscaConceptMariaDBTest"
+        "databaseUrl": "jdbc:mariadb://policydb:3306/policy",
+        "databaseUser": "policy_user",
+        "databasePassword": "cG9saWN5X3VzZXI=",
+        "persistenceUnit": "PolicyMariaDb"
     }
 }
