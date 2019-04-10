@@ -113,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "e5955761_cb8d0d3d",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-10T15:30:56Z",
+      "side": 1,
+      "message": "PAP reads the configuration from this file during startup.\n\nAll the policy components will be using the same db. Regarding name, I thought of using the existing policy db. And hence kept \"policy\".\nCan you please let me know the current name of policy db.",
+      "parentUuid": "cdef473b_516ed424",
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c193c889_f0cfdc29",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 2
@@ -124,6 +142,24 @@
       "writtenOn": "2019-04-10T14:36:49Z",
       "side": 1,
       "message": "How did you come up with the password below?",
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "622641c6_85d168fe",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-10T15:30:56Z",
+      "side": 1,
+      "message": "Base64 encoding.\nThat\u0027s what policy model provider expects.",
+      "parentUuid": "c193c889_f0cfdc29",
       "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
