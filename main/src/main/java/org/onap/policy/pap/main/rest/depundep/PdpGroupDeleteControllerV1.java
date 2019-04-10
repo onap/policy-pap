@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.depundep;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,6 +37,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.pap.main.rest.PapRestControllerV1;
 
 /**
  * Class to provide REST end points for PAP component to delete a PDP group.
@@ -131,7 +133,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     }
 
     /**
-     * Deletes a PDP policy.
+     * Undeploys the latest version of a policy from the PDPs.
      *
      * @param requestId request ID used in ONAP logging
      * @param policyName name of the PDP Policy to be deleted
@@ -140,8 +142,8 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     // @formatter:off
     @DELETE
     @Path("pdps/policies/{name}")
-    @ApiOperation(value = "Delete PDP Policy",
-        notes = "Deletes a PDP Policy, returning optional error details",
+    @ApiOperation(value = "Undeploy a PDP Policy from PDPs",
+        notes = "Undeploys the latest version of a policy from the PDPs, returning optional error details",
         response = PdpGroupDeleteResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
@@ -165,14 +167,15 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     public Response deletePolicy(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.deletePolicy(policyName, null);
+        Pair<Status, PdpGroupDeleteResponse> pair =
+                        provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, null));
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();
     }
 
     /**
-     * Deletes a specific version of a PDP policy.
+     * Undeploys a specific version of a policy from the PDPs.
      *
      * @param requestId request ID used in ONAP logging
      * @param policyName name of the PDP Policy to be deleted
@@ -182,8 +185,8 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     // @formatter:off
     @DELETE
     @Path("pdps/policies/{name}/versions/{version}")
-    @ApiOperation(value = "Delete version of a PDP Policy",
-        notes = "Deletes a version of a PDP Policy, returning optional error details",
+    @ApiOperation(value = "Undeploy version of a PDP Policy from PDPs",
+        notes = "Undeploys a specific version of a policy from the PDPs, returning optional error details",
         response = PdpGroupDeleteResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
@@ -209,7 +212,8 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName,
                     @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.deletePolicy(policyName, version);
+        Pair<Status, PdpGroupDeleteResponse> pair =
+                        provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, version));
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();
