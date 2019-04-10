@@ -41,7 +41,6 @@ import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployProvider;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -50,8 +49,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String POLICY1_NAME = "policyA";
     private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
-    private static final String GROUP1_VERSION = "200.2.3";
-    private static final String GROUP1_NEW_VERSION = "201.0.0";
     private static final String PDP1_TYPE = "pdpTypeA";
     private static final String PDP2_TYPE = "pdpTypeB";
     private static final String PDP4_TYPE = "pdpTypeD";
@@ -149,8 +146,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        assertGroup(getGroupUpdates(), GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(getGroupCreates(), GROUP1_NAME, GROUP1_NEW_VERSION);
+        assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         List<PdpUpdate> requests = getUpdateRequests(2);
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);

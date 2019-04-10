@@ -61,8 +61,6 @@ public class TestProviderBase extends ProviderSuper {
     private static final String POLICY1_NAME = "policyA";
     private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
-    private static final String GROUP1_VERSION = "200.2.3";
-    private static final String GROUP1_NEW_VERSION = "201.0.0";
     private static final String GROUP2_NAME = "groupB";
     private static final String PDP1_TYPE = "pdpTypeA";
     private static final String PDP2_TYPE = "pdpTypeB";
@@ -109,8 +107,7 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        assertGroup(getGroupUpdates(), GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(getGroupCreates(), GROUP1_NAME, GROUP1_NEW_VERSION);
+        assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         assertUpdate(getUpdateRequests(1), GROUP1_NAME, PDP1_TYPE, PDP1);
     }
@@ -197,8 +194,7 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        assertGroup(getGroupUpdates(), GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(getGroupCreates(), GROUP1_NAME, GROUP1_NEW_VERSION);
+        assertGroup(getGroupUpdates(), GROUP1_NAME);
     }
 
     @Test
@@ -224,8 +220,7 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        assertGroup(getGroupUpdates(), GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(getGroupCreates(), GROUP1_NAME, GROUP1_NEW_VERSION);
+        assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         List<PdpUpdate> requests = getUpdateRequests(2);
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
@@ -282,15 +277,10 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        // verify creates
-        List<PdpGroup> changes = getGroupCreates();
-        assertGroup(changes, GROUP1_NAME, GROUP1_NEW_VERSION);
-        assertGroup(changes, GROUP2_NAME, "301.0.0");
-
         // verify updates
-        changes = getGroupUpdates();
-        assertGroup(changes, GROUP1_NAME, GROUP1_VERSION);
-        assertGroup(changes, GROUP2_NAME, "300.2.3");
+        List<PdpGroup> changes = getGroupUpdates();
+        assertGroup(changes, GROUP1_NAME);
+        assertGroup(changes, GROUP2_NAME);
 
         List<PdpUpdate> requests = getUpdateRequests(3);
         assertUpdateIgnorePolicy(requests, GROUP1_NAME, PDP1_TYPE, PDP1);

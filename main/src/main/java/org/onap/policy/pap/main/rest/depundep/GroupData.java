@@ -21,10 +21,7 @@
 package org.onap.policy.pap.main.rest.depundep;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.onap.policy.common.utils.validation.Version;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.enums.PdpState;
 
 /**
  * PdpGroup data, which includes the old group, that's in the DB, and possibly a new
@@ -32,19 +29,12 @@ import org.onap.policy.models.pdp.enums.PdpState;
  */
 @Getter
 public class GroupData {
-    private final PdpGroup oldGroup;
+    private PdpGroup group;
 
     /**
-     * Starts out pointing to {@link #oldGroup}, but then changed to point to the new
-     * group, if {@link #setNewGroup(PdpGroup)} is invoked.
+     * {@code True} if the group has been updated, {@code false} otherwise.
      */
-    private PdpGroup currentGroup;
-
-    /**
-     * Latest version of this group.
-     */
-    @Setter
-    private Version latestVersion;
+    private boolean updated = false;
 
 
     /**
@@ -53,47 +43,21 @@ public class GroupData {
      * @param group the group that is in the DB
      */
     public GroupData(PdpGroup group) {
-        this.oldGroup = group;
-        this.currentGroup = group;
+        this.group = group;
     }
 
     /**
-     * Determines if a new version of this group has been created (i.e.,
-     * {@link #setNewGroup(PdpGroup)} has been invoked.
+     * Updates the group to the new value.
      *
-     * @return {@code true} if a new version of the group has been created, {@code false}
-     *         otherwise
+     * @param newGroup the updated group
      */
-    public boolean isNew() {
-        return (currentGroup != oldGroup);
-    }
-
-    /**
-     * Updates to a new group.
-     *
-     * @param newGroup the new group
-     * @throws IllegalArgumentException if the new group has a different name than the old
-     *         group
-     * @throws IllegalStateException if {@link #setLatestVersion(Version)} has not been
-     *         invoked yet
-     */
-    public void setNewGroup(PdpGroup newGroup) {
-        if (!currentGroup.getName().equals(newGroup.getName())) {
-            throw new IllegalArgumentException("attempt to change group name from " + currentGroup.getName() + " to "
-                            + newGroup.getName());
+    public void update(PdpGroup newGroup) {
+        if (!this.group.getName().equals(newGroup.getName())) {
+            throw new IllegalArgumentException(
+                            "expected group " + this.group.getName() + ", but received " + newGroup.getName());
         }
 
-        if (currentGroup == oldGroup) {
-            // first time to create a new group - bump the version
-            if (latestVersion == null) {
-                throw new IllegalStateException("latestVersion not set for group: " + oldGroup.getName());
-            }
-
-            latestVersion = latestVersion.newVersion();
-            oldGroup.setPdpGroupState(PdpState.PASSIVE);
-        }
-
-        currentGroup = newGroup;
-        currentGroup.setVersion(latestVersion.toString());
+        this.updated = true;
+        this.group = newGroup;
     }
 }

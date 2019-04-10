@@ -59,12 +59,6 @@ public class ProviderSuper {
     @Mock
     protected PolicyModelsProvider dao;
 
-    /**
-     * Used to capture input to dao.createPdpGroups().
-     */
-    @Captor
-    private ArgumentCaptor<List<PdpGroup>> createCaptor;
-
 
     /**
      * Used to capture input to dao.updatePdpGroups().
@@ -108,11 +102,10 @@ public class ProviderSuper {
         Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daofact);
     }
 
-    protected void assertGroup(List<PdpGroup> groups, String name, String version) {
+    protected void assertGroup(List<PdpGroup> groups, String name) {
         PdpGroup group = groups.remove(0);
 
         assertEquals(name, group.getName());
-        assertEquals(version, group.getVersion());
     }
 
     protected void assertUpdateIgnorePolicy(List<PdpUpdate> updates, String groupName, String pdpType, String pdpName) {
@@ -122,18 +115,6 @@ public class ProviderSuper {
         assertEquals(groupName, update.getPdpGroup());
         assertEquals(pdpType, update.getPdpSubgroup());
         assertEquals(pdpName, update.getName());
-    }
-
-    /**
-     * Gets the input to the method.
-     *
-     * @return the input that was passed to the dao.createPdpGroups() method
-     * @throws Exception if an error occurred
-     */
-    protected List<PdpGroup> getGroupCreates() throws Exception {
-        verify(dao).createPdpGroups(createCaptor.capture());
-
-        return copyList(createCaptor.getValue());
     }
 
     /**

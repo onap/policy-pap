@@ -22,15 +22,12 @@ package org.onap.policy.pap.main.rest.depundep;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.common.utils.validation.Version;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.SimpleResponse;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -203,8 +200,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
     protected abstract BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy);
 
     /**
-     * Finds the active PDP group(s) with the highest version that supports the given
-     * policy type.
+     * Finds the active PDP group(s) that supports the given policy type.
      *
      * @param data session data
      * @param policyType the policy type of interest
@@ -214,28 +210,8 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      */
     private Collection<PdpGroup> getGroups(SessionData data, ToscaPolicyTypeIdentifier policyType)
                     throws PfModelException {
-        // build a map containing the group with the highest version for each name
-        Map<String, GroupVersion> name2data = new HashMap<>();
 
-        for (PdpGroup group : data.getActivePdpGroupsByPolicyType(policyType)) {
-            Version vers = Version.makeVersion("PdpGroup", group.getName(), group.getVersion());
-            if (vers == null) {
-                continue;
-            }
-
-            GroupVersion grpdata = name2data.get(group.getName());
-
-            if (grpdata == null) {
-                // not in the map yet
-                name2data.put(group.getName(), new GroupVersion(group, vers));
-
-            } else if (vers.compareTo(grpdata.version) >= 0) {
-                // higher version
-                grpdata.replace(group, vers);
-            }
-        }
-
-        return name2data.values().stream().map(grpdata -> grpdata.group).collect(Collectors.toList());
+        return data.getActivePdpGroupsByPolicyType(policyType);
     }
 
     /**
@@ -243,19 +219,18 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      *
      * @param data session data
      * @param policy policy to be added to or removed from the group
-     * @param oldGroup the original group, to be updated
+     * @param group the original group, to be updated
      * @param updater function to update a group
      * @throws PfModelException if a DAO error occurred
      */
-    private void upgradeGroup(SessionData data, ToscaPolicy policy, PdpGroup oldGroup,
+    private void upgradeGroup(SessionData data, ToscaPolicy policy, PdpGroup group,
                     BiFunction<PdpGroup, PdpSubGroup, Boolean> updater) throws PfModelException {
 
-        PdpGroup newGroup = new PdpGroup(oldGroup);
         boolean updated = false;
 
-        for (PdpSubGroup subgroup : newGroup.getPdpSubgroups()) {
+        for (PdpSubGroup subgroup : group.getPdpSubgroups()) {
 
-            if (!updater.apply(newGroup, subgroup)) {
+            if (!updater.apply(group, subgroup)) {
                 continue;
             }
 
@@ -266,14 +241,14 @@ public abstract class ProviderBase<R extends SimpleResponse> {
              * assume that the PDP is, too, thus no need for a STATE-CHANGE.
              */
             for (Pdp pdpInstance : subgroup.getPdpInstances()) {
-                data.addUpdate(makeUpdate(data, newGroup, subgroup, pdpInstance));
+                data.addUpdate(makeUpdate(data, group, subgroup, pdpInstance));
             }
         }
 
 
         if (updated) {
             // something changed
-            data.setNewGroup(newGroup);
+            data.update(group);
         }
     }
 
@@ -297,23 +272,5 @@ public abstract class ProviderBase<R extends SimpleResponse> {
         update.setPolicies(subgroup.getPolicies().stream().map(data::getPolicy).collect(Collectors.toList()));
 
         return update;
-    }
-
-    /**
-     * Data associated with a group. Used to find the maximum version for a given group.
-     */
-    private static class GroupVersion {
-        private PdpGroup group;
-        private Version version;
-
-        public GroupVersion(PdpGroup group, Version version) {
-            this.group = group;
-            this.version = version;
-        }
-
-        public void replace(PdpGroup group, Version version) {
-            this.group = group;
-            this.version = version;
-        }
     }
 }

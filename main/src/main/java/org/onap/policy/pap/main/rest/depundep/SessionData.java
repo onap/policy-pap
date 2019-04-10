@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.onap.policy.common.utils.validation.Version;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
@@ -137,17 +136,6 @@ public class SessionData {
     }
 
     /**
-     * Determines if a group has been newly created as part of this REST call.
-     *
-     * @param group name to the group of interest
-     * @return {@code true} if the group has been newly created, {@code false} otherwise
-     */
-    public boolean isNewlyCreated(String group) {
-        GroupData data = groupCache.get(group);
-        return (data != null && data.isNew());
-    }
-
-    /**
      * Gets the policy having the given name and the maximum version.
      *
      * @param name name of the desired policy
@@ -175,42 +163,18 @@ public class SessionData {
     }
 
     /**
-     * Adds a new version of a group to the cache.
+     * Updates a group.
      *
-     * @param newGroup the new group to be added
-     * @throws IllegalStateException if the old group has not been loaded into the cache
-     *         yet
-     * @throws PfModelException if an error occurs
+     * @param newGroup the updated group
      */
-    public void setNewGroup(PdpGroup newGroup) throws PfModelException {
+    public void update(PdpGroup newGroup) {
         String name = newGroup.getName();
         GroupData data = groupCache.get(name);
         if (data == null) {
             throw new IllegalStateException("group not cached: " + name);
         }
 
-        if (data.getLatestVersion() != null) {
-            // already have the latest version
-            data.setNewGroup(newGroup);
-            return;
-        }
-
-        // must determine the latest version of this group, regardless of its state
-        PdpGroupFilter filter = PdpGroupFilter.builder().name(name).version(PdpGroupFilter.LATEST_VERSION).build();
-        List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
-        if (groups.isEmpty()) {
-            throw new PolicyPapRuntimeException("cannot find group: " + name);
-        }
-
-        PdpGroup group = groups.get(0);
-        Version vers = Version.makeVersion("PdpGroup", group.getName(), group.getVersion());
-        if (vers == null) {
-            // none of the versions are numeric - start with zero and increment from there
-            vers = new Version(0, 0, 0);
-        }
-
-        data.setLatestVersion(vers);
-        data.setNewGroup(newGroup);
+        data.update(newGroup);
     }
 
     /**
@@ -223,11 +187,11 @@ public class SessionData {
     public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaPolicyTypeIdentifier type) throws PfModelException {
         List<GroupData> data = type2groups.get(type);
         if (data != null) {
-            return data.stream().map(GroupData::getCurrentGroup).collect(Collectors.toList());
+            return data.stream().map(GroupData::getGroup).collect(Collectors.toList());
         }
 
         PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
-                .groupState(PdpState.ACTIVE).build();
+                        .groupState(PdpState.ACTIVE).build();
 
         List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
 
@@ -262,13 +226,12 @@ public class SessionData {
      */
     public void updateDb() throws PfModelException {
         List<GroupData> updatedGroups =
-                        groupCache.values().stream().filter(GroupData::isNew).collect(Collectors.toList());
+                        groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
         if (updatedGroups.isEmpty()) {
             return;
         }
 
-        // create new groups BEFORE we deactivate the old groups
-        dao.createPdpGroups(updatedGroups.stream().map(GroupData::getCurrentGroup).collect(Collectors.toList()));
-        dao.updatePdpGroups(updatedGroups.stream().map(GroupData::getOldGroup).collect(Collectors.toList()));
+        // update the groups
+        dao.updatePdpGroups(updatedGroups.stream().map(GroupData::getGroup).collect(Collectors.toList()));
     }
 }

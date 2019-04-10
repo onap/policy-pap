@@ -23,9 +23,7 @@ package org.onap.policy.pap.main.rest.depundep;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -47,15 +45,10 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 public class TestSessionData extends ProviderSuper {
-    private static final String GROUP_VERSION_PREFIX = "9.8.";
     private static final String GROUP_NAME = "groupA";
-    private static final String GROUP_VERSION = GROUP_VERSION_PREFIX + "7";
-    private static final String GROUP_NEW_VERSION = "10.0.0";
     private static final String GROUP_NAME2 = "groupB";
-    private static final String GROUP_VERSION2 = GROUP_VERSION_PREFIX + "6";
     private static final String PDP1 = "pdp_1";
     private static final String PDP2 = "pdp_2";
     private static final String PDP3 = "pdp_3";
@@ -85,8 +78,8 @@ public class TestSessionData extends ProviderSuper {
         ident = new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION);
         type = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION);
         type2 = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION + "0");
-        group1 = makeGroup(GROUP_NAME, GROUP_VERSION);
-        group2 = makeGroup(GROUP_NAME2, GROUP_VERSION2);
+        group1 = makeGroup(GROUP_NAME);
+        group2 = makeGroup(GROUP_NAME2);
 
         session = new SessionData(dao);
     }
@@ -190,51 +183,16 @@ public class TestSessionData extends ProviderSuper {
         assertThatThrownBy(() -> session.getPolicyMaxVersion(POLICY_NAME)).hasMessage("cannot find policy: myPolicy");
     }
 
-    @Test
-    public void testIsNewlyCreated_testCreatePdpGroup() throws Exception {
-        assertFalse(session.isNewlyCreated(GROUP_NAME));
-
-        // cause the group to be loaded into the cache
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
-        session.getActivePdpGroupsByPolicyType(type);
-
-        // not new yet
-        assertFalse(session.isNewlyCreated(GROUP_NAME));
-
-        // update it
-        session.setNewGroup(new PdpGroup(group1));
-        assertTrue(session.isNewlyCreated(GROUP_NAME));
-
-        /*
-         * now try group2
-         */
-        assertFalse(session.isNewlyCreated(GROUP_NAME2));
-
-        // cause the group to be loaded into the cache
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group2));
-        session.getActivePdpGroupsByPolicyType(type2);
-
-        // not new yet
-        assertFalse(session.isNewlyCreated(GROUP_NAME2));
-        assertTrue(session.isNewlyCreated(GROUP_NAME));
-
-        // update it
-        session.setNewGroup(new PdpGroup(group2));
-        assertTrue(session.isNewlyCreated(GROUP_NAME2));
-        assertTrue(session.isNewlyCreated(GROUP_NAME));
-    }
-
-    private PdpGroup makeGroup(String name, String version) {
+    private PdpGroup makeGroup(String name) {
         PdpGroup group = new PdpGroup();
 
         group.setName(name);
-        group.setVersion(version);
 
         return group;
     }
 
     @Test
-    public void testSetNewGroup() throws Exception {
+    public void testUpdate() throws Exception {
         // force the groups into the cache
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2));
         session.getActivePdpGroupsByPolicyType(type);
@@ -244,63 +202,30 @@ public class TestSessionData extends ProviderSuper {
          */
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
         PdpGroup newgrp = new PdpGroup(group1);
-        session.setNewGroup(newgrp);
-        assertEquals(GROUP_NEW_VERSION, newgrp.getVersion().toString());
+        session.update(newgrp);
 
-        // repeat - version should be unchanged
+        // repeat
         newgrp = new PdpGroup(group1);
-        session.setNewGroup(newgrp);
-        assertEquals(GROUP_NEW_VERSION, newgrp.getVersion().toString());
+        session.update(newgrp);
 
         /*
          * try group 2
          */
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group2));
         newgrp = new PdpGroup(group2);
-        session.setNewGroup(newgrp);
-        assertEquals(GROUP_NEW_VERSION, newgrp.getVersion().toString());
+        session.update(newgrp);
 
-        // repeat - version should be unchanged
+        // repeat
         newgrp = new PdpGroup(group2);
-        session.setNewGroup(newgrp);
-        assertEquals(GROUP_NEW_VERSION, newgrp.getVersion().toString());
-
-        // should have queried the DB once by type and twice by for latest version
-        verify(dao, times(3)).getFilteredPdpGroups(any());
+        session.update(newgrp);
     }
 
     @Test
-    public void testSetNewGroup_NotInCache() throws Exception {
+    public void testUpdate_NotInCache() throws Exception {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
 
-        assertThatIllegalStateException().isThrownBy(() -> session.setNewGroup(new PdpGroup(group1)))
+        assertThatIllegalStateException().isThrownBy(() -> session.update(new PdpGroup(group1)))
                         .withMessage("group not cached: groupA");
-    }
-
-    @Test
-    public void testSetNewGroup_NotFound() throws Exception {
-        // force the group into the cache
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
-        session.getActivePdpGroupsByPolicyType(type);
-
-        // query for latest version will return an empty list
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
-
-        assertThatThrownBy(() -> session.setNewGroup(new PdpGroup(group1)))
-                        .isInstanceOf(PolicyPapRuntimeException.class).hasMessage("cannot find group: groupA");
-    }
-
-    @Test
-    public void testSetNewGroup_InvalidVersion() throws Exception {
-        // force the groups into the cache
-        group1.setVersion("invalid version");
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
-        session.getActivePdpGroupsByPolicyType(type);
-
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
-        PdpGroup newgrp = new PdpGroup(group1);
-        session.setNewGroup(newgrp);
-        assertEquals("1.0.0", newgrp.getVersion().toString());
     }
 
     @Test
@@ -338,36 +263,31 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testUpdateDb() throws Exception {
         // force the groups into the cache
-        PdpGroup group3 = makeGroup("groupC", GROUP_VERSION2);
+        PdpGroup group3 = makeGroup("groupC");
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2, group3));
         session.getActivePdpGroupsByPolicyType(type);
 
         // update group 1
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
         PdpGroup newgrp1 = new PdpGroup(group1);
-        session.setNewGroup(newgrp1);
+        session.update(newgrp1);
 
         // another update
         newgrp1 = new PdpGroup(newgrp1);
-        session.setNewGroup(newgrp1);
+        session.update(newgrp1);
 
         // update group 3
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group3));
         PdpGroup newgrp3 = new PdpGroup(group3);
-        session.setNewGroup(newgrp3);
+        session.update(newgrp3);
 
         // push the changes to the DB
         session.updateDb();
 
-        // expect one create for groups 1 & 3
-        List<PdpGroup> changes = getGroupCreates();
+        // expect one update for groups 1 & 3
+        List<PdpGroup> changes = getGroupUpdates();
         assertSame(newgrp1, changes.get(0));
         assertSame(newgrp3, changes.get(1));
-
-        // expect one update for groups 1 & 3
-        changes = getGroupUpdates();
-        assertSame(group1, changes.get(0));
-        assertSame(group3, changes.get(1));
     }
 
     @Test

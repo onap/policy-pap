@@ -21,25 +21,20 @@
 package org.onap.policy.pap.main.rest.depundep;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.common.utils.validation.Version;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 
 public class TestGroupData {
-    private static final String NEW_VERSION = "2.0.0";
     private static final String NAME = "my-name";
 
     private PdpGroup oldGroup;
     private PdpGroup newGroup;
     private GroupData data;
-    private Version version;
 
     /**
      * Sets up.
@@ -51,47 +46,29 @@ public class TestGroupData {
 
         newGroup = new PdpGroup(oldGroup);
 
-        version = new Version(1, 2, 3);
-
         data = new GroupData(oldGroup);
     }
 
     @Test
     public void test() {
-        assertFalse(data.isNew());
-        assertSame(oldGroup, data.getOldGroup());
-        assertSame(oldGroup, data.getCurrentGroup());
+        assertFalse(data.isUpdated());
+        assertSame(oldGroup, data.getGroup());
 
-        data.setLatestVersion(version);
-        data.setNewGroup(newGroup);
+        data.update(newGroup);
 
-        assertTrue(data.isNew());
-        assertSame(oldGroup, data.getOldGroup());
-        assertSame(newGroup, data.getCurrentGroup());
-        assertEquals(NEW_VERSION, data.getLatestVersion().toString());
-        assertEquals(NEW_VERSION, newGroup.getVersion());
+        assertTrue(data.isUpdated());
+        assertSame(newGroup, data.getGroup());
 
         // repeat
         newGroup = new PdpGroup(oldGroup);
-        data.setNewGroup(newGroup);
-        assertSame(oldGroup, data.getOldGroup());
-        assertSame(newGroup, data.getCurrentGroup());
-        assertEquals(NEW_VERSION, data.getLatestVersion().toString());
-        assertEquals(NEW_VERSION, newGroup.getVersion());
-    }
+        data.update(newGroup);
+        assertTrue(data.isUpdated());
+        assertSame(newGroup, data.getGroup());
 
-    @Test
-    public void testSetNewGroup_DifferentName() {
-        newGroup.setName("different-name");
-
-        data.setLatestVersion(version);
-        assertThatIllegalArgumentException().isThrownBy(() -> data.setNewGroup(newGroup))
-                        .withMessage("attempt to change group name from my-name to different-name");
-    }
-
-    @Test
-    public void testSetNewGroup_VersionNotSet() {
-        assertThatIllegalStateException().isThrownBy(() -> data.setNewGroup(newGroup))
-                        .withMessage("latestVersion not set for group: my-name");
+        // incorrect name
+        newGroup = new PdpGroup(oldGroup);
+        newGroup.setName("other");
+        assertThatIllegalArgumentException().isThrownBy(() -> data.update(newGroup))
+                        .withMessage("expected group my-name, but received other");
     }
 }

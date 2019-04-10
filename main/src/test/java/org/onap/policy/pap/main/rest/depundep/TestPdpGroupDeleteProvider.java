@@ -128,18 +128,10 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         List<PdpGroup> updates = getGroupUpdates();
         assertEquals(1, updates.size());
         assertSame(group, updates.get(0));
-        assertEquals(PdpState.PASSIVE, group.getPdpGroupState());
-
-        // should have created a new group
-        List<PdpGroup> creates = getGroupCreates();
-        assertEquals(1, creates.size());
-        PdpGroup group2 = creates.get(0);
-        assertEquals(group.getName(), group2.getName());
-        assertEquals(PdpState.ACTIVE, group2.getPdpGroupState());
+        assertEquals(PdpState.ACTIVE, group.getPdpGroupState());
 
         // should be one less item in the new group
-        assertEquals(group.getPdpSubgroups().get(0).getPolicies().size() - 1,
-                        group2.getPdpSubgroups().get(0).getPolicies().size());
+        assertEquals(2, group.getPdpSubgroups().get(0).getPolicies().size());
 
         // should have updated the PDPs
         List<PdpUpdate> requests = getUpdateRequests(1);
