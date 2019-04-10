@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1579b894_4cbd6519",
+        "filename": "main/src/main/resources/META-INF/persistence.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-10T13:15:38Z",
+      "side": 1,
+      "message": "Yes Liam, we will add it once we have the provider implementation ready.",
+      "parentUuid": "97b7ef41_609a1fe7",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 77
+      },
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "70d4f4d9_01ebda9a",
         "filename": "main/src/main/resources/META-INF/persistence.xml",
         "patchSetId": 2
@@ -130,6 +154,30 @@
       "side": 1,
       "message": "Good point.  If we have a choice, better to put it here, where it\u0027s easily re-configured, rather than in the persistence.xml.",
       "parentUuid": "ee0d92a8_57984a4d",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 5
+      },
+      "revId": "ec1500962b7de7c69fbe47659896e7cb9608fcf7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "05a59abe_6e6a7209",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-10T13:15:38Z",
+      "side": 1,
+      "message": "As discussed in scrum, for now lets have it in this file \u0026 persistence.xml.\nWe will try to remove one of them in next release.",
+      "parentUuid": "e934a056_e75e9aba",
       "range": {
         "startLine": 21,
         "startChar": 1,
