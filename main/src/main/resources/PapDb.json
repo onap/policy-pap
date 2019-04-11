@@ -1,0 +1,64 @@
+{
+  "groups": [
+    {
+      "name": "controlloop",
+      "version": "1.0.0",
+      "description": "This group should be used for managing all control loop related policies and pdps",
+      "pdpGroupState": "ACTIVE",
+      "pdpSubgroups": [
+        {
+          "pdpType": "xacml",
+          "supportedPolicyTypes": [
+            {
+              "name": "onap.policies.controlloop.Guard",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1
+        },
+        {
+          "pdpType": "drools",
+          "supportedPolicyTypes": [
+            {
+              "name": "onap.policies.controlloop.Operational",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1
+        },
+        {
+          "pdpType": "apex",
+          "supportedPolicyTypes": [
+            {
+              "name": "onap.policies.controlloop.Operational",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1
+        }
+      ]
+    },
+    {
+      "name": "monitoring",
+      "version": "1.0.0",
+      "description": "This group should be used for managing all monitoring related policies and pdps",
+      "pdpGroupState": "ACTIVE",
+      "pdpSubgroups": [
+        {
+          "pdpType": "xacml",
+          "supportedPolicyTypes": [
+            {
+              "name": "onap.policies.Monitoring",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1
+        }
+      ]
+    }
+  ]
+}

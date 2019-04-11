@@ -24,6 +24,7 @@ package org.onap.policy.pap.main.startstop;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Properties;
+
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -78,14 +79,22 @@ public class Main {
         }
 
         // Read the properties
-        Properties props = new Properties();
+        final Properties props = new Properties();
         try {
-            String propFile = arguments.getFullPropertyFilePath();
+            final String propFile = arguments.getFullPropertyFilePath();
             try (FileInputStream stream = new FileInputStream(propFile)) {
                 props.load(stream);
             }
         } catch (final Exception e) {
             LOGGER.error("start of policy pap service failed", e);
+            return;
+        }
+
+        // Initialize database
+        try {
+            new PapDatabaseInitializer().initializePapDatabase(parameterGroup.getDatabaseProviderParameters());
+        } catch (final PolicyPapException exp) {
+            LOGGER.error("start of policy pap service failed, used parameters are {}", Arrays.toString(args), exp);
             return;
         }
 

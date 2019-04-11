@@ -21,7 +21,8 @@
     "databaseProviderParameters": {
         "name": "PolicyProviderParameterGroup",
         "implementation": "org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl",
-        "databaseUrl": "jdbc:mariadb://policydb:3306/policy",
+        "databaseDriver": "org.mariadb.jdbc.Driver",
+        "databaseUrl": "jdbc:mariadb://mariadb:3306/policyadmin",
         "databaseUser": "policy_user",
         "databasePassword": "cG9saWN5X3VzZXI=",
         "persistenceUnit": "PolicyMariaDb"

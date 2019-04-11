@@ -19,6 +19,7 @@
     "databaseProviderParameters": {
         "name": "PolicyProviderParameterGroup",
         "implementation": "org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl",
+        "databaseDriver": "org.h2.Driver",
         "databaseUrl": "jdbc:h2:mem:testdb",
         "databaseUser": "policy",
         "databasePassword": "P01icY",

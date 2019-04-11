@@ -48,8 +48,8 @@ import org.onap.policy.pap.main.rest.PapRestServer;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 /**
- * This class wraps a distributor so that it can be activated as a complete service together with all its pap and
- * forwarding handlers.
+ * This class activates Policy Administration (PAP) as a complete service together with all its controllers, listeners &
+ * handlers.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
