@@ -1,20 +1,20 @@
 {
     "policies": [
         {
-            "name": "policyA",
-            "version": "1.2.3"
+            "policy-id": "policyA",
+            "policy-version": "1.2.3"
         },
         {
-            "name": "policyB",
-            "version": "1.2.3"
+            "policy-id": "policyB",
+            "policy-version": "1.2.3"
         },
         {
-            "name": "policyC",
-            "version": "1.2.3"
+            "policy-id": "policyC",
+            "policy-version": "1.2.3"
         },
         {
-            "name": "policyD",
-            "version": "1.2.3"
+            "policy-id": "policyD",
+            "policy-version": "1.2.3"
         }
     ]
 }
