@@ -147,6 +147,30 @@
       "revId": "e5e24d606ecdaa1fca547969d56c890764f26e45",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "49b610ee_512e7eb7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1441
+      },
+      "writtenOn": "2019-04-12T12:11:53Z",
+      "side": 1,
+      "message": "That I can do, following the same approach here.",
+      "parentUuid": "39c75075_08b55673",
+      "range": {
+        "startLine": 64,
+        "startChar": 16,
+        "endLine": 64,
+        "endChar": 37
+      },
+      "revId": "e5e24d606ecdaa1fca547969d56c890764f26e45",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
