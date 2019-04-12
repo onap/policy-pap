@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -65,6 +66,12 @@ public class ProviderSuper {
      */
     @Captor
     private ArgumentCaptor<List<PdpGroup>> updateCaptor;
+
+    /**
+     * Used to capture input to dao.updatePdpGroups().
+     */
+    @Captor
+    private ArgumentCaptor<List<PdpGroup>> changeCaptor;
 
     protected Object lockit;
     protected PdpModifyRequestMap reqmap;
@@ -138,9 +145,9 @@ public class ProviderSuper {
     protected List<PdpUpdate> getUpdateRequests(int count) {
         ArgumentCaptor<PdpUpdate> captor = ArgumentCaptor.forClass(PdpUpdate.class);
 
-        verify(reqmap, times(count)).addRequest(captor.capture());
+        verify(reqmap, times(count)).addRequest(captor.capture(), any());
 
-        return new ArrayList<>(captor.getAllValues());
+        return captor.getAllValues().stream().filter(req -> req != null).collect(Collectors.toList());
     }
 
     /**

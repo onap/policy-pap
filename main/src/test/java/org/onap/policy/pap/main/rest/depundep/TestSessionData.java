@@ -36,7 +36,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.base.PfModelException;
@@ -143,14 +145,14 @@ public class TestSessionData extends ProviderSuper {
         PdpUpdate update3 = makeUpdate(PDP3);
         session.addUpdate(update3);
 
-        List<PdpUpdate> lst = sort(session.getPdpUpdates(), this::compare);
+        List<PdpUpdate> lst = sort(getUpdateRequests(), this::compare);
         assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
 
         // overwrite one
         update2 = makeUpdate(PDP2);
         session.addUpdate(update2);
 
-        lst = sort(session.getPdpUpdates(), this::compare);
+        lst = sort(getUpdateRequests(), this::compare);
         assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
     }
 
@@ -307,6 +309,12 @@ public class TestSessionData extends ProviderSuper {
         update.setName(pdpName);
 
         return update;
+    }
+
+    private List<PdpUpdate> getUpdateRequests() {
+        return session.getPdpRequests().stream().filter(req -> req.getLeft() != null).map(Pair::getLeft)
+                        .collect(Collectors.toList());
+
     }
 
     private <T> List<T> sort(Collection<T> collection, Comparator<T> comparator) {

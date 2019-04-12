@@ -26,9 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
@@ -57,9 +59,9 @@ public class SessionData {
     private final Map<ToscaPolicyTypeIdentifier, List<GroupData>> type2groups = new HashMap<>();
 
     /**
-     * Maps a PDP name to its most recently generated update request.
+     * Maps a PDP name to its most recently generated update and state-change requests.
      */
-    private final Map<String, PdpUpdate> pdpUpdates = new HashMap<>();
+    private final Map<String, Pair<PdpUpdate, PdpStateChange>> pdpRequests = new HashMap<>();
 
     /**
      * Maps a policy's identifier to the policy.
@@ -117,22 +119,37 @@ public class SessionData {
     }
 
     /**
+     * Adds an update and state-change to the sets, replacing any previous entries for the
+     * given PDP.
+     *
+     * @param update the update to be added
+     * @param change the state-change to be addded
+     */
+    public void addUpdate(PdpUpdate update, PdpStateChange change) {
+        if (!update.getName().equals(change.getName())) {
+            throw new IllegalArgumentException("PDP name mismatch" + update.getName() + ", " + change.getName());
+        }
+
+        pdpRequests.put(update.getName(), Pair.of(update, change));
+    }
+
+    /**
      * Adds an update to the set of updates, replacing any previous entry for the given
      * PDP.
      *
      * @param update the update to be added
      */
     public void addUpdate(PdpUpdate update) {
-        pdpUpdates.put(update.getName(), update);
+        pdpRequests.compute(update.getName(), (name, data) -> Pair.of(update, (data == null ? null : data.getRight())));
     }
 
     /**
-     * Gets the accumulated UPDATE requests.
+     * Gets the accumulated PDP requests.
      *
-     * @return the UPDATE requests
+     * @return the PDP requests
      */
-    public Collection<PdpUpdate> getPdpUpdates() {
-        return pdpUpdates.values();
+    public Collection<Pair<PdpUpdate, PdpStateChange>> getPdpRequests() {
+        return pdpRequests.values();
     }
 
     /**
@@ -163,6 +180,19 @@ public class SessionData {
     }
 
     /**
+     * Creates a group.
+     *
+     * @param newGroup the new group
+     */
+    public void create(PdpGroup newGroup) {
+        String name = newGroup.getName();
+
+        if (groupCache.put(name, new GroupData(newGroup, true)) != null) {
+            throw new IllegalStateException("group already cached: " + name);
+        }
+    }
+
+    /**
      * Updates a group.
      *
      * @param newGroup the updated group
@@ -175,6 +205,32 @@ public class SessionData {
         }
 
         data.update(newGroup);
+    }
+
+    /**
+     * Gets the group by the given name.
+     *
+     * @param name name of the group to get
+     * @return the group, or {@code null} if it does not exist
+     * @throws PolicyPapRuntimeException if an error occurs
+     */
+    public PdpGroup getGroup(String name) {
+
+        return groupCache.computeIfAbsent(name, key -> {
+
+            try {
+                List<PdpGroup> lst = dao.getPdpGroups(key, PdpGroup.VERSION);
+                if (lst.isEmpty()) {
+                    return null;
+                }
+
+                return new GroupData(lst.get(0));
+
+            } catch (PfModelException e) {
+                throw new PolicyPapRuntimeException("cannot get group: " + name, e);
+            }
+
+        }).getGroup();
     }
 
     /**
@@ -225,13 +281,17 @@ public class SessionData {
      * @throws PfModelException if an error occurs
      */
     public void updateDb() throws PfModelException {
-        List<GroupData> updatedGroups =
-                        groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
-        if (updatedGroups.isEmpty()) {
-            return;
+        // create new groups
+        List<GroupData> created = groupCache.values().stream().filter(GroupData::isNew).collect(Collectors.toList());
+        if (!created.isEmpty()) {
+            dao.createPdpGroups(created.stream().map(GroupData::getGroup).collect(Collectors.toList()));
         }
 
-        // update the groups
-        dao.updatePdpGroups(updatedGroups.stream().map(GroupData::getGroup).collect(Collectors.toList()));
+        // update existing groups
+        List<GroupData> updated =
+                        groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
+        if (!updated.isEmpty()) {
+            dao.updatePdpGroups(updated.stream().map(GroupData::getGroup).collect(Collectors.toList()));
+        }
     }
 }

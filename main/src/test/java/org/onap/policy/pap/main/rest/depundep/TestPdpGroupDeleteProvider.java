@@ -57,7 +57,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String POLICY1_NAME = "policyA";
     private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
-    private static final String GROUP1_VERSION = "200.2.3";
 
     private MyProvider prov;
     private SessionData session;
@@ -92,9 +91,8 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
     @Test
     public void testDeleteGroup() {
-        Pair<Status, PdpGroupDeleteResponse> pair = prov.deleteGroup(GROUP1_NAME, GROUP1_VERSION);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("not implemented yet", pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasMessage("group not found: groupA");
     }
 
     @Test
