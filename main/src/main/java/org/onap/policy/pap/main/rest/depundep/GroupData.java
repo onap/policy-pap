@@ -24,26 +24,58 @@ import lombok.Getter;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 
 /**
- * PdpGroup data, which includes the old group, that's in the DB, and possibly a new
- * group, that must be added to the DB.
+ * PdpGroup data, only the latest copy of the group is retained.
  */
 @Getter
 public class GroupData {
     private PdpGroup group;
 
+    private enum State {
+        UNCHANGED, CREATED, UPDATED
+    }
+
     /**
-     * {@code True} if the group has been updated, {@code false} otherwise.
+     * State of the group.
      */
-    private boolean updated = false;
+    private State state;
 
 
     /**
-     * Constructs the object.
+     * Constructs the object, for an existing group.
      *
      * @param group the group that is in the DB
      */
     public GroupData(PdpGroup group) {
+        this(group, false);
+    }
+
+    /**
+     * Constructs the object.
+     *
+     * @param group the group that is in, or to be added to, the DB
+     * @param isNew {@code true} if this is a new group, {@code false} otherwise
+     */
+    public GroupData(PdpGroup group, boolean isNew) {
         this.group = group;
+        this.state = (isNew ? State.CREATED : State.UNCHANGED);
+    }
+
+    /**
+     * Determines if the group is new.
+     *
+     * @return {@code true} if the group is new, {@code false} otherwise
+     */
+    public boolean isNew() {
+        return (state == State.CREATED);
+    }
+
+    /**
+     * Determines if the group has been updated.
+     *
+     * @return {@code true} if the group has been updated, {@code false} otherwise
+     */
+    public boolean isUpdated() {
+        return (state == State.UPDATED);
     }
 
     /**
@@ -57,7 +89,10 @@ public class GroupData {
                             "expected group " + this.group.getName() + ", but received " + newGroup.getName());
         }
 
-        this.updated = true;
         this.group = newGroup;
+
+        if (state == State.UNCHANGED) {
+            state = State.UPDATED;
+        }
     }
 }
