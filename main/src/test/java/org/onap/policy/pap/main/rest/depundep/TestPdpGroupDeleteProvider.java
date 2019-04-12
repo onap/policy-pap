@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -29,7 +29,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -57,7 +59,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String POLICY1_NAME = "policyA";
     private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
-    private static final String GROUP1_VERSION = "200.2.3";
 
     private MyProvider prov;
     private SessionData session;
@@ -91,10 +92,62 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeleteGroup() {
-        Pair<Status, PdpGroupDeleteResponse> pair = prov.deleteGroup(GROUP1_NAME, GROUP1_VERSION);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("not implemented yet", pair.getRight().getErrorDetails());
+    public void testDeleteGroup_Inctive() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        prov.deleteGroup(GROUP1_NAME);
+
+        verify(session).deleteGroupFromDb(group);
+
+        // should be no PDP requests
+        verify(session, never()).addRequests(any(), any());
+    }
+
+    @Test
+    public void testDeleteGroup_Active() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        group.setPdpGroupState(PdpState.ACTIVE);
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasMessage("group is still ACTIVE");
+    }
+
+    @Test
+    public void testDeleteGroup_NotFound() throws Exception {
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasMessage("group not found");
+    }
+
+    @Test
+    public void testDeleteGroup_Inactive() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        prov.deleteGroup(GROUP1_NAME);
+
+        verify(session).deleteGroupFromDb(group);
+
+        // should done no requests for the PDPs
+        verify(session, never()).addRequests(any(), any());
+    }
+
+    @Test
+    public void testDeleteGroup_DaoEx() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        doThrow(ex).when(session).deleteGroupFromDb(group);
+
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasMessage(ProviderBase.DB_ERROR_MSG);
     }
 
     @Test

@@ -27,6 +27,7 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
@@ -52,47 +53,73 @@ public class PdpGroupDeleteProvider extends ProviderBase<PdpGroupDeleteResponse>
      * Deletes a PDP group.
      *
      * @param groupName name of the PDP group to be deleted
-     * @param version group version to delete; may be {@code null} if the group has only
-     *        one version
      * @return a pair containing the status and the response
      */
-    public Pair<Response.Status, PdpGroupDeleteResponse> deleteGroup(String groupName, String version) {
+    public Pair<Response.Status, PdpGroupDeleteResponse> deleteGroup(String groupName) {
 
-        PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
-        resp.setErrorDetails("not implemented yet");
-
-        return Pair.of(Response.Status.INTERNAL_SERVER_ERROR, resp);
+        return process(groupName, this::deleteGroup);
     }
 
     /**
-     * Deletes a PDP policy.
+     * Deletes a PDP group.
+     *
+     * @param data session data
+     * @param groupName name of the PDP group to be deleted
+     */
+    private void deleteGroup(SessionData data, String groupName) {
+        try {
+            PdpGroup group = data.getGroup(groupName);
+            if (group == null) {
+                throw new PolicyPapRuntimeException("group not found");
+            }
+
+            if (group.getPdpGroupState() == PdpState.ACTIVE) {
+                throw new PolicyPapRuntimeException("group is still " + PdpState.ACTIVE);
+            }
+
+            data.deleteGroupFromDb(group);
+
+        } catch (PfModelException e) {
+            // no need to log the error here, as it will be logged by the invoker
+            logger.warn("failed to delete group: {}", groupName);
+            throw new PolicyPapRuntimeException(DB_ERROR_MSG, e);
+
+        } catch (RuntimeException e) {
+            // no need to log the error here, as it will be logged by the invoker
+            logger.warn("failed to delete group: {}", groupName);
+            throw e;
+        }
+    }
+
+    /**
+     * Undeploys a policy.
      *
      * @param policyIdent identifier of the policy to be undeployed
      * @return a pair containing the status and the response
      */
     public Pair<Response.Status, PdpGroupDeleteResponse> undeploy(ToscaPolicyIdentifierOptVersion policyIdent) {
 
-        return process(policyIdent, this::deletePolicy);
+        return process(policyIdent, this::undeployPolicy);
     }
 
     /**
-     * Deletes a policy from its groups.
+     * Undeploys a policy from its groups.
      *
      * @param data session data
      * @param ident identifier of the policy to be deleted
      */
-    private void deletePolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) {
+    private void undeployPolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) {
         try {
             processPolicy(data, ident);
 
         } catch (PfModelException e) {
             // no need to log the error here, as it will be logged by the invoker
-            logger.warn("failed to deploy policy: {}", ident);
+            logger.warn("failed to undeploy policy: {}", ident);
             throw new PolicyPapRuntimeException(DB_ERROR_MSG, e);
 
         } catch (RuntimeException e) {
             // no need to log the error here, as it will be logged by the invoker
-            logger.warn("failed to deploy policy: {}", ident);
+            logger.warn("failed to undeploy policy: {}", ident);
             throw e;
         }
     }
@@ -104,6 +131,9 @@ public class PdpGroupDeleteProvider extends ProviderBase<PdpGroupDeleteResponse>
         return resp;
     }
 
+    /**
+     * Returns a function that will remove the specified policy from a subgroup.
+     */
     @Override
     protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
         ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
