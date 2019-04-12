@@ -31,14 +31,13 @@ import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
 public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
-    private static final String NOT_IMPLEMENTED_YET = "not implemented yet";
+    private static final String REQUEST_FAILED = "request failed";
     private static final String DELETE_GROUP_ENDPOINT = "pdps/groups";
     private static final String DELETE_POLICIES_ENDPOINT = "pdps/policies";
 
     @Test
     public void testSwagger() throws Exception {
         super.testSwagger(DELETE_GROUP_ENDPOINT + "/{name}");
-        super.testSwagger(DELETE_GROUP_ENDPOINT + "/{name}/versions/{version}");
 
         super.testSwagger(DELETE_POLICIES_ENDPOINT + "/{name}");
         super.testSwagger(DELETE_POLICIES_ENDPOINT + "/{name}/versions/{version}");
@@ -52,31 +51,12 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         Response rawresp = invocationBuilder.delete();
         PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
-        assertEquals(NOT_IMPLEMENTED_YET, resp.getErrorDetails());
+        assertEquals(REQUEST_FAILED, resp.getErrorDetails());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
-        assertEquals(NOT_IMPLEMENTED_YET, resp.getErrorDetails());
-
-        // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.delete());
-    }
-
-    @Test
-    public void testDeleteGroupVersion() throws Exception {
-        String uri = DELETE_GROUP_ENDPOINT + "/my-name/versions/1.2.3";
-
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.delete();
-        PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
-        assertEquals(NOT_IMPLEMENTED_YET, resp.getErrorDetails());
-
-        rawresp = invocationBuilder.delete();
-        resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
-        assertEquals(NOT_IMPLEMENTED_YET, resp.getErrorDetails());
+        assertEquals(REQUEST_FAILED, resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.delete());

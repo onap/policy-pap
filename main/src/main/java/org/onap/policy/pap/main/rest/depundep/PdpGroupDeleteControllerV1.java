@@ -82,51 +82,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     public Response deleteGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") String groupName) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.deleteGroup(groupName, null);
-
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                        .entity(pair.getRight()).build();
-    }
-
-    /**
-     * Deletes a particular version of a PDP group.
-     *
-     * @param requestId request ID used in ONAP logging
-     * @param groupName name of the PDP group to be deleted
-     * @param version version to be deleted
-     * @return a response
-     */
-    // @formatter:off
-    @DELETE
-    @Path("pdps/groups/{name}/versions/{version}")
-    @ApiOperation(value = "Delete version of a PDP Group",
-        notes = "Deletes a version of PDP Group, returning optional error details",
-        response = PdpGroupDeleteResponse.class,
-        tags = {"Policy Administration (PAP) API"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
-    // @formatter:on
-
-    public Response deleteGroupVersion(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") String groupName,
-                    @ApiParam(value = "PDP Group Version", required = true) @PathParam("version") String version) {
-
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.deleteGroup(groupName, version);
+        Pair<Status, PdpGroupDeleteResponse> pair = provider.deleteGroup(groupName);
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();
