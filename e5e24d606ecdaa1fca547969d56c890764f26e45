@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ccf18d0d_9db37759",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-12T08:46:16Z",
+      "side": 1,
+      "message": "Jorge, looks like slf4j doesn\u0027t support \"fatal\" level.",
+      "parentUuid": "5221373e_b800390a",
+      "revId": "e5e24d606ecdaa1fca547969d56c890764f26e45",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2edf500d_79ca943b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
         "patchSetId": 2
@@ -30,6 +48,30 @@
       "writtenOn": "2019-04-11T23:21:53Z",
       "side": 1,
       "message": "Do I need to follow this? This is basically pre-loading pdp groups, right?",
+      "range": {
+        "startLine": 64,
+        "startChar": 16,
+        "endLine": 64,
+        "endChar": 37
+      },
+      "revId": "e5e24d606ecdaa1fca547969d56c890764f26e45",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "83867abf_652ee77d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-12T08:46:16Z",
+      "side": 1,
+      "message": "Chenfei, you don\u0027t need to do this. Yeah it is creating initial PdpGroup/Subgroup in db.",
+      "parentUuid": "2edf500d_79ca943b",
       "range": {
         "startLine": 64,
         "startChar": 16,
