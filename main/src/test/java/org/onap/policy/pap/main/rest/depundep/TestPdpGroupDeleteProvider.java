@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -29,7 +29,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -41,10 +44,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
@@ -57,7 +62,9 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String POLICY1_NAME = "policyA";
     private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
-    private static final String GROUP1_VERSION = "200.2.3";
+    private static final String PDP1_1 = "pdpA_1";
+    private static final String PDP1_2 = "pdpA_2";
+    private static final String PDP3_1 = "pdpC_1";
 
     private MyProvider prov;
     private SessionData session;
@@ -91,10 +98,64 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeleteGroup() {
-        Pair<Status, PdpGroupDeleteResponse> pair = prov.deleteGroup(GROUP1_NAME, GROUP1_VERSION);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("not implemented yet", pair.getRight().getErrorDetails());
+    public void testDeleteGroup_Active() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        prov.deleteGroup(GROUP1_NAME);
+
+        verify(session).deleteGroupFromDb(group);
+
+        // should have an update for each PDP
+        ArgumentCaptor<PdpUpdate> updateRequests = ArgumentCaptor.forClass(PdpUpdate.class);
+        verify(session, times(3)).addRequests(updateRequests.capture(), any());
+        List<PdpUpdate> updates = updateRequests.getAllValues();
+        assertEquals(PDP1_1, updates.remove(0).getName());
+        assertEquals(PDP1_2, updates.remove(0).getName());
+        assertEquals(PDP3_1, updates.remove(0).getName());
+
+        ArgumentCaptor<PdpStateChange> changeRequests = ArgumentCaptor.forClass(PdpStateChange.class);
+        verify(session, times(3)).addRequests(any(), changeRequests.capture());
+        List<PdpStateChange> changes = changeRequests.getAllValues();
+        assertEquals(PDP1_1, changes.remove(0).getName());
+        assertEquals(PDP1_2, changes.remove(0).getName());
+        assertEquals(PDP3_1, changes.remove(0).getName());
+    }
+
+    @Test
+    public void testDeleteGroup_NotFound() throws Exception {
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasMessage("group not found: groupA");
+    }
+
+    @Test
+    public void testDeleteGroup_Inactive() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        group.setPdpGroupState(PdpState.PASSIVE);
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        prov.deleteGroup(GROUP1_NAME);
+
+        verify(session).deleteGroupFromDb(group);
+
+        // should done no requests for the PDPs
+        verify(session, never()).addRequests(any(), any());
+    }
+
+    @Test
+    public void testDeleteGroup_DaoEx() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        doThrow(ex).when(session).deleteGroupFromDb(group);
+
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasMessage(ProviderBase.DB_ERROR_MSG);
     }
 
     @Test
@@ -102,6 +163,33 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         Pair<Status, PdpGroupDeleteResponse> pair = prov.undeploy(optIdent);
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
+    }
+
+    @Test
+    public void removePdps() throws Exception {
+        PdpGroup group = loadGroup("deleteGroup.json");
+
+        group.setPdpGroupState(PdpState.ACTIVE);
+
+        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
+
+        prov.deleteGroup(GROUP1_NAME);
+
+        // should have an update for each PDP
+        ArgumentCaptor<PdpUpdate> updateRequests = ArgumentCaptor.forClass(PdpUpdate.class);
+        verify(session, times(3)).addRequests(updateRequests.capture(), any());
+
+        PdpUpdate update = updateRequests.getValue();
+        assertEquals(PDP3_1, update.getName());
+        assertNull(update.getPdpGroup());
+        assertNull(update.getPdpSubgroup());
+
+        ArgumentCaptor<PdpStateChange> changeRequests = ArgumentCaptor.forClass(PdpStateChange.class);
+        verify(session, times(3)).addRequests(any(), changeRequests.capture());
+
+        PdpStateChange change = changeRequests.getValue();
+        assertEquals(PDP3_1, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
     }
 
     /**

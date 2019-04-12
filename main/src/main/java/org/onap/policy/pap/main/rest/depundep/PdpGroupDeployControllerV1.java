@@ -82,7 +82,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
-        Pair<Status, PdpGroupDeployResponse> pair = provider.deployGroup(groups);
+        Pair<Status, PdpGroupDeployResponse> pair = provider.createOrUpdateGroups(groups);
 
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                         .entity(pair.getRight()).build();

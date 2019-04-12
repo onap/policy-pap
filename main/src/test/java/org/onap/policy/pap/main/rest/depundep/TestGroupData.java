@@ -50,19 +50,42 @@ public class TestGroupData {
     }
 
     @Test
-    public void test() {
+    public void testNew() {
+        data = new GroupData(oldGroup, true);
+        assertSame(oldGroup, data.getGroup());
+
+        assertTrue(data.isNew());
+        assertFalse(data.isUpdated());
+
+        data.update(newGroup);
+        assertTrue(data.isNew());
+        assertFalse(data.isUpdated());
+        assertSame(newGroup, data.getGroup());
+
+        // repeat with a new group
+        newGroup = new PdpGroup(oldGroup);
+        data.update(newGroup);
+        assertTrue(data.isNew());
+        assertFalse(data.isUpdated());
+        assertSame(newGroup, data.getGroup());
+    }
+
+    @Test
+    public void testUpdateOnly() {
         assertFalse(data.isUpdated());
         assertSame(oldGroup, data.getGroup());
 
         data.update(newGroup);
 
         assertTrue(data.isUpdated());
+        assertFalse(data.isNew());
         assertSame(newGroup, data.getGroup());
 
         // repeat
         newGroup = new PdpGroup(oldGroup);
         data.update(newGroup);
         assertTrue(data.isUpdated());
+        assertFalse(data.isNew());
         assertSame(newGroup, data.getGroup());
 
         // incorrect name

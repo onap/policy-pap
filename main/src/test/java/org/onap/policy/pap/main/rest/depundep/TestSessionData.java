@@ -20,9 +20,11 @@
 
 package org.onap.policy.pap.main.rest.depundep;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
@@ -35,20 +37,23 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import javax.ws.rs.core.Response.Status;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 public class TestSessionData extends ProviderSuper {
     private static final String GROUP_NAME = "groupA";
-    private static final String GROUP_NAME2 = "groupB";
     private static final String PDP1 = "pdp_1";
     private static final String PDP2 = "pdp_2";
     private static final String PDP3 = "pdp_3";
@@ -58,6 +63,7 @@ public class TestSessionData extends ProviderSuper {
     private static final String POLICY_VERSION2 = POLICY_VERSION_PREFIX + "4";
     private static final String POLICY_TYPE = "myType";
     private static final String POLICY_TYPE_VERSION = "10.20.30";
+    private static final String EXPECTED_EXCEPTION = "expected exception";
 
     private SessionData session;
     private ToscaPolicyIdentifier ident;
@@ -78,8 +84,8 @@ public class TestSessionData extends ProviderSuper {
         ident = new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION);
         type = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION);
         type2 = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION + "0");
-        group1 = makeGroup(GROUP_NAME);
-        group2 = makeGroup(GROUP_NAME2);
+        group1 = loadGroup("group1.json");
+        group2 = loadGroup("group2.json");
 
         session = new SessionData(dao);
     }
@@ -116,19 +122,76 @@ public class TestSessionData extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicy_TooMany() throws Exception {
-        ToscaPolicy policy = new ToscaPolicy();
-        when(dao.getPolicyList(any(), any())).thenReturn(Arrays.asList(policy, policy));
-
-        assertThatThrownBy(() -> session.getPolicy(ident)).hasMessage("too many policies match: myPolicy 1.2.3");
-    }
-
-    @Test
     public void testGetPolicy_DaoEx() throws Exception {
         PfModelException ex = new PfModelException(Status.INTERNAL_SERVER_ERROR, "expected exception");
         when(dao.getPolicyList(any(), any())).thenThrow(ex);
 
         assertThatThrownBy(() -> session.getPolicy(ident)).hasMessage("cannot get policy: myPolicy 1.2.3").hasCause(ex);
+    }
+
+    @Test
+    public void testAddRequests_testGetPdpStateChanges_testGetPdpUpdates() {
+        // pre-load with a update and state-change for other PDPs
+        PdpUpdate update2 = makeUpdate(PDP2);
+        session.addUpdate(update2);
+
+        PdpStateChange change3 = makeStateChange(PDP3);
+        session.addStateChange(change3);
+
+        // add requests
+        PdpUpdate update = makeUpdate(PDP1);
+        PdpStateChange change = makeStateChange(PDP1);
+        session.addRequests(update, change);
+        verifyRequests(update, update2, change, change3);
+
+        /*
+         * repeat with a new pair
+         */
+        update = makeUpdate(PDP1);
+        change = makeStateChange(PDP1);
+        session.addRequests(update, change);
+        verifyRequests(update, update2, change, change3);
+
+        // just make an update this time
+        update = makeUpdate(PDP1);
+        session.addUpdate(update);
+        verifyRequests(update, update2, change, change3);
+    }
+
+    private void verifyRequests(PdpUpdate update, PdpUpdate update2, PdpStateChange change, PdpStateChange change3) {
+        List<Pair<PdpUpdate, PdpStateChange>> requests = sort(session.getPdpRequests(), this::compare);
+        assertEquals(3, requests.size());
+
+        System.out.println(requests);
+        System.out.println(update);
+
+        Iterator<Pair<PdpUpdate, PdpStateChange>> reqiter = requests.iterator();
+        Pair<PdpUpdate, PdpStateChange> pair = reqiter.next();
+        assertSame(update, pair.getLeft());
+        assertSame(change, pair.getRight());
+
+        pair = reqiter.next();
+        assertSame(update2, pair.getLeft());
+        assertSame(null, pair.getRight());
+
+        pair = reqiter.next();
+        assertSame(null, pair.getLeft());
+        assertSame(change3, pair.getRight());
+
+        // verify individual lists
+        List<PdpUpdate> updates = Arrays.asList(update, update2);
+        assertEquals(sort(updates, this::compare), sort(session.getPdpUpdates(), this::compare));
+
+        List<PdpStateChange> changes = Arrays.asList(change, change3);
+        assertEquals(sort(changes, this::compare), sort(session.getPdpStateChanges(), this::compare));
+    }
+
+    @Test
+    public void testAddRequests_MismatchedNames() {
+        PdpUpdate update = makeUpdate(PDP1);
+        PdpStateChange change = makeStateChange(PDP2);
+        assertThatIllegalArgumentException().isThrownBy(() -> session.addRequests(update, change))
+                        .withMessage("PDP name mismatch pdp_1, pdp_2");
     }
 
     @Test
@@ -143,15 +206,38 @@ public class TestSessionData extends ProviderSuper {
         PdpUpdate update3 = makeUpdate(PDP3);
         session.addUpdate(update3);
 
-        List<PdpUpdate> lst = sort(session.getPdpUpdates(), this::compare);
+        List<PdpUpdate> lst = sort(getUpdateRequests(), this::compare);
         assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
 
         // overwrite one
         update2 = makeUpdate(PDP2);
         session.addUpdate(update2);
 
-        lst = sort(session.getPdpUpdates(), this::compare);
+        lst = sort(getUpdateRequests(), this::compare);
         assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
+    }
+
+    @Test
+    public void testAddStateChange_testGetPdpStateChanges() {
+        // several different changes, but one duplicate
+        PdpStateChange change1 = makeStateChange(PDP1);
+        session.addStateChange(change1);
+
+        PdpStateChange change2 = makeStateChange(PDP2);
+        session.addStateChange(change2);
+
+        PdpStateChange change3 = makeStateChange(PDP3);
+        session.addStateChange(change3);
+
+        List<PdpStateChange> lst = sort(getStateChangeRequests(), this::compare);
+        assertEquals(Arrays.asList(change1, change2, change3).toString(), lst.toString());
+
+        // overwrite one
+        change2 = makeStateChange(PDP2);
+        session.addStateChange(change2);
+
+        lst = sort(getStateChangeRequests(), this::compare);
+        assertEquals(Arrays.asList(change1, change2, change3).toString(), lst.toString());
     }
 
     private ToscaPolicy makePolicy(String name, String version) {
@@ -183,12 +269,19 @@ public class TestSessionData extends ProviderSuper {
         assertThatThrownBy(() -> session.getPolicyMaxVersion(POLICY_NAME)).hasMessage("cannot find policy: myPolicy");
     }
 
-    private PdpGroup makeGroup(String name) {
-        PdpGroup group = new PdpGroup();
+    @Test
+    public void testCreate() throws Exception {
+        session.create(group1);
+        assertSame(group1, session.getGroup(group1.getName()));
 
-        group.setName(name);
+        // can add another
+        session.create(group2);
+        assertSame(group1, session.getGroup(group1.getName()));
+        assertSame(group2, session.getGroup(group2.getName()));
 
-        return group;
+        // cannot overwrite
+        assertThatIllegalStateException().isThrownBy(() -> session.create(group1))
+                        .withMessage("group already cached: groupA");
     }
 
     @Test
@@ -229,6 +322,48 @@ public class TestSessionData extends ProviderSuper {
     }
 
     @Test
+    public void testGetGroup() throws Exception {
+        when(dao.getPdpGroups(GROUP_NAME)).thenReturn(Arrays.asList(group1));
+
+        assertSame(group1, session.getGroup(GROUP_NAME));
+        verify(dao).getPdpGroups(any());
+
+        // repeat
+        assertSame(group1, session.getGroup(GROUP_NAME));
+
+        // should not access dao again
+        verify(dao, times(1)).getPdpGroups(any());
+    }
+
+    @Test
+    public void testGetGroup_NotFound() throws Exception {
+        when(dao.getPdpGroups(GROUP_NAME)).thenReturn(Collections.emptyList());
+
+        assertNull(session.getGroup(GROUP_NAME));
+        verify(dao).getPdpGroups(any());
+
+        // repeat
+        assertNull(session.getGroup(GROUP_NAME));
+
+        // SHOULD access dao again
+        verify(dao, times(2)).getPdpGroups(GROUP_NAME);
+
+        // find it this time
+        when(dao.getPdpGroups(GROUP_NAME)).thenReturn(Arrays.asList(group1));
+        assertSame(group1, session.getGroup(GROUP_NAME));
+        verify(dao, times(3)).getPdpGroups(GROUP_NAME);
+    }
+
+    @Test
+    public void testGetGroup_DaoEx() throws Exception {
+        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        when(dao.getPdpGroups(GROUP_NAME)).thenThrow(ex);
+
+        assertThatThrownBy(() -> session.getGroup(GROUP_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+                        .hasCause(ex);
+    }
+
+    @Test
     public void testGetActivePdpGroupsByPolicyType() throws Exception {
         List<PdpGroup> groups = Arrays.asList(group1, group2);
         when(dao.getFilteredPdpGroups(any())).thenReturn(groups);
@@ -263,9 +398,16 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testUpdateDb() throws Exception {
         // force the groups into the cache
-        PdpGroup group3 = makeGroup("groupC");
+        PdpGroup group3 = loadGroup("group3.json");
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2, group3));
         session.getActivePdpGroupsByPolicyType(type);
+
+        // create groups 4 & 5
+        PdpGroup group4 = loadGroup("group4.json");
+        session.create(group4);
+
+        PdpGroup group5 = loadGroup("group5.json");
+        session.create(group5);
 
         // update group 1
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
@@ -281,13 +423,25 @@ public class TestSessionData extends ProviderSuper {
         PdpGroup newgrp3 = new PdpGroup(group3);
         session.update(newgrp3);
 
+        // update group 5
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group5));
+        PdpGroup newgrp5 = new PdpGroup(group5);
+        session.update(newgrp5);
+
         // push the changes to the DB
         session.updateDb();
 
+        // expect one create for groups 4 & 5 (group5 replaced by newgrp5)
+        List<PdpGroup> creates = getGroupCreates();
+        assertEquals(2, creates.size());
+        assertSame(group4, creates.get(0));
+        assertSame(newgrp5, creates.get(1));
+
         // expect one update for groups 1 & 3
-        List<PdpGroup> changes = getGroupUpdates();
-        assertSame(newgrp1, changes.get(0));
-        assertSame(newgrp3, changes.get(1));
+        List<PdpGroup> updates = getGroupUpdates();
+        assertEquals(2, updates.size());
+        assertSame(newgrp1, updates.get(0));
+        assertSame(newgrp3, updates.get(1));
     }
 
     @Test
@@ -301,12 +455,35 @@ public class TestSessionData extends ProviderSuper {
         verify(dao, never()).updatePdpGroups(any());
     }
 
+    @Test
+    public void testDeleteGroupFromDb() throws Exception {
+        session.deleteGroupFromDb(group1);
+
+        verify(dao).deletePdpGroup(group1.getName());
+    }
+
     private PdpUpdate makeUpdate(String pdpName) {
         PdpUpdate update = new PdpUpdate();
 
         update.setName(pdpName);
 
         return update;
+    }
+
+    private PdpStateChange makeStateChange(String pdpName) {
+        PdpStateChange change = new PdpStateChange();
+
+        change.setName(pdpName);
+
+        return change;
+    }
+
+    private List<PdpUpdate> getUpdateRequests() {
+        return session.getPdpUpdates();
+    }
+
+    private List<PdpStateChange> getStateChangeRequests() {
+        return session.getPdpStateChanges();
     }
 
     private <T> List<T> sort(Collection<T> collection, Comparator<T> comparator) {
@@ -316,7 +493,19 @@ public class TestSessionData extends ProviderSuper {
         return lst;
     }
 
+    private int compare(Pair<PdpUpdate, PdpStateChange> left, Pair<PdpUpdate, PdpStateChange> right) {
+        return getName(left).compareTo(getName(right));
+    }
+
     private int compare(PdpUpdate left, PdpUpdate right) {
         return left.getName().compareTo(right.getName());
+    }
+
+    private int compare(PdpStateChange left, PdpStateChange right) {
+        return left.getName().compareTo(right.getName());
+    }
+
+    private String getName(Pair<PdpUpdate, PdpStateChange> pair) {
+        return (pair.getKey() != null ? pair.getKey().getName() : pair.getValue().getName());
     }
 }

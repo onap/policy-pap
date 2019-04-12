@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -43,6 +44,7 @@ import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
@@ -61,7 +63,7 @@ public class ProviderSuper {
 
 
     /**
-     * Used to capture input to dao.updatePdpGroups().
+     * Used to capture input to dao.updatePdpGroups() and dao.createPdpGroups().
      */
     @Captor
     private ArgumentCaptor<List<PdpGroup>> updateCaptor;
@@ -118,7 +120,19 @@ public class ProviderSuper {
     }
 
     /**
-     * Gets the input to the method.
+     * Gets the input to the create() method.
+     *
+     * @return the input that was passed to the dao.updatePdpGroups() method
+     * @throws Exception if an error occurred
+     */
+    protected List<PdpGroup> getGroupCreates() throws Exception {
+        verify(dao).createPdpGroups(updateCaptor.capture());
+
+        return copyList(updateCaptor.getValue());
+    }
+
+    /**
+     * Gets the input to the update() method.
      *
      * @return the input that was passed to the dao.updatePdpGroups() method
      * @throws Exception if an error occurred
@@ -130,6 +144,20 @@ public class ProviderSuper {
     }
 
     /**
+     * Gets the state-changes that were added to the request map.
+     *
+     * @param count the number of times the method is expected to have been called
+     * @return the state-changes that were added to the request map
+     */
+    protected List<PdpStateChange> getStateChangeRequests(int count) {
+        ArgumentCaptor<PdpStateChange> captor = ArgumentCaptor.forClass(PdpStateChange.class);
+
+        verify(reqmap, times(count)).addRequest(any(), captor.capture());
+
+        return captor.getAllValues().stream().filter(req -> req != null).collect(Collectors.toList());
+    }
+
+    /**
      * Gets the updates that were added to the request map.
      *
      * @param count the number of times the method is expected to have been called
@@ -138,9 +166,9 @@ public class ProviderSuper {
     protected List<PdpUpdate> getUpdateRequests(int count) {
         ArgumentCaptor<PdpUpdate> captor = ArgumentCaptor.forClass(PdpUpdate.class);
 
-        verify(reqmap, times(count)).addRequest(captor.capture());
+        verify(reqmap, times(count)).addRequest(captor.capture(), any());
 
-        return new ArrayList<>(captor.getAllValues());
+        return captor.getAllValues().stream().filter(req -> req != null).collect(Collectors.toList());
     }
 
     /**

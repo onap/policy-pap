@@ -1,0 +1,29 @@
+{
+    "name": "groupA",
+    "pdpGroupState": "ACTIVE",
+    "pdpSubgroups": [
+        {
+            "pdpType": "pdpTypeA",
+            "pdpInstances": [
+                {
+                    "instanceId": "pdpA_1"
+                },
+                {
+                    "instanceId": "pdpA_2"
+                }
+            ]
+        },
+        {
+            "pdpType": "pdpTypeB",
+            "pdpInstances": []
+        },
+        {
+            "pdpType": "pdpTypeC",
+            "pdpInstances": [
+                {
+                    "instanceId": "pdpC_1"
+                }
+            ]
+        }
+    ]
+}

@@ -32,6 +32,7 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.SimpleResponse;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
@@ -59,7 +60,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ProviderBase<R extends SimpleResponse> {
     private static final String DEPLOY_FAILED = "failed to deploy/undeploy policies";
-
     public static final String DB_ERROR_MSG = "DB error";
 
     private static final Logger logger = LoggerFactory.getLogger(ProviderBase.class);
@@ -100,7 +100,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
 
         synchronized (updateLock) {
             // list of requests to be published to the PDPs
-            Collection<PdpUpdate> requests = Collections.emptyList();
+            Collection<Pair<PdpUpdate, PdpStateChange>> requests = Collections.emptyList();
 
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
@@ -110,7 +110,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
                 // make all of the DB updates
                 data.updateDb();
 
-                requests = data.getPdpUpdates();
+                requests = data.getPdpRequests();
 
             } catch (PfModelException e) {
                 logger.warn(DEPLOY_FAILED, e);
@@ -127,7 +127,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
 
 
             // publish the requests
-            requests.forEach(requestMap::addRequest);
+            requests.forEach(pair -> requestMap.addRequest(pair.getLeft(), pair.getRight()));
         }
 
         return Pair.of(Response.Status.OK, makeResponse(null));
@@ -236,13 +236,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
 
             updated = true;
 
-            /*
-             * generate an UPDATE for each PDP instance. Since the group is active, we
-             * assume that the PDP is, too, thus no need for a STATE-CHANGE.
-             */
-            for (Pdp pdpInstance : subgroup.getPdpInstances()) {
-                data.addUpdate(makeUpdate(data, group, subgroup, pdpInstance));
-            }
+            makeUpdates(data, group, subgroup);
         }
 
 
@@ -253,19 +247,32 @@ public abstract class ProviderBase<R extends SimpleResponse> {
     }
 
     /**
+     * Makes UPDATE messages for each PDP in a subgroup.
+     *
+     * @param data session data
+     * @param group group containing the subgroup
+     * @param subgroup subgroup whose PDPs should receive messages
+     */
+    protected void makeUpdates(SessionData data, PdpGroup group, PdpSubGroup subgroup) {
+        for (Pdp pdp : subgroup.getPdpInstances()) {
+            data.addUpdate(makeUpdate(data, group, subgroup, pdp));
+        }
+    }
+
+    /**
      * Makes an UPDATE message for a particular PDP.
      *
      * @param data session data
      * @param group group to which the PDP should belong
      * @param subgroup subgroup to which the PDP should belong
-     * @param pdpInstance identifies the PDP of interest
+     * @param pdp the PDP of interest
      * @return a new UPDATE message
      */
-    private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdpInstance) {
+    private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdp) {
 
         PdpUpdate update = new PdpUpdate();
 
-        update.setName(pdpInstance.getInstanceId());
+        update.setName(pdp.getInstanceId());
         update.setDescription(group.getDescription());
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
