@@ -143,14 +143,14 @@ public class TestSessionData extends ProviderSuper {
         PdpUpdate update3 = makeUpdate(PDP3);
         session.addUpdate(update3);
 
-        List<PdpUpdate> lst = sort(session.getPdpUpdates(), this::compare);
+        List<PdpUpdate> lst = sort(getUpdateRequests(), this::compare);
         assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
 
         // overwrite one
         update2 = makeUpdate(PDP2);
         session.addUpdate(update2);
 
-        lst = sort(session.getPdpUpdates(), this::compare);
+        lst = sort(getUpdateRequests(), this::compare);
         assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
     }
 
@@ -307,6 +307,11 @@ public class TestSessionData extends ProviderSuper {
         update.setName(pdpName);
 
         return update;
+    }
+
+    private List<PdpUpdate> getUpdateRequests() {
+        return session.getPdpUpdates();
+
     }
 
     private <T> List<T> sort(Collection<T> collection, Comparator<T> comparator) {

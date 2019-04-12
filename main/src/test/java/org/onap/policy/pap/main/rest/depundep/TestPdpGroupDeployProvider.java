@@ -80,9 +80,9 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testDeployGroup() {
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployGroup(new PdpGroups());
+        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(new PdpGroups());
         assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("not implemented yet", pair.getRight().getErrorDetails());
+        assertEquals("request failed", pair.getRight().getErrorDetails());
     }
 
     @Test
