@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "cdbaf79f_91502a5f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-12T13:02:15Z",
+      "side": 1,
+      "message": "If the db initialization fails then we are not starting PAP. The call returns back with the error message.",
+      "parentUuid": "74e865a6_0dd1b0d0",
+      "revId": "e5e24d606ecdaa1fca547969d56c890764f26e45",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2edf500d_79ca943b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
         "patchSetId": 2
