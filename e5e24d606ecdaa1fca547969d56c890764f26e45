@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "5221373e_b800390a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-04-12T01:26:39Z",
+      "side": 1,
+      "message": "probably this is \"fatal\" level.",
+      "revId": "e5e24d606ecdaa1fca547969d56c890764f26e45",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2edf500d_79ca943b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
         "patchSetId": 2
