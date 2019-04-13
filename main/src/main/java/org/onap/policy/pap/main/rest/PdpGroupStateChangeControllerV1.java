@@ -58,13 +58,12 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param groupName name of the PDP group to be deleted
-     * @param version version of the PDP group
      * @param state state of the PDP group
      * @return a response
      */
     // @formatter:off
     @PUT
-    @Path("pdps/groups/{name}/versions/{version}")
+    @Path("pdps/groups/{name}")
     @ApiOperation(value = "Change state of a PDP Group",
         notes = "Changes state of PDP Group, returning optional error details",
         response = PdpGroupStateChangeResponse.class,
@@ -90,11 +89,10 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
     public Response changeGroupState(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") final String groupName,
-            @ApiParam(value = "PDP Group Version", required = true) @PathParam("version") final String version,
             @ApiParam(value = "PDP Group State", required = true) @QueryParam("state") final PdpState state) {
 
         try {
-            final Pair<Status, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, version, state);
+            final Pair<Status, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
             return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                     .entity(pair.getRight()).build();
         } catch (final PfModelException exp) {

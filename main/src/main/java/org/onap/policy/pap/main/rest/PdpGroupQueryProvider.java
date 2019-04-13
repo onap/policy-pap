@@ -53,7 +53,7 @@ public class PdpGroupQueryProvider {
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
                 Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            pdpGroups.setGroups(databaseProvider.getPdpGroups(null, null));
+            pdpGroups.setGroups(databaseProvider.getPdpGroups(null));
         }
         LOGGER.debug("PdpGroup Query Response - {}", pdpGroups);
         return Pair.of(Response.Status.OK, pdpGroups);

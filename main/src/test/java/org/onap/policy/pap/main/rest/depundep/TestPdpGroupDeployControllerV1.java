@@ -93,7 +93,6 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
         PdpGroup group = new PdpGroup();
         group.setName("drools-group");
         group.setDescription("my description");
-        group.setVersion("my-version");
         group.setPdpSubgroups(Arrays.asList(subgrp));
 
         return Entity.entity(group, MediaType.APPLICATION_JSON);
