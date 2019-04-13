@@ -69,7 +69,7 @@ public class PapDatabaseInitializer {
             final String originalJson = ResourceUtils.getResourceAsString("PapDb.json");
             final PdpGroups pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
             final List<PdpGroup> pdpGroupsFromDb = databaseProvider.getPdpGroups(
-                    pdpGroupsToCreate.getGroups().get(0).getName(), pdpGroupsToCreate.getGroups().get(0).getVersion());
+                    pdpGroupsToCreate.getGroups().get(0).getName());
             if (pdpGroupsFromDb.isEmpty()) {
                 databaseProvider.createPdpGroups(pdpGroupsToCreate.getGroups());
                 LOGGER.debug("Created initial pdpGroup in DB - {}", pdpGroupsToCreate);

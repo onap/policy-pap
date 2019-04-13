@@ -82,20 +82,19 @@ public class PdpGroupStateChangeProvider {
      * Changes state of a PDP group.
      *
      * @param groupName name of the PDP group
-     * @param groupVersion version of the PDP group
      * @param pdpGroupState state of the PDP group
      * @return a pair containing the status and the response
      * @throws PfModelException in case of errors
      */
     public Pair<Response.Status, PdpGroupStateChangeResponse> changeGroupState(final String groupName,
-            final String groupVersion, final PdpState pdpGroupState) throws PfModelException {
+            final PdpState pdpGroupState) throws PfModelException {
         synchronized (updateLock) {
             switch (pdpGroupState) {
                 case ACTIVE:
-                    handleActiveState(groupName, groupVersion);
+                    handleActiveState(groupName);
                     break;
                 case PASSIVE:
-                    handlePassiveState(groupName, groupVersion);
+                    handlePassiveState(groupName);
                     break;
                 default:
                     throw new PfModelException(Response.Status.BAD_REQUEST,
@@ -105,11 +104,11 @@ public class PdpGroupStateChangeProvider {
         }
     }
 
-    private void handleActiveState(final String groupName, final String groupVersion) throws PfModelException {
+    private void handleActiveState(final String groupName) throws PfModelException {
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
             final PdpGroupFilter filter = PdpGroupFilter.builder().name(groupName).groupState(PdpState.ACTIVE).build();
             final List<PdpGroup> activePdpGroups = databaseProvider.getFilteredPdpGroups(filter);
-            final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName, groupVersion);
+            final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName);
             if (activePdpGroups.isEmpty() && !pdpGroups.isEmpty()) {
                 updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.ACTIVE);
                 sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
@@ -122,9 +121,9 @@ public class PdpGroupStateChangeProvider {
         }
     }
 
-    private void handlePassiveState(final String groupName, final String groupVersion) throws PfModelException {
+    private void handlePassiveState(final String groupName) throws PfModelException {
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName, groupVersion);
+            final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName);
             if (!pdpGroups.isEmpty() && !PdpState.PASSIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
                 updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.PASSIVE);
                 sendPdpMessage(pdpGroups.get(0), PdpState.PASSIVE, databaseProvider);

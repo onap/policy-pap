@@ -41,12 +41,12 @@ public class TestPdpGroupStateChangeControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testSwagger() throws Exception {
-        super.testSwagger(GROUP_ENDPOINT + "/{name}/versions/{version}");
+        super.testSwagger(GROUP_ENDPOINT + "/{name}");
     }
 
     @Test
     public void testchangeGroupState() throws Exception {
-        final String uri = GROUP_ENDPOINT + "/my-name/versions/1.2.3?state=ACTIVE";
+        final String uri = GROUP_ENDPOINT + "/my-name?state=ACTIVE";
 
         final Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.put(Entity.json(""));
