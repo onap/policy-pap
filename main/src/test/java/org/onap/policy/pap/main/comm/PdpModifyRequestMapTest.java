@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.comm;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -60,7 +61,6 @@ import org.powermock.reflect.Whitebox;
 
 public class PdpModifyRequestMapTest extends CommonRequestBase {
     private static final String MY_REASON = "my reason";
-    private static final String MY_VERSION = "1.2.3";
 
     /**
      * Used to capture input to dao.createPdpGroups().
@@ -290,7 +290,44 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testDisablePdp() {
+    public void testDisablePdp() throws Exception {
+        map.addRequest(update);
+
+        // put the PDP in a group
+        PdpGroup group = makeGroup(MY_GROUP);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        // indicate failure
+        invokeFailureHandler(1);
+
+        // should have stopped publishing
+        verify(requests).stopPublishing();
+
+        // should have published a new update
+        PdpMessage msg2 = getSingletons(3).get(1).getMessage();
+        assertNotNull(msg2);
+        assertTrue(msg2 instanceof PdpUpdate);
+
+        // update should have null group & subgroup
+        update = (PdpUpdate) msg2;
+        assertEquals(PDP1, update.getName());
+        assertNull(update.getPdpGroup());
+        assertNull(update.getPdpSubgroup());
+
+        // should have published a state-change
+        msg2 = getSingletons(3).get(2).getMessage();
+        assertNotNull(msg2);
+        assertTrue(msg2 instanceof PdpStateChange);
+
+        change = (PdpStateChange) msg2;
+        assertEquals(PDP1, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
+    }
+
+    @Test
+    public void testDisablePdp_NotInGroup() {
         map.addRequest(update);
 
         // indicate failure
@@ -334,7 +371,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromGroup() throws Exception {
         map.addRequest(change);
 
-        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP + "a", PDP1 + "a"),
                         makeSubGroup(MY_SUBGROUP, PDP1), makeSubGroup(MY_SUBGROUP + "c", PDP1 + "c")));
 
@@ -383,7 +420,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromGroup_NoMatchingSubgroup() throws Exception {
         map.addRequest(change);
 
-        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, DIFFERENT)));
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
@@ -397,7 +434,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromSubgroup() throws Exception {
         map.addRequest(change);
 
-        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, PDP1 + "x", PDP1 + "y")));
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
@@ -556,11 +593,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         return Whitebox.getInternalState(request, "listener");
     }
 
-    private PdpGroup makeGroup(String name, String version) {
+    private PdpGroup makeGroup(String name) {
         PdpGroup group = new PdpGroup();
 
         group.setName(name);
-        group.setVersion(version);
 
         return group;
     }

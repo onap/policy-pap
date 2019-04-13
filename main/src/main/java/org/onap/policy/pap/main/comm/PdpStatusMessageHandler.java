@@ -113,7 +113,7 @@ public class PdpStatusMessageHandler {
         Optional<PdpSubGroup> subGroup = null;
         final PdpGroupFilter filter = PdpGroupFilter.builder().pdpType(message.getPdpType())
                 .policyTypeList(message.getSupportedPolicyTypes()).matchPolicyTypesExactly(true)
-                .groupState(PdpState.ACTIVE).version(PdpGroupFilter.LATEST_VERSION).build();
+                .groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         for (final PdpGroup pdpGroup : pdpGroups) {
             subGroup = findPdpSubGroup(message, pdpGroup);
@@ -142,7 +142,7 @@ public class PdpStatusMessageHandler {
 
         pdpSubGroup.setCurrentInstanceCount(pdpSubGroup.getCurrentInstanceCount() + 1);
 
-        databaseProvider.updatePdpSubGroup(pdpGroup.getName(), pdpGroup.getVersion(), pdpSubGroup);
+        databaseProvider.updatePdpSubGroup(pdpGroup.getName(), pdpSubGroup);
 
         LOGGER.debug("Updated PdpSubGroup in DB - {} belonging to PdpGroup - {}", pdpSubGroup, pdpGroup);
     }
@@ -214,7 +214,7 @@ public class PdpStatusMessageHandler {
             final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpSubGroup.getPdpInstances().remove(pdpInstance);
         pdpSubGroup.setCurrentInstanceCount(pdpSubGroup.getCurrentInstanceCount() - 1);
-        databaseProvider.updatePdpSubGroup(pdpGroup.getName(), pdpGroup.getVersion(), pdpSubGroup);
+        databaseProvider.updatePdpSubGroup(pdpGroup.getName(), pdpSubGroup);
 
         LOGGER.debug("Deleted PdpInstance - {} belonging to PdpSubGroup - {} and PdpGroup - {}", pdpInstance,
                 pdpSubGroup, pdpGroup);
@@ -233,7 +233,7 @@ public class PdpStatusMessageHandler {
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpInstance.setHealthy(message.getHealthy());
-        databaseProvider.updatePdp(pdpGroup.getName(), pdpGroup.getVersion(), pdpSubgroup.getPdpType(), pdpInstance);
+        databaseProvider.updatePdp(pdpGroup.getName(), pdpSubgroup.getPdpType(), pdpInstance);
 
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
     }
