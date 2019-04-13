@@ -237,8 +237,9 @@ public class PdpModifyRequestMap {
         requests.stopPublishing();
 
         // remove the PDP from all groups
+        boolean removed = false;
         try {
-            removeFromGroups(requests.getPdpName());
+            removed = removeFromGroups(requests.getPdpName());
         } catch (PfModelException e) {
             logger.info("unable to remove PDP {} from subgroup", requests.getPdpName(), e);
         }
@@ -247,16 +248,28 @@ public class PdpModifyRequestMap {
         PdpStateChange change = new PdpStateChange();
         change.setName(requests.getPdpName());
         change.setState(PdpState.PASSIVE);
-        addRequest(change);
+
+        if (removed) {
+            // send an update, too
+            PdpUpdate update = new PdpUpdate();
+            update.setName(requests.getPdpName());
+
+            addRequest(update, change);
+
+        } else {
+            addRequest(change);
+        }
     }
 
     /**
      * Removes a PDP from all active groups.
      *
      * @param pdpName name of the PDP to be removed
+     * @return {@code true} if the PDP was removed from a group, {@code false} if it was
+     *         not assigned to a group
      * @throws PfModelException if an error occurs
      */
-    public void removeFromGroups(String pdpName) throws PfModelException {
+    public boolean removeFromGroups(String pdpName) throws PfModelException {
 
         try (PolicyModelsProvider dao = daoFactory.create()) {
 
@@ -270,8 +283,12 @@ public class PdpModifyRequestMap {
                 }
             }
 
-            if (!updates.isEmpty()) {
+            if (updates.isEmpty()) {
+                return false;
+
+            } else {
                 dao.updatePdpGroups(updates);
+                return true;
             }
         }
     }
@@ -281,8 +298,8 @@ public class PdpModifyRequestMap {
      *
      * @param pdpName name of the PDP to be removed
      * @param group group from which it should be removed
-     * @return {@code true} if the PDP was removed from the, {@code false} if it was not
-     *         assigned to the group
+     * @return {@code true} if the PDP was removed from the group, {@code false} if it was
+     *         not assigned to the group
      */
     private boolean removeFromGroup(String pdpName, PdpGroup group) {
         for (PdpSubGroup subgrp : group.getPdpSubgroups()) {

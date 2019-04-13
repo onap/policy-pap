@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.comm;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -290,7 +291,44 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testDisablePdp() {
+    public void testDisablePdp() throws Exception {
+        map.addRequest(update);
+
+        // put the PDP in a group
+        PdpGroup group = makeGroup(MY_GROUP, MY_VERSION);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        // indicate failure
+        invokeFailureHandler(1);
+
+        // should have stopped publishing
+        verify(requests).stopPublishing();
+
+        // should have published a new update
+        PdpMessage msg2 = getSingletons(3).get(1).getMessage();
+        assertNotNull(msg2);
+        assertTrue(msg2 instanceof PdpUpdate);
+
+        // update should have null group & subgroup
+        update = (PdpUpdate) msg2;
+        assertEquals(PDP1, update.getName());
+        assertNull(update.getPdpGroup());
+        assertNull(update.getPdpSubgroup());
+
+        // should have published a state-change
+        msg2 = getSingletons(3).get(2).getMessage();
+        assertNotNull(msg2);
+        assertTrue(msg2 instanceof PdpStateChange);
+
+        change = (PdpStateChange) msg2;
+        assertEquals(PDP1, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
+    }
+
+    @Test
+    public void testDisablePdp_NotInGroup() {
         map.addRequest(update);
 
         // indicate failure
