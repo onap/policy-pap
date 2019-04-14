@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "efdfab18_30e49119",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/PdpGroupDeleteProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-14T00:46:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1eeb3927_f091ddaf",
+      "range": {
+        "startLine": 80,
+        "startChar": 12,
+        "endLine": 82,
+        "endChar": 13
+      },
+      "revId": "5d1d776fc0aa5ad41a9db2bdee3cac11b27f7db2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4c6e9c7e_43845f68",
         "filename": "main/src/test/resources/simpleDeploy/group4.json",
         "patchSetId": 6
@@ -36,6 +60,30 @@
       "writtenOn": "2019-04-13T22:30:56Z",
       "side": 1,
       "message": "Should we allow creation of PdpGroup without any Subgroup?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 1
+      },
+      "revId": "5d1d776fc0aa5ad41a9db2bdee3cac11b27f7db2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "abb3e4e0_7f461d04",
+        "filename": "main/src/test/resources/simpleDeploy/group4.json",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-14T00:46:08Z",
+      "side": 1,
+      "message": "Added a validation test in models-pdp via:\nhttps://gerrit.onap.org/r/#/c/85262/\n\nfyi: has no bearing on these test files",
+      "parentUuid": "4c6e9c7e_43845f68",
       "range": {
         "startLine": 1,
         "startChar": 0,
