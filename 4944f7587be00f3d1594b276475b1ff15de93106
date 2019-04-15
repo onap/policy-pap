@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9366756b_ffa1c506",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-04-15T15:52:44Z",
+      "side": 1,
+      "message": "Are you sure? I thought on the send you just post an individual message: see:\nhttps://onap.readthedocs.io/en/amsterdam/submodules/dmaap/messagerouter/messageservice.git/docs/message-router/message-router.html",
+      "parentUuid": "aab1cddc_bde04040",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4795b5bd_a20f007c",
         "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "e210c435_a87072ba",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-04-15T15:52:44Z",
+      "side": 1,
+      "message": "OK Will fix.",
+      "parentUuid": "4795b5bd_a20f007c",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b48bdbd5_d34c2692",
         "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2019-04-15T15:26:34Z",
       "side": 1,
       "message": "should return an array of messages",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0dbdb137_49532638",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-04-15T15:52:44Z",
+      "side": 1,
+      "message": "Will fix.",
+      "parentUuid": "b48bdbd5_d34c2692",
       "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
