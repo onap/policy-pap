@@ -24,25 +24,21 @@ package org.onap.policy.pap.main.rest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.onap.policy.common.capabilities.Startable;
 import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.http.server.internal.JettyServletServer;
 import org.onap.policy.common.endpoints.properties.PolicyEndPointProperties;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
+import org.onap.policy.common.utils.services.ServiceManagerContainer;
 import org.onap.policy.pap.main.parameters.RestServerParameters;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class to manage life cycle of PAP rest server.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class PapRestServer implements Startable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PapRestServer.class);
+public class PapRestServer extends ServiceManagerContainer {
 
     private List<HttpServletServer> servers = new ArrayList<>();
 
@@ -55,26 +51,18 @@ public class PapRestServer implements Startable {
      */
     public PapRestServer(final RestServerParameters restServerParameters) {
         this.restServerParameters = restServerParameters;
-    }
+        this.servers = HttpServletServer.factory.build(getServerProperties());
 
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public boolean start() {
-        try {
-            servers = HttpServletServer.factory.build(getServerProperties());
-            for (final HttpServletServer server : servers) {
-                if (server.isAaf()) {
-                    server.addFilterClass(null, PapAafFilter.class.getName());
-                }
-                server.start();
+        // configure servers, but don't actually start them
+        for (final HttpServletServer server : servers) {
+            if (server.isAaf()) {
+                server.addFilterClass(null, PapAafFilter.class.getName());
             }
-        } catch (final Exception exp) {
-            LOGGER.error("Failed to start pap http server", exp);
-            return false;
+
+            // arrange to start/stop server when this.start() is invoked
+            String name = "rest server " + ((JettyServletServer) server).getName();
+            addAction(name, server::start, server::stop);
         }
-        return true;
     }
 
     /**
@@ -114,47 +102,8 @@ public class PapRestServer implements Startable {
         return props;
     }
 
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public boolean stop() {
-        for (final HttpServletServer server : servers) {
-            try {
-                server.stop();
-            } catch (final Exception exp) {
-                LOGGER.error("Failed to stop pap http server", exp);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public void shutdown() {
-        stop();
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public boolean isAlive() {
-        return !servers.isEmpty();
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("PapRestServer [servers=");
-        builder.append(servers);
-        builder.append("]");
-        return builder.toString();
+        return "PapRestServer [servers=" + servers + "]";
     }
-
 }
