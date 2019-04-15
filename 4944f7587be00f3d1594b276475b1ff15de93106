@@ -2,6 +2,74 @@
   "comments": [
     {
       "key": {
+        "uuid": "faa2aa3e_19578b3c",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/parameters/DmaapSimParameterHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "interesting.  Maybe next release we\u0027ll fix the decoder to throw an exception if the file is empty",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fbfbd86c_e70ec4b8",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "note: dmaap messages are all just plain strings, so can change the generic \"Object\" to \"String\" in a number of cases",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "05a48dae_358d8b9b",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "should be 15ms by default, but use the passed-in value otherwise.\n\nDon\u0027t bother waiting, just use a blocking queue and await(desired-timeout).",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cf55899e_3f5a3f7a",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "change Object to Queue\u003cString\u003e",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aab1cddc_bde04040",
         "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
         "patchSetId": 3
@@ -30,6 +98,24 @@
       "writtenOn": "2019-04-15T15:52:44Z",
       "side": 1,
       "message": "Are you sure? I thought on the send you just post an individual message: see:\nhttps://onap.readthedocs.io/en/amsterdam/submodules/dmaap/messagerouter/messageservice.git/docs/message-router/message-router.html",
+      "parentUuid": "aab1cddc_bde04040",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "00b107ab_699fbfd6",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "actually, this depends on the application media type.  If it\u0027s application/json, then this is an array of strings (i.e., messages).\n\nHowever, I believe the cambria client publisher actually uses application/cambria, which is a more compressed form, in which case, it would have to be decoded from that instead.  In other words, I don\u0027t think any of the clients will be able to publish to this simulator. :-(  However, we can certainly use curl to post messages to it.",
       "parentUuid": "aab1cddc_bde04040",
       "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
@@ -72,6 +158,23 @@
     },
     {
       "key": {
+        "uuid": "8565248c_c98b3d5b",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "remove the do-loop and replace with queue.await(timeout)\n\ncan choose to just return one message at a time, or could return up to the client-specified limit.  If choose to do the latter, then only await(timeout) for the first message, the others should simply use poll() until the message count limit is reached or poll() returns null",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b48bdbd5_d34c2692",
         "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
         "patchSetId": 3
@@ -101,6 +204,74 @@
       "side": 1,
       "message": "Will fix.",
       "parentUuid": "b48bdbd5_d34c2692",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c835ddfa_4dea402a",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/rest/DmaapSimRestControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "timeout should default to 15ms",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "33321b51_c193701d",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/rest/DmaapSimRestServer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "no need for this join()",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3eeb5807_29025cd3",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/startstop/Main.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "don\u0027t need this unless something else needs access to the activator",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e0f152b5_180936bf",
+        "filename": "dmaap-sim/src/test/resources/logback-test.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:07:39Z",
+      "side": 1,
+      "message": "Apex?",
       "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
