@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aab1cddc_bde04040",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T15:26:34Z",
+      "side": 1,
+      "message": "this should be an array of messages",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b48bdbd5_d34c2692",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T15:26:34Z",
+      "side": 1,
+      "message": "should return an array of messages",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
