@@ -206,62 +206,6 @@ public class PdpModifyRequestMap {
     }
 
     /**
-     * Starts the next request associated with a PDP.
-     *
-     * @param requests current set of requests
-     * @param request the request that just completed
-     */
-    private void startNextRequest(PdpRequests requests, Request request) {
-        if (!requests.startNextRequest(request)) {
-            pdp2requests.remove(requests.getPdpName(), requests);
-        }
-    }
-
-    /**
-     * Disables a PDP by removing it from its subgroup and then sending it a PASSIVE
-     * request.
-     *
-     * @param requests the requests associated with the PDP to be disabled
-     */
-    private void disablePdp(PdpRequests requests) {
-
-        // remove the requests from the map
-        if (!pdp2requests.remove(requests.getPdpName(), requests)) {
-            // don't have the info we need to disable it
-            logger.warn("no requests with which to disable {}", requests.getPdpName());
-            return;
-        }
-
-        logger.warn("disabling {}", requests.getPdpName());
-
-        requests.stopPublishing();
-
-        // remove the PDP from all groups
-        boolean removed = false;
-        try {
-            removed = removeFromGroups(requests.getPdpName());
-        } catch (PfModelException e) {
-            logger.info("unable to remove PDP {} from subgroup", requests.getPdpName(), e);
-        }
-
-        // send the state change
-        PdpStateChange change = new PdpStateChange();
-        change.setName(requests.getPdpName());
-        change.setState(PdpState.PASSIVE);
-
-        if (removed) {
-            // send an update, too
-            PdpUpdate update = new PdpUpdate();
-            update.setName(requests.getPdpName());
-
-            addRequest(update, change);
-
-        } else {
-            addRequest(change);
-        }
-    }
-
-    /**
      * Removes a PDP from all active groups.
      *
      * @param pdpName name of the PDP to be removed
@@ -383,6 +327,62 @@ public class PdpModifyRequestMap {
         @Override
         public void retryCountExhausted() {
             disablePdp(requests);
+        }
+
+        /**
+         * Starts the next request associated with a PDP.
+         *
+         * @param requests current set of requests
+         * @param request the request that just completed
+         */
+        private void startNextRequest(PdpRequests requests, Request request) {
+            if (!requests.startNextRequest(request)) {
+                pdp2requests.remove(requests.getPdpName(), requests);
+            }
+        }
+
+        /**
+         * Disables a PDP by removing it from its subgroup and then sending it a PASSIVE
+         * request.
+         *
+         * @param requests the requests associated with the PDP to be disabled
+         */
+        private void disablePdp(PdpRequests requests) {
+
+            // remove the requests from the map
+            if (!pdp2requests.remove(requests.getPdpName(), requests)) {
+                // don't have the info we need to disable it
+                logger.warn("no requests with which to disable {}", requests.getPdpName());
+                return;
+            }
+
+            logger.warn("disabling {}", requests.getPdpName());
+
+            requests.stopPublishing();
+
+            // remove the PDP from all groups
+            boolean removed = false;
+            try {
+                removed = removeFromGroups(requests.getPdpName());
+            } catch (PfModelException e) {
+                logger.info("unable to remove PDP {} from subgroup", requests.getPdpName(), e);
+            }
+
+            // send the state change
+            PdpStateChange change = new PdpStateChange();
+            change.setName(requests.getPdpName());
+            change.setState(PdpState.PASSIVE);
+
+            if (removed) {
+                // send an update, too
+                PdpUpdate update = new PdpUpdate();
+                update.setName(requests.getPdpName());
+
+                addRequest(update, change);
+
+            } else {
+                addRequest(change);
+            }
         }
     }
 }

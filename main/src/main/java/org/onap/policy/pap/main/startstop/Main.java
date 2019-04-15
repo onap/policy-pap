@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Main {
 
+    private static final String START_FAILED = "start of policy pap service failed";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     private PapActivator activator;
@@ -66,7 +68,7 @@ public class Main {
             // Validate that the arguments are sane
             arguments.validate();
         } catch (final PolicyPapException e) {
-            LOGGER.error("start of policy pap service failed", e);
+            LOGGER.error(START_FAILED, e);
             return;
         }
 
@@ -74,7 +76,7 @@ public class Main {
         try {
             parameterGroup = new PapParameterHandler().getParameters(arguments);
         } catch (final Exception e) {
-            LOGGER.error("start of policy pap service failed", e);
+            LOGGER.error(START_FAILED, e);
             return;
         }
 
@@ -86,7 +88,7 @@ public class Main {
                 props.load(stream);
             }
         } catch (final Exception e) {
-            LOGGER.error("start of policy pap service failed", e);
+            LOGGER.error(START_FAILED, e);
             return;
         }
 
@@ -94,7 +96,7 @@ public class Main {
         try {
             new PapDatabaseInitializer().initializePapDatabase(parameterGroup.getDatabaseProviderParameters());
         } catch (final PolicyPapException exp) {
-            LOGGER.error("start of policy pap service failed, used parameters are {}", Arrays.toString(args), exp);
+            LOGGER.error(START_FAILED + ", used parameters are {}", Arrays.toString(args), exp);
             return;
         }
 

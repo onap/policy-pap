@@ -135,12 +135,12 @@ public class PapActivator extends ServiceManagerContainer {
             () -> msgDispatcher.unregister(PdpMessageType.PDP_STATUS.name()));
 
         addAction("Message Dispatcher",
-            () -> registerMsgDispatcher(),
-            () -> unregisterMsgDispatcher());
+            this::registerMsgDispatcher,
+            this::unregisterMsgDispatcher);
 
         addAction("topics",
-            () -> TopicEndpoint.manager.start(),
-            () -> TopicEndpoint.manager.shutdown());
+            TopicEndpoint.manager::start,
+            TopicEndpoint.manager::shutdown);
 
         addAction("PAP statistics",
             () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
@@ -183,12 +183,8 @@ public class PapActivator extends ServiceManagerContainer {
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
         addAction("Create REST server",
-            () -> {
-                restServer = new PapRestServer(papParameterGroup.getRestServerParameters());
-            },
-            () -> {
-                restServer = null;
-            });
+            () -> restServer = new PapRestServer(papParameterGroup.getRestServerParameters()),
+            () -> restServer = null);
 
         addAction("REST server",
             () -> restServer.start(),
