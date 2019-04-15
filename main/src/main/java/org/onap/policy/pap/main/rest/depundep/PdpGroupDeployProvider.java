@@ -328,8 +328,8 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      */
     private <T> boolean updateList(List<T> dblist, List<T> newList, Consumer<List<T>> setter) {
 
-        Set<T> dbTypes = new HashSet<T>(dblist);
-        Set<T> newTypes = new HashSet<T>(newList);
+        Set<T> dbTypes = new HashSet<>(dblist);
+        Set<T> newTypes = new HashSet<>(newList);
 
         if (dbTypes.equals(newTypes)) {
             return false;

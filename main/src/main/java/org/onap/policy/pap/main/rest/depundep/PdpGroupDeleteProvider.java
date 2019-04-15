@@ -138,10 +138,7 @@ public class PdpGroupDeleteProvider extends ProviderBase<PdpGroupDeleteResponse>
     protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
         ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
 
-        return (group, subgroup) -> {
-
-            // remove the policy from the subgroup
-            return subgroup.getPolicies().remove(desiredIdent);
-        };
+        // remove the policy from the subgroup
+        return (group, subgroup) -> subgroup.getPolicies().remove(desiredIdent);
     }
 }

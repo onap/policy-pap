@@ -62,7 +62,7 @@ public class UpdateReq extends RequestImpl {
             return reason;
         }
 
-        PdpUpdate message = (PdpUpdate) getMessage();
+        PdpUpdate message = getMessage();
         if (!StringUtils.equals(message.getPdpGroup(), response.getPdpGroup())) {
             return "group does not match";
         }

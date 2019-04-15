@@ -100,7 +100,7 @@ public class PapRestControllerV1 {
      */
     public ResponseBuilder addVersionControlHeaders(ResponseBuilder respBuilder) {
         return respBuilder.header(VERSION_MINOR_NAME, "0").header(VERSION_PATCH_NAME, "0").header(VERSION_LATEST_NAME,
-                        "1.0.0");
+                        API_VERSION);
     }
 
     /**

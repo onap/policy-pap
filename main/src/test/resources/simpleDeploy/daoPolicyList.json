@@ -4,7 +4,7 @@
             "name": "policyA",
             "version": "1.2.3",
             "type": "typeA",
-            "typeVersion": "100.2.3"
+            "type_version": "100.2.3"
         }
     ]
 }

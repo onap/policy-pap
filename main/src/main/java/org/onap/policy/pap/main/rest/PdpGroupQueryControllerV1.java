@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +41,8 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide REST end points for PAP component to query details of all PDP groups.
@@ -47,6 +50,8 @@ import org.onap.policy.models.pdp.concepts.PdpGroups;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryControllerV1.class);
 
     private final PdpGroupQueryProvider provider = new PdpGroupQueryProvider();
 
@@ -89,6 +94,7 @@ public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                     .entity(pair.getRight()).build();
         } catch (final PfModelException exp) {
+            LOGGER.info("group query failed", exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
                             .entity(exp.getErrorResponse()).build();

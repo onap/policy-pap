@@ -66,7 +66,7 @@ public class PapRestServer implements Startable {
             servers = HttpServletServer.factory.build(getServerProperties());
             for (final HttpServletServer server : servers) {
                 if (server.isAaf()) {
-                    server.addFilterClass(null, PapAafFilter.class.getCanonicalName());
+                    server.addFilterClass(null, PapAafFilter.class.getName());
                 }
                 server.start();
             }
@@ -93,12 +93,12 @@ public class PapRestServer implements Startable {
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_PORT_SUFFIX,
                         Integer.toString(restServerParameters.getPort()));
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_REST_CLASSES_SUFFIX,
-                        String.join(",", HealthCheckRestControllerV1.class.getCanonicalName(),
-                                        StatisticsRestControllerV1.class.getCanonicalName(),
-                                        PdpGroupDeployControllerV1.class.getCanonicalName(),
-                                        PdpGroupDeleteControllerV1.class.getCanonicalName(),
-                                        PdpGroupStateChangeControllerV1.class.getCanonicalName(),
-                                        PdpGroupQueryControllerV1.class.getCanonicalName()));
+                        String.join(",", HealthCheckRestControllerV1.class.getName(),
+                                        StatisticsRestControllerV1.class.getName(),
+                                        PdpGroupDeployControllerV1.class.getName(),
+                                        PdpGroupDeleteControllerV1.class.getName(),
+                                        PdpGroupStateChangeControllerV1.class.getName(),
+                                        PdpGroupQueryControllerV1.class.getName()));
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_MANAGED_SUFFIX, "false");
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_SWAGGER_SUFFIX, "true");
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_AUTH_USERNAME_SUFFIX,

@@ -138,7 +138,7 @@ public class PapCommandLineArguments {
         }
 
         if (commandLine.hasOption('h')) {
-            return help(Main.class.getCanonicalName());
+            return help(Main.class.getName());
         }
 
         if (commandLine.hasOption('v')) {

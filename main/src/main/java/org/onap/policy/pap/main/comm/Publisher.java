@@ -107,11 +107,9 @@ public class Publisher implements Runnable {
             }
 
             PdpMessage data = token.replaceItem(null);
-            if (data == null) {
-                continue;
+            if (data != null) {
+                client.send(data);
             }
-
-            client.send(data);
         }
     }
 

@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +44,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide REST end points for PAP component to change state of a PDP group.
@@ -50,6 +53,8 @@ import org.onap.policy.models.pdp.enums.PdpState;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryControllerV1.class);
 
     private final PdpGroupStateChangeProvider provider = new PdpGroupStateChangeProvider();
 
@@ -96,6 +101,7 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                     .entity(pair.getRight()).build();
         } catch (final PfModelException exp) {
+            LOGGER.info("group state-change failed", exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
                             .entity(exp.getErrorResponse()).build();
