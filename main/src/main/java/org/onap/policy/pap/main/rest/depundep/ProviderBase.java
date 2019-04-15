@@ -179,7 +179,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
         BiFunction<PdpGroup, PdpSubGroup, Boolean> updater = makeUpdater(policy);
 
         for (PdpGroup group : groups) {
-            upgradeGroup(data, policy, group, updater);
+            upgradeGroup(data, group, updater);
         }
     }
 
@@ -212,13 +212,11 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      * Updates a group, assigning a new version number, if it actually changes.
      *
      * @param data session data
-     * @param policy policy to be added to or removed from the group
      * @param group the original group, to be updated
      * @param updater function to update a group
-     * @throws PfModelException if a DAO error occurred
      */
-    private void upgradeGroup(SessionData data, ToscaPolicy policy, PdpGroup group,
-                    BiFunction<PdpGroup, PdpSubGroup, Boolean> updater) throws PfModelException {
+    private void upgradeGroup(SessionData data, PdpGroup group,
+                    BiFunction<PdpGroup, PdpSubGroup, Boolean> updater) {
 
         boolean updated = false;
 

@@ -112,7 +112,7 @@ public abstract class RequestImpl implements Request {
                             () -> timer = params.getTimers().register(this.message.getRequestId(), this::handleTimeout),
                             () -> timer.cancel())
                         .addAction("enqueue",
-                            () -> enqueue(),
+                            this::enqueue,
                             () -> {
                                 // do not remove from the queue - token may be re-used
                             });
@@ -260,7 +260,7 @@ public abstract class RequestImpl implements Request {
 
             String reason = checkResponse(response);
             if (reason != null) {
-                logger.info("{} PDP data mismatch: {}", getName(), reason);
+                logger.info("{} PDP data mismatch via {}: {}", getName(), infra, reason);
                 listener.failure(pdpName, reason);
                 return;
             }
@@ -286,7 +286,7 @@ public abstract class RequestImpl implements Request {
             stopPublishing();
 
             if (!bumpRetryCount()) {
-                logger.info("{} timeout - retry count {} exhausted", getName(), retryCount);
+                logger.info("{} timeout {} - retry count {} exhausted", getName(), timerName, retryCount);
                 listener.retryCountExhausted();
                 return;
             }

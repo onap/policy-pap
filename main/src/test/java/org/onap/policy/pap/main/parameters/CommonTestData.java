@@ -170,7 +170,7 @@ public class CommonTestData {
     public Map<String, Object> getPolicyModelsProviderParametersMap() {
         final Map<String, Object> map = new TreeMap<>();
         map.put("name", PolicyModelsProviderParameters.class.getSimpleName());
-        map.put("implementation", DatabasePolicyModelsProviderImpl.class.getCanonicalName());
+        map.put("implementation", DatabasePolicyModelsProviderImpl.class.getName());
         map.put("databaseDriver", "org.h2.Driver");
         map.put("databaseUrl", "jdbc:h2:mem:testdb");
         map.put("databaseUser", "policy");
