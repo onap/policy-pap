@@ -123,6 +123,42 @@
     },
     {
       "key": {
+        "uuid": "534e7c9f_2b9d57a2",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:12:34Z",
+      "side": 1,
+      "message": "Interestingly, the API refers to the latter media type, but provides no description of it.",
+      "parentUuid": "00b107ab_699fbfd6",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "273ca1ea_47da6b78",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T16:12:34Z",
+      "side": 1,
+      "message": "ah, good point - it could be either: an array OR an individual message.",
+      "parentUuid": "9366756b_ffa1c506",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4795b5bd_a20f007c",
         "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
         "patchSetId": 3
