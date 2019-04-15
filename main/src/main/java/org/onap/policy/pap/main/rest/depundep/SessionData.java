@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
@@ -36,7 +37,8 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
@@ -44,6 +46,14 @@ import org.onap.policy.pap.main.PolicyPapRuntimeException;
  * Data used during a single REST call when updating PDP policies.
  */
 public class SessionData {
+    /**
+     * If a version string matches this, then it is just a prefix (i.e., major or major.minor).
+     */
+    private static final Pattern VERSION_PREFIX_PAT = Pattern.compile("[^.]*(?:[.][^.]*)?");
+
+    /**
+     * DB provider.
+     */
     private final PolicyModelsProvider dao;
 
     /**
@@ -66,13 +76,7 @@ public class SessionData {
     /**
      * Maps a policy's identifier to the policy.
      */
-    private final Map<ToscaPolicyIdentifier, ToscaPolicy> policyCache = new HashMap<>();
-
-    /**
-     * Maps a policy name to its latest policy. Every policy appearing within this map has
-     * a corresponding entry in {@link #policyCache}.
-     */
-    private final Map<String, ToscaPolicy> latestPolicy = new HashMap<>();
+    private final Map<ToscaPolicyIdentifierOptVersion, ToscaPolicy> policyCache = new HashMap<>();
 
 
     /**
@@ -88,28 +92,50 @@ public class SessionData {
      * Gets the policy, referenced by an identifier. Loads it from the cache, if possible.
      * Otherwise, gets it from the DB.
      *
-     * @param ident policy identifier
+     * @param desiredPolicy policy identifier
      * @return the specified policy
      * @throws PolicyPapRuntimeException if an error occurs
      */
-    public ToscaPolicy getPolicy(ToscaPolicyIdentifier ident) {
+    public ToscaPolicy getPolicy(ToscaPolicyIdentifierOptVersion desiredPolicy) {
 
-        return policyCache.computeIfAbsent(ident, key -> {
+        ToscaPolicy policy = policyCache.computeIfAbsent(desiredPolicy, key -> {
 
             try {
-                List<ToscaPolicy> lst = dao.getPolicyList(ident.getName(), ident.getVersion());
+                ToscaPolicyFilterBuilder filterBuilder = ToscaPolicyFilter.builder().name(desiredPolicy.getName());
+
+                String version = desiredPolicy.getVersion();
+                if (version == null) {
+                    // no version specified - get the latest
+                    filterBuilder.version(ToscaPolicyFilter.LATEST_VERSION);
+
+                } else if (VERSION_PREFIX_PAT.matcher(version).matches()) {
+                    // version prefix provided - match the prefix and then pick the latest
+                    filterBuilder.versionPrefix(version + ".").version(ToscaPolicyFilter.LATEST_VERSION);
+
+                } else {
+                    // must be an exact match
+                    filterBuilder.version(version);
+                }
+
+
+                List<ToscaPolicy> lst = dao.getFilteredPolicyList(filterBuilder.build());
                 if (lst.isEmpty()) {
-                    throw new PolicyPapRuntimeException(
-                                    "cannot find policy: " + ident.getName() + " " + ident.getVersion());
+                    throw new PolicyPapRuntimeException("cannot find policy: " + desiredPolicy.getName() + " "
+                                    + desiredPolicy.getVersion());
                 }
 
                 return lst.get(0);
 
             } catch (PfModelException e) {
-                throw new PolicyPapRuntimeException("cannot get policy: " + ident.getName() + " " + ident.getVersion(),
-                                e);
+                throw new PolicyPapRuntimeException(
+                                "cannot get policy: " + desiredPolicy.getName() + " " + desiredPolicy.getVersion(), e);
             }
         });
+
+        // desired version may have only been a prefix - cache with full identifier, too
+        policyCache.putIfAbsent(new ToscaPolicyIdentifierOptVersion(policy.getIdentifier()), policy);
+
+        return policy;
     }
 
     /**
@@ -174,33 +200,6 @@ public class SessionData {
     public List<PdpStateChange> getPdpStateChanges() {
         return pdpRequests.values().stream().filter(req -> req.getRight() != null).map(Pair::getRight)
                         .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the policy having the given name and the maximum version.
-     *
-     * @param name name of the desired policy
-     * @return the desired policy, or {@code null} if there is no policy with given name
-     * @throws PfModelException if an error occurs
-     */
-    public ToscaPolicy getPolicyMaxVersion(String name) throws PfModelException {
-        ToscaPolicy policy = latestPolicy.get(name);
-        if (policy != null) {
-            return policy;
-        }
-
-        ToscaPolicyFilter filter =
-                        ToscaPolicyFilter.builder().name(name).version(ToscaPolicyFilter.LATEST_VERSION).build();
-        List<ToscaPolicy> policies = dao.getFilteredPolicyList(filter);
-        if (policies.isEmpty()) {
-            throw new PolicyPapRuntimeException("cannot find policy: " + name);
-        }
-
-        policy = policies.get(0);
-        policyCache.putIfAbsent(policy.getIdentifier(), policy);
-        latestPolicy.put(name, policy);
-
-        return policy;
     }
 
     /**

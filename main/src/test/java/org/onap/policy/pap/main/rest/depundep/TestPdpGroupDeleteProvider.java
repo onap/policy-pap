@@ -56,8 +56,6 @@ import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
-    private static final String POLICY1_NAME = "policyA";
-    private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
 
     private MyProvider prov;
@@ -169,9 +167,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         PdpGroup group = loadGroup("undeploy.json");
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-
-        when(dao.getPolicyList(POLICY1_NAME, "1.2.300")).thenReturn(Arrays.asList(policy1));
-        when(dao.getPolicyList("policyB", POLICY1_VERSION)).thenReturn(Arrays.asList(policy1));
+        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
         Pair<Status, PdpGroupDeleteResponse> pair = new PdpGroupDeleteProvider().undeploy(optIdent);
         assertEquals(Status.OK, pair.getLeft());

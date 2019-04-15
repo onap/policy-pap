@@ -89,7 +89,7 @@ public class TestProviderBase extends ProviderSuper {
 
         super.setUp();
 
-        when(dao.getPolicyList(POLICY1_NAME, POLICY1_VERSION)).thenReturn(loadPolicies("daoPolicyList.json"));
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
 
         prov = new MyProvider();
     }
@@ -156,33 +156,7 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(Status.OK, pair.getLeft());
         assertNull(pair.getRight().getErrorDetails());
 
-        verify(dao).getPolicyList(any(), any());
-        verify(dao, never()).getFilteredPolicyList(any());
-    }
-
-    @Test
-    public void testGetPolicy_NullVersion() throws Exception {
-        // only allow this query once
-        when(dao.getPolicyList(POLICY1_NAME, POLICY1_VERSION)).thenReturn(loadPolicies("daoPolicyList.json"))
-                        .thenThrow(new RuntimeException(EXPECTED_EXCEPTION));
-
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
-
-        Pair<Status, MyResponse> pair = prov.process(loadRequest("getPolicyReqNullVersion.json"), this::handle);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
-
         verify(dao).getFilteredPolicyList(any());
-        verify(dao, never()).getPolicies(any(), any());
-    }
-
-    @Test
-    public void testGetPolicy_NotFound() throws Exception {
-        when(dao.getPolicyList(any(), any())).thenReturn(Collections.emptyList());
-
-        Pair<Status, MyResponse> pair = prov.process(loadRequest(), this::handle);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("cannot find policy: " + POLICY1_NAME + " " + POLICY1_VERSION, pair.getRight().getErrorDetails());
     }
 
     @Test
@@ -245,10 +219,10 @@ public class TestProviderBase extends ProviderSuper {
          * Should generate updates to pdp1, pdp2, and pdp3.
          */
 
-        when(dao.getPolicyList(POLICY1_NAME, POLICY1_VERSION)).thenReturn(loadPolicies("daoPolicyList.json"));
-        when(dao.getPolicyList("policyB", POLICY1_VERSION)).thenReturn(loadPolicies("upgradeGroupPolicy2.json"));
-        when(dao.getPolicyList("policyC", POLICY1_VERSION)).thenReturn(loadPolicies("upgradeGroupPolicy3.json"));
-        when(dao.getPolicyList("policyD", POLICY1_VERSION)).thenReturn(loadPolicies("upgradeGroupPolicy4.json"));
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
+                        .thenReturn(loadPolicies("upgradeGroupPolicy2.json"))
+                        .thenReturn(loadPolicies("upgradeGroupPolicy3.json"))
+                        .thenReturn(loadPolicies("upgradeGroupPolicy4.json"));
 
         List<PdpGroup> groups1 = loadGroups("upgradeGroupGroup1.json");
         List<PdpGroup> groups2 = loadGroups("upgradeGroupGroup2.json");

@@ -43,12 +43,14 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
@@ -60,13 +62,12 @@ public class TestSessionData extends ProviderSuper {
     private static final String POLICY_VERSION_PREFIX = "1.2.";
     private static final String POLICY_NAME = "myPolicy";
     private static final String POLICY_VERSION = POLICY_VERSION_PREFIX + "3";
-    private static final String POLICY_VERSION2 = POLICY_VERSION_PREFIX + "4";
     private static final String POLICY_TYPE = "myType";
     private static final String POLICY_TYPE_VERSION = "10.20.30";
     private static final String EXPECTED_EXCEPTION = "expected exception";
 
     private SessionData session;
-    private ToscaPolicyIdentifier ident;
+    private ToscaPolicyIdentifierOptVersion ident;
     private ToscaPolicyTypeIdentifier type;
     private ToscaPolicyTypeIdentifier type2;
     private PdpGroup group1;
@@ -81,7 +82,7 @@ public class TestSessionData extends ProviderSuper {
     public void setUp() throws Exception {
         super.setUp();
 
-        ident = new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION);
+        ident = new ToscaPolicyIdentifierOptVersion(POLICY_NAME, POLICY_VERSION);
         type = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION);
         type2 = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION + "0");
         group1 = loadGroup("group1.json");
@@ -91,32 +92,62 @@ public class TestSessionData extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicy() throws Exception {
+    public void testGetPolicy_NullVersion() throws Exception {
         ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
-        when(dao.getPolicyList(POLICY_NAME, POLICY_VERSION)).thenReturn(Arrays.asList(policy1));
+        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
-        ToscaPolicy policy2 = makePolicy(POLICY_NAME, POLICY_VERSION2);
-        when(dao.getPolicyList(POLICY_NAME, POLICY_VERSION2)).thenReturn(Arrays.asList(policy2));
-
-        ToscaPolicyIdentifier ident2 = new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION2);
-
+        ident.setVersion(null);
         assertSame(policy1, session.getPolicy(ident));
-        assertSame(policy2, session.getPolicy(ident2));
 
-        // repeat
+        ToscaPolicyFilter filter = getPolicyFilter();
+        assertEquals(POLICY_NAME, filter.getName());
+        assertEquals(ToscaPolicyFilter.LATEST_VERSION, filter.getVersion());
+        assertEquals(null, filter.getVersionPrefix());
+
+        // retrieve a second time using full version - should use cache
+        assertSame(policy1, session.getPolicy(new ToscaPolicyIdentifierOptVersion(policy1.getIdentifier())));
+        verify(dao).getFilteredPolicyList(any());
+    }
+
+    @Test
+    public void testGetPolicy_MajorVersion() throws Exception {
+        ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
+        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+
+        ident.setVersion("1");
         assertSame(policy1, session.getPolicy(ident));
-        assertSame(policy2, session.getPolicy(ident2));
 
+        ToscaPolicyFilter filter = getPolicyFilter();
+        assertEquals(POLICY_NAME, filter.getName());
+        assertEquals(ToscaPolicyFilter.LATEST_VERSION, filter.getVersion());
+        assertEquals("1.", filter.getVersionPrefix());
+
+        // retrieve a second time using full version - should use cache
+        assertSame(policy1, session.getPolicy(new ToscaPolicyIdentifierOptVersion(policy1.getIdentifier())));
+        verify(dao).getFilteredPolicyList(any());
+    }
+
+    @Test
+    public void testGetPolicy_MajorMinorVersion() throws Exception {
+        ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
+        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+
+        ident.setVersion(POLICY_VERSION);
         assertSame(policy1, session.getPolicy(ident));
-        assertSame(policy2, session.getPolicy(ident2));
 
-        // should have only invoked this once for each policy
-        verify(dao, times(2)).getPolicyList(any(), any());
+        ToscaPolicyFilter filter = getPolicyFilter();
+        assertEquals(POLICY_NAME, filter.getName());
+        assertEquals(POLICY_VERSION, filter.getVersion());
+        assertEquals(null, filter.getVersionPrefix());
+
+        // retrieve a second time using full version - should use cache
+        assertSame(policy1, session.getPolicy(new ToscaPolicyIdentifierOptVersion(policy1.getIdentifier())));
+        verify(dao).getFilteredPolicyList(any());
     }
 
     @Test
     public void testGetPolicy_NotFound() throws Exception {
-        when(dao.getPolicyList(any(), any())).thenReturn(Collections.emptyList());
+        when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
 
         assertThatThrownBy(() -> session.getPolicy(ident)).hasMessage("cannot find policy: myPolicy 1.2.3");
     }
@@ -124,7 +155,7 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testGetPolicy_DaoEx() throws Exception {
         PfModelException ex = new PfModelException(Status.INTERNAL_SERVER_ERROR, "expected exception");
-        when(dao.getPolicyList(any(), any())).thenThrow(ex);
+        when(dao.getFilteredPolicyList(any())).thenThrow(ex);
 
         assertThatThrownBy(() -> session.getPolicy(ident)).hasMessage("cannot get policy: myPolicy 1.2.3").hasCause(ex);
     }
@@ -247,26 +278,6 @@ public class TestSessionData extends ProviderSuper {
         policy.setVersion(version);
 
         return policy;
-    }
-
-    @Test
-    public void testGetPolicyMaxVersion() throws Exception {
-        ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
-
-        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
-
-        assertSame(policy1, session.getPolicyMaxVersion(POLICY_NAME));
-        assertSame(policy1, session.getPolicyMaxVersion(POLICY_NAME));
-        assertSame(policy1, session.getPolicyMaxVersion(POLICY_NAME));
-
-        // should have only invoked DAO once; used cache for other requests
-        verify(dao, times(1)).getFilteredPolicyList(any());
-    }
-
-    @Test
-    public void testGetPolicyMaxVersion_NotFound() throws Exception {
-        when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
-        assertThatThrownBy(() -> session.getPolicyMaxVersion(POLICY_NAME)).hasMessage("cannot find policy: myPolicy");
     }
 
     @Test
@@ -476,6 +487,13 @@ public class TestSessionData extends ProviderSuper {
         change.setName(pdpName);
 
         return change;
+    }
+
+    private ToscaPolicyFilter getPolicyFilter() throws Exception {
+        ArgumentCaptor<ToscaPolicyFilter> captor = ArgumentCaptor.forClass(ToscaPolicyFilter.class);
+        verify(dao).getFilteredPolicyList(captor.capture());
+
+        return captor.getValue();
     }
 
     private List<PdpUpdate> getUpdateRequests() {
