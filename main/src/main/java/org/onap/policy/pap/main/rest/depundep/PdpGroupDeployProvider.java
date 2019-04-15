@@ -351,7 +351,7 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaPolicyIdentifier ident : subgrp.getPolicies()) {
-            ToscaPolicy policy = data.getPolicy(ident);
+            ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
 
             if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
                 result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,

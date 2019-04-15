@@ -58,7 +58,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
     private static final Object REQUEST_FAILED_MSG = "request failed";
 
-    private static final String POLICY1_NAME = "policyA";
     private static final String POLICY2_NAME = "policyB";
     private static final String POLICY1_VERSION = "1.2.3";
     private static final String GROUP1_NAME = "groupA";
@@ -86,7 +85,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         super.setUp();
 
-        when(dao.getPolicyList(POLICY1_NAME, POLICY1_VERSION)).thenReturn(loadPolicies("daoPolicyList.json"));
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
 
         prov = new PdpGroupDeployProvider();
     }
@@ -279,7 +278,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
         subgrp.getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX", "9.8.7"));
 
-        when(dao.getPolicyList(POLICY2_NAME, POLICY1_VERSION)).thenReturn(loadPolicies("createGroupNewPolicy.json"));
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
+                        .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
         assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
 
@@ -424,7 +424,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
         subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
 
-        when(dao.getPolicyList(POLICY2_NAME, POLICY1_VERSION)).thenReturn(loadPolicies("createGroupNewPolicy.json"));
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
+                        .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
         assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
 
@@ -478,7 +479,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testDeploySimplePolicies_RuntimeEx() throws Exception {
-        when(dao.getPolicyList(any(), any())).thenThrow(new RuntimeException(EXPECTED_EXCEPTION));
+        when(dao.getFilteredPolicyList(any())).thenThrow(new RuntimeException(EXPECTED_EXCEPTION));
 
         Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
         assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());

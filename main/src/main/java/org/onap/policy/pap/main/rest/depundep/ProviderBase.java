@@ -37,7 +37,6 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PapConstants;
@@ -155,12 +154,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
     private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy)
                     throws PfModelException {
 
-        if (desiredPolicy.isNullVersion()) {
-            return data.getPolicyMaxVersion(desiredPolicy.getName());
-
-        } else {
-            return data.getPolicy(new ToscaPolicyIdentifier(desiredPolicy.getName(), desiredPolicy.getVersion()));
-        }
+        return data.getPolicy(desiredPolicy);
     }
 
     /**
@@ -276,7 +270,8 @@ public abstract class ProviderBase<R extends SimpleResponse> {
         update.setDescription(group.getDescription());
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
-        update.setPolicies(subgroup.getPolicies().stream().map(data::getPolicy).collect(Collectors.toList()));
+        update.setPolicies(subgroup.getPolicies().stream().map(ToscaPolicyIdentifierOptVersion::new)
+                        .map(data::getPolicy).collect(Collectors.toList()));
 
         return update;
     }
