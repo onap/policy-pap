@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "4795b5bd_a20f007c",
+        "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-15T15:29:10Z",
+      "side": 1,
+      "message": "the response should be json:\n\n  {\n    \"count\": number-of-messages-added-to-the-queue\n  }",
+      "revId": "4944f7587be00f3d1594b276475b1ff15de93106",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b48bdbd5_d34c2692",
         "filename": "dmaap-sim/src/main/java/org/onap/dmaap/sim/provider/DmaapSimProvider.java",
         "patchSetId": 3
