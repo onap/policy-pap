@@ -15,7 +15,8 @@
             }
           ],
           "currentInstanceCount": 0,
-          "desiredInstanceCount": 1
+          "desiredInstanceCount": 1,
+          "policies": []
         },
         {
           "pdpType": "drools",
@@ -26,7 +27,8 @@
             }
           ],
           "currentInstanceCount": 0,
-          "desiredInstanceCount": 1
+          "desiredInstanceCount": 1,
+          "policies": []
         },
         {
           "pdpType": "apex",
@@ -37,7 +39,8 @@
             }
           ],
           "currentInstanceCount": 0,
-          "desiredInstanceCount": 1
+          "desiredInstanceCount": 1,
+          "policies": []
         }
       ]
     },
@@ -56,7 +59,8 @@
             }
           ],
           "currentInstanceCount": 0,
-          "desiredInstanceCount": 1
+          "desiredInstanceCount": 1,
+          "policies": []
         }
       ]
     }
