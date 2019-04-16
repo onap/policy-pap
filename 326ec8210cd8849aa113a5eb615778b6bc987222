@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "08837e95_31fcdb84",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestPapActivator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-04-16T16:13:53Z",
+      "side": 1,
+      "message": "Interesting - wonder if this is somethign that was missing from xacml-pdp and why i was having a lot of trouble last week with Junits running in different order.",
+      "range": {
+        "startLine": 64,
+        "startChar": 8,
+        "endLine": 64,
+        "endChar": 44
+      },
+      "revId": "326ec8210cd8849aa113a5eb615778b6bc987222",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
