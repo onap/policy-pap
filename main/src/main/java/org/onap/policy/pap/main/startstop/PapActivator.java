@@ -174,6 +174,7 @@ public class PapActivator extends ServiceManagerContainer {
         addAction("PDP modification requests",
             () -> Registry.register(PapConstants.REG_PDP_MODIFY_MAP, new PdpModifyRequestMap(
                             new PdpModifyRequestMapParams()
+                                    .setDaoFactory(daoFactory.get())
                                     .setModifyLock(pdpUpdateLock)
                                     .setParams(pdpParams)
                                     .setPublisher(pdpPub.get())
