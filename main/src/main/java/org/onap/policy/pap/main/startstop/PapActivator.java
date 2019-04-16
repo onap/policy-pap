@@ -179,7 +179,8 @@ public class PapActivator extends ServiceManagerContainer {
                                     .setPublisher(pdpPub.get())
                                     .setResponseDispatcher(reqIdDispatcher)
                                     .setStateChangeTimers(pdpStChgTimers.get())
-                                    .setUpdateTimers(pdpUpdTimers.get()))),
+                                    .setUpdateTimers(pdpUpdTimers.get())
+                                    .setDaoFactory(daoFactory.get()))),
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
         addAction("Create REST server",
