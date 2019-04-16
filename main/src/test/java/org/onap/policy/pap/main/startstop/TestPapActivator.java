@@ -33,6 +33,7 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.onap.policy.common.endpoints.http.server.HttpServletServer;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -60,6 +61,7 @@ public class TestPapActivator {
     @Before
     public void setUp() throws Exception {
         Registry.newRegistry();
+        HttpServletServer.factory.destroy();
 
         final String[] papConfigParameters =
             {"-c", "parameters/PapConfigParameters.json", "-p", "parameters/topic.properties"};

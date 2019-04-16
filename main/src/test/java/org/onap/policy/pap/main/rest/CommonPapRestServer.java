@@ -42,6 +42,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.onap.policy.common.endpoints.http.server.HttpServletServer;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -94,6 +95,8 @@ public class CommonPapRestServer {
         httpsPrefix = "https://localhost:" + port + "/";
 
         makeConfigFile();
+
+        HttpServletServer.factory.destroy();
 
         startMain();
     }
