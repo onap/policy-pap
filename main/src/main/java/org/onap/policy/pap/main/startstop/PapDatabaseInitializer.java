@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.List;
-
+import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
@@ -71,6 +72,10 @@ public class PapDatabaseInitializer {
             final List<PdpGroup> pdpGroupsFromDb = databaseProvider.getPdpGroups(
                     pdpGroupsToCreate.getGroups().get(0).getName());
             if (pdpGroupsFromDb.isEmpty()) {
+                ValidationResult result = pdpGroupsToCreate.validatePapRest();
+                if (!result.isValid()) {
+                    throw new PolicyPapException(result.getResult());
+                }
                 databaseProvider.createPdpGroups(pdpGroupsToCreate.getGroups());
                 LOGGER.debug("Created initial pdpGroup in DB - {}", pdpGroupsToCreate);
             } else {
