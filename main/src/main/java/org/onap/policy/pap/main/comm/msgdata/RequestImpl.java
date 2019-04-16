@@ -260,7 +260,7 @@ public abstract class RequestImpl implements Request {
 
             String reason = checkResponse(response);
             if (reason != null) {
-                logger.info("{} PDP data mismatch via {}: {}", getName(), infra, reason);
+                logger.info("{} PDP data mismatch via {} {}: {}", getName(), infra, topic, reason);
                 listener.failure(pdpName, reason);
                 return;
             }

@@ -102,21 +102,7 @@ public class SessionData {
 
             try {
                 ToscaPolicyFilterBuilder filterBuilder = ToscaPolicyFilter.builder().name(desiredPolicy.getName());
-
-                String version = desiredPolicy.getVersion();
-                if (version == null) {
-                    // no version specified - get the latest
-                    filterBuilder.version(ToscaPolicyFilter.LATEST_VERSION);
-
-                } else if (VERSION_PREFIX_PAT.matcher(version).matches()) {
-                    // version prefix provided - match the prefix and then pick the latest
-                    filterBuilder.versionPrefix(version + ".").version(ToscaPolicyFilter.LATEST_VERSION);
-
-                } else {
-                    // must be an exact match
-                    filterBuilder.version(version);
-                }
-
+                setPolicyFilterVersion(filterBuilder, desiredPolicy.getVersion());
 
                 List<ToscaPolicy> lst = dao.getFilteredPolicyList(filterBuilder.build());
                 if (lst.isEmpty()) {
@@ -136,6 +122,28 @@ public class SessionData {
         policyCache.putIfAbsent(new ToscaPolicyIdentifierOptVersion(policy.getIdentifier()), policy);
 
         return policy;
+    }
+
+    /**
+     * Sets the "version" in a policy filter.
+     *
+     * @param filterBuilder filter builder whose version should be set
+     * @param desiredVersion desired version
+     */
+    private void setPolicyFilterVersion(ToscaPolicyFilterBuilder filterBuilder, String desiredVersion) {
+
+        if (desiredVersion == null) {
+            // no version specified - get the latest
+            filterBuilder.version(ToscaPolicyFilter.LATEST_VERSION);
+
+        } else if (VERSION_PREFIX_PAT.matcher(desiredVersion).matches()) {
+            // version prefix provided - match the prefix and then pick the latest
+            filterBuilder.versionPrefix(desiredVersion + ".").version(ToscaPolicyFilter.LATEST_VERSION);
+
+        } else {
+            // must be an exact match
+            filterBuilder.version(desiredVersion);
+        }
     }
 
     /**
