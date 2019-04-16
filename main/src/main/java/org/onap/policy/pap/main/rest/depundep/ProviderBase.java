@@ -148,11 +148,10 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      * @param desiredPolicy the policy desired, with the "name" and optional
      *        "policyVersion" populated
      * @return the matching Policy type
-     * @throws PfModelException if a DAO error occurred
-     * @throws PolicyPapRuntimeException if there is no matching policy type
+     * @throws PolicyPapRuntimeException if there is no matching policy type or a DAO
+     *         error occurs
      */
-    private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy)
-                    throws PfModelException {
+    private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy) {
 
         return data.getPolicy(desiredPolicy);
     }
