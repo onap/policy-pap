@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@ package org.onap.policy.pap.main.comm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -221,13 +222,19 @@ public class PdpStatusMessageHandler {
     }
 
     private boolean validatePdpDetails(final PdpStatus message, final PdpGroup pdpGroup, final PdpSubGroup subGroup,
-            final Pdp pdpInstanceDetails) {
+                    final Pdp pdpInstanceDetails) {
 
-        return message.getPdpGroup().equals(pdpGroup.getName())
-                && message.getPdpSubgroup().equals(subGroup.getPdpType())
-                && message.getState().equals(pdpInstanceDetails.getPdpState())
-                && message.getSupportedPolicyTypes().containsAll(subGroup.getSupportedPolicyTypes())
-                && message.getPdpType().equals(subGroup.getPdpType());
+        /*
+         * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check
+         * supported policy types. Nevertheless, it does the job and provides a convenient
+         * way to build a bunch of comparisons.
+         */
+        return new EqualsBuilder().append(message.getPdpGroup(), pdpGroup.getName())
+                        .append(message.getPdpSubgroup(), subGroup.getPdpType())
+                        .append(message.getPdpType(), subGroup.getPdpType())
+                        .append(message.getState(), pdpInstanceDetails.getPdpState())
+                        .append(message.getSupportedPolicyTypes().containsAll(subGroup.getSupportedPolicyTypes()), true)
+                        .build();
     }
 
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
