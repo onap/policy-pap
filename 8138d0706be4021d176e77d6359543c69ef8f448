@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da9b35c9_e6138857",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestServer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-04-16T16:55:47Z",
+      "side": 1,
+      "message": "Probably best to add the \"getName()\" to the HttpServletServer\" interface ..   I think you are going to get a sonar here.  In theory implementation can change under you, ie. TomcatServletServer.\n\nIf you decide to do that, at the same time you can make the IndexedHttp*Factory public so it is not package protected to allow multiple factories in junits.   They may clash those if the underlying servers use the same port when they bind though if the servers are not mocked, hence not sure of value.",
+      "revId": "8138d0706be4021d176e77d6359543c69ef8f448",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
