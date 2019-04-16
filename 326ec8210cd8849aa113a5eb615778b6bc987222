@@ -22,6 +22,30 @@
       "revId": "326ec8210cd8849aa113a5eb615778b6bc987222",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c81c6b89_ab26df40",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestPapActivator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-16T16:20:34Z",
+      "side": 1,
+      "message": "it might, since it also shuts down any rest servers that happen to still be running.  It wasn\u0027t really needed in this case, but I wanted to cover all bases in case we choose to use different properties in future junit tests - din\u0027t want one set interfering with the other and then trying to figure out what went wrong.",
+      "parentUuid": "08837e95_31fcdb84",
+      "range": {
+        "startLine": 64,
+        "startChar": 8,
+        "endLine": 64,
+        "endChar": 44
+      },
+      "revId": "326ec8210cd8849aa113a5eb615778b6bc987222",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
