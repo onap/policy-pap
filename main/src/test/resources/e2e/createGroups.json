@@ -1,0 +1,61 @@
+{
+    "groups": [
+        {
+            "name": "createGroups",
+            "pdpGroupState": "PASSIVE",
+            "properties": {
+                "hello": "world"
+            },
+            "pdpSubgroups": [
+                {
+                    "pdpType": "pdpTypeA",
+                    "desiredInstanceCount": 2,
+                    "properties": {},
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpAA_1",
+                            "pdpState": "ACTIVE",
+                            "healthy": "HEALTHY"
+                        },
+                        {
+                            "instanceId": "pdpAA_2",
+                            "pdpState": "ACTIVE",
+                            "healthy": "HEALTHY"
+                        }
+                    ],
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",
+                            "version": "1.0.0"
+                        }
+                    ],
+                    "policies": [
+                        {
+                            "name": "onap.restart.tca",
+                            "version": "1.0.0"
+                        }
+                    ]
+                },
+                {
+                    "pdpType": "pdpTypeB",
+                    "desiredInstanceCount": 1,
+                    "properties": {},
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpAB_1",
+                            "pdpState": "ACTIVE",
+                            "healthy": "HEALTHY"
+                        }
+                    ],
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",
+                            "version": "1.0.0"
+                        }
+                    ],
+                    "policies": []
+                }
+            ]
+        }
+    ]
+}
