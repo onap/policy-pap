@@ -26,16 +26,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
 import org.junit.Test;
 import org.onap.policy.common.parameters.GroupValidationResult;
+import org.onap.policy.common.utils.coder.Coder;
+import org.onap.policy.common.utils.coder.StandardCoder;
 
 public class TestPdpParameters {
-    private static CommonTestData testData = new CommonTestData();
+    private static final Coder coder = new StandardCoder();
+    private static final CommonTestData testData = new CommonTestData();
 
     @Test
     public void testGetters() {
-        PdpParameters params = testData.toObject(testData.getPdpParametersMap(), PdpParameters.class);
+        PdpParameters params = testData.getPapParameterGroup(1).getPdpParameters();
 
         PdpUpdateParameters update = params.getUpdateParameters();
         assertNotNull(update);
@@ -43,53 +45,46 @@ public class TestPdpParameters {
 
         PdpStateChangeParameters state = params.getStateChangeParameters();
         assertNotNull(state);
-        assertEquals(2, state.getMaxWaitMs());
+        assertEquals(5, state.getMaxWaitMs());
     }
 
     @Test
-    public void testValidate() {
+    public void testValidate() throws Exception {
+        String json = testData.getPapParameterGroupAsString(1);
+
         // valid
-        Map<String, Object> map = testData.getPdpParametersMap();
-        GroupValidationResult result = testData.toObject(map, PdpParameters.class).validate();
+        String json2 = json;
+        GroupValidationResult result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertNull(result.getResult());
         assertTrue(result.isValid());
 
         // no update params
-        map = testData.getPdpParametersMap();
-        map.remove("updateParameters");
-        result = testData.toObject(map, PdpParameters.class).validate();
+        json2 = testData.nullifyField(json, "updateParameters");
+        result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
         assertTrue(result.getResult().contains("field 'updateParameters'".replace('\'', '"')));
         assertTrue(result.getResult().contains("is null"));
 
         // invalid update params
-        map = testData.getPdpParametersMap();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> updmap = (Map<String, Object>) map.get("updateParameters");
-        updmap.put("maxRetryCount", "-2");
-        result = testData.toObject(map, PdpParameters.class).validate();
+        json2 = json.replaceFirst("2", "-2");
+        result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
         assertTrue(result.getResult().contains("parameter group 'PdpUpdateParameters'".replace('\'', '"')));
         assertTrue(result.getResult().contains(
-                        "field 'maxRetryCount' type 'int' value '-2' INVALID, must be >= 0".replace('\'', '"')));
+                        "field 'maxWaitMs' type 'long' value '-2' INVALID, must be >= 0".replace('\'', '"')));
 
         // no state-change params
-        map = testData.getPdpParametersMap();
-        map.remove("stateChangeParameters");
-        result = testData.toObject(map, PdpParameters.class).validate();
+        json2 = testData.nullifyField(json, "stateChangeParameters");
+        result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
 
         // invalid state-change params
-        map = testData.getPdpParametersMap();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> statemap = (Map<String, Object>) map.get("stateChangeParameters");
-        statemap.put("maxRetryCount", "-3");
-        result = testData.toObject(map, PdpParameters.class).validate();
+        json2 = json.replaceFirst("5", "-5");
+        result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
-        System.out.println(result.getResult());
         assertTrue(result.getResult().contains("parameter group 'PdpStateChangeParameters'".replace('\'', '"')));
         assertTrue(result.getResult().contains(
-                        "field 'maxRetryCount' type 'int' value '-3' INVALID, must be >= 0".replace('\'', '"')));
+                        "field 'maxWaitMs' type 'long' value '-5' INVALID, must be >= 0".replace('\'', '"')));
     }
 
 }
