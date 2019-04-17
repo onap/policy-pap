@@ -25,9 +25,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
 import org.junit.Test;
 import org.onap.policy.common.parameters.GroupValidationResult;
+import org.onap.policy.common.utils.coder.Coder;
+import org.onap.policy.common.utils.coder.StandardCoder;
 
 /**
  * Class to perform unit test of {@link PapParameterGroup}.
@@ -35,6 +36,8 @@ import org.onap.policy.common.parameters.GroupValidationResult;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class TestPapParameterGroup {
+    private static final Coder coder = new StandardCoder();
+
     CommonTestData commonTestData = new CommonTestData();
 
     @Test
@@ -45,8 +48,7 @@ public class TestPapParameterGroup {
 
     @Test
     public void testPapParameterGroup() {
-        final PapParameterGroup papParameters = commonTestData.toObject(
-                        commonTestData.getPapParameterGroupMap(CommonTestData.PAP_GROUP_NAME), PapParameterGroup.class);
+        final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(1);
         final RestServerParameters restServerParameters = papParameters.getRestServerParameters();
         final GroupValidationResult validationResult = papParameters.validate();
         assertTrue(validationResult.isValid());
@@ -60,9 +62,9 @@ public class TestPapParameterGroup {
     }
 
     @Test
-    public void testPapParameterGroup_NullName() {
-        final PapParameterGroup papParameters = commonTestData.toObject(
-                        commonTestData.getPapParameterGroupMap(null), PapParameterGroup.class);
+    public void testPapParameterGroup_NullName() throws Exception {
+        String json = commonTestData.getPapParameterGroupAsString(1).replace("\"PapGroup\"", "null");
+        final PapParameterGroup papParameters = coder.decode(json, PapParameterGroup.class);
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertEquals(null, papParameters.getName());
@@ -70,9 +72,9 @@ public class TestPapParameterGroup {
     }
 
     @Test
-    public void testPapParameterGroup_EmptyName() {
-        final PapParameterGroup papParameters = commonTestData.toObject(
-                        commonTestData.getPapParameterGroupMap(""), PapParameterGroup.class);
+    public void testPapParameterGroup_EmptyName() throws Exception {
+        String json = commonTestData.getPapParameterGroupAsString(1).replace(CommonTestData.PAP_GROUP_NAME, "");
+        final PapParameterGroup papParameters = coder.decode(json, PapParameterGroup.class);
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertEquals("", papParameters.getName());
@@ -82,8 +84,7 @@ public class TestPapParameterGroup {
 
     @Test
     public void testPapParameterGroup_SetName() {
-        final PapParameterGroup papParameters = commonTestData.toObject(
-                        commonTestData.getPapParameterGroupMap(CommonTestData.PAP_GROUP_NAME), PapParameterGroup.class);
+        final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(1);
         papParameters.setName("PapNewGroup");
         final GroupValidationResult validationResult = papParameters.validate();
         assertTrue(validationResult.isValid());
@@ -91,12 +92,10 @@ public class TestPapParameterGroup {
     }
 
     @Test
-    public void testApiParameterGroup_EmptyRestServerParameters() {
-        Map<String, Object> map = commonTestData.getPapParameterGroupMap(CommonTestData.PAP_GROUP_NAME);
-        map.put("restServerParameters", commonTestData.getRestServerParametersMap(true));
-
-        final PapParameterGroup papParameters = commonTestData.toObject(
-                        map, PapParameterGroup.class);
+    public void testApiParameterGroup_EmptyRestServerParameters() throws Exception {
+        String json = commonTestData.getPapParameterGroupAsString(1);
+        json = commonTestData.nullifyField(json, "restServerParameters");
+        final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(0);
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertTrue(validationResult.getResult()

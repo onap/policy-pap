@@ -90,6 +90,15 @@ public class PdpModifyRequestMap {
     }
 
     /**
+     * Determines if the map contains any requests.
+     *
+     * @return {@code true} if the map is empty, {@code false} otherwise
+     */
+    public boolean isEmpty() {
+        return pdp2requests.isEmpty();
+    }
+
+    /**
      * Stops publishing requests to the given PDP.
      *
      * @param pdpName PDP name

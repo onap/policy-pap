@@ -25,8 +25,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 import javax.net.ssl.SSLContext;
@@ -42,10 +43,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
 import org.onap.policy.common.endpoints.http.server.HttpServletServer;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
-import org.onap.policy.common.utils.coder.Coder;
-import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
@@ -67,8 +67,6 @@ public class CommonPapRestServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonPapRestServer.class);
 
     private static String KEYSTORE = System.getProperty("user.dir") + "/src/test/resources/ssl/policy-keystore";
-
-    private static Coder coder = new StandardCoder();
 
     public static final String NOT_ALIVE = "not alive";
     public static final String ALIVE = "alive";
@@ -97,6 +95,9 @@ public class CommonPapRestServer {
         makeConfigFile();
 
         HttpServletServer.factory.destroy();
+        TopicEndpoint.manager.shutdown();
+
+        CommonTestData.newDb();
 
         startMain();
     }
@@ -156,16 +157,14 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     private static void makeConfigFile() throws Exception {
-        Map<String, Object> config = new CommonTestData().getPapParameterGroupMap("PapGroup");
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> restParams = (Map<String, Object>) config.get("restServerParameters");
-        restParams.put("port", port);
+        String json = new CommonTestData().getPapParameterGroupAsString(port);
 
         File file = new File("src/test/resources/parameters/TestConfigParams.json");
         file.deleteOnExit();
 
-        coder.encode(file, config);
+        try (FileOutputStream output = new FileOutputStream(file)) {
+            output.write(json.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     /**
