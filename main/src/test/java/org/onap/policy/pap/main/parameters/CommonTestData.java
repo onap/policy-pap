@@ -21,17 +21,15 @@
 
 package org.onap.policy.pap.main.parameters;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.onap.policy.common.parameters.ParameterGroup;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
-import org.onap.policy.models.provider.PolicyModelsProviderParameters;
-import org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.onap.policy.pap.main.rest.e2e.End2EndBase;
 
 /**
  * Class to hold/create all parameters for test cases.
@@ -39,144 +37,79 @@ import org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class CommonTestData {
-
-    private static final String REST_SERVER_PASSWORD = "zb!XztG34";
-    private static final String REST_SERVER_USER = "healthcheck";
-    private static final int REST_SERVER_PORT = 6969;
-    private static final String REST_SERVER_HOST = "0.0.0.0";
-    private static final boolean REST_SERVER_HTTPS = true;
-    private static final boolean REST_SERVER_AAF = false;
     public static final String PAP_GROUP_NAME = "PapGroup";
 
     private static final Coder coder = new StandardCoder();
 
+    private static int dbNum = 0;
+
+    public static void newDb() {
+        ++dbNum;
+    }
+
     /**
-     * Converts the contents of a map to a parameter class.
+     * Gets the standard PAP parameters.
      *
-     * @param source property map
-     * @param clazz class of object to be created from the map
-     * @return a new object represented by the map
+     * @param port port to be inserted into the parameters
+     * @return the standard PAP parameters
      */
-    public <T extends ParameterGroup> T toObject(final Map<String, Object> source, final Class<T> clazz) {
+    public PapParameterGroup getPapParameterGroup(int port) {
         try {
-            return coder.decode(coder.encode(source), clazz);
+            return coder.decode(getPapParameterGroupAsString(port), PapParameterGroup.class);
 
-        } catch (final CoderException e) {
-            throw new RuntimeException("cannot create " + clazz.getName() + " from map", e);
+        } catch (CoderException e) {
+            throw new PolicyPapRuntimeException("cannot read PAP parameters", e);
         }
     }
 
     /**
-     * Returns a property map for a PapParameterGroup map for test cases.
+     * Gets the standard PAP parameters, as a String.
      *
-     * @param name name of the parameters
-     *
-     * @return a property map suitable for constructing an object
+     * @param port port to be inserted into the parameters
+     * @return the standard PAP parameters
      */
-    public Map<String, Object> getPapParameterGroupMap(final String name) {
-        final Map<String, Object> map = new TreeMap<>();
+    public String getPapParameterGroupAsString(int port) {
 
-        map.put("name", name);
-        map.put("restServerParameters", getRestServerParametersMap(false));
-        map.put("pdpParameters", getPdpParametersMap());
-        map.put("databaseProviderParameters", getPolicyModelsProviderParametersMap());
+        try {
+            File file = new File(getParamFile());
+            String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
-        return map;
-    }
+            json = json.replace("${port}", String.valueOf(port));
+            json = json.replace("${dbName}", "jdbc:h2:mem:testdb" + dbNum);
 
-    /**
-     * Returns a property map for a RestServerParameters map for test cases.
-     *
-     * @param isEmpty boolean value to represent that object created should be empty or not
-     * @return a property map suitable for constructing an object
-     */
-    public Map<String, Object> getRestServerParametersMap(final boolean isEmpty) {
-        final Map<String, Object> map = new TreeMap<>();
-        map.put("https", REST_SERVER_HTTPS);
-        map.put("aaf", REST_SERVER_AAF);
+            return json;
 
-        if (!isEmpty) {
-            map.put("host", REST_SERVER_HOST);
-            map.put("port", REST_SERVER_PORT);
-            map.put("userName", REST_SERVER_USER);
-            map.put("password", REST_SERVER_PASSWORD);
+        } catch (IOException e) {
+            throw new PolicyPapRuntimeException("cannot read PAP parameters", e);
         }
-
-        return map;
     }
 
     /**
-     * Returns a property map for a PdpParameters map for test cases.
+     * Gets the full path to the parameter file, which may vary depending on whether or
+     * not this is an end-to-end test.
      *
-     * @return a property map suitable for constructing an object
+     * @return the parameter file name
      */
-    public Map<String, Object> getPdpParametersMap() {
-        final Map<String, Object> map = new TreeMap<>();
+    private String getParamFile() {
+        String paramFile = "src/test/resources/parameters/PapConfigParametersStd.json";
 
-        map.put("updateParameters", getPdpUpdateParametersMap());
-        map.put("stateChangeParameters", getPdpStateChangeParametersMap());
-
-        return map;
+        for (StackTraceElement stack : Thread.currentThread().getStackTrace()) {
+            String classnm = stack.getClassName();
+            if (End2EndBase.class.getName().equals(classnm)) {
+                paramFile = "src/test/resources/e2e/PapConfigParameters.json";
+                break;
+            }
+        }
+        return paramFile;
     }
 
     /**
-     * Returns a property map for a PdpUpdateParameters map for test cases.
-     *
-     * @return a property map suitable for constructing an object
+     * Nulls out a field within a JSON string.
+     * @param json JSON string
+     * @param field field to be nulled out
+     * @return a new JSON string with the field nulled out
      */
-    public Map<String, Object> getPdpUpdateParametersMap() {
-        return getPdpRequestParametersMap();
-    }
-
-    /**
-     * Returns a property map for a PdpStateChangeParameters map for test cases.
-     *
-     * @return a property map suitable for constructing an object
-     */
-    public Map<String, Object> getPdpStateChangeParametersMap() {
-        return getPdpRequestParametersMap();
-    }
-
-    /**
-     * Returns a property map for a PdpParameters map for test cases.
-     *
-     * @return a property map suitable for constructing an object
-     */
-    public Map<String, Object> getPdpRequestParametersMap() {
-        final Map<String, Object> map = new HashMap<>();
-        map.put("maxRetryCount", "1");
-        map.put("maxWaitMs", "2");
-
-        return map;
-    }
-
-    /**
-     * Returns a property map for a PdpGroupDeploymentParameters map for test cases.
-     *
-     * @return a property map suitable for constructing an object
-     */
-    public Map<String, Object> getPdpGroupDeploymentParametersMap() {
-        final Map<String, Object> map = new TreeMap<>();
-        map.put("waitResponseMs", "1");
-
-        return map;
-    }
-
-    /**
-     * Returns a property map for a PolicyModelsProviderParameters map for test cases.
-     *
-     * @return a property map suitable for constructing an object
-     */
-    public Map<String, Object> getPolicyModelsProviderParametersMap() {
-        final Map<String, Object> map = new TreeMap<>();
-        map.put("name", PolicyModelsProviderParameters.class.getSimpleName());
-        map.put("implementation", DatabasePolicyModelsProviderImpl.class.getName());
-        map.put("databaseDriver", "org.h2.Driver");
-        map.put("databaseUrl", "jdbc:h2:mem:testdb");
-        map.put("databaseUser", "policy");
-        map.put("databasePassword", Base64.getEncoder().encodeToString("P01icY".getBytes()));
-        map.put("persistenceUnit", "ToscaConceptTest");
-
-        return map;
+    public String nullifyField(String json, String field) {
+        return json.replace(field + "\"", field + "\":null, \"" + field + "Xxx\"");
     }
 }
