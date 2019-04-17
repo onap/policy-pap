@@ -39,4 +39,24 @@
             <property name="eclipselink.logging.level" value="INFO" />
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="PolicyMariaDb" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+        <class>org.onap.policy.models.dao.converters.CDataConditioner</class>
+        <class>org.onap.policy.models.dao.converters.Uuid2String</class>
+        <class>org.onap.policy.models.base.PfConceptKey</class>
+        <class>org.onap.policy.models.tosca.simple.concepts.JpaToscaPolicyType</class>
+        <class>org.onap.policy.models.tosca.simple.concepts.JpaToscaPolicy</class>
+        <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpGroup</class>
+        <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpSubGroup</class>
+        <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdp</class>
+
+        <properties>
+            <property name="javax.persistence.schema-generation.database.action" value="create" />
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+            <property name="eclipselink.ddl-generation.output-mode" value="database" />
+            <property name="eclipselink.logging.level" value="INFO" />
+        </properties>
+    </persistence-unit>
 </persistence>
