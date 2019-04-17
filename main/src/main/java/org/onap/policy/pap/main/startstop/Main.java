@@ -153,6 +153,10 @@ public class Main {
          */
         @Override
         public void run() {
+            if (!activator.isAlive()) {
+                return;
+            }
+
             try {
                 // Shutdown the policy pap service and wait for everything to stop
                 activator.stop();
