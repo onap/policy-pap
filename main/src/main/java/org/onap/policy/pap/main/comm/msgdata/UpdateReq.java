@@ -20,7 +20,9 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -72,9 +74,9 @@ public class UpdateReq extends RequestImpl {
         }
 
         // see if the policies match
-        Set<ToscaPolicyIdentifier> set1 = new HashSet<>(response.getPolicies());
-        Set<ToscaPolicyIdentifier> set2 = new HashSet<>(
-                        message.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
+        Set<ToscaPolicyIdentifier> set1 = new HashSet<>(alwaysList(response.getPolicies()));
+        Set<ToscaPolicyIdentifier> set2 = new HashSet<>(alwaysList(message.getPolicies()).stream()
+                        .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
 
         if (!set1.equals(set2)) {
             return "policies do not match";
@@ -101,10 +103,20 @@ public class UpdateReq extends RequestImpl {
         }
 
         // see if the policies are the same
-        Set<ToscaPolicy> set1 = new HashSet<>(first.getPolicies());
-        Set<ToscaPolicy> set2 = new HashSet<>(second.getPolicies());
+        Set<ToscaPolicy> set1 = new HashSet<>(alwaysList(first.getPolicies()));
+        Set<ToscaPolicy> set2 = new HashSet<>(alwaysList(second.getPolicies()));
 
         return set1.equals(set2);
+    }
+
+    /**
+     * Always get a list, even if the original is {@code null}.
+     *
+     * @param list the original list, or {@code null}
+     * @return the list, or an empty list if the original was {@code null}
+     */
+    private <T> List<T> alwaysList(List<T> list) {
+        return (list != null ? list : Collections.emptyList());
     }
 
     @Override
