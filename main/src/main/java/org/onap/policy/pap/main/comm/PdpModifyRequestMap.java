@@ -21,6 +21,7 @@
 package org.onap.policy.pap.main.comm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -386,6 +387,7 @@ public class PdpModifyRequestMap {
                 // send an update, too
                 PdpUpdate update = new PdpUpdate();
                 update.setName(requests.getPdpName());
+                update.setPolicies(Collections.emptyList());
 
                 addRequest(update, change);
 

@@ -73,6 +73,11 @@ public class UpdateReqTest extends CommonRequestBase {
     @Test
     public void testCheckResponse() {
         assertNull(data.checkResponse(response));
+
+        // both policy lists null
+        update.setPolicies(null);
+        response.setPolicies(null);
+        assertNull(data.checkResponse(response));
     }
 
     @Test
@@ -114,6 +119,20 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
+    public void testUpdateReqCheckResponse_MismatchedPolicies_Null_NotNull() {
+        update.setPolicies(null);
+
+        assertEquals("policies do not match", data.checkResponse(response));
+    }
+
+    @Test
+    public void testUpdateReqCheckResponse_MismatchedPolicies_NotNull_Null() {
+        response.setPolicies(null);
+
+        assertEquals("policies do not match", data.checkResponse(response));
+    }
+
+    @Test
     public void isSameContent() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setName("world");
@@ -121,6 +140,11 @@ public class UpdateReqTest extends CommonRequestBase {
 
         // different request type
         assertFalse(data.isSameContent(new StateChangeReq(reqParams, MY_REQ_NAME, new PdpStateChange())));
+
+        // both policy lists null
+        update.setPolicies(null);
+        msg2.setPolicies(null);
+        assertTrue(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
     }
 
     @Test
@@ -172,6 +196,23 @@ public class UpdateReqTest extends CommonRequestBase {
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
         policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
         msg2.setPolicies(policies);
+
+        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+    }
+
+    @Test
+    public void isSameContent_DiffPolicies_NotNull_Null() {
+        PdpUpdate msg2 = new PdpUpdate(update);
+        msg2.setPolicies(null);
+
+        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+    }
+
+    @Test
+    public void isSameContent_DiffPolicies_Null_NotNull() {
+        PdpUpdate msg2 = new PdpUpdate(update);
+
+        update.setPolicies(null);
 
         assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
     }
