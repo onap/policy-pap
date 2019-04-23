@@ -48,6 +48,7 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
@@ -231,6 +232,16 @@ public class ProviderSuper {
      */
     protected ToscaPolicy loadPolicy(String fileName) {
         return loadFile(fileName, ToscaPolicy.class);
+    }
+
+    /**
+     * Loads a policy type.
+     *
+     * @param fileName name of the file from which to load
+     * @return a policy type
+     */
+    protected ToscaPolicyType loadPolicyType(String fileName) {
+        return loadFile(fileName, ToscaPolicyType.class);
     }
 
     /**

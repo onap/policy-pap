@@ -40,6 +40,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 
 /**
@@ -79,6 +80,11 @@ public class SessionData {
      */
     private final Map<ToscaPolicyIdentifierOptVersion, ToscaPolicy> policyCache = new HashMap<>();
 
+    /**
+     * Maps a policy type's identifier to the policy.
+     */
+    private final Map<ToscaPolicyTypeIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
+
 
     /**
      * Constructs the object.
@@ -87,6 +93,32 @@ public class SessionData {
      */
     public SessionData(PolicyModelsProvider dao) {
         this.dao = dao;
+    }
+
+    /**
+     * Gets the policy type, referenced by an identifier. Loads it from the cache, if possible.
+     * Otherwise, gets it from the DB.
+     *
+     * @param desiredType policy type identifier
+     * @return the specified policy type
+     * @throws PfModelException if an error occurred
+     */
+    public ToscaPolicyType getPolicyType(ToscaPolicyTypeIdentifier desiredType) throws PfModelException {
+
+        ToscaPolicyType type = typeCache.get(desiredType);
+        if (type == null) {
+
+            List<ToscaPolicyType> lst = dao.getPolicyTypeList(desiredType.getName(), desiredType.getVersion());
+            if (lst.isEmpty()) {
+                throw new PfModelException(Status.NOT_FOUND,
+                                "cannot find policy type: " + desiredType.getName() + " " + desiredType.getVersion());
+            }
+
+            type = lst.get(0);
+            typeCache.put(desiredType, type);
+        }
+
+        return type;
     }
 
     /**
