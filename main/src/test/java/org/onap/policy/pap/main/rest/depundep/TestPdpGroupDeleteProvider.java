@@ -23,7 +23,6 @@ package org.onap.policy.pap.main.rest.depundep;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -36,23 +35,19 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -111,14 +106,17 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         when(session.getGroup(GROUP1_NAME)).thenReturn(group);
 
-        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
                         .hasMessage("group is still ACTIVE");
     }
 
     @Test
     public void testDeleteGroup_NotFound() throws Exception {
-        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
-                        .hasMessage("group not found");
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
+                        .hasMessage("group not found").matches(thr -> {
+                            PfModelException ex = (PfModelException) thr;
+                            return (ex.getErrorResponse().getResponseCode() == Status.NOT_FOUND);
+                        });
     }
 
     @Test
@@ -144,15 +142,12 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
         doThrow(ex).when(session).deleteGroupFromDb(group);
 
-        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
-                        .hasMessage(ProviderBase.DB_ERROR_MSG);
+        assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isSameAs(ex);
     }
 
     @Test
-    public void testUndeploy_testDeletePolicy() {
-        Pair<Status, PdpGroupDeleteResponse> pair = prov.undeploy(optIdent);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+    public void testUndeploy_testDeletePolicy() throws Exception {
+        prov.undeploy(optIdent);
     }
 
     /**
@@ -169,9 +164,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
         when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
-        Pair<Status, PdpGroupDeleteResponse> pair = new PdpGroupDeleteProvider().undeploy(optIdent);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        new PdpGroupDeleteProvider().undeploy(optIdent);
 
         // should have updated the old group
         List<PdpGroup> updates = getGroupUpdates();
@@ -199,8 +192,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         prov = spy(prov);
         doThrow(exc).when(prov).processPolicy(any(), any());
 
-        assertThatThrownBy(() -> prov.undeploy(optIdent)).isInstanceOf(PolicyPapRuntimeException.class)
-                        .hasMessage(PdpGroupDeleteProvider.DB_ERROR_MSG);
+        assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
     }
 
     @Test
@@ -211,15 +203,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         doThrow(exc).when(prov).processPolicy(any(), any());
 
         assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
-    }
-
-    @Test
-    public void testMakeResponse() {
-        PdpGroupDeleteResponse resp = prov.makeResponse(null);
-        assertNull(resp.getErrorDetails());
-
-        resp = prov.makeResponse(EXPECTED_EXCEPTION);
-        assertEquals(EXPECTED_EXCEPTION, resp.getErrorDetails());
     }
 
     @Test
@@ -263,10 +246,8 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private class MyProvider extends PdpGroupDeleteProvider {
 
         @Override
-        protected <T> Pair<Status, PdpGroupDeleteResponse> process(T request, BiConsumer<SessionData, T> processor) {
+        protected <T> void process(T request, BiConsumerWithEx<SessionData, T> processor) throws PfModelException {
             processor.accept(session, request);
-
-            return Pair.of(Status.OK, new PdpGroupDeleteResponse());
         }
 
         @Override

@@ -30,16 +30,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import javax.ws.rs.core.Response;
-import org.apache.commons.lang3.tuple.Pair;
+import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.parameters.BeanValidationResult;
 import org.onap.policy.common.parameters.ObjectValidationResult;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.parameters.ValidationStatus;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
-import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -48,7 +47,6 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * <li>PAP DAO Factory</li>
  * </ul>
  */
-public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse> {
+public class PdpGroupDeployProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployProvider.class);
 
 
@@ -76,18 +74,18 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * Creates or updates PDP groups.
      *
      * @param groups PDP group configurations to be created or updated
-     * @return a pair containing the status and the response
+     * @throws PfModelException if an error occurred
      */
-    public Pair<Response.Status, PdpGroupDeployResponse> createOrUpdateGroups(PdpGroups groups) {
+    public void createOrUpdateGroups(PdpGroups groups) throws PfModelException {
         ValidationResult result = groups.validatePapRest();
 
         if (!result.isValid()) {
             String msg = result.getResult().trim();
             logger.warn(msg);
-            return Pair.of(Response.Status.INTERNAL_SERVER_ERROR, makeResponse(msg));
+            throw new PfModelException(Status.BAD_REQUEST, msg);
         }
 
-        return process(groups, this::createOrUpdate);
+        process(groups, this::createOrUpdate);
     }
 
     /**
@@ -95,8 +93,9 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      *
      * @param data session data
      * @param groups PDP group configurations
+     * @throws PfModelException if an error occurred
      */
-    private void createOrUpdate(SessionData data, PdpGroups groups) {
+    private void createOrUpdate(SessionData data, PdpGroups groups) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult("groups", groups);
 
         for (PdpGroup group : groups.getGroups()) {
@@ -111,7 +110,7 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
         }
 
         if (!result.isValid()) {
-            throw new PolicyPapRuntimeException(result.getResult().trim());
+            throw new PfModelException(Status.BAD_REQUEST, result.getResult().trim());
         }
     }
 
@@ -121,8 +120,9 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param data session data
      * @param group the group to be added
      * @return the validation result
+     * @throws PfModelException if an error occurred
      */
-    private ValidationResult addGroup(SessionData data, PdpGroup group) {
+    private ValidationResult addGroup(SessionData data, PdpGroup group) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult(group.getName(), group);
 
         validateGroupOnly(group, result);
@@ -176,8 +176,9 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param dbgroup the group, as it appears within the DB
      * @param group the group to be added
      * @return the validation result
+     * @throws PfModelException if an error occurred
      */
-    private ValidationResult updateGroup(SessionData data, PdpGroup dbgroup, PdpGroup group) {
+    private ValidationResult updateGroup(SessionData data, PdpGroup dbgroup, PdpGroup group) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult(group.getName(), group);
 
         if (!ObjectUtils.equals(dbgroup.getProperties(), group.getProperties())) {
@@ -242,8 +243,9 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param data session data
      * @param subgrp the subgroup to be added
      * @return the validation result
+     * @throws PfModelException if an error occurred
      */
-    private ValidationResult addSubGroup(SessionData data, PdpSubGroup subgrp) {
+    private ValidationResult addSubGroup(SessionData data, PdpSubGroup subgrp) throws PfModelException {
         subgrp.setCurrentInstanceCount(0);
         subgrp.setPdpInstances(Collections.emptyList());
 
@@ -264,9 +266,10 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param container container for additional validation results
      * @return {@code true} if the subgroup content was changed, {@code false} if there
      *         were no changes
+     * @throws PfModelException if an error occurred
      */
     private boolean updateSubGroup(SessionData data, PdpGroup dbgroup, PdpSubGroup dbsub, PdpSubGroup subgrp,
-                    BeanValidationResult container) {
+                    BeanValidationResult container) throws PfModelException {
 
         // perform additional validations first
         if (!validateSubGroup(data, dbsub, subgrp, container)) {
@@ -301,9 +304,10 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param subgrp the subgroup to be validated
      * @param container container for additional validation results
      * @return {@code true} if the subgroup is valid, {@code false} otherwise
+     * @throws PfModelException if an error occurred
      */
     private boolean validateSubGroup(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp,
-                    BeanValidationResult container) {
+                    BeanValidationResult container) throws PfModelException {
 
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
@@ -346,16 +350,27 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param data session data
      * @param subgrp the subgroup to be validated
      * @param result the validation result
+     * @throws PfModelException if an error occurred
      */
-    private ValidationResult validatePolicies(SessionData data, PdpSubGroup subgrp) {
+    private ValidationResult validatePolicies(SessionData data, PdpSubGroup subgrp) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaPolicyIdentifier ident : subgrp.getPolicies()) {
-            ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
+            try {
+                ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
 
-            if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
+                if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
+                    result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
+                                    "not a supported policy for the subgroup"));
+                }
+
+            } catch (PfModelException e) {
+                if (e.getErrorResponse().getResponseCode() != Status.NOT_FOUND) {
+                    throw e;
+                }
+
                 result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
-                                "not a supported policy for the subgroup"));
+                                "unknown policy"));
             }
         }
 
@@ -366,10 +381,10 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * Deploys or updates PDP policies using the simple API.
      *
      * @param policies PDP policies
-     * @return a pair containing the status and the response
+     * @throws PfModelException if an error occurred
      */
-    public Pair<Response.Status, PdpGroupDeployResponse> deployPolicies(PdpDeployPolicies policies) {
-        return process(policies, this::deploySimplePolicies);
+    public void deployPolicies(PdpDeployPolicies policies) throws PfModelException {
+        process(policies, this::deploySimplePolicies);
     }
 
     /**
@@ -379,20 +394,16 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
      * @param data session data
      * @param extPolicies external PDP policies
      * @return a list of requests that should be sent to configure the PDPs
+     * @throws PfModelException if an error occurred
      */
-    private void deploySimplePolicies(SessionData data, PdpDeployPolicies policies) {
+    private void deploySimplePolicies(SessionData data, PdpDeployPolicies policies) throws PfModelException {
 
         for (ToscaPolicyIdentifierOptVersion desiredPolicy : policies.getPolicies()) {
 
             try {
                 processPolicy(data, desiredPolicy);
 
-            } catch (PfModelException e) {
-                // no need to log the error here, as it will be logged by the invoker
-                logger.warn("failed to deploy policy: {}", desiredPolicy);
-                throw new PolicyPapRuntimeException(DB_ERROR_MSG, e);
-
-            } catch (RuntimeException e) {
+            } catch (PfModelException | RuntimeException e) {
                 // no need to log the error here, as it will be logged by the invoker
                 logger.warn("failed to deploy policy: {}", desiredPolicy);
                 throw e;
@@ -421,8 +432,8 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
             }
 
             if (subgroup.getPdpInstances().isEmpty()) {
-                throw new PolicyPapRuntimeException("group " + group.getName() + " subgroup " + subgroup.getPdpType()
-                                + " has no active PDPs");
+                throw new PfModelRuntimeException(Status.BAD_REQUEST, "group " + group.getName() + " subgroup "
+                                + subgroup.getPdpType() + " has no active PDPs");
             }
 
 
@@ -430,12 +441,5 @@ public class PdpGroupDeployProvider extends ProviderBase<PdpGroupDeployResponse>
             subgroup.getPolicies().add(desiredIdent);
             return true;
         };
-    }
-
-    @Override
-    public PdpGroupDeployResponse makeResponse(String errorMsg) {
-        PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
-        resp.setErrorDetails(errorMsg);
-        return resp;
     }
 }

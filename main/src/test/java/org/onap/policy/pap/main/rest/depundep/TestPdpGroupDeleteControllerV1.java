@@ -29,6 +29,9 @@ import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
+/**
+ * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
+ */
 public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
     private static final String GROUP_NOT_FOUND = "group not found";
@@ -50,12 +53,12 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();
         PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals(GROUP_NOT_FOUND, resp.getErrorDetails());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals(GROUP_NOT_FOUND, resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
@@ -69,12 +72,12 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();
         PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals("cannot find policy: my-name null", resp.getErrorDetails());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals("cannot find policy: my-name null", resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
@@ -88,12 +91,12 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();
         PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals("cannot find policy: my-name 3", resp.getErrorDetails());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals("cannot find policy: my-name 3", resp.getErrorDetails());
 
         // verify it fails when no authorization info is included

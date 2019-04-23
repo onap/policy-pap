@@ -37,6 +37,9 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
+/**
+ * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
+ */
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
     private static final String DEPLOY_GROUP_ENDPOINT = "pdps";
@@ -55,12 +58,12 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
         Response rawresp = invocationBuilder.post(entgrp);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertNotNull(resp.getErrorDetails());
 
         rawresp = invocationBuilder.post(entgrp);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertNotNull(resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
@@ -74,12 +77,12 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
         Response rawresp = invocationBuilder.post(entgrp);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertNotNull(resp.getErrorDetails());
 
         rawresp = invocationBuilder.post(entgrp);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertNotNull(resp.getErrorDetails());
 
         // verify it fails when no authorization info is included

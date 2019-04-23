@@ -221,7 +221,7 @@ public class PdpModifyRequestMap {
      * @param pdpName name of the PDP to be removed
      * @return {@code true} if the PDP was removed from a group, {@code false} if it was
      *         not assigned to a group
-     * @throws PfModelException if an error occurs
+     * @throws PfModelException if an error occurred
      */
     public boolean removeFromGroups(String pdpName) throws PfModelException {
 

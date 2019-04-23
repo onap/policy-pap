@@ -86,7 +86,7 @@ public class PdpGroupDeleteTest extends End2EndBase {
         // repeat - should fail
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
         assertEquals("group not found", resp.getErrorDetails());
     }
 
