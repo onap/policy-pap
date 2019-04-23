@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -40,6 +39,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 
 /**
@@ -79,6 +79,11 @@ public class SessionData {
      */
     private final Map<ToscaPolicyIdentifierOptVersion, ToscaPolicy> policyCache = new HashMap<>();
 
+    /**
+     * Maps a policy type's identifier to the policy.
+     */
+    private final Map<ToscaPolicyTypeIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
+
 
     /**
      * Constructs the object.
@@ -87,6 +92,31 @@ public class SessionData {
      */
     public SessionData(PolicyModelsProvider dao) {
         this.dao = dao;
+    }
+
+    /**
+     * Gets the policy type, referenced by an identifier. Loads it from the cache, if possible.
+     * Otherwise, gets it from the DB.
+     *
+     * @param desiredType policy type identifier
+     * @return the specified policy type
+     * @throws PfModelException if an error occurred
+     */
+    public ToscaPolicyType getPolicyType(ToscaPolicyTypeIdentifier desiredType) throws PfModelException {
+
+        ToscaPolicyType type = typeCache.get(desiredType);
+        if (type == null) {
+
+            List<ToscaPolicyType> lst = dao.getPolicyTypeList(desiredType.getName(), desiredType.getVersion());
+            if (lst.isEmpty()) {
+                return null;
+            }
+
+            type = lst.get(0);
+            typeCache.put(desiredType, type);
+        }
+
+        return type;
     }
 
     /**
@@ -106,8 +136,7 @@ public class SessionData {
 
             List<ToscaPolicy> lst = dao.getFilteredPolicyList(filterBuilder.build());
             if (lst.isEmpty()) {
-                throw new PfModelException(Status.NOT_FOUND,
-                                "cannot find policy: " + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
+                return null;
             }
 
             policy = lst.get(0);

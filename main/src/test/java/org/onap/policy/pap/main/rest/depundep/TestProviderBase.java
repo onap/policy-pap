@@ -151,6 +151,17 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
+    public void testGetPolicy_NotFound() throws Exception {
+        when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(() -> prov.process(loadRequest(), this::handle)).isInstanceOf(PfModelRuntimeException.class)
+                        .hasMessage("cannot find policy: policyA 1.2.3").matches(thr -> {
+                            PfModelRuntimeException exc = (PfModelRuntimeException) thr;
+                            return (exc.getErrorResponse().getResponseCode() == Status.NOT_FOUND);
+                        });
+    }
+
+    @Test
     public void testGetGroup() throws Exception {
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("getGroupDao.json"))
                         .thenReturn(loadGroups("groups.json"));
