@@ -35,15 +35,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.pap.main.rest.PapRestControllerV1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide REST end points for PAP component to delete a PDP group.
  */
 public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
+    private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteControllerV1.class);
 
     private final PdpGroupDeleteProvider provider = new PdpGroupDeleteProvider();
 
@@ -82,10 +86,18 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     public Response deleteGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") String groupName) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair = provider.deleteGroup(groupName);
+        try {
+            provider.deleteGroup(groupName);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
+                            .entity(new PdpGroupDeleteResponse()).build();
 
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                        .entity(pair.getRight()).build();
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn("delete group failed", e);
+            PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
+            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                            requestId).entity(resp).build();
+        }
     }
 
     /**
@@ -123,11 +135,18 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     public Response deletePolicy(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair =
-                        provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, null));
+        try {
+            provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, null));
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
+                            .entity(new PdpGroupDeleteResponse()).build();
 
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                        .entity(pair.getRight()).build();
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn("undeploy policy failed", e);
+            PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
+            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                            requestId).entity(resp).build();
+        }
     }
 
     /**
@@ -168,10 +187,17 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName,
                     @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {
 
-        Pair<Status, PdpGroupDeleteResponse> pair =
-                        provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, version));
+        try {
+            provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, version));
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
+                            .entity(new PdpGroupDeleteResponse()).build();
 
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                        .entity(pair.getRight()).build();
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn("undeploy policy failed", e);
+            PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
+            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                            requestId).entity(resp).build();
+        }
     }
 }

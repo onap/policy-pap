@@ -124,7 +124,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         groups.getGroups().get(0).setProperties(null);
         rawresp = invocationBuilder.post(entity);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertTrue(resp.getErrorDetails().contains("cannot change properties"));
     }
 

@@ -34,16 +34,20 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.pap.main.rest.PapRestControllerV1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide REST end points for PAP component to deploy a PDP group.
  */
 public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
+    private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployControllerV1.class);
 
     private final PdpGroupDeployProvider provider = new PdpGroupDeployProvider();
 
@@ -82,10 +86,18 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
-        Pair<Status, PdpGroupDeployResponse> pair = provider.createOrUpdateGroups(groups);
+        try {
+            provider.createOrUpdateGroups(groups);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
+                            .entity(new PdpGroupDeployResponse()).build();
 
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                        .entity(pair.getRight()).build();
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn("create groups failed", e);
+            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
+            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                            requestId).entity(resp).build();
+        }
     }
 
     /**
@@ -124,9 +136,17 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policies; only the name is required",
                                     required = true) PdpDeployPolicies policies) {
 
-        Pair<Status, PdpGroupDeployResponse> pair = provider.deployPolicies(policies);
+        try {
+            provider.deployPolicies(policies);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
+                            .entity(new PdpGroupDeployResponse()).build();
 
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                        .entity(pair.getRight()).build();
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn("deploy policies failed", e);
+            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
+            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                            requestId).entity(resp).build();
+        }
     }
 }
