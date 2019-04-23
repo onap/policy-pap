@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -40,14 +41,14 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 /**
  * Data used during a single REST call when updating PDP policies.
  */
 public class SessionData {
     /**
-     * If a version string matches this, then it is just a prefix (i.e., major or major.minor).
+     * If a version string matches this, then it is just a prefix (i.e., major or
+     * major.minor).
      */
     private static final Pattern VERSION_PREFIX_PAT = Pattern.compile("[^.]+(?:[.][^.]*)?");
 
@@ -94,29 +95,24 @@ public class SessionData {
      *
      * @param desiredPolicy policy identifier
      * @return the specified policy
-     * @throws PolicyPapRuntimeException if an error occurs
+     * @throws PfModelException if an error occurred
      */
-    public ToscaPolicy getPolicy(ToscaPolicyIdentifierOptVersion desiredPolicy) {
+    public ToscaPolicy getPolicy(ToscaPolicyIdentifierOptVersion desiredPolicy) throws PfModelException {
 
-        ToscaPolicy policy = policyCache.computeIfAbsent(desiredPolicy, key -> {
+        ToscaPolicy policy = policyCache.get(desiredPolicy);
+        if (policy == null) {
+            ToscaPolicyFilterBuilder filterBuilder = ToscaPolicyFilter.builder().name(desiredPolicy.getName());
+            setPolicyFilterVersion(filterBuilder, desiredPolicy.getVersion());
 
-            try {
-                ToscaPolicyFilterBuilder filterBuilder = ToscaPolicyFilter.builder().name(desiredPolicy.getName());
-                setPolicyFilterVersion(filterBuilder, desiredPolicy.getVersion());
-
-                List<ToscaPolicy> lst = dao.getFilteredPolicyList(filterBuilder.build());
-                if (lst.isEmpty()) {
-                    throw new PolicyPapRuntimeException("cannot find policy: " + desiredPolicy.getName() + " "
-                                    + desiredPolicy.getVersion());
-                }
-
-                return lst.get(0);
-
-            } catch (PfModelException e) {
-                throw new PolicyPapRuntimeException(
-                                "cannot get policy: " + desiredPolicy.getName() + " " + desiredPolicy.getVersion(), e);
+            List<ToscaPolicy> lst = dao.getFilteredPolicyList(filterBuilder.build());
+            if (lst.isEmpty()) {
+                throw new PfModelException(Status.NOT_FOUND,
+                                "cannot find policy: " + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
             }
-        });
+
+            policy = lst.get(0);
+            policyCache.put(desiredPolicy, policy);
+        }
 
         // desired version may have only been a prefix - cache with full identifier, too
         policyCache.putIfAbsent(new ToscaPolicyIdentifierOptVersion(policy.getIdentifier()), policy);
@@ -172,8 +168,8 @@ public class SessionData {
     }
 
     /**
-     * Adds a state-change to the set of state-change requests, replacing any previous entry for the given
-     * PDP.
+     * Adds a state-change to the set of state-change requests, replacing any previous
+     * entry for the given PDP.
      *
      * @param change the state-change to be added
      */
@@ -243,27 +239,22 @@ public class SessionData {
      *
      * @param name name of the group to get
      * @return the group, or {@code null} if it does not exist
-     * @throws PolicyPapRuntimeException if an error occurs
+     * @throws PfModelException if an error occurred
      */
-    public PdpGroup getGroup(String name) {
+    public PdpGroup getGroup(String name) throws PfModelException {
 
-        GroupData data = groupCache.computeIfAbsent(name, key -> {
-
-            try {
-                List<PdpGroup> lst = dao.getPdpGroups(key);
-                if (lst.isEmpty()) {
-                    return null;
-                }
-
-                return new GroupData(lst.get(0));
-
-            } catch (PfModelException e) {
-                throw new PolicyPapRuntimeException("cannot get group: " + name, e);
+        GroupData data = groupCache.get(name);
+        if (data == null) {
+            List<PdpGroup> lst = dao.getPdpGroups(name);
+            if (lst.isEmpty()) {
+                return null;
             }
 
-        });
+            data = new GroupData(lst.get(0));
+            groupCache.put(name, data);
+        }
 
-        return (data == null ? null : data.getGroup());
+        return data.getGroup();
     }
 
     /**
@@ -271,7 +262,7 @@ public class SessionData {
      *
      * @param type desired policy type
      * @return the active groups supporting the given policy
-     * @throws PfModelException if an error occurs
+     * @throws PfModelException if an error occurred
      */
     public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaPolicyTypeIdentifier type) throws PfModelException {
         List<GroupData> data = type2groups.get(type);
@@ -311,7 +302,7 @@ public class SessionData {
     /**
      * Update the DB with the changes.
      *
-     * @throws PfModelException if an error occurs
+     * @throws PfModelException if an error occurred
      */
     public void updateDb() throws PfModelException {
         // create new groups
@@ -333,7 +324,7 @@ public class SessionData {
      * executed later).
      *
      * @param group the group to be deleted
-     * @throws PfModelException if an error occurs
+     * @throws PfModelException if an error occurred
      */
     public void deleteGroupFromDb(PdpGroup group) throws PfModelException {
         dao.deletePdpGroup(group.getName());

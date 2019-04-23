@@ -20,15 +20,14 @@
 
 package org.onap.policy.pap.main.rest.depundep;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.onap.policy.pap.main.rest.depundep.ProviderBase.DB_ERROR_MSG;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,14 +36,13 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
-import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -56,7 +54,6 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifi
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
-    private static final Object REQUEST_FAILED_MSG = "request failed";
 
     private static final String POLICY2_NAME = "policyB";
     private static final String POLICY1_VERSION = "1.2.3";
@@ -92,9 +89,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testCreateOrUpdateGroups() throws Exception {
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(loadPdpGroups("emptyGroups.json"));
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.createOrUpdateGroups(loadPdpGroups("emptyGroups.json"));
 
         // no groups, so no action should have been taken
         assertNoGroupAction();
@@ -102,9 +97,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testCreateOrUpdateGroups_InvalidRequest() throws Exception {
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(new PdpGroups());
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("is null"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(new PdpGroups())).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("is null");
 
         assertNoGroupAction();
     }
@@ -114,9 +108,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("pdpGroupState"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("pdpGroupState");
 
         assertNoGroupAction();
     }
@@ -127,7 +120,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup group = groups.getGroups().get(0);
         group.setPdpGroupState(PdpState.PASSIVE);
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         // should not have updated the state
         assertEquals(PdpState.PASSIVE, group.getPdpGroupState());
@@ -140,9 +133,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("pdpGroupState"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("pdpGroupState");
 
         assertNoGroupAction();
     }
@@ -154,32 +146,31 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // policy won't match supported type
         groups.getGroups().get(0).getPdpSubgroups().get(0).getSupportedPolicyTypes().get(0).setVersion("99.99.99");
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("supported policy"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("supported policy");
 
         assertNoGroupAction();
     }
 
     @Test
-    public void testValidateGroupOnly_NullState() {
+    public void testValidateGroupOnly_NullState() throws PfModelException {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(null);
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
     }
 
     @Test
-    public void testValidateGroupOnly_Active() {
+    public void testValidateGroupOnly_Active() throws PfModelException {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.ACTIVE);
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
     }
 
     @Test
-    public void testValidateGroupOnly_Passive() {
+    public void testValidateGroupOnly_Passive() throws PfModelException {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.PASSIVE);
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
     }
 
     @Test
@@ -187,9 +178,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("pdpGroupState"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("pdpGroupState");
     }
 
     @Test
@@ -200,7 +190,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup group = new PdpGroup(groups.getGroups().get(0));
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertNoGroupAction();
     }
@@ -214,9 +204,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("properties"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("properties");
 
         assertNoGroupAction();
     }
@@ -229,7 +218,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         group.setDescription("old description");
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertGroupUpdateOnly(group);
 
@@ -243,7 +232,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         PdpGroup newgrp = groups.getGroups().get(0);
         assertEquals(newgrp.toString(), group.toString());
@@ -260,7 +249,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // something different in this subgroup
         group.getPdpSubgroups().get(0).setDesiredInstanceCount(10);
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
@@ -281,7 +270,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
         Collections.sort(group.getPdpSubgroups().get(0).getPolicies());
@@ -299,7 +288,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup group = new PdpGroup(newgrp);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertNoGroupAction();
     }
@@ -313,7 +302,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         group.setDescription(null);
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
@@ -328,7 +317,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         newgrp.setDescription(null);
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
@@ -343,7 +332,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         newgrp.setDescription(group.getDescription() + "-changed");
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
@@ -355,7 +344,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         PdpGroup newgrp = groups.getGroups().get(0);
 
@@ -368,6 +357,30 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
+    public void testAddSubGroup_ValidationPolicyNotFound() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        PfModelException exc = new PfModelException(Status.NOT_FOUND, EXPECTED_EXCEPTION);
+        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).hasMessageContaining("unknown policy");
+    }
+
+    @Test
+    public void testAddSubGroup_ValidationPolicyDaoEx() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
+        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isSameAs(exc);
+    }
+
+    @Test
     public void testUpdateSubGroup_Invalid() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
@@ -377,9 +390,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // change properties
         newgrp.getPdpSubgroups().get(0).setProperties(new TreeMap<>());
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("properties"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("properties");
 
         assertNoGroupAction();
     }
@@ -393,7 +405,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX", "9.8.7"));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
@@ -408,7 +420,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         newgrp.getPdpSubgroups().get(0).setDesiredInstanceCount(20);
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
@@ -427,7 +439,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
-        assertEquals(Status.OK, prov.createOrUpdateGroups(groups).getLeft());
+        prov.createOrUpdateGroups(groups);
 
         Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
         Collections.sort(group.getPdpSubgroups().get(0).getPolicies());
@@ -447,52 +459,52 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         newgrp.setProperties(new TreeMap<>());
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.createOrUpdateGroups(groups);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertTrue(pair.getRight().getErrorDetails().contains("properties"));
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("properties");
 
         assertNoGroupAction();
     }
 
     @Test
-    public void testDeployPolicies() {
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadEmptyRequest());
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+    public void testDeployPolicies() throws PfModelException {
+        prov.deployPolicies(loadEmptyRequest());
     }
 
     @Test
     public void testDeploySimplePolicies() throws Exception {
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.deployPolicies(loadEmptyRequest());
     }
 
     @Test
     public void testDeploySimplePolicies_DaoEx() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenThrow(new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION));
+        PfModelException exc = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        when(dao.getFilteredPdpGroups(any())).thenThrow(exc);
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals(DB_ERROR_MSG, pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isSameAs(exc);
+    }
+
+    @Test
+    public void testDeploySimplePolicies_DaoPfRtEx() throws Exception {
+        PfModelRuntimeException exc = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        when(dao.getFilteredPdpGroups(any())).thenThrow(exc);
+
+        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isSameAs(exc);
     }
 
     @Test
     public void testDeploySimplePolicies_RuntimeEx() throws Exception {
-        when(dao.getFilteredPolicyList(any())).thenThrow(new RuntimeException(EXPECTED_EXCEPTION));
+        RuntimeException exc = new RuntimeException(EXPECTED_EXCEPTION);
+        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals(REQUEST_FAILED_MSG, pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelException.class).hasCause(exc);
     }
 
     @Test
     public void testDeploySimplePolicies_NoGroups() throws Exception {
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("emptyGroups.json"));
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("policy not supported by any PDP group: policyA 1.2.3", pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelException.class)
+                        .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
     }
 
     @Test
@@ -511,9 +523,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao.json"));
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.deployPolicies(loadRequest());
 
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
@@ -528,10 +538,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // subgroup has no PDPs
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroup_NoPdpsDao.json"));
 
-        Pair<Status, PdpGroupDeployResponse> pair = prov.deployPolicies(loadRequest());
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals("group " + GROUP1_NAME + " subgroup " + PDP1_TYPE + " has no active PDPs",
-                        pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelRuntimeException.class)
+                        .hasMessage("group " + GROUP1_NAME + " subgroup " + PDP1_TYPE + " has no active PDPs");
 
         verify(dao, never()).createPdpGroups(any());
         verify(dao, never()).updatePdpGroups(any());

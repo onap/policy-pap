@@ -22,14 +22,12 @@ package org.onap.policy.pap.main.rest.depundep;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.onap.policy.pap.main.rest.depundep.ProviderBase.DB_ERROR_MSG;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,25 +36,22 @@ import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
-import org.onap.policy.models.pap.concepts.SimpleResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.powermock.reflect.Whitebox;
 
 public class TestProviderBase extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
-    private static final Object REQUEST_FAILED_MSG = "request failed";
 
     private static final String POLICY1_NAME = "policyA";
     private static final String POLICY1_VERSION = "1.2.3";
@@ -103,9 +98,7 @@ public class TestProviderBase extends ProviderSuper {
 
     @Test
     public void testProcess() throws Exception {
-        Pair<Status, MyResponse> pair = prov.process(loadRequest(), this::handle);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.process(loadRequest(), this::handle);
 
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
@@ -114,29 +107,27 @@ public class TestProviderBase extends ProviderSuper {
 
     @Test
     public void testProcess_CreateEx() throws Exception {
-        when(daofact.create()).thenThrow(new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION));
+        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        when(daofact.create()).thenThrow(ex);
 
-        Pair<Status, MyResponse> pair = prov.process(loadEmptyRequest(), this::handle);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals(DB_ERROR_MSG, pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.process(loadEmptyRequest(), this::handle)).isSameAs(ex);
     }
 
     @Test
-    public void testProcess_PapEx() throws Exception {
-        when(daofact.create()).thenThrow(new PolicyPapRuntimeException(EXPECTED_EXCEPTION));
+    public void testProcess_PfRtEx() throws Exception {
+        PfModelRuntimeException ex = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        when(daofact.create()).thenThrow(ex);
 
-        Pair<Status, MyResponse> pair = prov.process(loadEmptyRequest(), this::handle);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals(EXPECTED_EXCEPTION, pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.process(loadEmptyRequest(), this::handle)).isSameAs(ex);
     }
 
     @Test
     public void testProcess_RuntimeEx() throws Exception {
-        when(daofact.create()).thenThrow(new RuntimeException(EXPECTED_EXCEPTION));
+        RuntimeException ex = new RuntimeException(EXPECTED_EXCEPTION);
+        when(daofact.create()).thenThrow(ex);
 
-        Pair<Status, MyResponse> pair = prov.process(loadEmptyRequest(), this::handle);
-        assertEquals(Status.INTERNAL_SERVER_ERROR, pair.getLeft());
-        assertEquals(REQUEST_FAILED_MSG, pair.getRight().getErrorDetails());
+        assertThatThrownBy(() -> prov.process(loadEmptyRequest(), this::handle)).isInstanceOf(PfModelException.class)
+                        .hasMessage("request failed").hasCause(ex);
     }
 
     @Test
@@ -145,18 +136,18 @@ public class TestProviderBase extends ProviderSuper {
 
         SessionData session = new SessionData(dao);
         ToscaPolicyIdentifierOptVersion ident = new ToscaPolicyIdentifierOptVersion(POLICY1_NAME, POLICY1_VERSION);
-        assertThatThrownBy(() -> prov.processPolicy(session, ident)).isInstanceOf(PolicyPapRuntimeException.class)
+        assertThatThrownBy(() -> prov.processPolicy(session, ident)).isInstanceOf(PfModelException.class)
                         .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
 
     }
 
     @Test
     public void testGetPolicy() throws Exception {
-        Pair<Status, MyResponse> pair = prov.process(loadRequest(), this::handle);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
+        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
 
-        verify(dao).getFilteredPolicyList(any());
+        assertThatThrownBy(() -> prov.process(loadRequest(), this::handle)).isInstanceOf(PfModelRuntimeException.class)
+                        .hasCause(exc);
     }
 
     @Test
@@ -164,9 +155,7 @@ public class TestProviderBase extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("getGroupDao.json"))
                         .thenReturn(loadGroups("groups.json"));
 
-        Pair<Status, MyResponse> pair = prov.process(loadRequest(), this::handle);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.process(loadRequest(), this::handle);
 
         assertGroup(getGroupUpdates(), GROUP1_NAME);
     }
@@ -190,9 +179,7 @@ public class TestProviderBase extends ProviderSuper {
         prov.clear();
         prov.add(false, true, false, true);
 
-        Pair<Status, MyResponse> pair = prov.process(loadRequest(), this::handle);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.process(loadRequest(), this::handle);
 
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
@@ -242,14 +229,11 @@ public class TestProviderBase extends ProviderSuper {
         // multiple policies in the request
         PdpDeployPolicies request = loadFile("updateGroupReqMultiple.json", PdpDeployPolicies.class);
 
-        Pair<Status, MyResponse> pair = prov.process(request, (data, deploy) -> {
+        prov.process(request, (data, deploy) -> {
             for (ToscaPolicyIdentifierOptVersion policy : deploy.getPolicies()) {
                 handle(data, policy);
             }
         });
-
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
 
         // verify updates
         List<PdpGroup> changes = getGroupUpdates();
@@ -267,9 +251,7 @@ public class TestProviderBase extends ProviderSuper {
         prov.clear();
         prov.add(false);
 
-        Pair<Status, MyResponse> pair = prov.process(loadRequest(), this::handle);
-        assertEquals(Status.OK, pair.getLeft());
-        assertNull(pair.getRight().getErrorDetails());
+        prov.process(loadRequest(), this::handle);
 
         verify(dao, never()).createPdpGroups(any());
         verify(dao, never()).updatePdpGroups(any());
@@ -320,18 +302,14 @@ public class TestProviderBase extends ProviderSuper {
      *
      * @param data session data
      * @param request request to be handled
+     * @throws PfModelException if an error occurred
      */
-    private void handle(SessionData data, ToscaPolicyIdentifierOptVersion request) {
-        try {
-            prov.processPolicy(data, request);
-
-        } catch (PfModelException e) {
-            throw new PolicyPapRuntimeException(e);
-        }
+    private void handle(SessionData data, ToscaPolicyIdentifierOptVersion request) throws PfModelException {
+        prov.processPolicy(data, request);
     }
 
 
-    private static class MyProvider extends ProviderBase<MyResponse> {
+    private static class MyProvider extends ProviderBase {
         /**
          * Used to determine whether or not to make an update when
          * {@link #makeUpdater(ToscaPolicy)} is called. The updater function removes an
@@ -357,11 +335,6 @@ public class TestProviderBase extends ProviderSuper {
         }
 
         @Override
-        public MyResponse makeResponse(String errorMsg) {
-            return new MyResponse(errorMsg);
-        }
-
-        @Override
         protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
             return (group, subgroup) -> {
                 if (shouldUpdate.remove()) {
@@ -374,12 +347,6 @@ public class TestProviderBase extends ProviderSuper {
                     return false;
                 }
             };
-        }
-    }
-
-    private static class MyResponse extends SimpleResponse {
-        public MyResponse(String errorMsg) {
-            setErrorDetails(errorMsg);
         }
     }
 }

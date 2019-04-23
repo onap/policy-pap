@@ -52,7 +52,6 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 
 public class TestSessionData extends ProviderSuper {
     private static final String GROUP_NAME = "groupA";
@@ -157,7 +156,7 @@ public class TestSessionData extends ProviderSuper {
         PfModelException ex = new PfModelException(Status.INTERNAL_SERVER_ERROR, "expected exception");
         when(dao.getFilteredPolicyList(any())).thenThrow(ex);
 
-        assertThatThrownBy(() -> session.getPolicy(ident)).hasMessage("cannot get policy: myPolicy 1.2.3").hasCause(ex);
+        assertThatThrownBy(() -> session.getPolicy(ident)).isSameAs(ex);
     }
 
     @Test
@@ -370,8 +369,7 @@ public class TestSessionData extends ProviderSuper {
         PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
         when(dao.getPdpGroups(GROUP_NAME)).thenThrow(ex);
 
-        assertThatThrownBy(() -> session.getGroup(GROUP_NAME)).isInstanceOf(PolicyPapRuntimeException.class)
-                        .hasCause(ex);
+        assertThatThrownBy(() -> session.getGroup(GROUP_NAME)).isSameAs(ex);
     }
 
     @Test

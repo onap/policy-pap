@@ -22,14 +22,13 @@ package org.onap.policy.pap.main.rest.depundep;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.pap.concepts.SimpleResponse;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
@@ -41,7 +40,6 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOp
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +52,8 @@ import org.slf4j.LoggerFactory;
  * <li>PDP Modify Request Map</li>
  * <li>PAP DAO Factory</li>
  * </ul>
- *
- * @param <R> the response type
  */
-public abstract class ProviderBase<R extends SimpleResponse> {
+public abstract class ProviderBase {
     private static final String DEPLOY_FAILED = "failed to deploy/undeploy policies";
     public static final String DB_ERROR_MSG = "DB error";
 
@@ -93,9 +89,9 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      *
      * @param request PDP policy request
      * @param processor function that processes the request
-     * @return a pair containing the status and the response
+     * @throws PfModelException if an error occurred
      */
-    protected <T> Pair<Response.Status, R> process(T request, BiConsumer<SessionData, T> processor) {
+    protected <T> void process(T request, BiConsumerWithEx<SessionData, T> processor) throws PfModelException {
 
         synchronized (updateLock) {
             // list of requests to be published to the PDPs
@@ -111,49 +107,19 @@ public abstract class ProviderBase<R extends SimpleResponse> {
 
                 requests = data.getPdpRequests();
 
-            } catch (PfModelException e) {
+            } catch (PfModelException | PfModelRuntimeException e) {
                 logger.warn(DEPLOY_FAILED, e);
-                return Pair.of(Response.Status.INTERNAL_SERVER_ERROR, makeResponse(DB_ERROR_MSG));
-
-            } catch (PolicyPapRuntimeException e) {
-                logger.warn(DEPLOY_FAILED, e);
-                return Pair.of(Response.Status.INTERNAL_SERVER_ERROR, makeResponse(e.getMessage()));
+                throw e;
 
             } catch (RuntimeException e) {
                 logger.warn(DEPLOY_FAILED, e);
-                return Pair.of(Response.Status.INTERNAL_SERVER_ERROR, makeResponse("request failed"));
+                throw new PfModelException(Status.INTERNAL_SERVER_ERROR, "request failed", e);
             }
 
 
             // publish the requests
             requests.forEach(pair -> requestMap.addRequest(pair.getLeft(), pair.getRight()));
         }
-
-        return Pair.of(Response.Status.OK, makeResponse(null));
-    }
-
-    /**
-     * Makes a response.
-     *
-     * @param errorMsg error message, or {@code null} if there was no error
-     * @return a new response
-     */
-    public abstract R makeResponse(String errorMsg);
-
-    /**
-     * Finds a Policy having the given name and version. If the specified version is
-     * {@code null}, then it finds the matching Policy with the latest version.
-     *
-     * @param data session data
-     * @param desiredPolicy the policy desired, with the "name" and optional
-     *        "policyVersion" populated
-     * @return the matching Policy type
-     * @throws PolicyPapRuntimeException if there is no matching policy type or a DAO
-     *         error occurs
-     */
-    private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy) {
-
-        return data.getPolicy(desiredPolicy);
     }
 
     /**
@@ -161,8 +127,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      *
      * @param data session data
      * @param desiredPolicy request policy
-     * @throws PolicyPapRuntimeException if an error occurs
-     * @throws PfModelException if a DAO error occurred
+     * @throws PfModelException if an error occurred
      */
     protected void processPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy)
                     throws PfModelException {
@@ -171,8 +136,8 @@ public abstract class ProviderBase<R extends SimpleResponse> {
 
         Collection<PdpGroup> groups = getGroups(data, policy.getTypeIdentifier());
         if (groups.isEmpty()) {
-            throw new PolicyPapRuntimeException("policy not supported by any PDP group: " + desiredPolicy.getName()
-                            + " " + desiredPolicy.getVersion());
+            throw new PfModelException(Status.BAD_REQUEST, "policy not supported by any PDP group: "
+                            + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 
         BiFunction<PdpGroup, PdpSubGroup, Boolean> updater = makeUpdater(policy);
@@ -199,7 +164,7 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      * @param policyType the policy type of interest
      * @return the matching PDP group, or {@code null} if no active group supports the
      *         given PDP types
-     * @throws PfModelException if an error occurs
+     * @throws PfModelException if an error occurred
      */
     private Collection<PdpGroup> getGroups(SessionData data, ToscaPolicyTypeIdentifier policyType)
                     throws PfModelException {
@@ -213,9 +178,9 @@ public abstract class ProviderBase<R extends SimpleResponse> {
      * @param data session data
      * @param group the original group, to be updated
      * @param updater function to update a group
+     * @throws PfModelRuntimeException if an error occurred
      */
-    private void upgradeGroup(SessionData data, PdpGroup group,
-                    BiFunction<PdpGroup, PdpSubGroup, Boolean> updater) {
+    private void upgradeGroup(SessionData data, PdpGroup group, BiFunction<PdpGroup, PdpSubGroup, Boolean> updater) {
 
         boolean updated = false;
 
@@ -268,8 +233,38 @@ public abstract class ProviderBase<R extends SimpleResponse> {
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
         update.setPolicies(subgroup.getPolicies().stream().map(ToscaPolicyIdentifierOptVersion::new)
-                        .map(data::getPolicy).collect(Collectors.toList()));
+                        .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
 
         return update;
+    }
+
+    /**
+     * Gets the specified policy.
+     *
+     * @param data session data
+     * @param ident policy identifier, with an optional version
+     * @return the policy of interest
+     * @throws PfModelRuntimeException if an error occurred or the policy was not found
+     */
+    private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) {
+        try {
+            return data.getPolicy(ident);
+
+        } catch (PfModelException e) {
+            throw new PfModelRuntimeException(e.getErrorResponse().getResponseCode(),
+                            e.getErrorResponse().getErrorMessage(), e);
+        }
+    }
+
+    @FunctionalInterface
+    public static interface BiConsumerWithEx<F, S> {
+        /**
+         * Performs this operation on the given arguments.
+         *
+         * @param firstArg the first input argument
+         * @param secondArg the second input argument
+         * @throws PfModelException if an error occurred
+         */
+        void accept(F firstArg, S secondArg) throws PfModelException;
     }
 }
