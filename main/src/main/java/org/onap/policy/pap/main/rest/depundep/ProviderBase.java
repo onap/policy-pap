@@ -248,7 +248,13 @@ public abstract class ProviderBase {
      */
     private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) {
         try {
-            return data.getPolicy(ident);
+            ToscaPolicy policy = data.getPolicy(ident);
+            if (policy == null) {
+                throw new PfModelRuntimeException(Status.NOT_FOUND,
+                                "cannot find policy: " + ident.getName() + " " + ident.getVersion());
+            }
+
+            return policy;
 
         } catch (PfModelException e) {
             throw new PfModelRuntimeException(e.getErrorResponse().getResponseCode(),

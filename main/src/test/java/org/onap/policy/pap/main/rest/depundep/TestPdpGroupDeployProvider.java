@@ -83,6 +83,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         super.setUp();
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
+        when(dao.getPolicyTypeList("typeA", "100.2.3")).thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
 
         prov = new PdpGroupDeployProvider();
     }
@@ -357,13 +358,36 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddSubGroup_ValidationPolicyNotFound() throws Exception {
+    public void testAddSubGroup_ValidationPolicyTypeNotFound() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         PfModelException exc = new PfModelException(Status.NOT_FOUND, EXPECTED_EXCEPTION);
-        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
+        when(dao.getPolicyTypeList(any(), any())).thenThrow(exc);
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).hasMessageContaining("unknown policy type");
+    }
+
+    @Test
+    public void testAddSubGroup_ValidationPolicyTypeDaoEx() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
+        when(dao.getPolicyTypeList(any(), any())).thenThrow(exc);
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isSameAs(exc);
+    }
+
+    @Test
+    public void testAddSubGroup_ValidationPolicyNotFound() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).hasMessageContaining("unknown policy");
     }

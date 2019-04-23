@@ -251,6 +251,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
+        result.addResult(validateSupportedTypes(data, subgrp));
         result.addResult(validatePolicies(data, subgrp));
 
         return result;
@@ -345,6 +346,34 @@ public class PdpGroupDeployProvider extends ProviderBase {
     }
 
     /**
+     * Performs additional validations of the supported policy types within a subgroup.
+     *
+     * @param data session data
+     * @param subgrp the subgroup to be validated
+     * @param result the validation result
+     * @throws PfModelException if an error occurred
+     */
+    private ValidationResult validateSupportedTypes(SessionData data, PdpSubGroup subgrp) throws PfModelException {
+        BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+
+        for (ToscaPolicyTypeIdentifier type : subgrp.getSupportedPolicyTypes()) {
+            try {
+                data.getPolicyType(type);
+
+            } catch (PfModelException e) {
+                if (e.getErrorResponse().getResponseCode() != Status.NOT_FOUND) {
+                    throw e;
+                }
+
+                result.addResult(new ObjectValidationResult("policy type", type, ValidationStatus.INVALID,
+                                "unknown policy type"));
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Performs additional validations of the policies within a subgroup.
      *
      * @param data session data
@@ -356,21 +385,14 @@ public class PdpGroupDeployProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaPolicyIdentifier ident : subgrp.getPolicies()) {
-            try {
-                ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
-
-                if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
-                    result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
-                                    "not a supported policy for the subgroup"));
-                }
-
-            } catch (PfModelException e) {
-                if (e.getErrorResponse().getResponseCode() != Status.NOT_FOUND) {
-                    throw e;
-                }
-
+            ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
+            if (policy == null) {
                 result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
                                 "unknown policy"));
+
+            } else if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
+                result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
+                                "not a supported policy for the subgroup"));
             }
         }
 

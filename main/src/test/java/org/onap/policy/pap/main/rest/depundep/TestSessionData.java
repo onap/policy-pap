@@ -51,6 +51,7 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 
 public class TestSessionData extends ProviderSuper {
@@ -88,6 +89,36 @@ public class TestSessionData extends ProviderSuper {
         group2 = loadGroup("group2.json");
 
         session = new SessionData(dao);
+    }
+
+    @Test
+    public void testGetPolicyType() throws Exception {
+        ToscaPolicyType policy1 = makePolicyType(POLICY_TYPE, POLICY_TYPE_VERSION);
+        when(dao.getPolicyTypeList(POLICY_TYPE, POLICY_TYPE_VERSION)).thenReturn(Arrays.asList(policy1));
+
+        assertSame(policy1, session.getPolicyType(type));
+
+        // retrieve a second time - should use cache
+        assertSame(policy1, session.getPolicyType(type));
+    }
+
+    @Test
+    public void testGetPolicyType_NotFound() throws Exception {
+        when(dao.getPolicyTypeList(any(), any())).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(() -> session.getPolicyType(type)).isInstanceOf(PfModelException.class)
+                        .hasMessage("cannot find policy type: myType 10.20.30").matches(thr -> {
+                            PfModelException ex2 = (PfModelException) thr;
+                            return (ex2.getErrorResponse().getResponseCode() == Status.NOT_FOUND);
+                        });
+    }
+
+    @Test
+    public void testGetPolicyType_DaoEx() throws Exception {
+        PfModelException ex = new PfModelException(Status.INTERNAL_SERVER_ERROR, EXPECTED_EXCEPTION);
+        when(dao.getPolicyTypeList(POLICY_TYPE, POLICY_TYPE_VERSION)).thenThrow(ex);
+
+        assertThatThrownBy(() -> session.getPolicyType(type)).isSameAs(ex);
     }
 
     @Test
@@ -148,12 +179,12 @@ public class TestSessionData extends ProviderSuper {
     public void testGetPolicy_NotFound() throws Exception {
         when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
 
-        assertThatThrownBy(() -> session.getPolicy(ident)).hasMessage("cannot find policy: myPolicy 1.2.3");
+        assertNull(session.getPolicy(ident));
     }
 
     @Test
     public void testGetPolicy_DaoEx() throws Exception {
-        PfModelException ex = new PfModelException(Status.INTERNAL_SERVER_ERROR, "expected exception");
+        PfModelException ex = new PfModelException(Status.INTERNAL_SERVER_ERROR, EXPECTED_EXCEPTION);
         when(dao.getFilteredPolicyList(any())).thenThrow(ex);
 
         assertThatThrownBy(() -> session.getPolicy(ident)).isSameAs(ex);
@@ -268,6 +299,15 @@ public class TestSessionData extends ProviderSuper {
 
         lst = sort(getStateChangeRequests(), this::compare);
         assertEquals(Arrays.asList(change1, change2, change3).toString(), lst.toString());
+    }
+
+    private ToscaPolicyType makePolicyType(String name, String version) {
+        ToscaPolicyType type = new ToscaPolicyType();
+
+        type.setName(name);
+        type.setVersion(version);
+
+        return type;
     }
 
     private ToscaPolicy makePolicy(String name, String version) {
