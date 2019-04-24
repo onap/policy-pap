@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2bbbc9eb_3819b401",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/depundep/PdpGroupDeployProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-04-24T16:22:25Z",
+      "side": 1,
+      "message": "sonar will probably recommend a log statement here",
+      "range": {
+        "startLine": 367,
+        "startChar": 0,
+        "endLine": 370,
+        "endChar": 13
+      },
+      "revId": "043ae89fedcf8b4b66713bafe3ce8f3ec12d5452",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
