@@ -34,7 +34,7 @@
           "pdpType": "apex",
           "supportedPolicyTypes": [
             {
-              "name": "onap.policies.controlloop.Operational",
+              "name": "onap.policies.controlloop.operational.Apex",
               "version": "1.0.0"
             }
           ],
