@@ -33,6 +33,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import org.onap.policy.models.base.PfModelException;
 
 /**
  * Version v1 common superclass to provide REST endpoints for PAP component.
@@ -116,5 +117,13 @@ public class PapRestControllerV1 {
         }
 
         return respBuilder.header(REQUEST_ID_NAME, requestId);
+    }
+
+    /**
+     * Functions that throw {@link PfModelException}.
+     */
+    @FunctionalInterface
+    public static interface RunnableWithPfEx {
+        public void run() throws PfModelException;
     }
 }

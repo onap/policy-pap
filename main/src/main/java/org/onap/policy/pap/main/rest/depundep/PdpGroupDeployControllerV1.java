@@ -86,18 +86,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
-        try {
-            provider.createOrUpdateGroups(groups);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
-                            .entity(new PdpGroupDeployResponse()).build();
-
-        } catch (PfModelException | PfModelRuntimeException e) {
-            logger.warn("create groups failed", e);
-            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
-            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                            requestId).entity(resp).build();
-        }
+        return doOperation(requestId, "create groups failed", () -> provider.createOrUpdateGroups(groups));
     }
 
     /**
@@ -136,13 +125,25 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policies; only the name is required",
                                     required = true) PdpDeployPolicies policies) {
 
+        return doOperation(requestId, "deploy policies failed", () -> provider.deployPolicies(policies));
+    }
+
+    /**
+     * Invokes an operation.
+     *
+     * @param requestId request ID
+     * @param errmsg error message to log if the operation throws an exception
+     * @param runnable operation to invoke
+     * @return a {@link PdpGroupDeployResponse} response entity
+     */
+    private Response doOperation(UUID requestId, String errmsg, RunnableWithPfEx runnable) {
         try {
-            provider.deployPolicies(policies);
+            runnable.run();
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
                             .entity(new PdpGroupDeployResponse()).build();
 
         } catch (PfModelException | PfModelRuntimeException e) {
-            logger.warn("deploy policies failed", e);
+            logger.warn(errmsg, e);
             PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
