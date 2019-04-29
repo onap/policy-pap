@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7717f91d_3c9f96cb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-29T19:00:56Z",
+      "side": 1,
+      "message": "I think sonar prefers the use of isEmpty()",
+      "revId": "bf9ee3db56605fcd982eea61824fcd153156dd0d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9723b61c_a5b990fa",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-29T19:00:56Z",
+      "side": 1,
+      "message": "change type of selectedPdpGroups to TreeMap and can then change this line to:\n\n  xxx \u003d selectedPdpGroups.lastEntry().getValue()",
+      "revId": "bf9ee3db56605fcd982eea61824fcd153156dd0d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ec52c07c_a63e9acb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-29T19:00:56Z",
+      "side": 1,
+      "message": "doesn\u0027t look like emptyPdpGroup parameter is needed",
+      "revId": "bf9ee3db56605fcd982eea61824fcd153156dd0d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "437288f5_08ba99e4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-04-29T19:00:56Z",
+      "side": 1,
+      "message": "doesn\u0027t look like pdpGroupFound parameter is needed",
+      "revId": "bf9ee3db56605fcd982eea61824fcd153156dd0d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
