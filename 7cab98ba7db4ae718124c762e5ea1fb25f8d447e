@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dce753c0_b6175843",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-04-30T11:55:14Z",
+      "side": 1,
+      "message": "Question: Do any sections need synchronization? in theory there could me multiple parallel activities: rest api group/subgroup administration, and multiple pdps perhaps in the same group/subgroup registering.",
+      "revId": "7cab98ba7db4ae718124c762e5ea1fb25f8d447e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
