@@ -16,6 +16,24 @@
       "revId": "7cab98ba7db4ae718124c762e5ea1fb25f8d447e",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3e0588e7_dd590cfe",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-04-30T12:47:54Z",
+      "side": 1,
+      "message": "We are already taking locks at Line 90.\nsynchronized (updateLock) {",
+      "parentUuid": "dce753c0_b6175843",
+      "revId": "7cab98ba7db4ae718124c762e5ea1fb25f8d447e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
