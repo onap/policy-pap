@@ -23,7 +23,10 @@ package org.onap.policy.pap.main.comm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -111,22 +114,53 @@ public class PdpStatusMessageHandler {
     private boolean findAndUpdatePdpGroup(final PdpStatus message, final PolicyModelsProvider databaseProvider)
             throws PfModelException {
         boolean pdpGroupFound = false;
-        Optional<PdpSubGroup> subGroup = null;
-        final PdpGroupFilter filter = PdpGroupFilter.builder().pdpType(message.getPdpType())
-                .policyTypeList(message.getSupportedPolicyTypes()).matchPolicyTypesExactly(true)
-                .groupState(PdpState.ACTIVE).build();
+        PdpGroup emptyPdpGroup = null;
+        final PdpGroupFilter filter =
+                PdpGroupFilter.builder().pdpType(message.getPdpType()).groupState(PdpState.ACTIVE).build();
+
+        final TreeMap<Integer, PdpGroup> selectedPdpGroups = new TreeMap<>();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
+        emptyPdpGroup = selectPdpGroupsForRegistration(message, selectedPdpGroups, pdpGroups);
+        if (emptyPdpGroup != null) {
+            pdpGroupFound = registerPdp(message, databaseProvider, emptyPdpGroup);
+        } else if (selectedPdpGroups.isEmpty()) {
+            final PdpGroup finalizedPdpGroup = selectedPdpGroups.lastEntry().getValue();
+            pdpGroupFound = registerPdp(message, databaseProvider, finalizedPdpGroup);
+        }
+        return pdpGroupFound;
+    }
+
+    private PdpGroup selectPdpGroupsForRegistration(final PdpStatus message,
+            final Map<Integer, PdpGroup> selectedPdpGroups, final List<PdpGroup> pdpGroups) {
+        PdpGroup emptyPdpGroup = null;
         for (final PdpGroup pdpGroup : pdpGroups) {
-            subGroup = findPdpSubGroup(message, pdpGroup);
-            if (subGroup.isPresent()) {
-                LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", pdpGroup, message);
-                if (!findPdpInstance(message, subGroup.get()).isPresent()) {
-                    updatePdpSubGroup(pdpGroup, subGroup.get(), message, databaseProvider);
+            for (final PdpSubGroup pdpSubGroup : pdpGroup.getPdpSubgroups()) {
+                if (message.getSupportedPolicyTypes().containsAll(pdpSubGroup.getSupportedPolicyTypes())) {
+                    if (pdpSubGroup.getCurrentInstanceCount() == 0) {
+                        emptyPdpGroup = pdpGroup;
+                    } else {
+                        selectedPdpGroups.put(
+                                pdpSubGroup.getDesiredInstanceCount() - pdpSubGroup.getCurrentInstanceCount(),
+                                pdpGroup);
+                    }
                 }
-                sendPdpMessage(pdpGroup.getName(), subGroup.get(), message.getName(), null, databaseProvider);
-                pdpGroupFound = true;
-                break;
             }
+        }
+        return emptyPdpGroup;
+    }
+
+    private boolean registerPdp(final PdpStatus message, final PolicyModelsProvider databaseProvider,
+            final PdpGroup finalizedPdpGroup) throws PfModelException {
+        Optional<PdpSubGroup> subGroup;
+        boolean pdpGroupFound = false;
+        subGroup = findPdpSubGroup(message, finalizedPdpGroup);
+        if (subGroup.isPresent()) {
+            LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", finalizedPdpGroup, message);
+            if (!findPdpInstance(message, subGroup.get()).isPresent()) {
+                updatePdpSubGroup(finalizedPdpGroup, subGroup.get(), message, databaseProvider);
+            }
+            sendPdpMessage(finalizedPdpGroup.getName(), subGroup.get(), message.getName(), null, databaseProvider);
+            pdpGroupFound = true;
         }
         return pdpGroupFound;
     }
@@ -222,19 +256,18 @@ public class PdpStatusMessageHandler {
     }
 
     private boolean validatePdpDetails(final PdpStatus message, final PdpGroup pdpGroup, final PdpSubGroup subGroup,
-                    final Pdp pdpInstanceDetails) {
+            final Pdp pdpInstanceDetails) {
 
         /*
-         * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check
-         * supported policy types. Nevertheless, it does the job and provides a convenient
-         * way to build a bunch of comparisons.
+         * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check supported policy types.
+         * Nevertheless, it does the job and provides a convenient way to build a bunch of comparisons.
          */
         return new EqualsBuilder().append(message.getPdpGroup(), pdpGroup.getName())
-                        .append(message.getPdpSubgroup(), subGroup.getPdpType())
-                        .append(message.getPdpType(), subGroup.getPdpType())
-                        .append(message.getState(), pdpInstanceDetails.getPdpState())
-                        .append(message.getSupportedPolicyTypes().containsAll(subGroup.getSupportedPolicyTypes()), true)
-                        .build();
+                .append(message.getPdpSubgroup(), subGroup.getPdpType())
+                .append(message.getPdpType(), subGroup.getPdpType())
+                .append(message.getState(), pdpInstanceDetails.getPdpState())
+                .append(message.getSupportedPolicyTypes().containsAll(subGroup.getSupportedPolicyTypes()), true)
+                .build();
     }
 
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
