@@ -258,6 +258,8 @@ public abstract class RequestImpl implements Request {
                 return;
             }
 
+            svcmgr.stop();
+
             String reason = checkResponse(response);
             if (reason != null) {
                 logger.info("{} PDP data mismatch via {} {}: {}", getName(), infra, topic, reason);

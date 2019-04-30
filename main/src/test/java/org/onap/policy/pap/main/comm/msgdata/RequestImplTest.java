@@ -109,6 +109,9 @@ public class RequestImplTest extends CommonRequestBase {
         PdpStateChange msg2 = new PdpStateChange();
         req.reconfigure(msg2, null);
 
+        // should have cancelled the first timer
+        verify(timer).cancel();
+
         // should only be one token in the queue
         QueueToken<PdpMessage> token = queue.poll();
         assertNotNull(token);
@@ -132,6 +135,9 @@ public class RequestImplTest extends CommonRequestBase {
         // replace the message with a new message
         PdpStateChange msg2 = new PdpStateChange();
         req.reconfigure(msg2, null);
+
+        // should have cancelled the first timer
+        verify(timer).cancel();
 
         // should only be one token in the queue
         QueueToken<PdpMessage> token = queue.poll();
@@ -193,6 +199,9 @@ public class RequestImplTest extends CommonRequestBase {
         verify(timers, times(1)).register(any(), any());
         verify(publisher, times(1)).enqueue(any());
         assertNull(queue.poll());
+
+        // should NOT have cancelled the timer
+        verify(timer, never()).cancel();
     }
 
     @Test
@@ -400,6 +409,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         verify(listener).success(PDP1);
         verify(listener, never()).failure(any(), any());
+        verify(timer).cancel();
     }
 
     @Test
@@ -424,6 +434,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         verify(listener, never()).success(any());
         verify(listener).failure(DIFFERENT, "PDP name does not match");
+        verify(timer).cancel();
     }
 
     @Test
