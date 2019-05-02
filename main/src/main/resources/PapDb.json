@@ -1,9 +1,9 @@
 {
   "groups": [
     {
-      "name": "controlloop",
+      "name": "defaultGroup",
       "version": "1.0.0",
-      "description": "This group should be used for managing all control loop related policies and pdps",
+      "description": "The default group that registers all supported policy types and pdps.",
       "pdpGroupState": "ACTIVE",
       "pdpSubgroups": [
         {
@@ -24,47 +24,7 @@
             {
               "name": "onap.policies.controlloop.guard.coordination.FirstBlocksSecond",
               "version": "1.0.0"
-            }
-          ],
-          "currentInstanceCount": 0,
-          "desiredInstanceCount": 1,
-          "policies": []
-        },
-        {
-          "pdpType": "drools",
-          "supportedPolicyTypes": [
-            {
-              "name": "onap.policies.controlloop.Operational",
-              "version": "1.0.0"
-            }
-          ],
-          "currentInstanceCount": 0,
-          "desiredInstanceCount": 1,
-          "policies": []
-        },
-        {
-          "pdpType": "apex",
-          "supportedPolicyTypes": [
-            {
-              "name": "onap.policies.controlloop.operational.Apex",
-              "version": "1.0.0"
-            }
-          ],
-          "currentInstanceCount": 0,
-          "desiredInstanceCount": 1,
-          "policies": []
-        }
-      ]
-    },
-    {
-      "name": "monitoring",
-      "version": "1.0.0",
-      "description": "This group should be used for managing all monitoring related policies and pdps",
-      "pdpGroupState": "ACTIVE",
-      "pdpSubgroups": [
-        {
-          "pdpType": "xacml",
-          "supportedPolicyTypes": [
+            },
             {
               "name": "onap.Monitoring",
               "version": "1.0.0"
@@ -76,23 +36,7 @@
             {
               "name": "onap.policies.monitoring.dcaegen2.collectors.datafile.datafile-app-server",
               "version": "1.0.0"
-            }
-          ],
-          "currentInstanceCount": 0,
-          "desiredInstanceCount": 1,
-          "policies": []
-        }
-      ]
-    },
-    {
-      "name": "optimization",
-      "version": "1.0.0",
-      "description": "This group should be used for managing all optimization related policies and pdps",
-      "pdpGroupState": "ACTIVE",
-      "pdpSubgroups": [
-        {
-          "pdpType": "xacml",
-          "supportedPolicyTypes": [
+            },
             {
               "name": "onap.policies.optimization.AffinityPolicy",
               "version": "1.0.0"
@@ -127,6 +71,30 @@
             },
             {
               "name": "onap.policies.optimization.VnfPolicy",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1,
+          "policies": []
+        },
+        {
+          "pdpType": "drools",
+          "supportedPolicyTypes": [
+            {
+              "name": "onap.policies.controlloop.Operational",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1,
+          "policies": []
+        },
+        {
+          "pdpType": "apex",
+          "supportedPolicyTypes": [
+            {
+              "name": "onap.policies.controlloop.operational.Apex",
               "version": "1.0.0"
             }
           ],
