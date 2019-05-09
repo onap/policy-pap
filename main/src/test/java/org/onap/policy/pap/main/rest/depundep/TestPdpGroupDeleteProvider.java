@@ -113,10 +113,9 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     @Test
     public void testDeleteGroup_NotFound() throws Exception {
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
-                        .hasMessage("group not found").matches(thr -> {
-                            PfModelException ex = (PfModelException) thr;
-                            return (ex.getErrorResponse().getResponseCode() == Status.NOT_FOUND);
-                        });
+                        .hasMessage("group not found")
+                        .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
+                        .isEqualTo(Status.NOT_FOUND);
     }
 
     @Test
@@ -146,7 +145,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUndeploy_testDeletePolicy() throws Exception {
+    public void testUndeploy_testUndeployPolicy() throws Exception {
         prov.undeploy(optIdent);
     }
 
@@ -186,7 +185,15 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeletePolicy_DaoEx() throws Exception {
+    public void testUndeployPolicy_NotFound() throws Exception {
+        when(session.isUnchanged()).thenReturn(true);
+
+        assertThatThrownBy(() -> prov.undeploy(optIdent)).isInstanceOf(PfModelException.class)
+                        .hasMessage("policy does not appear in any PDP group: policyA null");
+    }
+
+    @Test
+    public void testUndeployPolicy_DaoEx() throws Exception {
         PfModelException exc = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
 
         prov = spy(prov);
@@ -196,7 +203,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeletePolicy_RtEx() throws Exception {
+    public void testUndeployPolicy_RtEx() throws Exception {
         RuntimeException exc = new RuntimeException(EXPECTED_EXCEPTION);
 
         prov = spy(prov);

@@ -124,8 +124,8 @@ public class PdpGroupDeleteTest extends End2EndBase {
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertEquals("policy does not appear in any PDP group: onap.restart.tcaB null", resp.getErrorDetails());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class PdpGroupDeleteTest extends End2EndBase {
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertEquals("policy does not appear in any PDP group: onap.restart.tcaC 1.0.0", resp.getErrorDetails());
     }
 }

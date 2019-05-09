@@ -207,6 +207,15 @@ public class SessionData {
     }
 
     /**
+     * Determines if any changes were made due to the REST call.
+     *
+     * @return {@code true} if nothing was changed, {@code false} if something was changed
+     */
+    public boolean isUnchanged() {
+        return pdpRequests.isEmpty();
+    }
+
+    /**
      * Gets the accumulated PDP requests.
      *
      * @return the PDP requests

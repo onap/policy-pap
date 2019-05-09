@@ -24,8 +24,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -187,7 +189,9 @@ public class TestSessionData extends ProviderSuper {
     }
 
     @Test
-    public void testAddRequests_testGetPdpStateChanges_testGetPdpUpdates() {
+    public void testIsUnchanged_testAddRequests_testGetPdpStateChanges_testGetPdpUpdates() {
+        assertTrue(session.isUnchanged());
+
         // pre-load with a update and state-change for other PDPs
         PdpUpdate update2 = makeUpdate(PDP2);
         session.addUpdate(update2);
@@ -199,6 +203,7 @@ public class TestSessionData extends ProviderSuper {
         PdpUpdate update = makeUpdate(PDP1);
         PdpStateChange change = makeStateChange(PDP1);
         session.addRequests(update, change);
+        assertFalse(session.isUnchanged());
         verifyRequests(update, update2, change, change3);
 
         /*
