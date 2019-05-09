@@ -443,6 +443,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
             if (subgroup.getPolicies().contains(desiredIdent)) {
                 // already has the desired policy
+                logger.info("subgroup {} {} already contains policy {} {}", group.getName(), subgroup.getPdpType(),
+                                desiredIdent.getName(), desiredIdent.getVersion());
                 return false;
             }
 
@@ -454,6 +456,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
             // add the policy to the subgroup
             subgroup.getPolicies().add(desiredIdent);
+
+            logger.info("add policy {} {} to subgroup {} {} count={}", desiredIdent.getName(),
+                            desiredIdent.getVersion(), group.getName(), subgroup.getPdpType(),
+                            subgroup.getPolicies().size());
             return true;
         };
     }

@@ -41,11 +41,15 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.Tosca
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Data used during a single REST call when updating PDP policies.
  */
 public class SessionData {
+    private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
+
     /**
      * If a version string matches this, then it is just a prefix (i.e., major or
      * major.minor).
@@ -95,8 +99,8 @@ public class SessionData {
     }
 
     /**
-     * Gets the policy type, referenced by an identifier. Loads it from the cache, if possible.
-     * Otherwise, gets it from the DB.
+     * Gets the policy type, referenced by an identifier. Loads it from the cache, if
+     * possible. Otherwise, gets it from the DB.
      *
      * @param desiredType policy type identifier
      * @return the specified policy type
@@ -183,6 +187,8 @@ public class SessionData {
             throw new IllegalArgumentException("PDP name mismatch " + update.getName() + ", " + change.getName());
         }
 
+        logger.info("add update and state-change {} {} {} policies={}", update.getName(), update.getPdpGroup(),
+                        update.getPdpSubgroup(), update.getPolicies().size());
         pdpRequests.put(update.getName(), Pair.of(update, change));
     }
 
@@ -193,6 +199,8 @@ public class SessionData {
      * @param update the update to be added
      */
     public void addUpdate(PdpUpdate update) {
+        logger.info("add update {} {} {} policies={}", update.getName(), update.getPdpGroup(), update.getPdpSubgroup(),
+                        update.getPolicies().size());
         pdpRequests.compute(update.getName(), (name, data) -> Pair.of(update, (data == null ? null : data.getRight())));
     }
 
@@ -203,6 +211,7 @@ public class SessionData {
      * @param change the state-change to be added
      */
     public void addStateChange(PdpStateChange change) {
+        logger.info("add state-change {}", change.getName());
         pdpRequests.compute(change.getName(), (name, data) -> Pair.of((data == null ? null : data.getLeft()), change));
     }
 
@@ -255,6 +264,8 @@ public class SessionData {
         if (groupCache.put(name, new GroupData(newGroup, true)) != null) {
             throw new IllegalStateException("group already cached: " + name);
         }
+
+        logger.info("create cached group {}", newGroup.getName());
     }
 
     /**
@@ -269,6 +280,7 @@ public class SessionData {
             throw new IllegalStateException("group not cached: " + name);
         }
 
+        logger.info("update cached group {}", newGroup.getName());
         data.update(newGroup);
     }
 
@@ -285,11 +297,16 @@ public class SessionData {
         if (data == null) {
             List<PdpGroup> lst = dao.getPdpGroups(name);
             if (lst.isEmpty()) {
+                logger.info("unknown group {}", name);
                 return null;
             }
 
+            logger.info("cache group {}", name);
             data = new GroupData(lst.get(0));
             groupCache.put(name, data);
+
+        } else {
+            logger.info("use cached group {}", name);
         }
 
         return data.getGroup();
@@ -304,19 +321,17 @@ public class SessionData {
      */
     public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaPolicyTypeIdentifier type) throws PfModelException {
         List<GroupData> data = type2groups.get(type);
-        if (data != null) {
-            return data.stream().map(GroupData::getGroup).collect(Collectors.toList());
+        if (data == null) {
+            PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
+                            .groupState(PdpState.ACTIVE).build();
+
+            List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
+
+            data = groups.stream().map(this::addGroup).collect(Collectors.toList());
+            type2groups.put(type, data);
         }
 
-        PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
-                        .groupState(PdpState.ACTIVE).build();
-
-        List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
-
-        data = groups.stream().map(this::addGroup).collect(Collectors.toList());
-        type2groups.put(type, data);
-
-        return groups;
+        return data.stream().map(GroupData::getGroup).collect(Collectors.toList());
     }
 
     /**
@@ -327,12 +342,14 @@ public class SessionData {
      */
     private GroupData addGroup(PdpGroup group) {
         GroupData data = groupCache.get(group.getName());
-        if (data != null) {
-            return data;
-        }
+        if (data == null) {
+            logger.info("cache group {}", group.getName());
+            data = new GroupData(group);
+            groupCache.put(group.getName(), data);
 
-        data = new GroupData(group);
-        groupCache.put(group.getName(), data);
+        } else {
+            logger.info("use cached group {}", group.getName());
+        }
 
         return data;
     }
@@ -346,6 +363,9 @@ public class SessionData {
         // create new groups
         List<GroupData> created = groupCache.values().stream().filter(GroupData::isNew).collect(Collectors.toList());
         if (!created.isEmpty()) {
+            if (logger.isInfoEnabled()) {
+                created.forEach(group -> logger.info("creating DB group {}", group.getGroup().getName()));
+            }
             dao.createPdpGroups(created.stream().map(GroupData::getGroup).collect(Collectors.toList()));
         }
 
@@ -353,6 +373,9 @@ public class SessionData {
         List<GroupData> updated =
                         groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
         if (!updated.isEmpty()) {
+            if (logger.isInfoEnabled()) {
+                updated.forEach(group -> logger.info("updating DB group {}", group.getGroup().getName()));
+            }
             dao.updatePdpGroups(updated.stream().map(GroupData::getGroup).collect(Collectors.toList()));
         }
     }
@@ -365,6 +388,7 @@ public class SessionData {
      * @throws PfModelException if an error occurred
      */
     public void deleteGroupFromDb(PdpGroup group) throws PfModelException {
+        logger.info("deleting DB group {}", group.getName());
         dao.deletePdpGroup(group.getName());
     }
 }

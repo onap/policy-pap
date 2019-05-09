@@ -124,6 +124,15 @@ public class PdpGroupDeleteProvider extends ProviderBase {
         ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
 
         // remove the policy from the subgroup
-        return (group, subgroup) -> subgroup.getPolicies().remove(desiredIdent);
+        return (group, subgroup) -> {
+
+            boolean result = subgroup.getPolicies().remove(desiredIdent);
+
+            logger.info("remove policy {} {} from subgroup {} {} count={}", desiredIdent.getName(),
+                            desiredIdent.getVersion(), group.getName(), subgroup.getPdpType(),
+                            subgroup.getPolicies().size());
+
+            return result;
+        };
     }
 }
