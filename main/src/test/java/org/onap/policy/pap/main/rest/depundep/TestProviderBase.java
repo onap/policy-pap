@@ -137,7 +137,9 @@ public class TestProviderBase extends ProviderSuper {
         SessionData session = new SessionData(dao);
         ToscaPolicyIdentifierOptVersion ident = new ToscaPolicyIdentifierOptVersion(POLICY1_NAME, POLICY1_VERSION);
         assertThatThrownBy(() -> prov.processPolicy(session, ident)).isInstanceOf(PfModelException.class)
-                        .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
+                        .hasMessage("policy not supported by any PDP group: policyA 1.2.3")
+                        .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
+                        .isEqualTo(Status.NOT_FOUND);
 
     }
 

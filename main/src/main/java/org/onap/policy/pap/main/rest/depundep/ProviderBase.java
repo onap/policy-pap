@@ -136,7 +136,7 @@ public abstract class ProviderBase {
 
         Collection<PdpGroup> groups = getGroups(data, policy.getTypeIdentifier());
         if (groups.isEmpty()) {
-            throw new PfModelException(Status.BAD_REQUEST, "policy not supported by any PDP group: "
+            throw new PfModelException(Status.NOT_FOUND, "policy not supported by any PDP group: "
                             + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 

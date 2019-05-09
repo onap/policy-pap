@@ -104,6 +104,11 @@ public class PdpGroupDeleteProvider extends ProviderBase {
         try {
             processPolicy(data, ident);
 
+            if (data.isUnchanged()) {
+                throw new PfModelException(Status.NOT_FOUND, "policy does not appear in any PDP group: "
+                                + ident.getName() + " " + ident.getVersion());
+            }
+
         } catch (PfModelException | RuntimeException e) {
             // no need to log the error object here, as it will be logged by the invoker
             logger.warn("failed to undeploy policy: {}", ident);
