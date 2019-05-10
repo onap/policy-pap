@@ -54,10 +54,12 @@ public class TestGroupData {
         data = new GroupData(oldGroup, true);
         assertSame(oldGroup, data.getGroup());
 
+        assertFalse(data.isUnchanged());
         assertTrue(data.isNew());
         assertFalse(data.isUpdated());
 
         data.update(newGroup);
+        assertFalse(data.isUnchanged());
         assertTrue(data.isNew());
         assertFalse(data.isUpdated());
         assertSame(newGroup, data.getGroup());
@@ -65,6 +67,7 @@ public class TestGroupData {
         // repeat with a new group
         newGroup = new PdpGroup(oldGroup);
         data.update(newGroup);
+        assertFalse(data.isUnchanged());
         assertTrue(data.isNew());
         assertFalse(data.isUpdated());
         assertSame(newGroup, data.getGroup());
@@ -72,11 +75,13 @@ public class TestGroupData {
 
     @Test
     public void testUpdateOnly() {
+        assertTrue(data.isUnchanged());
         assertFalse(data.isUpdated());
         assertSame(oldGroup, data.getGroup());
 
         data.update(newGroup);
 
+        assertFalse(data.isUnchanged());
         assertTrue(data.isUpdated());
         assertFalse(data.isNew());
         assertSame(newGroup, data.getGroup());
@@ -84,6 +89,7 @@ public class TestGroupData {
         // repeat
         newGroup = new PdpGroup(oldGroup);
         data.update(newGroup);
+        assertFalse(data.isUnchanged());
         assertTrue(data.isUpdated());
         assertFalse(data.isNew());
         assertSame(newGroup, data.getGroup());

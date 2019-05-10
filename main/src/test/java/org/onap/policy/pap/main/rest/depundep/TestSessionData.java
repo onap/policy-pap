@@ -189,9 +189,7 @@ public class TestSessionData extends ProviderSuper {
     }
 
     @Test
-    public void testIsUnchanged_testAddRequests_testGetPdpStateChanges_testGetPdpUpdates() {
-        assertTrue(session.isUnchanged());
-
+    public void testAddRequests_testGetPdpStateChanges_testGetPdpUpdates() {
         // pre-load with a update and state-change for other PDPs
         PdpUpdate update2 = makeUpdate(PDP2);
         session.addUpdate(update2);
@@ -203,7 +201,6 @@ public class TestSessionData extends ProviderSuper {
         PdpUpdate update = makeUpdate(PDP1);
         PdpStateChange change = makeStateChange(PDP1);
         session.addRequests(update, change);
-        assertFalse(session.isUnchanged());
         verifyRequests(update, update2, change, change3);
 
         /*
@@ -322,13 +319,17 @@ public class TestSessionData extends ProviderSuper {
 
     @Test
     public void testCreate() throws Exception {
+        assertTrue(session.isUnchanged());
+
         session.create(group1);
         assertSame(group1, session.getGroup(group1.getName()));
+        assertFalse(session.isUnchanged());
 
         // can add another
         session.create(group2);
         assertSame(group1, session.getGroup(group1.getName()));
         assertSame(group2, session.getGroup(group2.getName()));
+        assertFalse(session.isUnchanged());
 
         // cannot overwrite
         assertThatIllegalStateException().isThrownBy(() -> session.create(group1))
@@ -337,6 +338,8 @@ public class TestSessionData extends ProviderSuper {
 
     @Test
     public void testUpdate() throws Exception {
+        assertTrue(session.isUnchanged());
+
         // force the groups into the cache
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2));
         session.getActivePdpGroupsByPolicyType(type);
@@ -347,10 +350,12 @@ public class TestSessionData extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
         PdpGroup newgrp = new PdpGroup(group1);
         session.update(newgrp);
+        assertFalse(session.isUnchanged());
 
         // repeat
         newgrp = new PdpGroup(group1);
         session.update(newgrp);
+        assertFalse(session.isUnchanged());
 
         /*
          * try group 2
@@ -358,10 +363,12 @@ public class TestSessionData extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group2));
         newgrp = new PdpGroup(group2);
         session.update(newgrp);
+        assertFalse(session.isUnchanged());
 
         // repeat
         newgrp = new PdpGroup(group2);
         session.update(newgrp);
+        assertFalse(session.isUnchanged());
     }
 
     @Test
