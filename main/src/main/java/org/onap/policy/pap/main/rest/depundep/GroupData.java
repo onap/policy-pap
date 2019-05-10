@@ -61,6 +61,15 @@ public class GroupData {
     }
 
     /**
+     * Determines if the group is unchanged (i.e., neither new nor updated).
+     *
+     * @return {@code true} if the group is unchanged, {@code false} otherwise
+     */
+    public boolean isUnchanged() {
+        return (state == State.UNCHANGED);
+    }
+
+    /**
      * Determines if the group is new.
      *
      * @return {@code true} if the group is new, {@code false} otherwise

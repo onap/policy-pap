@@ -221,7 +221,7 @@ public class SessionData {
      * @return {@code true} if nothing was changed, {@code false} if something was changed
      */
     public boolean isUnchanged() {
-        return pdpRequests.isEmpty();
+        return groupCache.values().stream().allMatch(GroupData::isUnchanged);
     }
 
     /**
