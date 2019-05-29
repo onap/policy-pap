@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3546b36_f0e79bcc",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/topic.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-05-29T13:10:21Z",
+      "side": 1,
+      "message": "no way to make this work without hard-coding IPs?  (same comment for other files)",
+      "revId": "fb4643501d7182b3be5d6715ea0ed8966155f9f2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
