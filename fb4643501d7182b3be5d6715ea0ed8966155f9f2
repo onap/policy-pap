@@ -16,6 +16,24 @@
       "revId": "fb4643501d7182b3be5d6715ea0ed8966155f9f2",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fe339230_21fd4452",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/topic.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-05-30T12:27:30Z",
+      "side": 1,
+      "message": "We need to pass the IP\u0027s of the setup. The two VM\u0027s that will be used for testing.\nAlso, I am documenting them in the test plan setup wiki for the user to know.\n\nWe can certainly look in future how to make it more automatic and remove manual updates.",
+      "parentUuid": "c3546b36_f0e79bcc",
+      "revId": "fb4643501d7182b3be5d6715ea0ed8966155f9f2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
