@@ -17,7 +17,7 @@ RUN tar xvfz /packages/policy-pap.tar.gz --directory ${POLICY_PAP_HOME} \
 
 WORKDIR ${POLICY_PAP_HOME}
 COPY policy-pap.sh  bin/.
-RUN chown -R policy:policy * && chmod +x bin/*.sh \
+RUN chown -R policy:policy * && chmod 755 bin/*.sh \
    && cp ${POLICY_PAP_HOME}/etc/ssl/* ${POLICY_HOME}/etc/ssl && chown policy:policy ${POLICY_HOME}/etc/ssl/*
 
 USER policy
