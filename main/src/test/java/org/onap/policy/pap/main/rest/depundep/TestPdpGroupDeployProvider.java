@@ -22,6 +22,7 @@ package org.onap.policy.pap.main.rest.depundep;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -45,6 +46,7 @@ import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
@@ -254,6 +256,41 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
+    }
+
+    @Test
+    public void testUpdateGroup_RemovedSubGroup() throws Exception {
+        PdpGroup dbgroup = new PdpGroup(loadPdpGroups("createGroupsDelSub.json").getGroups().get(0));
+        when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
+
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+
+        prov.createOrUpdateGroups(groups);
+
+        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
+        Collections.sort(dbgroup.getPdpSubgroups().get(0).getPolicies());
+
+        // verify that DB group was updated
+        List<PdpGroup> updates = getGroupUpdates();
+        assertEquals(1, updates.size());
+        assertEquals(newgrp.toString(), updates.get(0).toString());
+
+        // this requires a PDP UPDATE message
+        List<PdpUpdate> pdpUpdates = getUpdateRequests(1);
+        assertEquals(1, pdpUpdates.size());
+
+        PdpUpdate pdpUpdate = pdpUpdates.get(0);
+        assertEquals(PDP2, pdpUpdate.getName());
+        assertNull(pdpUpdate.getPdpGroup());
+
+        // it also requires a PDP STATE-CHANGE message
+        List<PdpStateChange> changes = getStateChangeRequests(1);
+        assertEquals(1, changes.size());
+
+        PdpStateChange change = changes.get(0);
+        assertEquals(PDP2, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
     }
 
     @Test

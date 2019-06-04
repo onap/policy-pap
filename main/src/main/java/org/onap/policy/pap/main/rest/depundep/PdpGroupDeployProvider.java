@@ -39,9 +39,12 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
+import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
@@ -186,27 +189,9 @@ public class PdpGroupDeployProvider extends ProviderBase {
                             "cannot change properties"));
         }
 
-        // create a map of existing subgroups
-        Map<String, PdpSubGroup> type2sub = new HashMap<>();
-        dbgroup.getPdpSubgroups().forEach(subgrp -> type2sub.put(subgrp.getPdpType(), subgrp));
-
         boolean updated = updateField(dbgroup.getDescription(), group.getDescription(), dbgroup::setDescription);
-
-        for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
-            PdpSubGroup dbsub = type2sub.get(subgrp.getPdpType());
-            BeanValidationResult subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
-
-            if (dbsub == null) {
-                updated = true;
-                subResult.addResult(addSubGroup(data, subgrp));
-                dbgroup.getPdpSubgroups().add(subgrp);
-
-            } else {
-                updated = updateSubGroup(data, group, dbsub, subgrp, subResult) || updated;
-            }
-
-            result.addResult(subResult);
-        }
+        updated = notifyPdpsDelSubGroups(data, dbgroup, group) || updated;
+        updated = addOrUpdateSubGroups(data, dbgroup, group, result) || updated;
 
         if (result.isValid() && updated) {
             data.update(group);
@@ -235,6 +220,95 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         setter.accept(newValue);
         return true;
+    }
+
+    /**
+     * Adds or updates subgroups within the group.
+     *
+     * @param data session data
+     * @param dbgroup the group, as it appears within the DB
+     * @param group the group to be added
+     * @param result the validation result
+     * @return {@code true} if the DB group was modified, {@code false} otherwise
+     * @throws PfModelException if an error occurred
+     */
+    private boolean addOrUpdateSubGroups(SessionData data, PdpGroup dbgroup, PdpGroup group,
+                    BeanValidationResult result) throws PfModelException {
+
+        // create a map of existing subgroups
+        Map<String, PdpSubGroup> type2sub = new HashMap<>();
+        dbgroup.getPdpSubgroups().forEach(subgrp -> type2sub.put(subgrp.getPdpType(), subgrp));
+
+        boolean updated = false;
+
+        for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
+            PdpSubGroup dbsub = type2sub.get(subgrp.getPdpType());
+            BeanValidationResult subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+
+            if (dbsub == null) {
+                updated = true;
+                subResult.addResult(addSubGroup(data, subgrp));
+                dbgroup.getPdpSubgroups().add(subgrp);
+
+            } else {
+                updated = updateSubGroup(data, group, dbsub, subgrp, subResult) || updated;
+            }
+
+            result.addResult(subResult);
+        }
+
+        return updated;
+    }
+
+    /**
+     * Notifies any PDPs whose subgroups are being removed.
+     *
+     * @param data session data
+     * @param dbgroup the group, as it appears within the DB
+     * @param group the group being updated
+     * @return {@code true} if a subgroup was removed, {@code false} otherwise
+     */
+    private boolean notifyPdpsDelSubGroups(SessionData data, PdpGroup dbgroup, PdpGroup group) {
+        boolean updated = false;
+
+        // subgroups, as they appear within the updated group
+        Set<String> subgroups = new HashSet<>();
+        group.getPdpSubgroups().forEach(subgrp -> subgroups.add(subgrp.getPdpType()));
+
+        // loop through subgroups as they appear within the DB
+        for (PdpSubGroup subgrp : dbgroup.getPdpSubgroups()) {
+
+            if (!subgroups.contains(subgrp.getPdpType())) {
+                // this subgroup no longer appears - notify its PDPs
+                updated = true;
+                notifyPdpsDelSubGroup(data, subgrp);
+            }
+        }
+
+        return updated;
+    }
+
+    /**
+     * Notifies the PDPs that their subgroup is being removed.
+     *
+     * @param data session data
+     * @param subgrp subgroup that is being removed
+     */
+    private void notifyPdpsDelSubGroup(SessionData data, PdpSubGroup subgrp) {
+        for (Pdp pdp : subgrp.getPdpInstances()) {
+            String name = pdp.getInstanceId();
+
+            // make it passive
+            PdpStateChange change = new PdpStateChange();
+            change.setName(name);
+            change.setState(PdpState.PASSIVE);
+
+            // remove it from subgroup and undeploy all policies
+            PdpUpdate update = new PdpUpdate();
+            update.setName(name);
+
+            data.addRequests(update, change);
+        }
     }
 
     /**
