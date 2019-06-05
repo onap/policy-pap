@@ -65,6 +65,8 @@ import org.slf4j.LoggerFactory;
 public class PdpGroupDeployProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployProvider.class);
 
+    private static final String POLICY_RESULT_NAME = "policy";
+
 
     /**
      * Constructs the object.
@@ -326,7 +328,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         result.addResult(validateSupportedTypes(data, subgrp));
-        result.addResult(validatePolicies(data, subgrp));
+        result.addResult(validatePolicies(data, null, subgrp));
 
         return result;
     }
@@ -391,7 +393,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
                             "cannot change properties"));
         }
 
-        result.addResult(validatePolicies(data, subgrp));
+        result.addResult(validatePolicies(data, dbsub, subgrp));
         container.addResult(result);
 
         return result.isValid();
@@ -444,22 +446,39 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * Performs additional validations of the policies within a subgroup.
      *
      * @param data session data
+     * @param dbsub subgroup from the DB, or {@code null} if this is a new subgroup
      * @param subgrp the subgroup to be validated
      * @param result the validation result
      * @throws PfModelException if an error occurred
      */
-    private ValidationResult validatePolicies(SessionData data, PdpSubGroup subgrp) throws PfModelException {
+    private ValidationResult validatePolicies(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp)
+                    throws PfModelException {
+
+        // build a map of the DB data, from policy name to policy version
+        Map<String, String> dbname2vers = new HashMap<>();
+        if (dbsub != null) {
+            dbsub.getPolicies().forEach(ident -> dbname2vers.put(ident.getName(), ident.getVersion()));
+        }
+
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaPolicyIdentifier ident : subgrp.getPolicies()) {
+            String actualVersion;
+
             ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
             if (policy == null) {
-                result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
+                result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
                                 "unknown policy"));
 
             } else if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
-                result.addResult(new ObjectValidationResult("policy", ident, ValidationStatus.INVALID,
+                result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
                                 "not a supported policy for the subgroup"));
+
+            } else if ((actualVersion = dbname2vers.get(ident.getName())) != null
+                            && !actualVersion.equals(ident.getVersion())) {
+                // policy exists in the DB subgroup, but has the wrong version
+                result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
+                                "different version already deployed: " + actualVersion));
             }
         }
 
@@ -515,10 +534,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
                 return false;
             }
 
-            if (subgroup.getPolicies().contains(desiredIdent)) {
-                // already has the desired policy
-                logger.info("subgroup {} {} already contains policy {} {}", group.getName(), subgroup.getPdpType(),
-                                desiredIdent.getName(), desiredIdent.getVersion());
+            if (containsPolicy(group, subgroup, desiredIdent)) {
                 return false;
             }
 
@@ -536,5 +552,42 @@ public class PdpGroupDeployProvider extends ProviderBase {
                             subgroup.getPolicies().size());
             return true;
         };
+    }
+
+    /**
+     * Determines if a subgroup already contains the desired policy.
+     *
+     * @param group group that contains the subgroup
+     * @param subgroup subgroup of interest
+     * @param desiredIdent identifier of the desired policy
+     * @return {@code true} if the subgroup contains the desired policy, {@code false}
+     *         otherwise
+     * @throws PfModelRuntimeException if the subgroup contains a different version of the
+     *         desired policy
+     */
+    private boolean containsPolicy(PdpGroup group, PdpSubGroup subgroup, ToscaPolicyIdentifier desiredIdent) {
+        String desnm = desiredIdent.getName();
+        String desvers = desiredIdent.getVersion();
+
+        for (ToscaPolicyIdentifier actualIdent : subgroup.getPolicies()) {
+            if (!actualIdent.getName().equals(desnm)) {
+                continue;
+            }
+
+            // found the policy - ensure the version matches
+            if (!actualIdent.getVersion().equals(desvers)) {
+                throw new PfModelRuntimeException(Status.BAD_REQUEST,
+                                "group " + group.getName() + " subgroup " + subgroup.getPdpType() + " policy " + desnm
+                                                + " " + desvers + " different version already deployed: "
+                                                + actualIdent.getVersion());
+            }
+
+            // already has the desired policy & version
+            logger.info("subgroup {} {} already contains policy {} {}", group.getName(), subgroup.getPdpType(), desnm,
+                            desvers);
+            return true;
+        }
+
+        return false;
     }
 }
