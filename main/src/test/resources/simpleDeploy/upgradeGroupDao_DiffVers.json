@@ -1,0 +1,72 @@
+{
+    "groups": [
+        {
+            "name": "groupA",
+            "version": "200.2.3",
+            "pdpSubgroups": [
+                {
+                    "pdpType": "pdpTypeA",
+                    "supportedPolicyTypes": [],
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpA"
+                        }
+                    ],
+                    "policies": []
+                },
+                {
+                    "pdpType": "pdpTypeB",
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "typeA",
+                            "version": "100.2.3"
+                        }
+                    ],
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpB"
+                        }
+                    ],
+                    "policies": []
+                },
+                {
+                    "pdpType": "pdpTypeC",
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "typeA",
+                            "version": "100.2.3"
+                        }
+                    ],
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpC"
+                        }
+                    ],
+                    "policies": [
+                        {
+                            "name": "policyA",
+                            "version": "9.9.9",
+                            "type": "typeA",
+                            "type_version": "100.2.3"
+                        }
+                    ]
+                },
+                {
+                    "pdpType": "pdpTypeD",
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "typeA",
+                            "version": "100.2.3"
+                        }
+                    ],
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpD"
+                        }
+                    ],
+                    "policies": []
+                }
+            ]
+        }
+    ]
+}

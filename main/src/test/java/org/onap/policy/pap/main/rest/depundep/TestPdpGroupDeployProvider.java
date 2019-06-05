@@ -522,6 +522,25 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
+    public void testUpdateSubGroup_PolicyVersionMismatch() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+        PdpGroup dbgroup = new PdpGroup(newgrp);
+        when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
+
+        // arrange for DB policy version to be different
+        PdpSubGroup dbsubgrp = dbgroup.getPdpSubgroups().get(0);
+        dbsubgrp.getPolicies().get(0).setVersion("9.9.9");
+
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("different version already deployed");
+
+        assertNoGroupAction();
+    }
+
+    @Test
     public void testValidateSubGroup_PropertiesMismatch() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
@@ -601,6 +620,20 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         List<PdpUpdate> requests = getUpdateRequests(2);
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
         assertUpdate(requests, GROUP1_NAME, PDP4_TYPE, PDP4);
+    }
+
+    @Test
+    public void testMakeUpdater_PolicyVersionMismatch() throws Exception {
+
+        // subgroup has a different version of the Policy
+        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao_DiffVers.json"));
+
+        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelRuntimeException.class)
+                        .hasMessageContaining("pdpTypeC").hasMessageContaining("different version already deployed");
+
+        verify(dao, never()).createPdpGroups(any());
+        verify(dao, never()).updatePdpGroups(any());
+        verify(reqmap, never()).addRequest(any(PdpUpdate.class));
     }
 
     @Test
