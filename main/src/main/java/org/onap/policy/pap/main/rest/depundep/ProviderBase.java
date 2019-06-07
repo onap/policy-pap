@@ -40,7 +40,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOp
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpRequestMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,7 @@ public abstract class ProviderBase {
     /**
      * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
      */
-    private final PdpModifyRequestMap requestMap;
+    private final PdpRequestMap requestMap;
 
     /**
      * Factory for PAP DAO.
@@ -80,7 +80,7 @@ public abstract class ProviderBase {
      */
     public ProviderBase() {
         this.updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
-        this.requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
+        this.requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpRequestMap.class);
         this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
     }
 

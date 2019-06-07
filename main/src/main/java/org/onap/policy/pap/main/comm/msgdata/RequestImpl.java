@@ -268,7 +268,7 @@ public abstract class RequestImpl implements Request {
             }
 
             logger.info("{} successful", getName());
-            listener.success(pdpName);
+            listener.success(response);
         }
     }
 

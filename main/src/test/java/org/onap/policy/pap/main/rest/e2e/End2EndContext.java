@@ -50,7 +50,7 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpMessageType;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpRequestMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,7 +166,7 @@ public class End2EndContext {
         toPapThread.join(WAIT_MS);
         assertFalse(toPapThread.isAlive());
 
-        PdpModifyRequestMap map = Registry.get(PapConstants.REG_PDP_MODIFY_MAP);
+        PdpRequestMap map = Registry.get(PapConstants.REG_PDP_MODIFY_MAP);
         assertTrue(map.isEmpty());
 
         // no more requests, thus we can tell the other thread to stop

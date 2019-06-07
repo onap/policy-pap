@@ -41,7 +41,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpRequestMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class PdpGroupStateChangeProvider {
     /**
      * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
      */
-    private final PdpModifyRequestMap requestMap;
+    private final PdpRequestMap requestMap;
 
     /**
      * Factory for PAP DAO.
@@ -75,7 +75,7 @@ public class PdpGroupStateChangeProvider {
     public PdpGroupStateChangeProvider() {
         modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
-        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
+        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpRequestMap.class);
     }
 
     /**

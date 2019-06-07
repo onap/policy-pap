@@ -56,10 +56,10 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
-import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
+import org.onap.policy.pap.main.parameters.PdpRequestMapParams;
 import org.powermock.reflect.Whitebox;
 
-public class PdpModifyRequestMapTest extends CommonRequestBase {
+public class PdpRequestMapTest extends CommonRequestBase {
     private static final String MY_REASON = "my reason";
 
     /**
@@ -101,7 +101,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         when(requests.getPdpName()).thenReturn(PDP1);
 
-        response.setName(MY_NAME);
+        response.setName(PDP1);
         response.setState(MY_STATE);
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
@@ -111,7 +111,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testPdpModifyRequestMap() {
+    public void testPdpRequestMap() {
         assertSame(mapParams, Whitebox.getInternalState(map, "params"));
         assertSame(lock, Whitebox.getInternalState(map, "modifyLock"));
         assertSame(daoFactory, Whitebox.getInternalState(map, "daoFactory"));
@@ -257,7 +257,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         map.addRequest(change);
 
         // indicate success
-        getListener(getSingletons(1).get(0)).success(PDP1);
+        getListener(getSingletons(1).get(0)).success(response);
 
         /*
          * the above should have removed the requests so next time should allocate a new
@@ -276,7 +276,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         // indicate success with the update
         when(requests.startNextRequest(updateReq)).thenReturn(true);
-        getListener(updateReq).success(PDP1);
+        getListener(updateReq).success(response);
 
         // should have started the next request
         verify(requests).startNextRequest(updateReq);
@@ -454,7 +454,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testMakePdpRequests() {
         // this should invoke the real method without throwing an exception
-        new PdpModifyRequestMap(mapParams).addRequest(change);
+        new PdpRequestMap(mapParams).addRequest(change);
 
         QueueToken<PdpMessage> token = queue.poll();
         assertNotNull(token);
@@ -548,7 +548,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * @param count expected number of requests
      */
     private void invokeSuccessHandler(int count) {
-        getListener(getSingletons(count).get(0)).success(PDP1);
+        getListener(getSingletons(count).get(0)).success(response);
     }
 
     /**
@@ -641,13 +641,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         return newlst;
     }
 
-    private class MyMap extends PdpModifyRequestMap {
+    private class MyMap extends PdpRequestMap {
         /**
          * Number of times requests were allocated.
          */
         private int nalloc = 0;
 
-        public MyMap(PdpModifyRequestMapParams params) {
+        public MyMap(PdpRequestMapParams params) {
             super(params);
         }
 

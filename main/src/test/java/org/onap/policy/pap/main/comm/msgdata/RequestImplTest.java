@@ -407,7 +407,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener).success(PDP1);
+        verify(listener).success(response);
         verify(listener, never()).failure(any(), any());
         verify(timer).cancel();
     }
@@ -492,7 +492,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener).success(PDP1);
+        verify(listener).success(response);
         verify(listener, never()).failure(any(), any());
     }
 
@@ -529,7 +529,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener).success(DIFFERENT);
+        verify(listener).success(response);
         verify(listener, never()).failure(any(), any());
     }
 

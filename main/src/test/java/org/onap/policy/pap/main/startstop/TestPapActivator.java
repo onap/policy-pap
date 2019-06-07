@@ -37,7 +37,7 @@ import org.onap.policy.common.endpoints.http.server.HttpServletServer;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpRequestMap;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -100,7 +100,7 @@ public class TestPapActivator {
         // ensure items were added to the registry
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
         assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
-        assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class));
+        assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpRequestMap.class));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.start());
@@ -117,7 +117,7 @@ public class TestPapActivator {
         // ensure items have been removed from the registry
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_LOCK, Object.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class, null));
-        assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class, null));
+        assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_MAP, PdpRequestMap.class, null));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.stop());

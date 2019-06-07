@@ -8,11 +8,16 @@
         "https": true
     },
     "pdpParameters": {
+        "heartBeatMs": 1,
         "updateParameters": {
             "maxRetryCount": 1,
             "maxWaitMs": 1
         },
         "stateChangeParameters": {
+            "maxRetryCount": 1,
+            "maxWaitMs": 1
+        },
+        "healthCheckParameters": {
             "maxRetryCount": 1,
             "maxWaitMs": 1
         }

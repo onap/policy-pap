@@ -26,22 +26,26 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
+import org.onap.policy.models.pdp.concepts.PdpHealthCheck;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.comm.msgdata.HealthCheckReq;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
-import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
+import org.onap.policy.pap.main.parameters.PdpRequestMapParams;
 import org.onap.policy.pap.main.parameters.RequestParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +53,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Maps a PDP name to requests that modify PDPs.
  */
-public class PdpModifyRequestMap {
-    private static final Logger logger = LoggerFactory.getLogger(PdpModifyRequestMap.class);
+public class PdpRequestMap {
+    private static final Logger logger = LoggerFactory.getLogger(PdpRequestMap.class);
 
     private static final String UNEXPECTED_BROADCAST = "unexpected broadcast message: ";
 
@@ -67,7 +71,7 @@ public class PdpModifyRequestMap {
     /**
      * The configuration parameters.
      */
-    private final PdpModifyRequestMapParams params;
+    private final PdpRequestMapParams params;
 
     /**
      * Factory for PAP DAO.
@@ -82,7 +86,7 @@ public class PdpModifyRequestMap {
      *
      * @throws IllegalArgumentException if a required parameter is not set
      */
-    public PdpModifyRequestMap(PdpModifyRequestMapParams params) {
+    public PdpRequestMap(PdpRequestMapParams params) {
         params.validate();
 
         this.params = params;
@@ -157,7 +161,7 @@ public class PdpModifyRequestMap {
         String name = update.getName() + " " + PdpUpdate.class.getSimpleName();
         UpdateReq request = new UpdateReq(reqparams, name, update);
 
-        addSingleton(request);
+        addSingleton(request, SingletonListener::new);
     }
 
     /**
@@ -186,7 +190,36 @@ public class PdpModifyRequestMap {
         String name = stateChange.getName() + " " + PdpStateChange.class.getSimpleName();
         StateChangeReq request = new StateChangeReq(reqparams, name, stateChange);
 
-        addSingleton(request);
+        addSingleton(request, SingletonListener::new);
+    }
+
+    /**
+     * Adds a HEALTH-CHECK request to the map.
+     *
+     * @param healthCheck the HEALTH-CHECK request or {@code null}
+     */
+    public void addRequest(PdpHealthCheck healthCheck) {
+        if (healthCheck == null) {
+            return;
+        }
+
+        if (isBroadcast(healthCheck)) {
+            throw new IllegalArgumentException(UNEXPECTED_BROADCAST + healthCheck);
+        }
+
+        // @formatter:off
+        RequestParams reqparams = new RequestParams()
+            .setMaxRetryCount(params.getParams().getHealthCheckParameters().getMaxRetryCount())
+            .setTimers(params.getHealthCheckTimers())
+            .setModifyLock(params.getModifyLock())
+            .setPublisher(params.getPublisher())
+            .setResponseDispatcher(params.getResponseDispatcher());
+        // @formatter:on
+
+        String name = healthCheck.getName() + " " + PdpHealthCheck.class.getSimpleName();
+        HealthCheckReq request = new HealthCheckReq(reqparams, name, healthCheck);
+
+        addSingleton(request, HeartBeatListener::new);
     }
 
     /**
@@ -204,13 +237,14 @@ public class PdpModifyRequestMap {
      * Configures and adds a request to the map.
      *
      * @param request the request to be added
+     * @param makeListener function to make a listener for the specific request type
      */
-    private void addSingleton(Request request) {
+    private void addSingleton(Request request, BiFunction<PdpRequests,Request,SingletonListener> makeListener) {
 
         synchronized (modifyLock) {
             PdpRequests requests = pdp2requests.computeIfAbsent(request.getMessage().getName(), this::makePdpRequests);
 
-            request.setListener(new SingletonListener(requests, request));
+            request.setListener(makeListener.apply(requests, request));
             requests.addSingleton(request);
         }
     }
@@ -322,7 +356,9 @@ public class PdpModifyRequestMap {
         }
 
         @Override
-        public void success(String pdpName) {
+        public void success(PdpStatus response) {
+            String pdpName = response.getName();
+
             if (requests.getPdpName().equals(pdpName)) {
                 if (pdp2requests.get(requests.getPdpName()) == requests) {
                     startNextRequest(requests, request);
@@ -394,6 +430,24 @@ public class PdpModifyRequestMap {
             } else {
                 addRequest(change);
             }
+        }
+    }
+
+    /**
+     * Listener for responses for singleton heart beat requests.
+     */
+    private class HeartBeatListener extends SingletonListener {
+
+        public HeartBeatListener(PdpRequests requests, Request request) {
+            super(requests, request);
+        }
+
+        @Override
+        public void success(PdpStatus response) {
+            super.success(response);
+
+            final PdpStatusMessageHandler handler = new PdpStatusMessageHandler();
+            handler.handlePdpStatus(response);
         }
     }
 }

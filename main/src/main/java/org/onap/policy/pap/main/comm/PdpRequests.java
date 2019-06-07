@@ -36,7 +36,7 @@ public class PdpRequests {
     /**
      * The maximum request priority + 1.
      */
-    private static final int MAX_PRIORITY = 2;
+    private static final int MAX_PRIORITY = 3;
 
     /**
      * Name of the PDP with which the requests are associated.

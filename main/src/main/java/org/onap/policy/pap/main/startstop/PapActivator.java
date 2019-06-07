@@ -24,7 +24,6 @@ package org.onap.policy.pap.main.startstop;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
@@ -38,12 +37,14 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpRequestMap;
+import org.onap.policy.pap.main.comm.PdpTracker;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
-import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpParameters;
+import org.onap.policy.pap.main.parameters.PdpRequestMapParams;
+import org.onap.policy.pap.main.parameters.PdpTrackerParams;
 import org.onap.policy.pap.main.rest.PapRestServer;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
@@ -110,7 +111,10 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<Publisher> pdpPub = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
+        final AtomicReference<TimerManager> pdpHealthChkTimers = new AtomicReference<>();
         final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
+        final AtomicReference<PdpRequestMap> requestMap = new AtomicReference<>();
+        final AtomicReference<PdpTracker> pdpTracker = new AtomicReference<>();
 
         // @formatter:off
         addAction("PAP parameters",
@@ -162,8 +166,17 @@ public class PapActivator extends ServiceManagerContainer {
 
         addAction("PDP state-change timers",
             () -> {
-                pdpStChgTimers.set(new TimerManager("state-change", pdpParams.getUpdateParameters().getMaxWaitMs()));
+                pdpStChgTimers.set(
+                    new TimerManager("state-change", pdpParams.getStateChangeParameters().getMaxWaitMs()));
                 startThread(pdpStChgTimers.get());
+            },
+            () -> pdpStChgTimers.get().stop());
+
+        addAction("PDP health-check timers",
+            () -> {
+                pdpHealthChkTimers.set(
+                    new TimerManager("health-check", pdpParams.getHealthCheckParameters().getMaxWaitMs()));
+                startThread(pdpHealthChkTimers.get());
             },
             () -> pdpStChgTimers.get().stop());
 
@@ -171,17 +184,37 @@ public class PapActivator extends ServiceManagerContainer {
             () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
 
-        addAction("PDP modification requests",
-            () -> Registry.register(PapConstants.REG_PDP_MODIFY_MAP, new PdpModifyRequestMap(
-                            new PdpModifyRequestMapParams()
+        addAction("PDP request map",
+            () -> {
+                requestMap.set(new PdpRequestMap(
+                            new PdpRequestMapParams()
                                     .setDaoFactory(daoFactory.get())
                                     .setModifyLock(pdpUpdateLock)
                                     .setParams(pdpParams)
                                     .setPublisher(pdpPub.get())
                                     .setResponseDispatcher(reqIdDispatcher)
                                     .setStateChangeTimers(pdpStChgTimers.get())
-                                    .setUpdateTimers(pdpUpdTimers.get()))),
+                                    .setHealthCheckTimers(pdpStChgTimers.get())
+                                    .setUpdateTimers(pdpUpdTimers.get())));
+                Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
+            },
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
+
+        addAction("PDP heart beat tracker",
+            () -> {
+                pdpTracker.set(new PdpTracker(
+                            new PdpTrackerParams()
+                                    .setDaoFactory(daoFactory.get())
+                                    .setModifyLock(pdpUpdateLock)
+                                    .setHeartBeatMs(pdpParams.getHeartBeatMs())
+                                    .setRequestMap(requestMap.get())));
+                startThread(pdpTracker.get());
+                Registry.register(PapConstants.REG_PDP_TRACKER, pdpTracker.get());
+            },
+            () -> {
+                Registry.unregister(PapConstants.REG_PDP_TRACKER);
+                pdpTracker.get().stop();
+            });
 
         addAction("Create REST server",
             () -> restServer = new PapRestServer(papParameterGroup.getRestServerParameters()),

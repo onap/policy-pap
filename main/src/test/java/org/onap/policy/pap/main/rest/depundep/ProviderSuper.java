@@ -51,7 +51,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpRequestMap;
 
 /**
  * Super class for TestPdpGroupDeployProviderXxx classes.
@@ -70,7 +70,7 @@ public class ProviderSuper {
     private ArgumentCaptor<List<PdpGroup>> updateCaptor;
 
     protected Object lockit;
-    protected PdpModifyRequestMap reqmap;
+    protected PdpRequestMap reqmap;
     protected PolicyModelsProviderFactoryWrapper daofact;
     protected ToscaPolicy policy1;
 
@@ -85,7 +85,7 @@ public class ProviderSuper {
 
         MockitoAnnotations.initMocks(this);
 
-        reqmap = mock(PdpModifyRequestMap.class);
+        reqmap = mock(PdpRequestMap.class);
 
         lockit = new Object();
         daofact = mock(PolicyModelsProviderFactoryWrapper.class);

@@ -49,8 +49,8 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
-import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpParameters;
+import org.onap.policy.pap.main.parameters.PdpRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpStateChangeParameters;
 import org.onap.policy.pap.main.parameters.PdpUpdateParameters;
 import org.onap.policy.pap.main.parameters.RequestParams;
@@ -79,7 +79,7 @@ public class CommonRequestBase {
     protected PolicyModelsProviderFactoryWrapper daoFactory;
     protected PolicyModelsProvider dao;
     protected RequestParams reqParams;
-    protected PdpModifyRequestMapParams mapParams;
+    protected PdpRequestMapParams mapParams;
 
     /**
      * Sets up.
@@ -124,9 +124,9 @@ public class CommonRequestBase {
         reqParams = new RequestParams().setMaxRetryCount(RETRIES).setModifyLock(lock).setPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setTimers(timers);
 
-        mapParams = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(publisher)
+        mapParams = new PdpRequestMapParams().setModifyLock(lock).setPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setDaoFactory(daoFactory).setUpdateTimers(timers)
-                        .setStateChangeTimers(timers).setParams(pdpParams);
+                        .setStateChangeTimers(timers).setHealthCheckTimers(timers).setParams(pdpParams);
     }
 
     /**

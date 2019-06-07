@@ -29,49 +29,55 @@ import org.onap.policy.pap.main.comm.TimerManager;
 
 
 /**
- * Parameters needed to create a {@link PdpModifyRequestMapParams}.
+ * Parameters needed to create a {@link PdpRequestMap}.
  */
 @Getter
-public class PdpModifyRequestMapParams {
+public class PdpRequestMapParams {
     private Publisher publisher;
     private RequestIdDispatcher<PdpStatus> responseDispatcher;
     private Object modifyLock;
     private PdpParameters params;
     private TimerManager updateTimers;
     private TimerManager stateChangeTimers;
+    private TimerManager healthCheckTimers;
     private PolicyModelsProviderFactoryWrapper daoFactory;
 
-    public PdpModifyRequestMapParams setParams(PdpParameters params) {
+    public PdpRequestMapParams setParams(PdpParameters params) {
         this.params = params;
         return this;
     }
 
-    public PdpModifyRequestMapParams setUpdateTimers(TimerManager updateTimers) {
+    public PdpRequestMapParams setUpdateTimers(TimerManager updateTimers) {
         this.updateTimers = updateTimers;
         return this;
     }
 
-    public PdpModifyRequestMapParams setStateChangeTimers(TimerManager stateChangeTimers) {
+    public PdpRequestMapParams setStateChangeTimers(TimerManager stateChangeTimers) {
         this.stateChangeTimers = stateChangeTimers;
         return this;
     }
 
-    public PdpModifyRequestMapParams setDaoFactory(PolicyModelsProviderFactoryWrapper daoFactory) {
+    public PdpRequestMapParams setHealthCheckTimers(TimerManager healthCheckTimers) {
+        this.healthCheckTimers = healthCheckTimers;
+        return this;
+    }
+
+    public PdpRequestMapParams setDaoFactory(PolicyModelsProviderFactoryWrapper daoFactory) {
         this.daoFactory = daoFactory;
         return this;
     }
 
-    public PdpModifyRequestMapParams setPublisher(Publisher publisher) {
+    public PdpRequestMapParams setPublisher(Publisher publisher) {
         this.publisher = publisher;
         return this;
     }
 
-    public PdpModifyRequestMapParams setResponseDispatcher(RequestIdDispatcher<PdpStatus> responseDispatcher) {
+    public PdpRequestMapParams setResponseDispatcher(RequestIdDispatcher<PdpStatus> responseDispatcher) {
         this.responseDispatcher = responseDispatcher;
         return this;
     }
 
-    public PdpModifyRequestMapParams setModifyLock(Object modifyLock) {
+    public PdpRequestMapParams setModifyLock(Object modifyLock) {
         this.modifyLock = modifyLock;
         return this;
     }
@@ -102,6 +108,14 @@ public class PdpModifyRequestMapParams {
 
         if (stateChangeTimers == null) {
             throw new IllegalArgumentException("missing stateChangeTimers");
+        }
+
+        if (healthCheckTimers == null) {
+            throw new IllegalArgumentException("missing healthCheckTimers");
+        }
+
+        if (daoFactory == null) {
+            throw new IllegalArgumentException("missing daoFactory");
         }
     }
 }

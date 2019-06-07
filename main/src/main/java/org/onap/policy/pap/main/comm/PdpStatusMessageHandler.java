@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -65,12 +64,17 @@ public class PdpStatusMessageHandler {
     /**
      * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
      */
-    private final PdpModifyRequestMap requestMap;
+    private final PdpRequestMap requestMap;
 
     /**
      * Factory for PAP DAO.
      */
-    PolicyModelsProviderFactoryWrapper modelProviderWrapper;
+    private final PolicyModelsProviderFactoryWrapper modelProviderWrapper;
+
+    /**
+     * Tracks PDP heart beats.
+     */
+    private final PdpTracker pdpTracker;
 
     /**
      * Constructs the object.
@@ -78,7 +82,8 @@ public class PdpStatusMessageHandler {
     public PdpStatusMessageHandler() {
         modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
-        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
+        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpRequestMap.class);
+        pdpTracker = Registry.get(PapConstants.REG_PDP_TRACKER, PdpTracker.class);
     }
 
     /**
@@ -93,6 +98,10 @@ public class PdpStatusMessageHandler {
                     handlePdpRegistration(message, databaseProvider);
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
+                }
+
+                if (pdpTracker != null && message.getName() != null) {
+                    pdpTracker.add(message.getName());
                 }
             } catch (final PolicyPapException exp) {
                 LOGGER.error("Operation Failed", exp);
