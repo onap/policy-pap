@@ -523,7 +523,9 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * Adds a policy to a subgroup, if it isn't there already.
      */
     @Override
-    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
+    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+                    ToscaPolicyIdentifierOptVersion requestedIdent) {
+
         ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
         ToscaPolicyTypeIdentifier desiredType = policy.getTypeIdentifier();
 

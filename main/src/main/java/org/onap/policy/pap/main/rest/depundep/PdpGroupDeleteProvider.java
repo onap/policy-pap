@@ -20,7 +20,9 @@
 
 package org.onap.policy.pap.main.rest.depundep;
 
+import java.util.Iterator;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -117,20 +119,42 @@ public class PdpGroupDeleteProvider extends ProviderBase {
     }
 
     /**
-     * Returns a function that will remove the specified policy from a subgroup.
+     * Returns a function that will remove the desired policy from a subgroup.
      */
     @Override
-    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
-        ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
+    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+                    ToscaPolicyIdentifierOptVersion desiredIdent) {
 
-        // remove the policy from the subgroup
+        // construct a matcher based on whether or not the version was specified
+        Predicate<ToscaPolicyIdentifier> matcher;
+
+        if (desiredIdent.getVersion() != null) {
+            // version was specified - match the whole identifier
+            matcher = policy.getIdentifier()::equals;
+
+        } else {
+            // version was not specified - match the name only
+            String desnm = desiredIdent.getName();
+            matcher = ident -> ident.getName().equals(desnm);
+        }
+
+
+        // return a function that will remove the policy from the subgroup
         return (group, subgroup) -> {
 
-            boolean result = subgroup.getPolicies().remove(desiredIdent);
+            boolean result = false;
 
-            logger.info("remove policy {} {} from subgroup {} {} count={}", desiredIdent.getName(),
-                            desiredIdent.getVersion(), group.getName(), subgroup.getPdpType(),
-                            subgroup.getPolicies().size());
+            Iterator<ToscaPolicyIdentifier> iter = subgroup.getPolicies().iterator();
+            while (iter.hasNext()) {
+                ToscaPolicyIdentifier ident = iter.next();
+
+                if (matcher.test(ident)) {
+                    result = true;
+                    iter.remove();
+                    logger.info("remove policy {} {} from subgroup {} {} count={}", ident.getName(), ident.getVersion(),
+                                    group.getName(), subgroup.getPdpType(), subgroup.getPolicies().size());
+                }
+            }
 
             return result;
         };

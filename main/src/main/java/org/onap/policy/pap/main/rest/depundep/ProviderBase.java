@@ -140,7 +140,7 @@ public abstract class ProviderBase {
                             + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 
-        BiFunction<PdpGroup, PdpSubGroup, Boolean> updater = makeUpdater(policy);
+        BiFunction<PdpGroup, PdpSubGroup, Boolean> updater = makeUpdater(policy, desiredPolicy);
 
         for (PdpGroup group : groups) {
             upgradeGroup(data, group, updater);
@@ -153,9 +153,11 @@ public abstract class ProviderBase {
      * necessary/appropriate.
      *
      * @param policy policy to be added to or removed from each subgroup
+     * @param desiredPolicy request policy
      * @return a function to update a subgroup
      */
-    protected abstract BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy);
+    protected abstract BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+                    ToscaPolicyIdentifierOptVersion desiredPolicy);
 
     /**
      * Finds the active PDP group(s) that supports the given policy type.

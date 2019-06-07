@@ -345,7 +345,9 @@ public class TestProviderBase extends ProviderSuper {
         }
 
         @Override
-        protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy) {
+        protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+                        ToscaPolicyIdentifierOptVersion desiredPolicy) {
+
             return (group, subgroup) -> {
                 if (shouldUpdate.remove()) {
                     // queue indicated that the update should succeed

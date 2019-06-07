@@ -56,6 +56,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private MyProvider prov;
     private SessionData session;
     private ToscaPolicyIdentifierOptVersion optIdent;
+    private ToscaPolicyIdentifierOptVersion fullIdent;
     private ToscaPolicyIdentifier ident;
     private BiFunction<PdpGroup, PdpSubGroup, Boolean> updater;
 
@@ -78,10 +79,11 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         session = mock(SessionData.class);
         ident = policy1.getIdentifier();
         optIdent = new ToscaPolicyIdentifierOptVersion(ident.getName(), null);
+        fullIdent = new ToscaPolicyIdentifierOptVersion(ident.getName(), ident.getVersion());
 
         prov = new MyProvider();
 
-        updater = prov.makeUpdater(policy1);
+        updater = prov.makeUpdater(policy1, fullIdent);
     }
 
     @Test
@@ -163,7 +165,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
         when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
-        new PdpGroupDeleteProvider().undeploy(optIdent);
+        new PdpGroupDeleteProvider().undeploy(fullIdent);
 
         // should have updated the old group
         List<PdpGroup> updates = getGroupUpdates();
@@ -171,7 +173,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertSame(group, updates.get(0));
         assertEquals(PdpState.ACTIVE, group.getPdpGroupState());
 
-        // should be one less item in the new group
+        // should be one less item in the new subgroup
         assertEquals(2, group.getPdpSubgroups().get(0).getPolicies().size());
 
         // should have updated the PDPs
@@ -213,21 +215,39 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testMakeUpdater() {
+    public void testMakeUpdater_WithVersion() {
         /*
-         * this group has one policy with a different name, one matching policy, and one
-         * with a different version.
+         * this group has two matching policies and one policy with a different name.
          */
         PdpGroup group = loadGroup("undeploy.json");
 
         PdpSubGroup subgroup = group.getPdpSubgroups().get(0);
         int origSize = subgroup.getPolicies().size();
 
-        // invoke updater
+        // invoke updater - matching both name and version
         assertTrue(updater.apply(group, subgroup));
 
         // identified policy should have been removed
         assertEquals(origSize - 1, subgroup.getPolicies().size());
+        assertFalse(subgroup.getPolicies().contains(ident));
+    }
+
+    @Test
+    public void testMakeUpdater_NullVersion() {
+        /*
+         * this group has two matching policies and one policy with a different name.
+         */
+        PdpGroup group = loadGroup("undeploy.json");
+
+        PdpSubGroup subgroup = group.getPdpSubgroups().get(0);
+        int origSize = subgroup.getPolicies().size();
+
+        // invoke updater - matching the name, but with a null (i.e., wild-card) version
+        updater = prov.makeUpdater(policy1, optIdent);
+        assertTrue(updater.apply(group, subgroup));
+
+        // identified policy should have been removed
+        assertEquals(origSize - 2, subgroup.getPolicies().size());
         assertFalse(subgroup.getPolicies().contains(ident));
     }
 
