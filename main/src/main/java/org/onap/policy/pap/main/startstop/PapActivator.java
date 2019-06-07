@@ -110,6 +110,7 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<Publisher> pdpPub = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
+        final AtomicReference<TimerManager> pdpHealthChkTimers = new AtomicReference<>();
         final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
 
         // @formatter:off
@@ -162,8 +163,17 @@ public class PapActivator extends ServiceManagerContainer {
 
         addAction("PDP state-change timers",
             () -> {
-                pdpStChgTimers.set(new TimerManager("state-change", pdpParams.getUpdateParameters().getMaxWaitMs()));
+                pdpStChgTimers.set(
+                    new TimerManager("state-change", pdpParams.getStateChangeParameters().getMaxWaitMs()));
                 startThread(pdpStChgTimers.get());
+            },
+            () -> pdpStChgTimers.get().stop());
+
+        addAction("PDP health-check timers",
+            () -> {
+                pdpHealthChkTimers.set(
+                    new TimerManager("health-check", pdpParams.getHealthCheckParameters().getMaxWaitMs()));
+                startThread(pdpHealthChkTimers.get());
             },
             () -> pdpStChgTimers.get().stop());
 
@@ -180,6 +190,7 @@ public class PapActivator extends ServiceManagerContainer {
                                     .setPublisher(pdpPub.get())
                                     .setResponseDispatcher(reqIdDispatcher)
                                     .setStateChangeTimers(pdpStChgTimers.get())
+                                    .setHealthCheckTimers(pdpStChgTimers.get())
                                     .setUpdateTimers(pdpUpdTimers.get()))),
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 

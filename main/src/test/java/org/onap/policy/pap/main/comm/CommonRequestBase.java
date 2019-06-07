@@ -126,7 +126,7 @@ public class CommonRequestBase {
 
         mapParams = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setDaoFactory(daoFactory).setUpdateTimers(timers)
-                        .setStateChangeTimers(timers).setParams(pdpParams);
+                        .setStateChangeTimers(timers).setHealthCheckTimers(timers).setParams(pdpParams);
     }
 
     /**

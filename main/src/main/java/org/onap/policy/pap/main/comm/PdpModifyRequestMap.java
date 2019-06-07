@@ -30,6 +30,7 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
+import org.onap.policy.models.pdp.concepts.PdpHealthCheck;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -37,6 +38,7 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.comm.msgdata.HealthCheckReq;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
@@ -185,6 +187,35 @@ public class PdpModifyRequestMap {
 
         String name = stateChange.getName() + " " + PdpStateChange.class.getSimpleName();
         StateChangeReq request = new StateChangeReq(reqparams, name, stateChange);
+
+        addSingleton(request);
+    }
+
+    /**
+     * Adds a HEALTH-CHECK request to the map.
+     *
+     * @param healthCheck the HEALTH-CHECK request or {@code null}
+     */
+    public void addRequest(PdpHealthCheck healthCheck) {
+        if (healthCheck == null) {
+            return;
+        }
+
+        if (isBroadcast(healthCheck)) {
+            throw new IllegalArgumentException(UNEXPECTED_BROADCAST + healthCheck);
+        }
+
+        // @formatter:off
+        RequestParams reqparams = new RequestParams()
+            .setMaxRetryCount(params.getParams().getHealthCheckParameters().getMaxRetryCount())
+            .setTimers(params.getHealthCheckTimers())
+            .setModifyLock(params.getModifyLock())
+            .setPublisher(params.getPublisher())
+            .setResponseDispatcher(params.getResponseDispatcher());
+        // @formatter:on
+
+        String name = healthCheck.getName() + " " + PdpHealthCheck.class.getSimpleName();
+        HealthCheckReq request = new HealthCheckReq(reqparams, name, healthCheck);
 
         addSingleton(request);
     }

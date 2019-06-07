@@ -39,6 +39,7 @@ public class TestPdpModifyRequestMapParams {
     private PdpParameters pdpParams;
     private TimerManager updTimers;
     private TimerManager stateTimers;
+    private TimerManager healthTimers;
 
     /**
      * Sets up the objects and creates an empty {@link #params}.
@@ -52,9 +53,11 @@ public class TestPdpModifyRequestMapParams {
         pdpParams = mock(PdpParameters.class);
         updTimers = mock(TimerManager.class);
         stateTimers = mock(TimerManager.class);
+        healthTimers = mock(TimerManager.class);
 
         params = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp)
-                        .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
+                        .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers)
+                        .setHealthCheckTimers(healthTimers);
     }
 
     @Test
@@ -101,6 +104,12 @@ public class TestPdpModifyRequestMapParams {
     public void testValidate_MissingStateChangeTimers() {
         assertThatIllegalArgumentException().isThrownBy(() -> params.setStateChangeTimers(null).validate())
                         .withMessageContaining("state");
+    }
+
+    @Test
+    public void testValidate_MissingHealthCheckTimers() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setHealthCheckTimers(null).validate())
+                        .withMessageContaining("health");
     }
 
     @Test

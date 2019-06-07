@@ -39,6 +39,7 @@ public class PdpModifyRequestMapParams {
     private PdpParameters params;
     private TimerManager updateTimers;
     private TimerManager stateChangeTimers;
+    private TimerManager healthCheckTimers;
     private PolicyModelsProviderFactoryWrapper daoFactory;
 
     public PdpModifyRequestMapParams setParams(PdpParameters params) {
@@ -53,6 +54,11 @@ public class PdpModifyRequestMapParams {
 
     public PdpModifyRequestMapParams setStateChangeTimers(TimerManager stateChangeTimers) {
         this.stateChangeTimers = stateChangeTimers;
+        return this;
+    }
+
+    public PdpModifyRequestMapParams setHealthCheckTimers(TimerManager healthCheckTimers) {
+        this.healthCheckTimers = healthCheckTimers;
         return this;
     }
 
@@ -102,6 +108,10 @@ public class PdpModifyRequestMapParams {
 
         if (stateChangeTimers == null) {
             throw new IllegalArgumentException("missing stateChangeTimers");
+        }
+
+        if (healthCheckTimers == null) {
+            throw new IllegalArgumentException("missing healthCheckTimers");
         }
     }
 }

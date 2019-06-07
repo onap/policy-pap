@@ -21,31 +21,21 @@
 package org.onap.policy.pap.main.parameters;
 
 import lombok.Getter;
-import org.onap.policy.common.parameters.ParameterGroupImpl;
-import org.onap.policy.common.parameters.annotations.Min;
 import org.onap.policy.common.parameters.annotations.NotBlank;
 import org.onap.policy.common.parameters.annotations.NotNull;
 
 /**
- * Parameters for communicating with PDPs.
+ * Parameters for PDP HEALTH-CHECK requests.
  */
 @NotNull
 @NotBlank
 @Getter
-public class PdpParameters extends ParameterGroupImpl {
-
-    @Min(1)
-    private long heartBeatMs;
-
-    private PdpUpdateParameters updateParameters;
-    private PdpStateChangeParameters stateChangeParameters;
-    private PdpHealthCheckParameters healthCheckParameters;
-
+public class PdpHealthCheckParameters extends PdpRequestParameters {
 
     /**
      * Constructs the object.
      */
-    public PdpParameters() {
-        super(PdpParameters.class.getSimpleName());
+    public PdpHealthCheckParameters() {
+        super(PdpHealthCheckParameters.class.getSimpleName());
     }
 }
