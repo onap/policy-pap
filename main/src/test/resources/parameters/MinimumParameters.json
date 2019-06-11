@@ -7,6 +7,7 @@
         "password":"zb!XztG34"
     },
     "pdpParameters": {
+        "heartBeatMs": 1,
         "updateParameters": {
             "maxRetryCount": 1,
             "maxWaitMs": 1
