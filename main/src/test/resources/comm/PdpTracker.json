@@ -1,0 +1,41 @@
+{
+    "groups": [
+        {
+            "name": "group-X",
+            "pdpSubgroups": [
+                {
+                    "pdpType": "apex",
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdp-A"
+                        },
+                        {
+                            "instanceId": "pdp-B"
+                        }
+                    ]
+                },
+                {
+                    "pdpType": "drools",
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdp-C"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "group-Y",
+            "pdpSubgroups": [
+                {
+                    "pdpType": "apex",
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdp-D"
+                        }
+                    ]
+                }
+            ]
+        } 
+    ]
+}

@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -44,6 +45,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +56,9 @@ import org.slf4j.LoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PdpStatusMessageHandler {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpStatusMessageHandler.class);
+
+    private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
 
     /**
      * Lock used when updating PDPs.
@@ -70,7 +73,12 @@ public class PdpStatusMessageHandler {
     /**
      * Factory for PAP DAO.
      */
-    PolicyModelsProviderFactoryWrapper modelProviderWrapper;
+    private final PolicyModelsProviderFactoryWrapper modelProviderWrapper;
+
+    /**
+     * Heart beat interval, in milliseconds, to pass to PDPs.
+     */
+    private final long heartBeatMs;
 
     /**
      * Constructs the object.
@@ -79,6 +87,9 @@ public class PdpStatusMessageHandler {
         modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
         requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
+
+        PapParameterGroup params = ParameterService.get(PAP_GROUP_PARAMS_NAME);
+        heartBeatMs = params.getPdpParameters().getHeartBeatMs();
     }
 
     /**
@@ -93,6 +104,15 @@ public class PdpStatusMessageHandler {
                     handlePdpRegistration(message, databaseProvider);
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
+                }
+
+                /*
+                 * Indicate that a heart beat was received from the PDP. This is invoked
+                 * only if handleXxx() does not throw an exception.
+                 */
+                if (message.getName() != null) {
+                    PdpTracker pdpTracker = Registry.get(PapConstants.REG_PDP_TRACKER);
+                    pdpTracker.add(message.getName());
                 }
             } catch (final PolicyPapException exp) {
                 LOGGER.error("Operation Failed", exp);
@@ -297,6 +317,7 @@ public class PdpStatusMessageHandler {
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
         update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
+        update.setPdpHeartbeatIntervalMs(heartBeatMs);
 
         LOGGER.debug("Created PdpUpdate message - {}", update);
         return update;

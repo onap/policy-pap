@@ -22,6 +22,7 @@ package org.onap.policy.pap.main.parameters;
 
 import lombok.Getter;
 import org.onap.policy.common.parameters.ParameterGroupImpl;
+import org.onap.policy.common.parameters.annotations.Min;
 import org.onap.policy.common.parameters.annotations.NotBlank;
 import org.onap.policy.common.parameters.annotations.NotNull;
 
@@ -32,6 +33,10 @@ import org.onap.policy.common.parameters.annotations.NotNull;
 @NotBlank
 @Getter
 public class PdpParameters extends ParameterGroupImpl {
+
+    @Min(1)
+    private long heartBeatMs;
+
     private PdpUpdateParameters updateParameters;
     private PdpStateChangeParameters stateChangeParameters;
 

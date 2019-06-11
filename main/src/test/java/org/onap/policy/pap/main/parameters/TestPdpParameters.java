@@ -46,6 +46,8 @@ public class TestPdpParameters {
         PdpStateChangeParameters state = params.getStateChangeParameters();
         assertNotNull(state);
         assertEquals(5, state.getMaxWaitMs());
+
+        assertEquals(6L, params.getHeartBeatMs());
     }
 
     @Test
@@ -58,6 +60,13 @@ public class TestPdpParameters {
         assertNull(result.getResult());
         assertTrue(result.isValid());
 
+        // invalid heart beat
+        json2 = json.replaceFirst(": 6", ": 0");
+        result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
+        assertFalse(result.isValid());
+        assertTrue(result.getResult().contains(
+                        "field 'heartBeatMs' type 'long' value '0' INVALID, must be >= 1".replace('\'', '"')));
+
         // no update params
         json2 = testData.nullifyField(json, "updateParameters");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
@@ -66,7 +75,7 @@ public class TestPdpParameters {
         assertTrue(result.getResult().contains("is null"));
 
         // invalid update params
-        json2 = json.replaceFirst("2", "-2");
+        json2 = json.replaceFirst(": 2", ": -2");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
         assertTrue(result.getResult().contains("parameter group 'PdpUpdateParameters'".replace('\'', '"')));
@@ -79,7 +88,7 @@ public class TestPdpParameters {
         assertFalse(result.isValid());
 
         // invalid state-change params
-        json2 = json.replaceFirst("5", "-5");
+        json2 = json.replaceFirst(": 5", ": -5");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
         assertTrue(result.getResult().contains("parameter group 'PdpStateChangeParameters'".replace('\'', '"')));
