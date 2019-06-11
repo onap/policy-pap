@@ -15,7 +15,8 @@
         "stateChangeParameters": {
             "maxRetryCount": 1,
             "maxWaitMs": 5
-        }
+        },
+        "heartBeatMs": 6
     },
     "databaseProviderParameters": {
         "name": "PolicyModelsProviderParameters",
