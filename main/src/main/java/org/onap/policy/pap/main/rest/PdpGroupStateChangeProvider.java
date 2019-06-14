@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +21,9 @@
 
 package org.onap.policy.pap.main.rest;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.tuple.Pair;
-import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -37,11 +34,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
-import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpMessageGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,32 +43,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class PdpGroupStateChangeProvider {
+public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeProvider.class);
-
-    /**
-     * Lock used when updating PDPs.
-     */
-    private final Object updateLock;
-
-    /**
-     * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
-     */
-    private final PdpModifyRequestMap requestMap;
-
-    /**
-     * Factory for PAP DAO.
-     */
-    PolicyModelsProviderFactoryWrapper modelProviderWrapper;
 
     /**
      * Constructs the object.
      */
     public PdpGroupStateChangeProvider() {
-        modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
-        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
+        super(false);
     }
 
     /**
@@ -165,40 +141,5 @@ public class PdpGroupStateChangeProvider {
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
             }
         }
-    }
-
-    private PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-            final String pdpInstanceId, final PolicyModelsProvider databaseProvider) throws PfModelException {
-
-        final PdpUpdate update = new PdpUpdate();
-        update.setName(pdpInstanceId);
-        update.setPdpGroup(pdpGroupName);
-        update.setPdpSubgroup(subGroup.getPdpType());
-        update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
-
-        LOGGER.debug("Created PdpUpdate message - {}", update);
-        return update;
-    }
-
-    private List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup, final PolicyModelsProvider databaseProvider)
-            throws PfModelException {
-        final List<ToscaPolicy> policies = new ArrayList<>();
-        for (final ToscaPolicyIdentifier policyIdentifier : subGroup.getPolicies()) {
-            policies.addAll(databaseProvider.getPolicyList(policyIdentifier.getName(), policyIdentifier.getVersion()));
-        }
-        LOGGER.debug("Created ToscaPolicy list - {}", policies);
-        return policies;
-    }
-
-    private PdpStateChange createPdpStateChangeMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-            final String pdpInstanceId, final PdpState pdpState) {
-
-        final PdpStateChange stateChange = new PdpStateChange();
-        stateChange.setName(pdpInstanceId);
-        stateChange.setPdpGroup(pdpGroupName);
-        stateChange.setPdpSubgroup(subGroup.getPdpType());
-        stateChange.setState(pdpState);
-        LOGGER.debug("Created PdpStateChange message - {}", stateChange);
-        return stateChange;
     }
 }

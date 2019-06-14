@@ -21,14 +21,11 @@
 
 package org.onap.policy.pap.main.comm;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -40,12 +37,8 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapException;
-import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,41 +48,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class PdpStatusMessageHandler {
+public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpStatusMessageHandler.class);
-
-    private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
-
-    /**
-     * Lock used when updating PDPs.
-     */
-    private final Object updateLock;
-
-    /**
-     * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
-     */
-    private final PdpModifyRequestMap requestMap;
-
-    /**
-     * Factory for PAP DAO.
-     */
-    private final PolicyModelsProviderFactoryWrapper modelProviderWrapper;
-
-    /**
-     * Heart beat interval, in milliseconds, to pass to PDPs.
-     */
-    private final long heartBeatMs;
 
     /**
      * Constructs the object.
      */
     public PdpStatusMessageHandler() {
-        modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
-        requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
-
-        PapParameterGroup params = ParameterService.get(PAP_GROUP_PARAMS_NAME);
-        heartBeatMs = params.getPdpParameters().getHeartBeatMs();
+        super(true);
     }
 
     /**
@@ -154,15 +120,21 @@ public class PdpStatusMessageHandler {
             final Map<Integer, PdpGroup> selectedPdpGroups, final List<PdpGroup> pdpGroups) {
         PdpGroup emptyPdpGroup = null;
         for (final PdpGroup pdpGroup : pdpGroups) {
-            for (final PdpSubGroup pdpSubGroup : pdpGroup.getPdpSubgroups()) {
-                if (message.getSupportedPolicyTypes().containsAll(pdpSubGroup.getSupportedPolicyTypes())) {
-                    if (pdpSubGroup.getCurrentInstanceCount() == 0) {
-                        emptyPdpGroup = pdpGroup;
-                    } else {
-                        selectedPdpGroups.put(
-                                pdpSubGroup.getDesiredInstanceCount() - pdpSubGroup.getCurrentInstanceCount(),
-                                pdpGroup);
-                    }
+            emptyPdpGroup = selectPdpSubGroupsForRegistration(message, selectedPdpGroups, pdpGroup, emptyPdpGroup);
+        }
+        return emptyPdpGroup;
+    }
+
+    private PdpGroup selectPdpSubGroupsForRegistration(final PdpStatus message,
+                    final Map<Integer, PdpGroup> selectedPdpGroups, final PdpGroup pdpGroup, PdpGroup emptyPdpGroup) {
+        for (final PdpSubGroup pdpSubGroup : pdpGroup.getPdpSubgroups()) {
+            if (message.getSupportedPolicyTypes().containsAll(pdpSubGroup.getSupportedPolicyTypes())) {
+                if (pdpSubGroup.getCurrentInstanceCount() == 0) {
+                    emptyPdpGroup = pdpGroup;
+                } else {
+                    selectedPdpGroups.put(
+                            pdpSubGroup.getDesiredInstanceCount() - pdpSubGroup.getCurrentInstanceCount(),
+                            pdpGroup);
                 }
             }
         }
@@ -307,41 +279,5 @@ public class PdpStatusMessageHandler {
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
         LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
         LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
-    }
-
-    private PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-            final String pdpInstanceId, final PolicyModelsProvider databaseProvider) throws PfModelException {
-
-        final PdpUpdate update = new PdpUpdate();
-        update.setName(pdpInstanceId);
-        update.setPdpGroup(pdpGroupName);
-        update.setPdpSubgroup(subGroup.getPdpType());
-        update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
-        update.setPdpHeartbeatIntervalMs(heartBeatMs);
-
-        LOGGER.debug("Created PdpUpdate message - {}", update);
-        return update;
-    }
-
-    private List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup, final PolicyModelsProvider databaseProvider)
-            throws PfModelException {
-        final List<ToscaPolicy> policies = new ArrayList<>();
-        for (final ToscaPolicyIdentifier policyIdentifier : subGroup.getPolicies()) {
-            policies.addAll(databaseProvider.getPolicyList(policyIdentifier.getName(), policyIdentifier.getVersion()));
-        }
-        LOGGER.debug("Created ToscaPolicy list - {}", policies);
-        return policies;
-    }
-
-    private PdpStateChange createPdpStateChangeMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-            final String pdpInstanceId, final PdpState pdpState) {
-
-        final PdpStateChange stateChange = new PdpStateChange();
-        stateChange.setName(pdpInstanceId);
-        stateChange.setPdpGroup(pdpGroupName);
-        stateChange.setPdpSubgroup(subGroup.getPdpType());
-        stateChange.setState(pdpState == null ? PdpState.ACTIVE : pdpState);
-        LOGGER.debug("Created PdpStateChange message - {}", stateChange);
-        return stateChange;
     }
 }
