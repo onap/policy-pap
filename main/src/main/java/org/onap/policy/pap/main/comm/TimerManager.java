@@ -285,7 +285,7 @@ public class TimerManager implements Runnable {
                     return false;
                 }
 
-                logger.debug("{} timer " + cancelMsg + " {}", TimerManager.this.name, this);
+                logger.debug("{} timer {} {}", TimerManager.this.name, cancelMsg, this);
 
                 return true;
             }
