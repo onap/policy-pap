@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4dbb1ee_58495097",
+        "filename": "packages/policy-pap-docker/src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-17T11:28:23Z",
+      "side": 1,
+      "message": "POLICY_HOME is coming from the policy-common-alpine image.\nWondering why are we overriding that value here?",
+      "range": {
+        "startLine": 8,
+        "startChar": 4,
+        "endLine": 8,
+        "endChar": 15
+      },
+      "revId": "498db39c24ee5cb837c34ee37f5ea45fd84083d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "df63a329_9d3918a5",
+        "filename": "packages/policy-pap-docker/src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-17T11:28:23Z",
+      "side": 1,
+      "message": "This fails in few environments, better to have 755\nHave a look at this https://gerrit.onap.org/r/#/c/policy/api/+/89273/",
+      "range": {
+        "startLine": 21,
+        "startChar": 38,
+        "endLine": 21,
+        "endChar": 40
+      },
+      "revId": "498db39c24ee5cb837c34ee37f5ea45fd84083d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
