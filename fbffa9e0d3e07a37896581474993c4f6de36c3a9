@@ -16,6 +16,24 @@
       "revId": "fbffa9e0d3e07a37896581474993c4f6de36c3a9",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aac66d3_3bc9997b",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-20T17:00:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d77e62c4_f91a72ea",
+      "revId": "fbffa9e0d3e07a37896581474993c4f6de36c3a9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
