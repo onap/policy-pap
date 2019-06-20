@@ -317,7 +317,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * Adds a new subgroup.
      *
      * @param data session data
-     * @param subgrp the subgroup to be added
+     * @param subgrp the subgroup to be added, updated to fully qualified versions upon return
      * @return the validation result
      * @throws PfModelException if an error occurred
      */
@@ -339,7 +339,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @param data session data
      * @param dbgroup the group, from the DB, containing the subgroup
      * @param dbsub the subgroup, from the DB
-     * @param subgrp the subgroup to be updated
+     * @param subgrp the subgroup to be updated, updated to fully qualified versions upon return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup content was changed, {@code false} if there
      *         were no changes
@@ -378,7 +378,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      *
      * @param data session data
      * @param dbsub the subgroup, from the DB
-     * @param subgrp the subgroup to be validated
+     * @param subgrp the subgroup to be validated, updated to fully qualified versions upon return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup is valid, {@code false} otherwise
      * @throws PfModelException if an error occurred
@@ -447,14 +447,15 @@ public class PdpGroupDeployProvider extends ProviderBase {
      *
      * @param data session data
      * @param dbsub subgroup from the DB, or {@code null} if this is a new subgroup
-     * @param subgrp the subgroup to be validated
+     * @param subgrp the subgroup whose policies are to be validated, updated to fully
+     *        qualified versions upon return
      * @param result the validation result
      * @throws PfModelException if an error occurred
      */
     private ValidationResult validatePolicies(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp)
                     throws PfModelException {
 
-        // build a map of the DB data, from policy name to policy version
+        // build a map of the DB data, from policy name to (fully qualified) policy version
         Map<String, String> dbname2vers = new HashMap<>();
         if (dbsub != null) {
             dbsub.getPolicies().forEach(ident -> dbname2vers.put(ident.getName(), ident.getVersion()));
@@ -463,7 +464,17 @@ public class PdpGroupDeployProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaPolicyIdentifier ident : subgrp.getPolicies()) {
-            String actualVersion;
+            // note: "ident" may not have a fully qualified version
+
+            String expectedVersion = dbname2vers.get(ident.getName());
+            if (expectedVersion != null) {
+                // policy exists in the DB list - compare the versions
+                validateVersion(expectedVersion, ident, result);
+                ident.setVersion(expectedVersion);
+                continue;
+            }
+
+            // policy doesn't appear in the DB's policy list - look it up
 
             ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
             if (policy == null) {
@@ -474,15 +485,38 @@ public class PdpGroupDeployProvider extends ProviderBase {
                 result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
                                 "not a supported policy for the subgroup"));
 
-            } else if ((actualVersion = dbname2vers.get(ident.getName())) != null
-                            && !actualVersion.equals(ident.getVersion())) {
-                // policy exists in the DB subgroup, but has the wrong version
-                result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
-                                "different version already deployed: " + actualVersion));
+            } else {
+                // replace version with the fully qualified version from the policy
+                ident.setVersion(policy.getVersion());
             }
         }
 
         return result;
+    }
+
+    /**
+     * Determines if the new version matches the version in the DB.
+     *
+     * @param dbvers fully qualified version from the DB
+     * @param ident identifier whose version is to be validated; the version need not be
+     *        fully qualified
+     * @param result the validation result
+     */
+    private void validateVersion(String dbvers, ToscaPolicyIdentifier ident, BeanValidationResult result) {
+        String idvers = ident.getVersion();
+        if (dbvers.equals(idvers)) {
+            return;
+        }
+
+        // did not match - see if it's a prefix
+
+        if (SessionData.isVersionPrefix(idvers) && dbvers.startsWith(idvers + ".")) {
+            // ident has a prefix of this version
+            return;
+        }
+
+        result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
+                        "different version already deployed: " + dbvers));
     }
 
     /**

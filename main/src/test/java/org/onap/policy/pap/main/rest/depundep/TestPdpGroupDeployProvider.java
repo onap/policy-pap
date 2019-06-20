@@ -316,7 +316,9 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
         subgrp.getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX", "9.8.7"));
 
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
+        when(dao.getFilteredPolicyList(any()))
+                        .thenReturn(loadPolicies("createGroupNewPolicy.json"))
+                        .thenReturn(loadPolicies("daoPolicyList.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
         prov.createOrUpdateGroups(groups);
@@ -430,7 +432,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testAddSubGroup_ValidationPolicyNotFound() throws Exception {
-        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroups groups = loadPdpGroups("createGroupsNewSubNotFound.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
@@ -441,7 +443,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testAddSubGroup_ValidationPolicyDaoEx() throws Exception {
-        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroups groups = loadPdpGroups("createGroupsNewSubNotFound.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
@@ -449,6 +451,45 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getFilteredPolicyList(any())).thenThrow(exc);
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isSameAs(exc);
+    }
+
+    @Test
+    public void testAddSubGroup_ValidateVersionPrefixMatch() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+        PdpGroup dbgroup = new PdpGroup(newgrp);
+        when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
+
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
+                        .thenReturn(loadPolicies("daoPolicyList.json"))
+                        .thenReturn(loadPolicies("createGroupNewPolicy.json"));
+
+        PdpGroups reqgroups = loadPdpGroups("createGroupsVersPrefix.json");
+
+        prov.createOrUpdateGroups(reqgroups);
+
+        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
+        Collections.sort(dbgroup.getPdpSubgroups().get(0).getPolicies());
+
+        assertEquals(newgrp.toString(), dbgroup.toString());
+    }
+
+    @Test
+    public void testAddSubGroup_ValidateVersionPrefixMismatch() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+        PdpGroup dbgroup = new PdpGroup(newgrp);
+        when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
+
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
+
+
+        PdpGroups reqgroups = loadPdpGroups("createGroupsVersPrefixMismatch.json");
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(reqgroups)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("different version already deployed");
+
+        assertNoGroupAction();
     }
 
     @Test
@@ -507,7 +548,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
         subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
 
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
+                        .thenReturn(loadPolicies("daoPolicyList.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
         prov.createOrUpdateGroups(groups);
