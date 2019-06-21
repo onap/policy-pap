@@ -54,7 +54,7 @@ public class SessionData {
      * If a version string matches this, then it is just a prefix (i.e., major or
      * major.minor).
      */
-    private static final Pattern VERSION_PREFIX_PAT = Pattern.compile("[^.]+(?:[.][^.]*)?");
+    private static final Pattern VERSION_PREFIX_PAT = Pattern.compile("[^.]+(?:[.][^.]+)?");
 
     /**
      * DB provider.
@@ -165,7 +165,7 @@ public class SessionData {
             // no version specified - get the latest
             filterBuilder.version(ToscaPolicyFilter.LATEST_VERSION);
 
-        } else if (VERSION_PREFIX_PAT.matcher(desiredVersion).matches()) {
+        } else if (isVersionPrefix(desiredVersion)) {
             // version prefix provided - match the prefix and then pick the latest
             filterBuilder.versionPrefix(desiredVersion + ".").version(ToscaPolicyFilter.LATEST_VERSION);
 
@@ -173,6 +173,17 @@ public class SessionData {
             // must be an exact match
             filterBuilder.version(desiredVersion);
         }
+    }
+
+    /**
+     * Determines if a version contains only a prefix.
+     *
+     * @param version version to inspect
+     * @return {@code true} if the version contains only a prefix, {@code false} if it is
+     *         fully qualified
+     */
+    public static boolean isVersionPrefix(String version) {
+        return VERSION_PREFIX_PAT.matcher(version).matches();
     }
 
     /**

@@ -189,6 +189,20 @@ public class TestSessionData extends ProviderSuper {
     }
 
     @Test
+    public void testIsVersionPrefix() {
+        assertTrue(SessionData.isVersionPrefix("1"));
+        assertTrue(SessionData.isVersionPrefix("12"));
+        assertTrue(SessionData.isVersionPrefix("1.2"));
+        assertTrue(SessionData.isVersionPrefix("1.23"));
+
+        assertFalse(SessionData.isVersionPrefix("1."));
+        assertFalse(SessionData.isVersionPrefix("1.2."));
+        assertFalse(SessionData.isVersionPrefix("1.2.3"));
+        assertFalse(SessionData.isVersionPrefix("1.2.3."));
+        assertFalse(SessionData.isVersionPrefix("1.2.3.4"));
+    }
+
+    @Test
     public void testAddRequests_testGetPdpStateChanges_testGetPdpUpdates() {
         // pre-load with a update and state-change for other PDPs
         PdpUpdate update2 = makeUpdate(PDP2);
