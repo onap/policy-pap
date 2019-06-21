@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8d9ba051_5409dfd2",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/depundep/TestPdpGroupHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-21T11:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37f1a715_a9382432",
+      "revId": "c1bcc76673923e6ef1e964138286be5b662fb68e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32106844_649cc22c",
         "filename": "main/src/test/resources/simpleDeploy/pdpGroup.json",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2019-06-20T18:15:32Z",
       "side": 1,
       "message": "might want to move this up a level or into its own subdirectory within \"resources\", as it is not used when testing the deploy/undeploy code.",
+      "revId": "c1bcc76673923e6ef1e964138286be5b662fb68e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21bb3472_f878d485",
+        "filename": "main/src/test/resources/simpleDeploy/pdpGroup.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-21T11:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32106844_649cc22c",
       "revId": "c1bcc76673923e6ef1e964138286be5b662fb68e",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
