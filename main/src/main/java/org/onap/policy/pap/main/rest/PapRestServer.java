@@ -98,7 +98,8 @@ public class PapRestServer implements Startable {
                                         PdpGroupDeployControllerV1.class.getName(),
                                         PdpGroupDeleteControllerV1.class.getName(),
                                         PdpGroupStateChangeControllerV1.class.getName(),
-                                        PdpGroupQueryControllerV1.class.getName()));
+                                        PdpGroupQueryControllerV1.class.getName(),
+                                        PdpGroupHealthCheckControllerV1.class.getName()));
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_MANAGED_SUFFIX, "false");
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_SWAGGER_SUFFIX, "true");
         props.setProperty(svcpfx + PolicyEndPointProperties.PROPERTY_HTTP_AUTH_USERNAME_SUFFIX,
