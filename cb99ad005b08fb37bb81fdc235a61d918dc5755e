@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a8cc9a2_55a8289d",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-06-26T14:17:45Z",
+      "side": 1,
+      "message": "should this be 1.5.1-SNAPSHOT?",
+      "revId": "cb99ad005b08fb37bb81fdc235a61d918dc5755e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
