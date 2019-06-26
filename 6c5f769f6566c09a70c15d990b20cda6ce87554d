@@ -22,6 +22,30 @@
       "revId": "6c5f769f6566c09a70c15d990b20cda6ce87554d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cde5afd_ac9483ff",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-26T15:30:51Z",
+      "side": 1,
+      "message": "The current version of policy/models is 2.1.1-SNAPSHOT",
+      "parentUuid": "0def16cb_a3ea8750",
+      "range": {
+        "startLine": 50,
+        "startChar": 30,
+        "endLine": 50,
+        "endChar": 45
+      },
+      "revId": "6c5f769f6566c09a70c15d990b20cda6ce87554d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
