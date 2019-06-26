@@ -16,6 +16,24 @@
       "revId": "cb99ad005b08fb37bb81fdc235a61d918dc5755e",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "973e1591_c4f89b57",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-26T14:32:45Z",
+      "side": 1,
+      "message": "Yes, noticed it in my local.\nWill fix it in the next review I am bringing in.",
+      "parentUuid": "1a8cc9a2_55a8289d",
+      "revId": "cb99ad005b08fb37bb81fdc235a61d918dc5755e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
