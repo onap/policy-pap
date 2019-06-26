@@ -21,7 +21,6 @@
 #
 
 JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/
-POLICY_PAP_HOME=/opt/app/policy/pap
 KEYSTORE="${POLICY_HOME}/etc/ssl/policy-keystore"
 KEYSTORE_PASSWD="Pol1cy_0nap"
 TRUSTSTORE="${POLICY_HOME}/etc/ssl/policy-truststore"
@@ -42,15 +41,15 @@ fi
 
 if [ -z "$CONFIG_FILE" ]
   then
-    CONFIG_FILE="$POLICY_PAP_HOME/etc/defaultConfig.json"
+    CONFIG_FILE="$POLICY_HOME/etc/defaultConfig.json"
 fi
 
 if [ -z "$PROP_FILE" ]
   then
-    PROP_FILE="$POLICY_PAP_HOME/etc/topic.properties"
+    PROP_FILE="$POLICY_HOME/etc/topic.properties"
 fi
 
 echo "Policy pap config file: $CONFIG_FILE"
 echo "Policy pap property file: $PROP_FILE"
 
-$JAVA_HOME/bin/java -cp "$POLICY_PAP_HOME/etc:$POLICY_PAP_HOME/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE -p $PROP_FILE
+$JAVA_HOME/bin/java -cp "$POLICY_HOME/etc:$POLICY_HOME/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE -p $PROP_FILE
