@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ef6a190d_945701c1",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-26T14:02:12Z",
+      "side": 1,
+      "message": "Ignore this",
+      "parentUuid": "e3a29492_98f8bd28",
+      "range": {
+        "startLine": 24,
+        "startChar": 10,
+        "endLine": 24,
+        "endChar": 24
+      },
+      "revId": "78982429dbc978dc36cfca4bf30ca32c9c20660b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a7bbc76_e11f1634",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 3
@@ -41,6 +65,53 @@
         "startChar": 12,
         "endLine": 26,
         "endChar": 26
+      },
+      "revId": "78982429dbc978dc36cfca4bf30ca32c9c20660b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b199cb59_b485c8a1",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-26T14:02:12Z",
+      "side": 1,
+      "message": "Ignore this",
+      "parentUuid": "5a7bbc76_e11f1634",
+      "range": {
+        "startLine": 26,
+        "startChar": 12,
+        "endLine": 26,
+        "endChar": 26
+      },
+      "revId": "78982429dbc978dc36cfca4bf30ca32c9c20660b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2e339676_56b2c890",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-06-26T14:02:12Z",
+      "side": 1,
+      "message": "As a good practice, add curly braces in shell scripts.\nThe comment applies to multiple places below.",
+      "range": {
+        "startLine": 44,
+        "startChar": 17,
+        "endLine": 44,
+        "endChar": 29
       },
       "revId": "78982429dbc978dc36cfca4bf30ca32c9c20660b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
