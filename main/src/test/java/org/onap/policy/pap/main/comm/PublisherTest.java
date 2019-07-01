@@ -26,8 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -40,14 +38,17 @@ import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
+import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
-import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.parameters.PapParameterHandler;
+import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
 
 public class PublisherTest extends Threaded {
 
@@ -86,12 +87,10 @@ public class PublisherTest extends Threaded {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        Properties props = new Properties();
-        File propFile = new File(ResourceUtils.getFilePath4Resource("parameters/topic.properties"));
-        try (FileInputStream inp = new FileInputStream(propFile)) {
-            props.load(inp);
-        }
-
+        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
+        final PapParameterGroup parameterGroup = new PapParameterHandler().getParameters(arguments);
+        Properties props = ParameterUtils.getTopicProperties(parameterGroup.getTopicParameterGroup());
         TopicEndpoint.manager.shutdown();
 
         TopicEndpoint.manager.addTopics(props);

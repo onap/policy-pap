@@ -26,5 +26,17 @@
         "databaseUser": "policy",
         "databasePassword": "UDAxaWNZ",
         "persistenceUnit": "ToscaConceptTest"
+    },
+    "topicParameterGroup": {
+        "topicSources" : [{
+            "topic" : "POLICY-PDP-PAP",
+            "servers" : [ "message-router" ],
+            "topicCommInfrastructure" : "noop"
+        }],
+        "topicSinks" : [{
+            "topic" : "POLICY-PDP-PAP",
+            "servers" : [ "message-router" ],
+            "topicCommInfrastructure" : "noop"
+        }]
     }
 }

@@ -27,9 +27,9 @@ import java.util.Properties;
 
 import org.onap.policy.common.capabilities.Startable;
 import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.parameters.RestServerParameters;
 import org.onap.policy.common.endpoints.properties.PolicyEndPointProperties;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
-import org.onap.policy.pap.main.parameters.RestServerParameters;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
 import org.slf4j.Logger;

@@ -28,12 +28,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
 import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -63,16 +63,11 @@ public class TestPapActivator {
         Registry.newRegistry();
         HttpServletServer.factory.destroy();
 
-        final String[] papConfigParameters =
-            {"-c", "parameters/PapConfigParameters.json", "-p", "parameters/topic.properties"};
+        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
 
-        Properties props = new Properties();
-        String propFile = arguments.getFullPropertyFilePath();
-        try (FileInputStream stream = new FileInputStream(propFile)) {
-            props.load(stream);
-        }
+        Properties props = ParameterUtils.getTopicProperties(parGroup.getTopicParameterGroup());
 
         activator = new PapActivator(parGroup, props);
     }

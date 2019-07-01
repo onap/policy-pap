@@ -21,10 +21,9 @@
 
 package org.onap.policy.pap.main.startstop;
 
-import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Properties;
-
+import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -81,16 +80,7 @@ public class Main {
         }
 
         // Read the properties
-        final Properties props = new Properties();
-        try {
-            final String propFile = arguments.getFullPropertyFilePath();
-            try (FileInputStream stream = new FileInputStream(propFile)) {
-                props.load(stream);
-            }
-        } catch (final Exception e) {
-            LOGGER.error(START_FAILED, e);
-            return;
-        }
+        Properties props = ParameterUtils.getTopicProperties(parameterGroup.getTopicParameterGroup());
 
         // Initialize database
         try {

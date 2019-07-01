@@ -185,12 +185,7 @@ public class CommonPapRestServer {
         systemProps.put("javax.net.ssl.keyStorePassword", "Pol1cy_0nap");
         System.setProperties(systemProps);
 
-        // @formatter:off
-        final String[] papConfigParameters = {
-            "-c", "src/test/resources/parameters/TestConfigParams.json",
-            "-p", "src/test/resources/parameters/topic.properties"
-        };
-        // @formatter:on
+        final String[] papConfigParameters = { "-c", "src/test/resources/parameters/TestConfigParams.json" };
 
         main = new Main(papConfigParameters);
 

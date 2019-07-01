@@ -163,7 +163,6 @@ public class PapCommandLineArguments {
      */
     public void validate() throws PolicyPapException {
         validateReadableFile("policy pap configuration", configurationFilePath);
-        validateReadableFile("policy pap properties", propertyFilePath);
     }
 
     /**

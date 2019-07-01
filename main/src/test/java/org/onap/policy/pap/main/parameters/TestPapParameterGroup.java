@@ -26,6 +26,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.onap.policy.common.endpoints.parameters.RestServerParameters;
+import org.onap.policy.common.endpoints.parameters.TopicParameterGroup;
 import org.onap.policy.common.parameters.GroupValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -50,6 +52,7 @@ public class TestPapParameterGroup {
     public void testPapParameterGroup() {
         final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(1);
         final RestServerParameters restServerParameters = papParameters.getRestServerParameters();
+        final TopicParameterGroup topicParameterGroup = papParameters.getTopicParameterGroup();
         final GroupValidationResult validationResult = papParameters.validate();
         assertTrue(validationResult.isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, papParameters.getName());
@@ -59,6 +62,8 @@ public class TestPapParameterGroup {
         assertEquals(restServerParameters.getPassword(), papParameters.getRestServerParameters().getPassword());
         assertTrue(papParameters.getRestServerParameters().isHttps());
         assertFalse(papParameters.getRestServerParameters().isAaf());
+        assertEquals(topicParameterGroup.getTopicSinks(), papParameters.getTopicParameterGroup().getTopicSinks());
+        assertEquals(topicParameterGroup.getTopicSources(), papParameters.getTopicParameterGroup().getTopicSources());
     }
 
     @Test
@@ -99,7 +104,7 @@ public class TestPapParameterGroup {
         final GroupValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
         assertTrue(validationResult.getResult()
-                .contains("\"org.onap.policy.pap.main.parameters.RestServerParameters\" INVALID, "
+                .contains("\"org.onap.policy.common.endpoints.parameters.RestServerParameters\" INVALID, "
                         + "parameter group has status INVALID"));
     }
 }

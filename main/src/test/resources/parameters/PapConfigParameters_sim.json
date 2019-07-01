@@ -26,5 +26,17 @@
         "databaseUser": "policy",
         "databasePassword": "UDAxaWNZ",
         "persistenceUnit": "PolicyMariaDb"
+    },
+    "topicParameterGroup": {
+        "topicSources" : [{
+            "topic" : "POLICY-PDP-PAP",
+            "servers" : [ "localhost:6845" ],
+            "topicCommInfrastructure" : "dmaap"
+        }],
+        "topicSinks" : [{
+            "topic" : "POLICY-PDP-PAP",
+            "servers" : [ "localhost:6845" ],
+            "topicCommInfrastructure" : "dmaap"
+        }]
     }
 }
