@@ -34,24 +34,12 @@ else
     CONFIG_FILE=${CONFIG_FILE}
 fi
 
-if [ "$#" -ge 2 ]; then
-    PROP_FILE=$2
-else
-    PROP_FILE=${PROP_FILE}
-fi
-
 if [ -z "$CONFIG_FILE" ]
   then
     CONFIG_FILE="$POLICY_PAP_HOME/etc/defaultConfig.json"
 fi
 
-if [ -z "$PROP_FILE" ]
-  then
-    PROP_FILE="$POLICY_PAP_HOME/etc/topic.properties"
-fi
-
 echo "Policy pap config file: $CONFIG_FILE"
-echo "Policy pap property file: $PROP_FILE"
 
-$JAVA_HOME/bin/java -cp "$POLICY_PAP_HOME/etc:$POLICY_PAP_HOME/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=10.2.0.43  org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE -p $PROP_FILE
+$JAVA_HOME/bin/java -cp "$POLICY_PAP_HOME/etc:$POLICY_PAP_HOME/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=10.2.0.43  org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE
 

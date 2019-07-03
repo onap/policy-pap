@@ -20,4 +20,4 @@
 # the directory of the script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo ${DIR}
-docker run -p 9090:9090 -p 6969:6969 -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/topic.properties:/opt/app/policy/pap/etc/topic.properties --add-host mariadb:10.2.0.41 --name policy-pap -d --rm nexus3.onap.org:10001/onap/policy-pap:2.0.0-SNAPSHOT-latest
+docker run -p 9090:9090 -p 6969:6969 -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/defaultConfig.json:/opt/app/policy/pap/etc/defaultConfig.json --add-host mariadb:10.2.0.41 --name policy-pap -d --rm nexus3.onap.org:10001/onap/policy-pap:2.0.0-SNAPSHOT-latest
