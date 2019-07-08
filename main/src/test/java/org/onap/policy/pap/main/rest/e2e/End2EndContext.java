@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import lombok.Getter;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
-import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
 import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicSource;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
@@ -129,9 +129,9 @@ public class End2EndContext {
      * Constructs the object.
      */
     public End2EndContext() {
-        toPapTopic = TopicEndpoint.manager.getNoopTopicSource(PapConstants.TOPIC_POLICY_PDP_PAP);
+        toPapTopic = TopicEndpointManager.getManager().getNoopTopicSource(PapConstants.TOPIC_POLICY_PDP_PAP);
 
-        TopicEndpoint.manager.getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(topicListener);
+        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(topicListener);
 
         dispatcher = new MessageTypeDispatcher("messageName");
         dispatcher.register(PdpMessageType.PDP_UPDATE.name(), new UpdateListener());
@@ -200,7 +200,7 @@ public class End2EndContext {
         toPap.clear();
         pdps.forEach(pdp -> toPap.add(DONE));
 
-        TopicEndpoint.manager.getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(topicListener);
+        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(topicListener);
     }
 
     /**

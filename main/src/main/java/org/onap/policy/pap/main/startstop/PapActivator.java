@@ -24,7 +24,7 @@ package org.onap.policy.pap.main.startstop;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
@@ -90,8 +90,8 @@ public class PapActivator extends ServiceManagerContainer {
     public PapActivator(final PapParameterGroup papParameterGroup, final Properties topicProperties) {
         super("Policy PAP");
 
-        TopicEndpoint.manager.addTopicSinks(topicProperties);
-        TopicEndpoint.manager.addTopicSources(topicProperties);
+        TopicEndpointManager.getManager().addTopicSinks(topicProperties);
+        TopicEndpointManager.getManager().addTopicSources(topicProperties);
 
         try {
             this.papParameterGroup = papParameterGroup;
@@ -142,8 +142,8 @@ public class PapActivator extends ServiceManagerContainer {
             this::unregisterMsgDispatcher);
 
         addAction("topics",
-            TopicEndpoint.manager::start,
-            TopicEndpoint.manager::shutdown);
+            TopicEndpointManager.getManager()::start,
+            TopicEndpointManager.getManager()::shutdown);
 
         addAction("PAP statistics",
             () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
@@ -240,7 +240,7 @@ public class PapActivator extends ServiceManagerContainer {
      * Registers the dispatcher with the topic source(s).
      */
     private void registerMsgDispatcher() {
-        for (final TopicSource source : TopicEndpoint.manager
+        for (final TopicSource source : TopicEndpointManager.getManager()
                 .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.register(msgDispatcher);
         }
@@ -250,7 +250,7 @@ public class PapActivator extends ServiceManagerContainer {
      * Unregisters the dispatcher from the topic source(s).
      */
     private void unregisterMsgDispatcher() {
-        for (final TopicSource source : TopicEndpoint.manager
+        for (final TopicSource source : TopicEndpointManager.getManager()
                 .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.unregister(msgDispatcher);
         }

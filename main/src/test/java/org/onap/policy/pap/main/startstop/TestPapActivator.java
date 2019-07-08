@@ -32,7 +32,7 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
@@ -61,7 +61,7 @@ public class TestPapActivator {
     @Before
     public void setUp() throws Exception {
         Registry.newRegistry();
-        HttpServletServer.factory.destroy();
+        HttpServletServerFactoryInstance.getServerFactory().destroy();
 
         final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);

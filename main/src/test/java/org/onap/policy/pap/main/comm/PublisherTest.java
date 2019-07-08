@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
-import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
 import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.coder.Coder;
@@ -91,15 +91,15 @@ public class PublisherTest extends Threaded {
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parameterGroup = new PapParameterHandler().getParameters(arguments);
         Properties props = ParameterUtils.getTopicProperties(parameterGroup.getTopicParameterGroup());
-        TopicEndpoint.manager.shutdown();
+        TopicEndpointManager.getManager().shutdown();
 
-        TopicEndpoint.manager.addTopics(props);
-        TopicEndpoint.manager.start();
+        TopicEndpointManager.getManager().addTopics(props);
+        TopicEndpointManager.getManager().start();
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        TopicEndpoint.manager.shutdown();
+        TopicEndpointManager.getManager().shutdown();
     }
 
     /**
@@ -114,7 +114,7 @@ public class PublisherTest extends Threaded {
         pub = new Publisher(PapConstants.TOPIC_POLICY_PDP_PAP);
 
         listener = new MyListener();
-        TopicEndpoint.manager.getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(listener);
+        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(listener);
     }
 
     /**
@@ -124,7 +124,7 @@ public class PublisherTest extends Threaded {
      */
     @After
     public void tearDown() throws Exception {
-        TopicEndpoint.manager.getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(listener);
+        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(listener);
 
         super.tearDown();
     }

@@ -27,6 +27,7 @@ import java.util.Properties;
 
 import org.onap.policy.common.capabilities.Startable;
 import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.endpoints.parameters.RestServerParameters;
 import org.onap.policy.common.endpoints.properties.PolicyEndPointProperties;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
@@ -63,7 +64,7 @@ public class PapRestServer implements Startable {
     @Override
     public boolean start() {
         try {
-            servers = HttpServletServer.factory.build(getServerProperties());
+            servers = HttpServletServerFactoryInstance.getServerFactory().build(getServerProperties());
             for (final HttpServletServer server : servers) {
                 if (server.isAaf()) {
                     server.addFilterClass(null, PapAafFilter.class.getName());

@@ -43,8 +43,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.onap.policy.common.endpoints.event.comm.TopicEndpoint;
-import org.onap.policy.common.endpoints.http.server.HttpServletServer;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
+import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
@@ -94,8 +94,8 @@ public class CommonPapRestServer {
 
         makeConfigFile();
 
-        HttpServletServer.factory.destroy();
-        TopicEndpoint.manager.shutdown();
+        HttpServletServerFactoryInstance.getServerFactory().destroy();
+        TopicEndpointManager.getManager().shutdown();
 
         CommonTestData.newDb();
 
