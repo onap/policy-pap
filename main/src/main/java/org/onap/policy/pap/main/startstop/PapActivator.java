@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.http.server.RestServer;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.parameters.ParameterService;
@@ -44,8 +45,15 @@ import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.PdpParameters;
-import org.onap.policy.pap.main.rest.PapRestServer;
+import org.onap.policy.pap.main.rest.HealthCheckRestControllerV1;
+import org.onap.policy.pap.main.rest.PapAafFilter;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
+import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
+import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
+import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
+import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
+import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
 
 /**
  * This class activates Policy Administration (PAP) as a complete service together with all its controllers, listeners &
@@ -113,7 +121,7 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<TimerManager> heartBeatTimers = new AtomicReference<>();
         final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
-        final AtomicReference<PapRestServer> restServer = new AtomicReference<>();
+        final AtomicReference<RestServer> restServer = new AtomicReference<>();
 
         // @formatter:off
         addAction("PAP parameters",
@@ -208,7 +216,15 @@ public class PapActivator extends ServiceManagerContainer {
 
         addAction("REST server",
             () -> {
-                restServer.set(new PapRestServer(papParameterGroup.getRestServerParameters()));
+                RestServer server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
+                                HealthCheckRestControllerV1.class,
+                                StatisticsRestControllerV1.class,
+                                PdpGroupDeployControllerV1.class,
+                                PdpGroupDeleteControllerV1.class,
+                                PdpGroupStateChangeControllerV1.class,
+                                PdpGroupQueryControllerV1.class,
+                                PdpGroupHealthCheckControllerV1.class);
+                restServer.set(server);
                 restServer.get().start();
             },
             () -> restServer.get().stop());
