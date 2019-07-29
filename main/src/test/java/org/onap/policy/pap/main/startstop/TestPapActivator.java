@@ -28,12 +28,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
-import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -67,9 +65,7 @@ public class TestPapActivator {
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
 
-        Properties props = ParameterUtils.getTopicProperties(parGroup.getTopicParameterGroup());
-
-        activator = new PapActivator(parGroup, props);
+        activator = new PapActivator(parGroup);
     }
 
     /**

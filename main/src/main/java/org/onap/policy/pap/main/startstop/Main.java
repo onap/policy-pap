@@ -22,8 +22,6 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
-import java.util.Properties;
-import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -79,9 +77,6 @@ public class Main {
             return;
         }
 
-        // Read the properties
-        Properties props = ParameterUtils.getTopicProperties(parameterGroup.getTopicParameterGroup());
-
         // Initialize database
         try {
             new PapDatabaseInitializer().initializePapDatabase(parameterGroup.getDatabaseProviderParameters());
@@ -91,7 +86,7 @@ public class Main {
         }
 
         // Now, create the activator for the policy pap service
-        activator = new PapActivator(parameterGroup, props);
+        activator = new PapActivator(parameterGroup);
         Registry.register(PapConstants.REG_PAP_ACTIVATOR, activator);
 
         // Start the activator
