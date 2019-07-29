@@ -22,7 +22,6 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
@@ -93,13 +92,11 @@ public class PapActivator extends ServiceManagerContainer {
      * Instantiate the activator for policy pap as a complete service.
      *
      * @param papParameterGroup the parameters for the pap service
-     * @param topicProperties properties used to configure the topics
      */
-    public PapActivator(final PapParameterGroup papParameterGroup, final Properties topicProperties) {
+    public PapActivator(final PapParameterGroup papParameterGroup) {
         super("Policy PAP");
 
-        TopicEndpointManager.getManager().addTopicSinks(topicProperties);
-        TopicEndpointManager.getManager().addTopicSources(topicProperties);
+        TopicEndpointManager.getManager().addTopics(papParameterGroup.getTopicParameterGroup());
 
         try {
             this.papParameterGroup = papParameterGroup;
