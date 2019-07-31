@@ -16,6 +16,23 @@
       "revId": "8811df9603fe936c53d35ba7e71aff1e964c15e4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "87466276_d3adb409",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-07-31T19:53:37Z",
+      "side": 1,
+      "message": "I think we decided to use ${xxx} instead of $xxx in scripts",
+      "revId": "8811df9603fe936c53d35ba7e71aff1e964c15e4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
