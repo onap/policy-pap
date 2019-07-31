@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "932b2abd_74406d50",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-07-31T19:51:06Z",
+      "side": 1,
+      "message": "tabs \u003d\u003e spaces",
+      "revId": "8811df9603fe936c53d35ba7e71aff1e964c15e4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
