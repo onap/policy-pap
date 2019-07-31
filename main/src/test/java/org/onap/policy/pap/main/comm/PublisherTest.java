@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +37,6 @@ import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
-import org.onap.policy.common.endpoints.utils.ParameterUtils;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -90,10 +88,9 @@ public class PublisherTest extends Threaded {
         final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parameterGroup = new PapParameterHandler().getParameters(arguments);
-        Properties props = ParameterUtils.getTopicProperties(parameterGroup.getTopicParameterGroup());
         TopicEndpointManager.getManager().shutdown();
 
-        TopicEndpointManager.getManager().addTopics(props);
+        TopicEndpointManager.getManager().addTopics(parameterGroup.getTopicParameterGroup());
         TopicEndpointManager.getManager().start();
     }
 
