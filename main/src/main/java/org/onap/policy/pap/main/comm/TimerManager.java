@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,10 +109,13 @@ public class TimerManager implements Runnable {
     public Timer register(String timerName, Consumer<String> action) {
 
         synchronized (lockit) {
-            Timer timer = new Timer(timerName, action);
-
             // always remove existing entry so that new entry goes at the end of the map
-            name2timer.remove(timerName);
+            Timer timer = name2timer.remove(timerName);
+            if (timer != null) {
+                logger.info("{} timer replaced {}", name, timer);
+            }
+
+            timer = new Timer(timerName, action);
             name2timer.put(timerName, timer);
 
             logger.info("{} timer registered {}", name, timer);
@@ -203,6 +205,7 @@ public class TimerManager implements Runnable {
 
         // run the timer
         try {
+            logger.info("{} timer firing {}", TimerManager.this.name, timer);
             timer.runner.accept(timer.name);
         } catch (RuntimeException e) {
             logger.warn("{} timer threw an exception {}", TimerManager.this.name, timer, e);
@@ -265,28 +268,13 @@ public class TimerManager implements Runnable {
         private boolean cancel(String cancelMsg) {
 
             synchronized (lockit) {
-                AtomicBoolean wasPresent = new AtomicBoolean(false);
-
-                name2timer.computeIfPresent(name, (key, val) -> {
-
-                    if (val == this) {
-                        wasPresent.set(true);
-                        return null;
-
-                    } else {
-                        // different timer is in the map - leave it
-                        return val;
-                    }
-                });
-
-                if (!wasPresent.get()) {
+                if (!name2timer.remove(name, this)) {
                     // have a new timer in the map - ignore "this" timer
-                    logger.info("{} timer replaced {}", TimerManager.this.name, this);
+                    logger.info("{} timer discarded ({}) {}", TimerManager.this.name, cancelMsg, this);
                     return false;
                 }
 
-                logger.debug("{} timer {} {}", TimerManager.this.name, cancelMsg, this);
-
+                logger.info("{} timer {} {}", TimerManager.this.name, cancelMsg, this);
                 return true;
             }
         }
