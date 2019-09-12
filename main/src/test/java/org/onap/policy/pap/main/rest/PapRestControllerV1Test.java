@@ -20,10 +20,13 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.UUID;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.junit.Before;
@@ -38,6 +41,14 @@ public class PapRestControllerV1Test {
     public void setUp() {
         ctlr = new PapRestControllerV1();
         bldr = Response.status(Response.Status.OK);
+    }
+
+    @Test
+    public void testProduces() {
+        Produces annotation = PapRestControllerV1.class.getAnnotation(Produces.class);
+        assertNotNull(annotation);
+        assertThat(annotation.value()).contains(MediaType.APPLICATION_JSON)
+                        .contains(PapRestControllerV1.APPLICATION_YAML);
     }
 
     @Test

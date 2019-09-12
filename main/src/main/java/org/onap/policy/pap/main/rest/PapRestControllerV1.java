@@ -43,7 +43,7 @@ import org.onap.policy.models.base.PfModelException;
 // @formatter:off
 @Path("/policy/pap/v1")
 @Api(value = "Policy Administration (PAP) API")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML})
 @SwaggerDefinition(
     info = @Info(description =
                     "Policy Administration is responsible for the deployment life cycle of policies as well as "
@@ -52,13 +52,15 @@ import org.onap.policy.models.base.PfModelException;
                     + " ensuring that policies are available to users, that policies are executing correctly,"
                     + " and that the state and status of policies is monitored", version = "v1.0",
                     title = "Policy Administration"),
-    consumes = {MediaType.APPLICATION_JSON},
-    produces = {MediaType.APPLICATION_JSON},
+    consumes = {MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML},
+    produces = {MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML},
     schemes = {SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS},
     tags = {@Tag(name = "policy-administration", description = "Policy Administration Service Operations")},
     securityDefinition = @SecurityDefinition(basicAuthDefinitions = {@BasicAuthDefinition(key = "basicAuth")}))
 // @formatter:on
 public class PapRestControllerV1 {
+    public static final String APPLICATION_YAML = "application/yaml";
+
     public static final String EXTENSION_NAME = "interface info";
 
     public static final String API_VERSION_NAME = "api-version";
