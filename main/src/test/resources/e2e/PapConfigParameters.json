@@ -37,6 +37,10 @@
             "topic" : "POLICY-PDP-PAP",
             "servers" : [ "message-router" ],
             "topicCommInfrastructure" : "noop"
+        },{
+            "topic" : "POLICY-NOTIFICATION",
+            "servers" : [ "message-router" ],
+            "topicCommInfrastructure" : "noop"
         }]
     }
 }

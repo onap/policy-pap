@@ -50,7 +50,7 @@ public class PdpRequestsTest extends CommonRequestBase {
         update = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
         change = makeStateChangeReq(PDP1, MY_STATE);
 
-        data = new PdpRequests(PDP1);
+        data = new PdpRequests(PDP1, notifier);
     }
 
     @Test
@@ -62,6 +62,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     public void testAddSingleton() {
         data.addSingleton(update);
 
+        verify(update).setNotifier(notifier);
         verify(update).startPublishing(any());
     }
 

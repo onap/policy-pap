@@ -20,7 +20,6 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
-import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.parameters.RequestParams;
@@ -39,7 +38,7 @@ public class StateChangeReq extends RequestImpl {
      *
      * @throws IllegalArgumentException if a required parameter is not set
      */
-    public StateChangeReq(RequestParams params, String name, PdpMessage message) {
+    public StateChangeReq(RequestParams params, String name, PdpStateChange message) {
         super(params, name, message);
     }
 

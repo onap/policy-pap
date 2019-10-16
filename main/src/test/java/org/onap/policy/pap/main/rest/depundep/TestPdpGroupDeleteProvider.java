@@ -26,8 +26,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -35,11 +35,14 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.Set;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -48,17 +51,23 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.pap.main.rest.depundep.ProviderBase.Updater;
 
 public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
     private static final String GROUP1_NAME = "groupA";
 
-    private MyProvider prov;
+    @Mock
     private SessionData session;
+
+    @Captor
+    private ArgumentCaptor<Set<String>> pdpCaptor;
+
+    private MyProvider prov;
     private ToscaPolicyIdentifierOptVersion optIdent;
     private ToscaPolicyIdentifierOptVersion fullIdent;
     private ToscaPolicyIdentifier ident;
-    private BiFunction<PdpGroup, PdpSubGroup, Boolean> updater;
+    private Updater updater;
 
 
     @AfterClass
@@ -76,14 +85,13 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         super.setUp();
 
-        session = mock(SessionData.class);
         ident = policy1.getIdentifier();
         optIdent = new ToscaPolicyIdentifierOptVersion(ident.getName(), null);
         fullIdent = new ToscaPolicyIdentifierOptVersion(ident.getName(), ident.getVersion());
 
         prov = new MyProvider();
 
-        updater = prov.makeUpdater(policy1, fullIdent);
+        updater = prov.makeUpdater(session, policy1, fullIdent);
     }
 
     @Test
@@ -215,7 +223,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testMakeUpdater_WithVersion() {
+    public void testMakeUpdater_WithVersion() throws PfModelException {
         /*
          * this group has two matching policies and one policy with a different name.
          */
@@ -230,10 +238,13 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         // identified policy should have been removed
         assertEquals(origSize - 1, subgroup.getPolicies().size());
         assertFalse(subgroup.getPolicies().contains(ident));
+
+        verify(session).trackUndeploy(eq(ident), pdpCaptor.capture());
+        assertEquals("[pdpA]", pdpCaptor.getValue().toString());
     }
 
     @Test
-    public void testMakeUpdater_NullVersion() {
+    public void testMakeUpdater_NullVersion() throws PfModelException {
         /*
          * this group has two matching policies and one policy with a different name.
          */
@@ -243,7 +254,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         int origSize = subgroup.getPolicies().size();
 
         // invoke updater - matching the name, but with a null (i.e., wild-card) version
-        updater = prov.makeUpdater(policy1, optIdent);
+        updater = prov.makeUpdater(session, policy1, optIdent);
         assertTrue(updater.apply(group, subgroup));
 
         // identified policy should have been removed
@@ -252,7 +263,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testMakeUpdater_NotFound() {
+    public void testMakeUpdater_NotFound() throws PfModelException {
         /*
          * this group has one policy with a different name and one with a different
          * version, but not the policy of interest.
