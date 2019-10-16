@@ -25,7 +25,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.onap.policy.common.endpoints.event.comm.client.TopicSinkClient;
 import org.onap.policy.common.endpoints.event.comm.client.TopicSinkClientException;
 import org.onap.policy.common.utils.coder.StandardCoder;
-import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>This class has not been tested for multiple threads invoking {@link #run()}
  * simultaneously.
+ *
+ * @param <T> type of message published by this publisher
  */
-public class Publisher implements Runnable {
+public class Publisher<T> implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Publisher.class);
 
     /**
@@ -51,7 +52,7 @@ public class Publisher implements Runnable {
     /**
      * Request queue. The references may contain {@code null}.
      */
-    private final BlockingQueue<QueueToken<PdpMessage>> queue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<QueueToken<T>> queue = new LinkedBlockingQueue<>();
 
     /**
      * Set to {@code true} to cause the publisher to stop running.
@@ -88,7 +89,7 @@ public class Publisher implements Runnable {
      *
      * @param ref reference to the message to be published
      */
-    public void enqueue(QueueToken<PdpMessage> ref) {
+    public void enqueue(QueueToken<T> ref) {
         queue.add(ref);
     }
 
@@ -98,7 +99,7 @@ public class Publisher implements Runnable {
     @Override
     public void run() {
         for (;;) {
-            QueueToken<PdpMessage> token = getNext();
+            QueueToken<T> token = getNext();
 
             if (stopNow) {
                 // unblock any other publisher threads
@@ -106,7 +107,7 @@ public class Publisher implements Runnable {
                 break;
             }
 
-            PdpMessage data = token.replaceItem(null);
+            T data = token.replaceItem(null);
             if (data != null) {
                 client.send(data);
             }
@@ -120,7 +121,7 @@ public class Publisher implements Runnable {
      * @return the next item, or a reference containing {@code null} if this is
      *         interrupted
      */
-    private QueueToken<PdpMessage> getNext() {
+    private QueueToken<T> getNext() {
         try {
             return queue.take();
 

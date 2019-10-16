@@ -26,6 +26,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,20 +35,22 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.function.BiFunction;
+import java.util.TreeSet;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 import org.powermock.reflect.Whitebox;
 
 public class TestProviderBase extends ProviderSuper {
@@ -103,6 +106,24 @@ public class TestProviderBase extends ProviderSuper {
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         assertUpdate(getUpdateRequests(1), GROUP1_NAME, PDP1_TYPE, PDP1);
+
+        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier, times(2)).addDeploymentData(captor.capture());
+        assertNotifier(captor, PDP1, PDP3);
+
+        captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier, times(2)).addUndeploymentData(captor.capture());
+        assertNotifier(captor, PDP2, PDP4);
+    }
+
+    private void assertNotifier(ArgumentCaptor<PolicyPdpNotificationData> captor, String firstPdp, String secondPdp) {
+        assertEquals(1, captor.getAllValues().get(0).getPdps().size());
+        assertEquals(1, captor.getAllValues().get(1).getPdps().size());
+
+        // ensure the order by using a TreeSet
+        TreeSet<String> pdps = new TreeSet<>(captor.getAllValues().get(0).getPdps());
+        pdps.addAll(captor.getAllValues().get(1).getPdps());
+        assertEquals("[" + firstPdp + ", " + secondPdp + "]", pdps.toString());
     }
 
     @Test
@@ -345,13 +366,20 @@ public class TestProviderBase extends ProviderSuper {
         }
 
         @Override
-        protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+        protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
                         ToscaPolicyIdentifierOptVersion desiredPolicy) {
 
             return (group, subgroup) -> {
                 if (shouldUpdate.remove()) {
                     // queue indicated that the update should succeed
                     subgroup.getPolicies().add(policy.getIdentifier());
+
+                    data.trackDeploy(policy.getIdentifier(), Collections.singleton(PDP1));
+                    data.trackUndeploy(policy.getIdentifier(), Collections.singleton(PDP2));
+
+                    ToscaPolicyIdentifier ident2 = new ToscaPolicyIdentifier(POLICY1_NAME, "9.9.9");
+                    data.trackDeploy(ident2, Collections.singleton(PDP3));
+                    data.trackUndeploy(ident2, Collections.singleton(PDP4));
                     return true;
 
                 } else {

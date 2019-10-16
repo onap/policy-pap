@@ -21,12 +21,13 @@
 package org.onap.policy.pap.main.rest.depundep;
 
 import java.util.Iterator;
-import java.util.function.BiFunction;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
@@ -122,7 +123,7 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      * Returns a function that will remove the desired policy from a subgroup.
      */
     @Override
-    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+    protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
                     ToscaPolicyIdentifierOptVersion desiredIdent) {
 
         // construct a matcher based on whether or not the version was specified
@@ -142,6 +143,8 @@ public class PdpGroupDeleteProvider extends ProviderBase {
         // return a function that will remove the policy from the subgroup
         return (group, subgroup) -> {
 
+            Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
+
             boolean result = false;
 
             Iterator<ToscaPolicyIdentifier> iter = subgroup.getPolicies().iterator();
@@ -153,6 +156,8 @@ public class PdpGroupDeleteProvider extends ProviderBase {
                     iter.remove();
                     logger.info("remove policy {} {} from subgroup {} {} count={}", ident.getName(), ident.getVersion(),
                                     group.getName(), subgroup.getPdpType(), subgroup.getPolicies().size());
+
+                    data.trackUndeploy(ident, pdps);
                 }
             }
 
