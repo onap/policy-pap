@@ -35,11 +35,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -53,6 +55,7 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -278,6 +281,14 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         Collections.sort(dbgroup.getPdpSubgroups().get(0).getPolicies());
 
         assertEquals(newgrp.toString(), dbgroup.toString());
+
+        // no deployment notifications
+        verify(notifier, never()).addDeploymentData(any());
+
+        // should have notified of deleted subgroup's policies/PDPs
+        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier).addUndeploymentData(captor.capture());
+        assertDeploymentData(captor, policy1.getIdentifier(), "[pdpB, pdpD]");
 
         // this requires a PDP UPDATE message
         List<PdpUpdate> pdpUpdates = getUpdateRequests(2);
@@ -540,16 +551,23 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     @Test
     public void testUpdateSubGroup_Policies() throws Exception {
-        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroups groups = loadPdpGroups("createGroupsDelPolicy.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
-        subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
+
+        // delete second policy
+        subgrp.setPolicies(subgrp.getPolicies().subList(0, 1));
+
+        // add new policy
+        ToscaPolicyIdentifier policyId2 = new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION);
+        subgrp.getPolicies().add(policyId2);
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
                         .thenReturn(loadPolicies("daoPolicyList.json"))
+                        .thenReturn(loadPolicies("daoPolicyListDelPolicy.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
         prov.createOrUpdateGroups(groups);
@@ -559,8 +577,40 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertEquals(newgrp.toString(), group.toString());
 
+        // should have notified of added policy/PDPs
+        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier).addDeploymentData(captor.capture());
+        assertDeploymentData(captor, policyId2, "[pdpA]");
+
+        // should have notified of deleted policy/PDPs
+        captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier).addUndeploymentData(captor.capture());
+        assertDeploymentData(captor, new ToscaPolicyIdentifier("ToBeDeleted", POLICY1_VERSION), "[pdpA]");
+
         // this requires a PDP UPDATE message
         assertGroupUpdate(group, subgrp);
+    }
+
+    @Test
+    public void testUpdateSubGroup_Unchanged() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+        PdpGroup group = new PdpGroup(newgrp);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        prov.createOrUpdateGroups(groups);
+
+        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
+        Collections.sort(group.getPdpSubgroups().get(0).getPolicies());
+
+        assertEquals(newgrp.toString(), group.toString());
+
+        // no notifications
+        verify(notifier, never()).addDeploymentData(any());
+        verify(notifier, never()).addUndeploymentData(any());
+
+        // no group updates
+        assertNoGroupAction();
     }
 
     @Test
@@ -662,6 +712,14 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         List<PdpUpdate> requests = getUpdateRequests(2);
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
         assertUpdate(requests, GROUP1_NAME, PDP4_TYPE, PDP4);
+
+        // should have notified of added policy/PDPs
+        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier).addDeploymentData(captor.capture());
+        assertDeploymentData(captor, policy1.getIdentifier(), "[pdpB, pdpD]");
+
+        // no undeployment notifications
+        verify(notifier, never()).addUndeploymentData(any());
     }
 
     @Test
@@ -739,6 +797,14 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         List<PdpGroup> updates = getGroupUpdates();
         assertEquals(Arrays.asList(group), updates);
+    }
+
+    private void assertDeploymentData(ArgumentCaptor<PolicyPdpNotificationData> captor, ToscaPolicyIdentifier policyId,
+                    String expectedPdps) {
+        PolicyPdpNotificationData data = captor.getValue();
+        assertEquals(policyId, data.getPolicyId());
+        assertEquals(policy1.getTypeIdentifier(), data.getPolicyType());
+        assertEquals(expectedPdps, new TreeSet<>(data.getPdps()).toString());
     }
 
     /**
