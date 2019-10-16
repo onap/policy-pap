@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -18,27 +18,37 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main;
+package org.onap.policy.pap.main.notification;
 
 /**
- * Names of various items contained in the Registry.
+ * Tracker for policy deployments to PDPs.
+ *
+ * <p/>
+ * Policies are not removed from the internal map until all of the sets contained within
+ * the data are empty. This may be the result of a PDP being removed from the system
+ * because it is no longer responsive, or because the PDP Subgroup that contained it is
+ * deleted.
  */
-public class PapConstants {
+public class PolicyDeployTracker extends PolicyCommonTracker {
 
-    // Registry keys
-    public static final String REG_PAP_ACTIVATOR = "object:activator/pap";
-    public static final String REG_STATISTICS_MANAGER = "object:manager/statistics";
-    public static final String REG_PDP_MODIFY_LOCK = "lock:pdp";
-    public static final String REG_PDP_MODIFY_MAP = "object:pdp/modify/map";
-    public static final String REG_PDP_TRACKER = "object:pdp/tracker";
-    public static final String REG_POLICY_NOTIFIER = "object:policy/notifier";
-    public static final String REG_PAP_DAO_FACTORY = "object:pap/dao/factory";
-
-    // topic names
-    public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";
-    public static final String TOPIC_POLICY_NOTIFICATION = "POLICY-NOTIFICATION";
-
-    private PapConstants() {
+    /**
+     * Constructs the object.
+     */
+    public PolicyDeployTracker() {
         super();
+    }
+
+    @Override
+    protected boolean updateData(String pdp, PolicyTrackerData data, boolean stillActive) {
+        return (stillActive ? data.success(pdp) : data.fail(pdp));
+    }
+
+    /**
+     * Returns {@code true} only when the data is <i>completely empty</i> (i.e., it has no
+     * more PDPs)
+     */
+    @Override
+    protected boolean shouldRemove(PolicyTrackerData data) {
+        return data.isEmpty();
     }
 }

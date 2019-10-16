@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.comm;
 import lombok.Getter;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.pap.main.comm.msgdata.Request;
+import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,12 @@ public class PdpRequests {
     private final String pdpName;
 
     /**
+     * Notifier for policy update completions.
+     */
+    @Getter
+    private final PolicyNotifier notifier;
+
+    /**
      * Index of request currently being published.
      */
     private int curIndex = 0;
@@ -60,8 +67,9 @@ public class PdpRequests {
      *
      * @param pdpName name of the PDP with which the requests are associated
      */
-    public PdpRequests(String pdpName) {
+    public PdpRequests(String pdpName, PolicyNotifier notifier) {
         this.pdpName = pdpName;
+        this.notifier = notifier;
     }
 
     /**
@@ -86,7 +94,7 @@ public class PdpRequests {
         singletons[priority] = request;
 
         // stop publishing anything of a lower priority
-        QueueToken<PdpMessage> token = stopPublishingLowerPriority(priority);
+        final QueueToken<PdpMessage> token = stopPublishingLowerPriority(priority);
 
         // start publishing if nothing of higher priority
         if (higherPrioritySingleton(priority)) {
@@ -95,6 +103,7 @@ public class PdpRequests {
         }
 
         curIndex = priority;
+        request.setNotifier(notifier);
         request.startPublishing(token);
     }
 
