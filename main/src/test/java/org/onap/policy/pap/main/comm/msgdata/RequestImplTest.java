@@ -383,7 +383,7 @@ public class RequestImplTest extends CommonRequestBase {
 
     @Test
     public void testResetRetryCount_testBumpRetryCount() {
-        req = new MyRequest(new RequestParams().setMaxRetryCount(2).setModifyLock(lock).setPublisher(publisher)
+        req = new MyRequest(new RequestParams().setMaxRetryCount(2).setModifyLock(lock).setPdpPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setTimers(timers), MY_REQ_NAME, msg);
         req.setListener(listener);
 

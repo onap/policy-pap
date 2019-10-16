@@ -36,6 +36,8 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpTracker;
+import org.onap.policy.pap.main.comm.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -92,6 +94,8 @@ public class TestPapActivator {
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
         assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class));
+        assertNotNull(Registry.get(PapConstants.REG_PDP_TRACKER, PdpTracker.class));
+        assertNotNull(Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.start());

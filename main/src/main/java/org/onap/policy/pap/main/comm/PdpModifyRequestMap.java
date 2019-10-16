@@ -74,6 +74,11 @@ public class PdpModifyRequestMap {
      */
     private final PolicyModelsProviderFactoryWrapper daoFactory;
 
+    /**
+     * Used to notify when policy updates completes.
+     */
+    private final PolicyNotifier policyNotifier;
+
 
     /**
      * Constructs the object.
@@ -88,6 +93,7 @@ public class PdpModifyRequestMap {
         this.params = params;
         this.modifyLock = params.getModifyLock();
         this.daoFactory = params.getDaoFactory();
+        this.policyNotifier = params.getPolicyNotifier();
     }
 
     /**
@@ -150,7 +156,7 @@ public class PdpModifyRequestMap {
             .setMaxRetryCount(params.getParams().getUpdateParameters().getMaxRetryCount())
             .setTimers(params.getUpdateTimers())
             .setModifyLock(params.getModifyLock())
-            .setPublisher(params.getPublisher())
+            .setPdpPublisher(params.getPdpPublisher())
             .setResponseDispatcher(params.getResponseDispatcher());
         // @formatter:on
 
@@ -179,7 +185,7 @@ public class PdpModifyRequestMap {
             .setMaxRetryCount(params.getParams().getStateChangeParameters().getMaxRetryCount())
             .setTimers(params.getStateChangeTimers())
             .setModifyLock(params.getModifyLock())
-            .setPublisher(params.getPublisher())
+            .setPdpPublisher(params.getPdpPublisher())
             .setResponseDispatcher(params.getResponseDispatcher());
         // @formatter:on
 
@@ -299,7 +305,7 @@ public class PdpModifyRequestMap {
      * @return a new set of requests
      */
     protected PdpRequests makePdpRequests(String pdpName) {
-        return new PdpRequests(pdpName);
+        return new PdpRequests(pdpName, policyNotifier);
     }
 
     /**
@@ -358,6 +364,8 @@ public class PdpModifyRequestMap {
          * @param requests the requests associated with the PDP to be disabled
          */
         private void disablePdp(PdpRequests requests) {
+
+            policyNotifier.removePdp(requests.getPdpName());
 
             // remove the requests from the map
             if (!pdp2requests.remove(requests.getPdpName(), requests)) {

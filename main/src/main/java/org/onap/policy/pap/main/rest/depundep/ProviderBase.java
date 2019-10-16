@@ -21,17 +21,13 @@
 package org.onap.policy.pap.main.rest.depundep;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
@@ -41,6 +37,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifi
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PolicyNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +67,11 @@ public abstract class ProviderBase {
     private final PdpModifyRequestMap requestMap;
 
     /**
+     * Generates policy notifications based on responses from PDPs.
+     */
+    private final PolicyNotifier notifier;
+
+    /**
      * Factory for PAP DAO.
      */
     private final PolicyModelsProviderFactoryWrapper daoFactory;
@@ -82,6 +84,7 @@ public abstract class ProviderBase {
         this.updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
         this.requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
         this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+        this.notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class);
     }
 
     /**
@@ -94,18 +97,15 @@ public abstract class ProviderBase {
     protected <T> void process(T request, BiConsumerWithEx<SessionData, T> processor) throws PfModelException {
 
         synchronized (updateLock) {
-            // list of requests to be published to the PDPs
-            Collection<Pair<PdpUpdate, PdpStateChange>> requests = Collections.emptyList();
+            SessionData data;
 
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
-                SessionData data = new SessionData(dao);
+                data = new SessionData(dao);
                 processor.accept(data, request);
 
                 // make all of the DB updates
                 data.updateDb();
-
-                requests = data.getPdpRequests();
 
             } catch (PfModelException | PfModelRuntimeException e) {
                 logger.warn(DEPLOY_FAILED, e);
@@ -116,9 +116,12 @@ public abstract class ProviderBase {
                 throw new PfModelException(Status.INTERNAL_SERVER_ERROR, "request failed", e);
             }
 
+            // track responses for notification purposes
+            data.getDeployData().forEach(notifier::addDeployData);
+            data.getUndeployData().forEach(notifier::addUndeployData);
 
             // publish the requests
-            requests.forEach(pair -> requestMap.addRequest(pair.getLeft(), pair.getRight()));
+            data.getPdpRequests().forEach(pair -> requestMap.addRequest(pair.getLeft(), pair.getRight()));
         }
     }
 
@@ -140,7 +143,7 @@ public abstract class ProviderBase {
                             + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 
-        BiFunction<PdpGroup, PdpSubGroup, Boolean> updater = makeUpdater(policy, desiredPolicy);
+        Updater updater = makeUpdater(data, policy, desiredPolicy);
 
         for (PdpGroup group : groups) {
             upgradeGroup(data, group, updater);
@@ -152,11 +155,12 @@ public abstract class ProviderBase {
      * {@code true} if the subgroup was updated, {@code false} if no update was
      * necessary/appropriate.
      *
+     * @param data session data
      * @param policy policy to be added to or removed from each subgroup
      * @param desiredPolicy request policy
      * @return a function to update a subgroup
      */
-    protected abstract BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+    protected abstract Updater makeUpdater(SessionData data, ToscaPolicy policy,
                     ToscaPolicyIdentifierOptVersion desiredPolicy);
 
     /**
@@ -180,9 +184,9 @@ public abstract class ProviderBase {
      * @param data session data
      * @param group the original group, to be updated
      * @param updater function to update a group
-     * @throws PfModelRuntimeException if an error occurred
+     * @throws PfModelException if an error occurred
      */
-    private void upgradeGroup(SessionData data, PdpGroup group, BiFunction<PdpGroup, PdpSubGroup, Boolean> updater) {
+    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater) throws PfModelException {
 
         boolean updated = false;
 
@@ -274,5 +278,10 @@ public abstract class ProviderBase {
          * @throws PfModelException if an error occurred
          */
         void accept(F firstArg, S secondArg) throws PfModelException;
+    }
+
+    @FunctionalInterface
+    public static interface Updater {
+        boolean apply(PdpGroup group, PdpSubGroup subgroup) throws PfModelException;
     }
 }

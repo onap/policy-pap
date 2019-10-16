@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,9 +39,11 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.pap.main.comm.PolicyPdpNotificationData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +90,16 @@ public class SessionData {
      * Maps a policy type's identifier to the policy.
      */
     private final Map<ToscaPolicyTypeIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
+
+    /**
+     * Policies to be deployed.
+     */
+    private final Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> deploy = new HashMap<>();
+
+    /**
+     * Policies to be undeployed.
+     */
+    private final Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> undeploy = new HashMap<>();
 
 
     /**
@@ -401,5 +414,81 @@ public class SessionData {
     public void deleteGroupFromDb(PdpGroup group) throws PfModelException {
         logger.info("deleting DB group {}", group.getName());
         dao.deletePdpGroup(group.getName());
+    }
+
+    /**
+     * Adds policy deployment data.
+     *
+     * @param policyId ID of the policy being deployed
+     * @param pdps PDPs to which the policy is being deployed
+     * @throws PfModelException if an error occurred
+     */
+    protected void trackDeploy(ToscaPolicyIdentifier policyId, Set<String> pdps) throws PfModelException {
+
+        addData(policyId, pdps, deploy, undeploy);
+    }
+
+    /**
+     * Adds policy undeployment data.
+     *
+     * @param policyId ID of the policy being undeployed
+     * @param pdps PDPs to which the policy is being undeployed
+     * @throws PfModelException if an error occurred
+     */
+    protected void trackUndeploy(ToscaPolicyIdentifier policyId, Set<String> pdps) throws PfModelException {
+
+        addData(policyId, pdps, undeploy, deploy);
+    }
+
+    /**
+     * Adds policy deployment/undeployment data.
+     *
+     * @param policyId ID of the policy being deployed/undeployed
+     * @param pdps PDPs to which the policy is being deployed/undeployed
+     * @param addMap map to which it should be added
+     * @param removeMap map from which it should be removed
+     * @throws PfModelException if an error occurred
+     */
+    private void addData(ToscaPolicyIdentifier policyId, Set<String> pdps,
+                    Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> addMap,
+                    Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> removeMap) throws PfModelException {
+
+        PolicyPdpNotificationData removeData = removeMap.get(policyId);
+        if (removeData != null) {
+            removeData.removeAll(pdps);
+        }
+
+        ToscaPolicyIdentifierOptVersion optid = new ToscaPolicyIdentifierOptVersion(policyId);
+        ToscaPolicyTypeIdentifier policyType = getPolicy(optid).getTypeIdentifier();
+        PolicyPdpNotificationData data = new PolicyPdpNotificationData(policyId, policyType);
+        data.addAll(pdps);
+
+        addMap.compute(policyId, (key, addData) -> {
+            if (addData == null) {
+                return data;
+
+            } else {
+                addData.addAll(data.getPdps());
+                return addData;
+            }
+        });
+    }
+
+    /**
+     * Gets the policies to be deployed.
+     *
+     * @return the policies to be deployed
+     */
+    public Collection<PolicyPdpNotificationData> getDeployData() {
+        return deploy.values();
+    }
+
+    /**
+     * Gets the policies to be undeployed.
+     *
+     * @return the policies to be undeployed
+     */
+    public Collection<PolicyPdpNotificationData> getUndeployData() {
+        return undeploy.values();
     }
 }

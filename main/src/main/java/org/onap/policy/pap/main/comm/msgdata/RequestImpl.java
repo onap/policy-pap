@@ -28,6 +28,7 @@ import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.utils.services.ServiceManager;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.pap.main.comm.PolicyNotifier;
 import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.RequestParams;
@@ -62,6 +63,13 @@ public abstract class RequestImpl implements Request {
      */
     @Setter
     private RequestListener listener;
+
+    /**
+     * Notifier for policy update completions.
+     */
+    @Getter
+    @Setter
+    private PolicyNotifier notifier;
 
     /**
      * Current retry count.
@@ -217,7 +225,7 @@ public abstract class RequestImpl implements Request {
 
         // couldn't take the other's place - add our own token to the queue
         token = new QueueToken<>(message);
-        params.getPublisher().enqueue(token);
+        params.getPdpPublisher().enqueue(token);
     }
 
     /**

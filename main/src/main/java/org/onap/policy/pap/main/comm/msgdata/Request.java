@@ -22,6 +22,7 @@ package org.onap.policy.pap.main.comm.msgdata;
 
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.pap.main.comm.PolicyNotifier;
 import org.onap.policy.pap.main.comm.QueueToken;
 
 /**
@@ -59,6 +60,13 @@ public interface Request {
      * @param listener the request listener
      */
     public void setListener(RequestListener listener);
+
+    /**
+     * Sets the notifier to track responses to the request.
+     *
+     * @param notifier notifier used to publish notifications
+     */
+    public void setNotifier(PolicyNotifier notifier);
 
     /**
      * Determines if this request is currently being published.

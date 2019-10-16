@@ -69,7 +69,8 @@ public class CommonRequestBase {
     protected static final PdpState DIFF_STATE = PdpState.TERMINATED;
     protected static final int RETRIES = 1;
 
-    protected Publisher publisher;
+    protected Publisher<PdpMessage> publisher;
+    protected PolicyNotifier notifier;
     protected RequestIdDispatcher<PdpStatus> dispatcher;
     protected Object lock;
     protected TimerManager timers;
@@ -90,6 +91,7 @@ public class CommonRequestBase {
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         publisher = mock(Publisher.class);
+        notifier = mock(PolicyNotifier.class);
         dispatcher = mock(RequestIdDispatcher.class);
         lock = new Object();
         timers = mock(TimerManager.class);
@@ -121,12 +123,12 @@ public class CommonRequestBase {
         when(updateParams.getMaxRetryCount()).thenReturn(RETRIES);
         when(pdpParams.getUpdateParameters()).thenReturn(updateParams);
 
-        reqParams = new RequestParams().setMaxRetryCount(RETRIES).setModifyLock(lock).setPublisher(publisher)
+        reqParams = new RequestParams().setMaxRetryCount(RETRIES).setModifyLock(lock).setPdpPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setTimers(timers);
 
-        mapParams = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(publisher)
-                        .setResponseDispatcher(dispatcher).setDaoFactory(daoFactory).setUpdateTimers(timers)
-                        .setStateChangeTimers(timers).setParams(pdpParams);
+        mapParams = new PdpModifyRequestMapParams().setModifyLock(lock).setPdpPublisher(publisher)
+                        .setPolicyNotifier(notifier).setResponseDispatcher(dispatcher).setDaoFactory(daoFactory)
+                        .setUpdateTimers(timers).setStateChangeTimers(timers).setParams(pdpParams);
     }
 
     /**
