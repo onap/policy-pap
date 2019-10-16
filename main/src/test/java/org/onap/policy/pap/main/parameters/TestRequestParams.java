@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
@@ -36,7 +37,7 @@ public class TestRequestParams {
     private static final int RETRIES = 1;
 
     private RequestParams params;
-    private Publisher pub;
+    private Publisher<PdpMessage> pub;
     private RequestIdDispatcher<PdpStatus> disp;
     private Object lock;
     private TimerManager timers;
@@ -52,15 +53,15 @@ public class TestRequestParams {
         lock = new Object();
         timers = mock(TimerManager.class);
 
-        params = new RequestParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp).setTimers(timers)
-                        .setMaxRetryCount(RETRIES);
+        params = new RequestParams().setModifyLock(lock).setPdpPublisher(pub).setResponseDispatcher(disp)
+                        .setTimers(timers).setMaxRetryCount(RETRIES);
     }
 
     @Test
     public void testGettersSetters() {
-        assertSame(params, params.setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp));
+        assertSame(params, params.setModifyLock(lock).setPdpPublisher(pub).setResponseDispatcher(disp));
 
-        assertSame(pub, params.getPublisher());
+        assertSame(pub, params.getPdpPublisher());
         assertSame(disp, params.getResponseDispatcher());
         assertSame(lock, params.getModifyLock());
         assertSame(timers, params.getTimers());
@@ -87,7 +88,7 @@ public class TestRequestParams {
 
     @Test
     public void testValidate_MissingPublisher() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setPublisher(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setPdpPublisher(null).validate())
                         .withMessageContaining("publisher");
     }
 

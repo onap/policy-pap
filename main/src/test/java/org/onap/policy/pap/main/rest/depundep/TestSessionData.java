@@ -41,6 +41,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.function.Supplier;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -52,9 +54,11 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 
 public class TestSessionData extends ProviderSuper {
     private static final String GROUP_NAME = "groupA";
@@ -533,6 +537,70 @@ public class TestSessionData extends ProviderSuper {
         verify(dao).deletePdpGroup(group1.getName());
     }
 
+    @Test
+    public void testTrackDeploy() throws PfModelException {
+        testTrack(session::getDeployData, session::getUndeployData, session::trackDeploy);
+    }
+
+    /**
+     * Tests trackDeploy() when there is something in the undeployed list.
+     *
+     * @throws PfModelException if an error occurs
+     */
+    @Test
+    public void testTrackDeployRemoveUndeploy() throws PfModelException {
+        testTrack(session::getDeployData, session::getUndeployData, session::trackUndeploy, session::trackDeploy);
+    }
+
+    @Test
+    public void testTrackUndeploy() throws PfModelException {
+        testTrack(session::getUndeployData, session::getDeployData, session::trackUndeploy);
+    }
+
+    /**
+     * Tests trackUndeploy() when there is something in the deployed list.
+     *
+     * @throws PfModelException if an error occurs
+     */
+    @Test
+    public void testTrackUndeployRemoveUndeploy() throws PfModelException {
+        testTrack(session::getUndeployData, session::getDeployData, session::trackDeploy, session::trackUndeploy);
+    }
+
+    protected void testTrack(Supplier<Collection<PolicyPdpNotificationData>> expected,
+                    Supplier<Collection<PolicyPdpNotificationData>> unexpected, TrackEx... trackFuncs)
+                    throws PfModelException {
+
+        ToscaPolicy policy = makePolicy(POLICY_NAME, POLICY_VERSION);
+        policy.setType(POLICY_TYPE);
+        policy.setTypeVersion(POLICY_TYPE_VERSION);
+
+        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy));
+
+        ToscaPolicyIdentifier policyId = new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION);
+        List<String> pdps = Arrays.asList(PDP1, PDP2);
+
+        for (TrackEx trackFunc : trackFuncs) {
+            trackFunc.accept(policyId, pdps);
+        }
+
+        // "unexpected" list should be empty of any PDPs
+        Collection<PolicyPdpNotificationData> dataList = unexpected.get();
+        assertTrue(dataList.size() <= 1);
+        if (!dataList.isEmpty()) {
+            PolicyPdpNotificationData data = dataList.iterator().next();
+            assertTrue(data.getPdps().isEmpty());
+        }
+
+        dataList = expected.get();
+        assertEquals(1, dataList.size());
+
+        PolicyPdpNotificationData data = dataList.iterator().next();
+        assertEquals(policyId, data.getPolicyId());
+        assertEquals(type, data.getPolicyType());
+        assertEquals("[pdp_1, pdp_2]", new TreeSet<>(data.getPdps()).toString());
+    }
+
     private PdpUpdate makeUpdate(String pdpName) {
         PdpUpdate update = new PdpUpdate();
 
@@ -585,5 +653,10 @@ public class TestSessionData extends ProviderSuper {
 
     private String getName(Pair<PdpUpdate, PdpStateChange> pair) {
         return (pair.getKey() != null ? pair.getKey().getName() : pair.getValue().getName());
+    }
+
+    @FunctionalInterface
+    private static interface TrackEx {
+        public void accept(ToscaPolicyIdentifier policyId, Collection<String> pdps) throws PfModelException;
     }
 }

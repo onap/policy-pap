@@ -25,9 +25,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +49,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
     /**
      * Sets up.
+     *
      * @throws Exception if an error occurs
      */
     @Before
@@ -62,6 +67,7 @@ public class UpdateReqTest extends CommonRequestBase {
                         update.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList()));
 
         data = new UpdateReq(reqParams, MY_REQ_NAME, update);
+        data.setNotifier(notifier);
     }
 
     @Test
@@ -73,6 +79,7 @@ public class UpdateReqTest extends CommonRequestBase {
     @Test
     public void testCheckResponse() {
         assertNull(data.checkResponse(response));
+        verifyResponse();
 
         // both policy lists null
         update.setPolicies(null);
@@ -85,6 +92,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setName(null);
 
         assertEquals("null PDP name", data.checkResponse(response));
+        verifyNoResponse();
     }
 
     @Test
@@ -92,6 +100,7 @@ public class UpdateReqTest extends CommonRequestBase {
         update.setName(null);
 
         assertEquals(null, data.checkResponse(response));
+        verifyResponse();
     }
 
     @Test
@@ -99,6 +108,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPdpGroup(DIFFERENT);
 
         assertEquals("group does not match", data.checkResponse(response));
+        verifyResponse();
     }
 
     @Test
@@ -106,6 +116,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPdpSubgroup(DIFFERENT);
 
         assertEquals("subgroup does not match", data.checkResponse(response));
+        verifyResponse();
     }
 
     @Test
@@ -116,6 +127,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPolicies(policies.stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList()));
 
         assertEquals("policies do not match", data.checkResponse(response));
+        verifyResponse();
     }
 
     @Test
@@ -123,6 +135,7 @@ public class UpdateReqTest extends CommonRequestBase {
         update.setPolicies(null);
 
         assertEquals("policies do not match", data.checkResponse(response));
+        verifyResponse();
     }
 
     @Test
@@ -130,6 +143,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPolicies(null);
 
         assertEquals("policies do not match", data.checkResponse(response));
+        verifyResponse();
     }
 
     @Test
@@ -220,6 +234,16 @@ public class UpdateReqTest extends CommonRequestBase {
     @Test
     public void testGetPriority() {
         assertTrue(data.getPriority() > new StateChangeReq(reqParams, MY_REQ_NAME, new PdpStateChange()).getPriority());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void verifyResponse() {
+        verify(notifier).processResponse(any(), any(Set.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void verifyNoResponse() {
+        verify(notifier, never()).processResponse(any(), any(Set.class));
     }
 
     /**

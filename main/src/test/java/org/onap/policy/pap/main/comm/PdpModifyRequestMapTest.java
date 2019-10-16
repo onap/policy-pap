@@ -305,6 +305,9 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // should have stopped publishing
         verify(requests).stopPublishing();
 
+        // should have generated a notification
+        verify(notifier).removePdp(PDP1);
+
         // should have published a new update
         PdpMessage msg2 = getSingletons(3).get(1).getMessage();
         assertNotNull(msg2);
