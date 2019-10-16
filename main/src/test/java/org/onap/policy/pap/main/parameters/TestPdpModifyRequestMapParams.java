@@ -27,13 +27,14 @@ import static org.mockito.Mockito.mock;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 
 public class TestPdpModifyRequestMapParams {
     private PdpModifyRequestMapParams params;
-    private Publisher pub;
+    private Publisher<PdpMessage> pub;
     private RequestIdDispatcher<PdpStatus> disp;
     private Object lock;
     private PdpParameters pdpParams;
@@ -53,13 +54,13 @@ public class TestPdpModifyRequestMapParams {
         updTimers = mock(TimerManager.class);
         stateTimers = mock(TimerManager.class);
 
-        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp)
+        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPdpPublisher(pub).setResponseDispatcher(disp)
                         .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
     }
 
     @Test
     public void testGettersSetters() {
-        assertSame(pub, params.getPublisher());
+        assertSame(pub, params.getPdpPublisher());
         assertSame(disp, params.getResponseDispatcher());
         assertSame(lock, params.getModifyLock());
         assertSame(pdpParams, params.getParams());
@@ -75,7 +76,7 @@ public class TestPdpModifyRequestMapParams {
 
     @Test
     public void testValidate_MissingPublisher() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setPublisher(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setPdpPublisher(null).validate())
                         .withMessageContaining("publisher");
     }
 

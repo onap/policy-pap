@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -18,27 +18,32 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main;
+package org.onap.policy.pap.main.notification;
 
 /**
- * Names of various items contained in the Registry.
+ * Tracker for policy undeployments from PDPs.
+ *
+ * <p/>
+ * Policies are removed from the internal map when they are no longer waiting for
+ * responses from any PDPs.
  */
-public class PapConstants {
+public class PolicyUndeployTracker extends PolicyCommonTracker {
 
-    // Registry keys
-    public static final String REG_PAP_ACTIVATOR = "object:activator/pap";
-    public static final String REG_STATISTICS_MANAGER = "object:manager/statistics";
-    public static final String REG_PDP_MODIFY_LOCK = "lock:pdp";
-    public static final String REG_PDP_MODIFY_MAP = "object:pdp/modify/map";
-    public static final String REG_PDP_TRACKER = "object:pdp/tracker";
-    public static final String REG_POLICY_NOTIFIER = "object:policy/notifier";
-    public static final String REG_PAP_DAO_FACTORY = "object:pap/dao/factory";
-
-    // topic names
-    public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";
-    public static final String TOPIC_POLICY_NOTIFICATION = "POLICY-NOTIFICATION";
-
-    private PapConstants() {
+    /**
+     * Constructs the object.
+     */
+    public PolicyUndeployTracker() {
         super();
+    }
+
+    @Override
+    protected boolean updateData(String pdp, PolicyTrackerData data, boolean stillActive) {
+        // note: still active means the policy wasn't undeployed, thus it's a failure
+        return (stillActive ? data.fail(pdp) : data.success(pdp));
+    }
+
+    @Override
+    protected boolean shouldRemove(PolicyTrackerData data) {
+        return data.isComplete();
     }
 }
