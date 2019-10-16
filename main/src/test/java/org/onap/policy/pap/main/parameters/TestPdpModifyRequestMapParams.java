@@ -27,18 +27,23 @@ import static org.mockito.Mockito.mock;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
+import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 public class TestPdpModifyRequestMapParams {
     private PdpModifyRequestMapParams params;
-    private Publisher pub;
+    private Publisher<PdpMessage> pub;
     private RequestIdDispatcher<PdpStatus> disp;
     private Object lock;
     private PdpParameters pdpParams;
     private TimerManager updTimers;
     private TimerManager stateTimers;
+    private PolicyModelsProviderFactoryWrapper dao;
+    private PolicyNotifier notifier;
 
     /**
      * Sets up the objects and creates an empty {@link #params}.
@@ -52,19 +57,23 @@ public class TestPdpModifyRequestMapParams {
         pdpParams = mock(PdpParameters.class);
         updTimers = mock(TimerManager.class);
         stateTimers = mock(TimerManager.class);
+        dao = mock(PolicyModelsProviderFactoryWrapper.class);
+        notifier = mock(PolicyNotifier.class);
 
-        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPublisher(pub).setResponseDispatcher(disp)
-                        .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers);
+        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPdpPublisher(pub).setResponseDispatcher(disp)
+                        .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers)
+                        .setDaoFactory(dao).setPolicyNotifier(notifier);
     }
 
     @Test
     public void testGettersSetters() {
-        assertSame(pub, params.getPublisher());
+        assertSame(pub, params.getPdpPublisher());
         assertSame(disp, params.getResponseDispatcher());
         assertSame(lock, params.getModifyLock());
         assertSame(pdpParams, params.getParams());
         assertSame(updTimers, params.getUpdateTimers());
         assertSame(stateTimers, params.getStateChangeTimers());
+        assertSame(notifier, params.getPolicyNotifier());
     }
 
     @Test
@@ -75,7 +84,7 @@ public class TestPdpModifyRequestMapParams {
 
     @Test
     public void testValidate_MissingPublisher() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setPublisher(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setPdpPublisher(null).validate())
                         .withMessageContaining("publisher");
     }
 
@@ -107,5 +116,17 @@ public class TestPdpModifyRequestMapParams {
     public void testValidate_MissingUpdateTimers() {
         assertThatIllegalArgumentException().isThrownBy(() -> params.setUpdateTimers(null).validate())
                         .withMessageContaining("update");
+    }
+
+    @Test
+    public void testValidate_MissingDaoFactory() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setDaoFactory(null).validate())
+                        .withMessageContaining("DAO");
+    }
+
+    @Test
+    public void testValidate_MissingNotifier() {
+        assertThatIllegalArgumentException().isThrownBy(() -> params.setPolicyNotifier(null).validate())
+                        .withMessageContaining("notifier");
     }
 }

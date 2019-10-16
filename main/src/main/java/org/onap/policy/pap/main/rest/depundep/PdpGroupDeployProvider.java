@@ -28,8 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.parameters.BeanValidationResult;
 import org.onap.policy.common.parameters.ObjectValidationResult;
@@ -269,8 +269,9 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @param dbgroup the group, as it appears within the DB
      * @param group the group being updated
      * @return {@code true} if a subgroup was removed, {@code false} otherwise
+     * @throws PfModelException if an error occurred
      */
-    private boolean notifyPdpsDelSubGroups(SessionData data, PdpGroup dbgroup, PdpGroup group) {
+    private boolean notifyPdpsDelSubGroups(SessionData data, PdpGroup dbgroup, PdpGroup group) throws PfModelException {
         boolean updated = false;
 
         // subgroups, as they appear within the updated group
@@ -284,6 +285,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
                 // this subgroup no longer appears - notify its PDPs
                 updated = true;
                 notifyPdpsDelSubGroup(data, subgrp);
+                trackPdpsDelSubGroup(data, subgrp);
             }
         }
 
@@ -314,10 +316,26 @@ public class PdpGroupDeployProvider extends ProviderBase {
     }
 
     /**
+     * Tracks PDP responses when their subgroup is removed.
+     *
+     * @param data session data
+     * @param subgrp subgroup that is being removed
+     * @throws PfModelException if an error occurred
+     */
+    private void trackPdpsDelSubGroup(SessionData data, PdpSubGroup subgrp) throws PfModelException {
+        Set<String> pdps = subgrp.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
+
+        for (ToscaPolicyIdentifier policyId : subgrp.getPolicies()) {
+            data.trackUndeploy(policyId, pdps);
+        }
+    }
+
+    /**
      * Adds a new subgroup.
      *
      * @param data session data
-     * @param subgrp the subgroup to be added, updated to fully qualified versions upon return
+     * @param subgrp the subgroup to be added, updated to fully qualified versions upon
+     *        return
      * @return the validation result
      * @throws PfModelException if an error occurred
      */
@@ -339,7 +357,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @param data session data
      * @param dbgroup the group, from the DB, containing the subgroup
      * @param dbsub the subgroup, from the DB
-     * @param subgrp the subgroup to be updated, updated to fully qualified versions upon return
+     * @param subgrp the subgroup to be updated, updated to fully qualified versions upon
+     *        return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup content was changed, {@code false} if there
      *         were no changes
@@ -356,7 +375,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         /*
          * first, apply the changes about which the PDPs care
          */
-        boolean updated = updateList(dbsub.getPolicies(), subgrp.getPolicies(), dbsub::setPolicies);
+        boolean updated = updatePolicies(data, dbsub, subgrp);
 
         // publish any changes to the PDPs
         if (updated) {
@@ -373,12 +392,40 @@ public class PdpGroupDeployProvider extends ProviderBase {
                         dbsub::setDesiredInstanceCount) || updated;
     }
 
+    private boolean updatePolicies(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp) throws PfModelException {
+        Set<ToscaPolicyIdentifier> undeployed = new HashSet<>(dbsub.getPolicies());
+        undeployed.removeAll(subgrp.getPolicies());
+
+        Set<ToscaPolicyIdentifier> deployed = new HashSet<>(subgrp.getPolicies());
+        deployed.removeAll(dbsub.getPolicies());
+
+        if (deployed.isEmpty() && undeployed.isEmpty()) {
+            // lists are identical
+            return false;
+        }
+
+
+        Set<String> pdps = subgrp.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
+
+        for (ToscaPolicyIdentifier policyId : deployed) {
+            data.trackDeploy(policyId, pdps);
+        }
+
+        for (ToscaPolicyIdentifier policyId : undeployed) {
+            data.trackUndeploy(policyId, pdps);
+        }
+
+        dbsub.setPolicies(new ArrayList<>(subgrp.getPolicies()));
+        return true;
+    }
+
     /**
      * Performs additional validations of a subgroup.
      *
      * @param data session data
      * @param dbsub the subgroup, from the DB
-     * @param subgrp the subgroup to be validated, updated to fully qualified versions upon return
+     * @param subgrp the subgroup to be validated, updated to fully qualified versions
+     *        upon return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup is valid, {@code false} otherwise
      * @throws PfModelException if an error occurred
@@ -455,7 +502,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private ValidationResult validatePolicies(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp)
                     throws PfModelException {
 
-        // build a map of the DB data, from policy name to (fully qualified) policy version
+        // build a map of the DB data, from policy name to (fully qualified) policy
+        // version
         Map<String, String> dbname2vers = new HashMap<>();
         if (dbsub != null) {
             dbsub.getPolicies().forEach(ident -> dbname2vers.put(ident.getName(), ident.getVersion()));
@@ -557,7 +605,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * Adds a policy to a subgroup, if it isn't there already.
      */
     @Override
-    protected BiFunction<PdpGroup, PdpSubGroup, Boolean> makeUpdater(ToscaPolicy policy,
+    protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
                     ToscaPolicyIdentifierOptVersion requestedIdent) {
 
         ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
@@ -586,6 +634,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
             logger.info("add policy {} {} to subgroup {} {} count={}", desiredIdent.getName(),
                             desiredIdent.getVersion(), group.getName(), subgroup.getPdpType(),
                             subgroup.getPolicies().size());
+
+            Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
+            data.trackDeploy(desiredIdent, pdps);
+
             return true;
         };
     }

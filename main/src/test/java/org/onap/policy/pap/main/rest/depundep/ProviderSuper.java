@@ -52,6 +52,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 /**
  * Super class for TestPdpGroupDeployProviderXxx classes.
@@ -61,6 +62,9 @@ public class ProviderSuper {
 
     @Mock
     protected PolicyModelsProvider dao;
+
+    @Mock
+    protected PolicyNotifier notifier;
 
 
     /**
@@ -103,6 +107,7 @@ public class ProviderSuper {
         Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, lockit);
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);
         Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daofact);
+        Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier);
     }
 
     protected void assertGroup(List<PdpGroup> groups, String name) {
