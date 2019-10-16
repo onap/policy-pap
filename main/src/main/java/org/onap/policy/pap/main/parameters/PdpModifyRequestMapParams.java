@@ -22,10 +22,12 @@ package org.onap.policy.pap.main.parameters;
 
 import lombok.Getter;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
+import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 
 /**
@@ -33,13 +35,14 @@ import org.onap.policy.pap.main.comm.TimerManager;
  */
 @Getter
 public class PdpModifyRequestMapParams {
-    private Publisher publisher;
+    private Publisher<PdpMessage> pdpPublisher;
     private RequestIdDispatcher<PdpStatus> responseDispatcher;
     private Object modifyLock;
     private PdpParameters params;
     private TimerManager updateTimers;
     private TimerManager stateChangeTimers;
     private PolicyModelsProviderFactoryWrapper daoFactory;
+    private PolicyNotifier policyNotifier;
 
     public PdpModifyRequestMapParams setParams(PdpParameters params) {
         this.params = params;
@@ -61,8 +64,13 @@ public class PdpModifyRequestMapParams {
         return this;
     }
 
-    public PdpModifyRequestMapParams setPublisher(Publisher publisher) {
-        this.publisher = publisher;
+    public PdpModifyRequestMapParams setPolicyNotifier(PolicyNotifier policyNotifier) {
+        this.policyNotifier = policyNotifier;
+        return this;
+    }
+
+    public PdpModifyRequestMapParams setPdpPublisher(Publisher<PdpMessage> pdpPublisher) {
+        this.pdpPublisher = pdpPublisher;
         return this;
     }
 
@@ -80,7 +88,7 @@ public class PdpModifyRequestMapParams {
      * Validates the parameters.
      */
     public void validate() {
-        if (publisher == null) {
+        if (pdpPublisher == null) {
             throw new IllegalArgumentException("missing publisher");
         }
 
@@ -102,6 +110,14 @@ public class PdpModifyRequestMapParams {
 
         if (stateChangeTimers == null) {
             throw new IllegalArgumentException("missing stateChangeTimers");
+        }
+
+        if (daoFactory == null) {
+            throw new IllegalArgumentException("missing DAO factory");
+        }
+
+        if (policyNotifier == null) {
+            throw new IllegalArgumentException("missing policy notifier");
         }
     }
 }
