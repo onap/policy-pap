@@ -62,6 +62,7 @@ public class UpdateReqTest extends CommonRequestBase {
                         update.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList()));
 
         data = new UpdateReq(reqParams, MY_REQ_NAME, update);
+        data.setNotifier(notifier);
     }
 
     @Test

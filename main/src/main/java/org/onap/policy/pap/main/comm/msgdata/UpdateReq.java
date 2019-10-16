@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
@@ -48,7 +47,7 @@ public class UpdateReq extends RequestImpl {
      *
      * @throws IllegalArgumentException if a required parameter is not set
      */
-    public UpdateReq(RequestParams params, String name, PdpMessage message) {
+    public UpdateReq(RequestParams params, String name, PdpUpdate message) {
         super(params, name, message);
     }
 
@@ -61,10 +60,15 @@ public class UpdateReq extends RequestImpl {
     public String checkResponse(PdpStatus response) {
         String reason = super.checkResponse(response);
         if (reason != null) {
+            // response isn't for this PDP - don't generate notifications
             return reason;
         }
 
+        Set<ToscaPolicyIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
+        getNotifier().processResponse(getName(), actualSet);
+
         PdpUpdate message = getMessage();
+
         if (!StringUtils.equals(message.getPdpGroup(), response.getPdpGroup())) {
             return "group does not match";
         }
@@ -74,11 +78,11 @@ public class UpdateReq extends RequestImpl {
         }
 
         // see if the policies match
-        Set<ToscaPolicyIdentifier> set1 = new HashSet<>(alwaysList(response.getPolicies()));
-        Set<ToscaPolicyIdentifier> set2 = new HashSet<>(alwaysList(message.getPolicies()).stream()
+
+        Set<ToscaPolicyIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
                         .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
 
-        if (!set1.equals(set2)) {
+        if (!actualSet.equals(expectedSet)) {
             return "policies do not match";
         }
 

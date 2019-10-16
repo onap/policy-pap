@@ -75,7 +75,7 @@ public class PublisherTest extends Threaded {
      */
     private static final long MAX_WAIT_MS = 5000;
 
-    private Publisher pub;
+    private Publisher<PdpMessage> pub;
     private MyListener listener;
 
     /**
@@ -108,7 +108,7 @@ public class PublisherTest extends Threaded {
     public void setUp() throws Exception {
         super.setUp();
 
-        pub = new Publisher(PapConstants.TOPIC_POLICY_PDP_PAP);
+        pub = new Publisher<>(PapConstants.TOPIC_POLICY_PDP_PAP);
 
         listener = new MyListener();
         TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(listener);
@@ -146,7 +146,7 @@ public class PublisherTest extends Threaded {
 
     @Test
     public void testPublisher_Ex() throws Exception {
-        assertThatThrownBy(() -> new Publisher("unknwon-topic")).isInstanceOf(PolicyPapException.class);
+        assertThatThrownBy(() -> new Publisher<>("unknwon-topic")).isInstanceOf(PolicyPapException.class);
     }
 
     @Test
