@@ -34,6 +34,24 @@
       "revId": "92f4035bb3d3b538a166ff0af1c94976a4f435ef",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0f90bae3_51957481",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-10-17T14:04:00Z",
+      "side": 1,
+      "message": "I wondered about that, too.  Maybe add a JIRA for later, or just not bother until we decide it\u0027s needed.",
+      "parentUuid": "f282fa9b_c49a3efb",
+      "revId": "92f4035bb3d3b538a166ff0af1c94976a4f435ef",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
