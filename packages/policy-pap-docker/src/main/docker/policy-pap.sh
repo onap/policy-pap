@@ -40,4 +40,14 @@ fi
 
 echo "Policy pap config file: $CONFIG_FILE"
 
+if [[ -f "${POLICY_HOME}"/etc/mounted/policy-truststore ]]; then
+    echo "overriding policy-truststore"
+    cp -f "${POLICY_HOME}"/etc/mounted/policy-truststore  "${TRUSTSTORE}"
+fi
+
+if [[ -f "${POLICY_HOME}"/etc/mounted/policy-keystore ]]; then
+    echo "overriding policy-keystore"
+    cp -f "${POLICY_HOME}"/etc/mounted/policy-keystore  "${KEYSTORE}"
+fi
+
 $JAVA_HOME/bin/java -cp "${POLICY_HOME}/etc:${POLICY_HOME}/lib/*" -Djavax.net.ssl.keyStore="$KEYSTORE" -Djavax.net.ssl.keyStorePassword="$KEYSTORE_PASSWD" -Djavax.net.ssl.trustStore="$TRUSTSTORE" -Djavax.net.ssl.trustStorePassword="$TRUSTSTORE_PASSWD" org.onap.policy.pap.main.startstop.Main -c $CONFIG_FILE
