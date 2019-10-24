@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ccf82e75_fdb2b376",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/notification/PolicyPdpNotificationData.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-10-24T12:36:21Z",
+      "side": 1,
+      "message": "No need for single remove?",
+      "revId": "95fa0beded734eb3faab8a1d6595119edc71c85e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
