@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "76d16539_b62b95cd",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PublisherTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-10-25T13:43:48Z",
+      "side": 1,
+      "message": "interesting that this compiles, given that no type was specified",
+      "revId": "45c8e61888711a3d6f5913d1d7ddf640ff995b12",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
