@@ -69,7 +69,7 @@ public class CommonRequestBase {
     protected static final PdpState DIFF_STATE = PdpState.TERMINATED;
     protected static final int RETRIES = 1;
 
-    protected Publisher publisher;
+    protected Publisher<PdpMessage> publisher;
     protected RequestIdDispatcher<PdpStatus> dispatcher;
     protected Object lock;
     protected TimerManager timers;
