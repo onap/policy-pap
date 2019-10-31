@@ -132,6 +132,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.removeData(makeData(policy2, PDP1, PDP3), statusList);
         assertEquals(1, statusList.size());
         assertEquals(policy2, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertTrue(map.containsKey(policy1));
         assertTrue(map.containsKey(policy2));
     }
@@ -149,6 +150,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.removeData(makeData(policy1, PDP1, PDP2, PDP3), statusList);
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertFalse(map.containsKey(policy1));
         assertTrue(map.containsKey(policy2));
     }
@@ -165,6 +167,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
 
         assertEquals(3, map.size());
         assertFalse(map.containsKey(policy1));
@@ -185,6 +188,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
 
         assertEquals(3, map.size());
         assertFalse(map.containsKey(policy1));
@@ -205,6 +209,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
 
         assertEquals(3, map.size());
         assertFalse(map.containsKey(policy1));
@@ -236,6 +241,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
 
         assertEquals(1, map.size());
         assertTrue(map.containsKey(policy1));
@@ -258,6 +264,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
 
         assertTrue(map.isEmpty());

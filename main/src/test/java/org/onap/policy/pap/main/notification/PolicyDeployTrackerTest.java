@@ -71,6 +71,7 @@ public class PolicyDeployTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
 
         // indicate that PDP1 has failed - should get a notification, if still in the map
@@ -78,6 +79,7 @@ public class PolicyDeployTrackerTest extends PolicyCommonSupport {
         tracker.processResponse(PDP1, Collections.emptyList(), statusList);
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[1, 1, 0]", getCounts(statusList.get(0)).toString());
     }
 
