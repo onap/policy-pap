@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -49,6 +52,54 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         super.setUp();
 
         tracker = new MyTracker();
+    }
+
+    @Test
+    public void testGetStatus() {
+        tracker.addData(makeData(policy1, PDP1, PDP2));
+        tracker.addData(makeData(policy2, PDP2));
+
+        List<PolicyStatus> statusList = tracker.getStatus();
+        assertEquals(2, statusList.size());
+
+        Set<String> names = statusList.stream().map(PolicyStatus::getPolicyId).collect(Collectors.toSet());
+        assertTrue(names.contains(policy1.getName()));
+        assertTrue(names.contains(policy2.getName()));
+    }
+
+    @Test
+    public void testGetStatusString() {
+        tracker.addData(makeData(policy1, PDP1, PDP2));
+        tracker.addData(makeData(policy2, PDP2));
+
+        policy3 = new ToscaPolicyIdentifier(policy1.getName(), policy1.getVersion() + "0");
+        tracker.addData(makeData(policy3, PDP3));
+
+        List<PolicyStatus> statusList = tracker.getStatus(policy1.getName());
+        assertEquals(2, statusList.size());
+
+        Set<ToscaPolicyIdentifier> idents =
+                        statusList.stream().map(PolicyStatus::getPolicy).collect(Collectors.toSet());
+        assertTrue(idents.contains(policy1));
+        assertTrue(idents.contains(policy3));
+    }
+
+    @Test
+    public void testGetStatusToscaPolicyIdentifier() {
+        tracker.addData(makeData(policy1, PDP1, PDP2));
+        tracker.addData(makeData(policy2, PDP2));
+
+        policy3 = new ToscaPolicyIdentifier(policy1.getName(), policy1.getVersion() + "0");
+        tracker.addData(makeData(policy3, PDP3));
+
+        Optional<PolicyStatus> status = tracker.getStatus(policy1);
+        assertTrue(status.isPresent());
+
+        assertEquals(policy1, status.get().getPolicy());
+
+        // check not-found case
+        status = tracker.getStatus(policy4);
+        assertFalse(status.isPresent());
     }
 
     @Test
@@ -113,7 +164,8 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
     }
 
     /**
-     * Tests removeData() when the subclass indicates that the policy should NOT be removed.
+     * Tests removeData() when the subclass indicates that the policy should NOT be
+     * removed.
      */
     @Test
     public void testRemoveDataDoNotRemovePolicy() {

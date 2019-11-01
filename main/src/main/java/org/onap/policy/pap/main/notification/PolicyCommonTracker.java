@@ -27,8 +27,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 
@@ -53,6 +55,39 @@ public abstract class PolicyCommonTracker {
      */
     public PolicyCommonTracker() {
         super();
+    }
+
+    /**
+     * Gets the status of all policies being tracked.
+     *
+     * @return the status of all policies
+     */
+    public List<PolicyStatus> getStatus() {
+        return policy2data.entrySet().stream().map(this::makeStatus).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the status of all versions of a policy.
+     *
+     * @param policyId ID of the policy of interest, without the version
+     * @return the status of all versions of the policy having the given ID
+     */
+    public List<PolicyStatus> getStatus(String policyId) {
+        // version is not specified - have to scan the whole list
+        return policy2data.entrySet().stream().filter(ent -> ent.getKey().getName().equals(policyId))
+                        .map(this::makeStatus).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the status of a particular policy.
+     *
+     * @param ident identifier of the policy of interest
+     * @return the status of the given policy, or empty if the policy is not found
+     */
+    public Optional<PolicyStatus> getStatus(ToscaPolicyIdentifier ident) {
+        ToscaPolicyIdentifier ident2 = new ToscaPolicyIdentifier(ident.getName(), ident.getVersion());
+        PolicyTrackerData data = policy2data.get(ident2);
+        return Optional.ofNullable(data == null ? null : makeStatus(ident2, data));
     }
 
     /**
@@ -156,7 +191,7 @@ public abstract class PolicyCommonTracker {
             }
 
             // this policy is complete - notify
-            statusList.add(makeStatus(policyId, data));
+            statusList.add(makeStatus(ent));
 
             if (shouldRemove(data)) {
                 iter.remove();
@@ -187,13 +222,23 @@ public abstract class PolicyCommonTracker {
     protected abstract boolean shouldRemove(PolicyTrackerData data);
 
     /**
+     * Makes a status notification for the given policy entry.
+     *
+     * @param entry policy entry
+     * @return a new status notification
+     */
+    private PolicyStatus makeStatus(Map.Entry<ToscaPolicyIdentifier, PolicyTrackerData> entry) {
+        return makeStatus(entry.getKey(), entry.getValue());
+    }
+
+    /**
      * Makes a status notification for the given policy.
      *
      * @param policyId policy ID
      * @param data data to be used to set the status fields
      * @return a new status notification
      */
-    private synchronized PolicyStatus makeStatus(ToscaPolicyIdentifier policyId, PolicyTrackerData data) {
+    private PolicyStatus makeStatus(ToscaPolicyIdentifier policyId, PolicyTrackerData data) {
 
         PolicyStatus status = new PolicyStatus(data.getPolicyType(), policyId);
         data.putValuesInto(status);
