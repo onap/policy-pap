@@ -1,0 +1,56 @@
+{
+    "groups": [
+        {
+            "name": "policyStatus",
+            "pdpGroupState": "ACTIVE",
+            "pdpSubgroups": [
+                {
+                    "pdpType": "pdpTypeA",
+                    "desiredInstanceCount": 2,
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpBA_1",
+                            "pdpState": "ACTIVE",
+                            "healthy": "HEALTHY"
+                        },
+                        {
+                            "instanceId": "pdpBA_2",
+                            "pdpState": "ACTIVE",
+                            "healthy": "HEALTHY"
+                        }
+                    ],
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",
+                            "version": "1.0.0"
+                        }
+                    ],
+                    "policies": []
+                },
+                {
+                    "pdpType": "pdpTypeB",
+                    "desiredInstanceCount": 1,
+                    "pdpInstances": [
+                        {
+                            "instanceId": "pdpBB_1",
+                            "pdpState": "ACTIVE",
+                            "healthy": "HEALTHY"
+                        }
+                    ],
+                    "supportedPolicyTypes": [
+                        {
+                            "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",
+                            "version": "1.0.0"
+                        }
+                    ],
+                    "policies": [
+                        {
+                            "name": "onap.restart.tca",
+                            "version": "1.0.0"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
