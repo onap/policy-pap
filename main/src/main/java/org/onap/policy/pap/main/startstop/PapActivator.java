@@ -53,6 +53,7 @@ import org.onap.policy.pap.main.rest.PapStatisticsManager;
 import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
+import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
@@ -170,7 +171,7 @@ public class PapActivator extends ServiceManagerContainer {
             () -> {
                 notifyPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_NOTIFICATION));
                 startThread(notifyPub.get());
-                notifier.set(new PolicyNotifier(notifyPub.get()));
+                notifier.set(new PolicyNotifier(notifyPub.get(), daoFactory.get()));
             },
             () -> notifyPub.get().stop());
 
@@ -238,7 +239,8 @@ public class PapActivator extends ServiceManagerContainer {
                                 PdpGroupDeleteControllerV1.class,
                                 PdpGroupStateChangeControllerV1.class,
                                 PdpGroupQueryControllerV1.class,
-                                PdpGroupHealthCheckControllerV1.class);
+                                PdpGroupHealthCheckControllerV1.class,
+                                PolicyStatusControllerV1.class);
                 restServer.set(server);
                 restServer.get().start();
             },
