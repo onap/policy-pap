@@ -71,6 +71,7 @@ public class PolicyUndeployTrackerTest extends PolicyCommonSupport {
 
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
 
         // indicate that PDP1 has been re-deployed - should not get a notification,
