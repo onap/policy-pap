@@ -64,6 +64,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonPapRestServer {
 
+    protected static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonPapRestServer.class);
 
     private static String KEYSTORE = System.getProperty("user.dir") + "/src/test/resources/ssl/policy-keystore";
@@ -88,6 +90,17 @@ public class CommonPapRestServer {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        setUpBeforeClass(true);
+    }
+
+    /**
+     * Allocates a port for the server, writes a config file, and then starts Main, if
+     * specified.
+     *
+     * @param shouldStart {@code true} if Main should be started, {@code false} otherwise
+     * @throws Exception if an error occurs
+     */
+    public static void setUpBeforeClass(boolean shouldStart) throws Exception {
         port = NetworkUtil.allocPort();
 
         httpsPrefix = "https://localhost:" + port + "/";
@@ -99,7 +112,9 @@ public class CommonPapRestServer {
 
         CommonTestData.newDb();
 
-        startMain();
+        if (shouldStart) {
+            startMain();
+        }
     }
 
     /**
@@ -159,7 +174,7 @@ public class CommonPapRestServer {
     private static void makeConfigFile() throws Exception {
         String json = new CommonTestData().getPapParameterGroupAsString(port);
 
-        File file = new File("src/test/resources/parameters/TestConfigParams.json");
+        File file = new File(CONFIG_FILE);
         file.deleteOnExit();
 
         try (FileOutputStream output = new FileOutputStream(file)) {
@@ -172,7 +187,7 @@ public class CommonPapRestServer {
      *
      * @throws Exception if an error occurs
      */
-    private static void startMain() throws Exception {
+    protected static void startMain() throws Exception {
         Registry.newRegistry();
 
         // make sure port is available
@@ -185,7 +200,7 @@ public class CommonPapRestServer {
         systemProps.put("javax.net.ssl.keyStorePassword", "Pol1cy_0nap");
         System.setProperties(systemProps);
 
-        final String[] papConfigParameters = { "-c", "src/test/resources/parameters/TestConfigParams.json" };
+        final String[] papConfigParameters = { "-c", CONFIG_FILE };
 
         main = new Main(papConfigParameters);
 

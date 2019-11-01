@@ -32,14 +32,13 @@ import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
-import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
-import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,15 +74,21 @@ public class End2EndBase extends CommonPapRestServer {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        CommonPapRestServer.setUpBeforeClass();
+        setUpBeforeClass(true);
+    }
 
-        daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+    /**
+     * Starts Main, if specified, and connects to the DB.
+     *
+     * @param shouldStart {@code true} if Main should be started, {@code false} otherwise
+     * @throws Exception if an error occurs
+     */
+    public static void setUpBeforeClass(boolean shouldStart) throws Exception {
+        CommonPapRestServer.setUpBeforeClass(shouldStart);
 
-        try {
-            dbConn = daoFactory.create();
-        } catch (PfModelException e) {
-            throw new PolicyPapRuntimeException("cannot connect to DB", e);
-        }
+        PapParameterGroup params = new StandardCoder().decode(new File(CONFIG_FILE), PapParameterGroup.class);
+        daoFactory = new PolicyModelsProviderFactoryWrapper(params.getDatabaseProviderParameters());
+        dbConn = daoFactory.create();
     }
 
     /**
