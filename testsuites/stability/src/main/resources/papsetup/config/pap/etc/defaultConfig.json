@@ -38,6 +38,11 @@
             "topic" : "POLICY-PDP-PAP",
             "servers" : [ "10.2.0.41:3904" ],
             "topicCommInfrastructure" : "dmaap"
+        },
+        {
+            "topic" : "POLICY-NOTIFICATION",
+            "servers" : [ "10.2.0.41:3904" ],
+            "topicCommInfrastructure" : "dmaap"
         }]
     }
 }
