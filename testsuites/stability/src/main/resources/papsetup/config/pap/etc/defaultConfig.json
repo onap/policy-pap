@@ -35,7 +35,7 @@
             "topicCommInfrastructure" : "dmaap"
         }],
         "topicSinks" : [{
-            "topic" : "POLICY-PDP-PAP",
+            "topic" : "POLICY-NOTIFICATION",
             "servers" : [ "10.2.0.41:3904" ],
             "topicCommInfrastructure" : "dmaap"
         }]
