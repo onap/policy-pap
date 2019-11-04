@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6189160a_d22409cc",
+        "filename": "testsuites/stability/src/main/resources/papsetup/config/pap/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-11-04T22:42:05Z",
+      "side": 1,
+      "message": "match the \"10.2.0.41\"  for consistency ?",
+      "revId": "3fa278bc78efd0cea5b10ad8298c90816d6c1851",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
