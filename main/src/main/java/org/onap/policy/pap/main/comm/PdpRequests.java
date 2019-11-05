@@ -20,6 +20,8 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
 import lombok.Getter;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.pap.main.comm.msgdata.Request;
@@ -35,11 +37,6 @@ public class PdpRequests {
     private static final Logger logger = LoggerFactory.getLogger(PdpRequests.class);
 
     /**
-     * The maximum request priority + 1.
-     */
-    private static final int MAX_PRIORITY = 2;
-
-    /**
      * Name of the PDP with which the requests are associated.
      */
     @Getter
@@ -52,14 +49,11 @@ public class PdpRequests {
     private final PolicyNotifier notifier;
 
     /**
-     * Index of request currently being published.
+     * Queue of requests to be published. The first item in the queue is currently being
+     * published. Currently, there will be at most three messages in the queue: PASSIVE,
+     * ACTIVE, and UPDATE.
      */
-    private int curIndex = 0;
-
-    /**
-     * Singleton requests. Items may be {@code null}.
-     */
-    private Request[] singletons = new Request[MAX_PRIORITY];
+    private final Queue<Request> requests = new ArrayDeque<>(3);
 
 
     /**
@@ -85,108 +79,32 @@ public class PdpRequests {
             throw new IllegalArgumentException("unexpected broadcast for " + pdpName);
         }
 
-        if (checkExisting(request)) {
-            // have an existing request that's similar - discard this request
-            return;
+        // try to reconfigure an existing request with the new message
+        PdpMessage newMessage = request.getMessage();
+        for (Request req : requests) {
+            if (req.reconfigure(newMessage)) {
+                return;
+            }
         }
 
-        // no existing request of this type
+        // couldn't reconfigure an existing request - must add the new one
 
-        int priority = request.getPriority();
-        singletons[priority] = request;
+        requests.add(request);
 
-        // stop publishing anything of a lower priority
-        final QueueToken<PdpMessage> token = stopPublishingLowerPriority(priority);
-
-        // start publishing if nothing of higher priority
-        if (higherPrioritySingleton(priority)) {
-            logger.info("{} not publishing due to priority higher than {}", pdpName, priority);
-            return;
+        if (requests.peek() == request) {
+            // this is the first request in the queue - publish it
+            request.startPublishing();
         }
-
-        curIndex = priority;
-        request.startPublishing(token);
-    }
-
-    /**
-     * Checks for an existing request.
-     *
-     * @param request the request of interest
-     * @return {@code true} if a similar request already exists, {@code false} otherwise
-     */
-    private boolean checkExisting(Request request) {
-
-        return checkExistingSingleton(request);
-    }
-
-    /**
-     * Checks for an existing singleton request.
-     *
-     * @param request the request of interest
-     * @return {@code true} if a similar singleton request already exists, {@code false}
-     *         otherwise
-     */
-    private boolean checkExistingSingleton(Request request) {
-
-        Request exsingle = singletons[request.getPriority()];
-
-        if (exsingle == null) {
-            return false;
-        }
-
-        if (exsingle.isSameContent(request)) {
-            // unchanged from existing request
-            logger.info("{} message content unchanged for {}", pdpName, exsingle.getClass().getSimpleName());
-            return true;
-        }
-
-        // reconfigure the existing request
-        PdpMessage message = request.getMessage();
-        exsingle.reconfigure(message, null);
-
-        // still have a singleton in the queue for this request
-        return true;
     }
 
     /**
      * Stops all publishing and removes this PDP from any broadcast messages.
      */
     public void stopPublishing() {
-        // stop singletons
-        for (int x = 0; x < MAX_PRIORITY; ++x) {
-            Request single = singletons[x];
-
-            if (single != null) {
-                singletons[x] = null;
-                single.stopPublishing();
-            }
+        Request request = requests.peek();
+        if (request != null) {
+            request.stopPublishing();
         }
-    }
-
-    /**
-     * Stops publishing requests of a lower priority than the specified priority.
-     *
-     * @param priority priority of interest
-     * @return the token that was being used to publish a lower priority request
-     */
-    private QueueToken<PdpMessage> stopPublishingLowerPriority(int priority) {
-
-        // stop singletons
-        for (int x = 0; x < priority; ++x) {
-            Request single = singletons[x];
-
-            if (single != null) {
-                logger.info("{} stop publishing priority {}", pdpName, single.getPriority());
-
-                QueueToken<PdpMessage> token = single.stopPublishing(false);
-                if (token != null) {
-                    // found one that was publishing
-                    return token;
-                }
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -197,64 +115,24 @@ public class PdpRequests {
      *         requests for this PDP have been processed
      */
     public boolean startNextRequest(Request request) {
-        if (!zapRequest(curIndex, request)) {
-            // not at curIndex - look for it in other indices
-            for (int x = 0; x < MAX_PRIORITY; ++x) {
-                if (zapRequest(x, request)) {
-                    break;
-                }
-            }
+        if (request != requests.peek()) {
+            // not the request we're looking for
+            return !requests.isEmpty();
         }
 
-        // find/start the highest priority request
-        for (curIndex = MAX_PRIORITY - 1; curIndex >= 0; --curIndex) {
+        // remove the completed request
+        requests.remove();
 
-            if (singletons[curIndex] != null) {
-                logger.info("{} start publishing priority {}", pdpName, curIndex);
-
-                singletons[curIndex].startPublishing();
-                return true;
-            }
+        // start publishing next request, but don't remove it from the queue
+        Request nextRequest = requests.peek();
+        if (nextRequest == null) {
+            logger.info("{} has no more requests", pdpName);
+            return false;
         }
 
-        logger.info("{} has no more requests", pdpName);
-        curIndex = 0;
+        logger.info("{} start publishing next request", pdpName);
 
-        return false;
-    }
-
-    /**
-     * Zaps request pointers, if the request appears at the given index.
-     *
-     * @param index index to examine
-     * @param request request of interest
-     * @return {@code true} if a request pointer was zapped, {@code false} if the request
-     *         did not appear at the given index
-     */
-    private boolean zapRequest(int index, Request request) {
-        if (singletons[index] == request) {
-            singletons[index] = null;
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Determines if any singleton request, with a higher priority, is associated with the
-     * PDP.
-     *
-     * @param priority priority of interest
-     *
-     * @return {@code true} if the PDP has a singleton, {@code false} otherwise
-     */
-    private boolean higherPrioritySingleton(int priority) {
-        for (int x = priority + 1; x < MAX_PRIORITY; ++x) {
-            if (singletons[x] != null) {
-                return true;
-            }
-        }
-
-        return false;
+        nextRequest.startPublishing();
+        return true;
     }
 }

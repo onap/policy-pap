@@ -22,6 +22,7 @@ package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -118,6 +119,19 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
+    public void testIsEmpty() {
+        assertTrue(map.isEmpty());
+
+        map.addRequest(change);
+        assertFalse(map.isEmpty());
+
+        // indicate success
+        getListener(getSingletons(1).get(0)).success(PDP1);
+
+        assertTrue(map.isEmpty());
+    }
+
+    @Test
     public void testStopPublishing() {
         // try with non-existent PDP
         map.stopPublishing(PDP1);
@@ -156,8 +170,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         assertEquals("pdp_1 PdpUpdate", req.getName());
     }
 
+    /**
+     * Tests addRequest() when two requests are provided and the second is an "activate"
+     * message.
+     */
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange_BothProvided() {
+    public void testAddRequestPdpUpdatePdpStateChange_BothProvided_Active() {
+        change.setState(PdpState.ACTIVE);
         map.addRequest(update, change);
 
         // should have only allocated one request structure
@@ -166,6 +185,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // both requests should have been added
         List<Request> values = getSingletons(2);
 
+        // update should appear first
         Request req = values.remove(0);
         assertSame(update, req.getMessage());
         assertEquals("pdp_1 PdpUpdate", req.getName());
@@ -173,6 +193,31 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         req = values.remove(0);
         assertSame(change, req.getMessage());
         assertEquals("pdp_1 PdpStateChange", req.getName());
+    }
+
+    /**
+     * Tests addRequest() when two requests are provided and the second is "deactivate"
+     * message.
+     */
+    @Test
+    public void testAddRequestPdpUpdatePdpStateChange_BothProvided_Passive() {
+        change.setState(PdpState.PASSIVE);
+        map.addRequest(update, change);
+
+        // should have only allocated one request structure
+        assertEquals(1, map.nalloc);
+
+        // both requests should have been added
+        List<Request> values = getSingletons(2);
+
+        // state-change should appear first
+        Request req = values.remove(0);
+        assertSame(change, req.getMessage());
+        assertEquals("pdp_1 PdpStateChange", req.getName());
+
+        req = values.remove(0);
+        assertSame(update, req.getMessage());
+        assertEquals("pdp_1 PdpUpdate", req.getName());
     }
 
     @Test
@@ -311,6 +356,15 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // should have published a new update
         PdpMessage msg2 = getSingletons(3).get(1).getMessage();
         assertNotNull(msg2);
+        assertTrue(msg2 instanceof PdpStateChange);
+
+        change = (PdpStateChange) msg2;
+        assertEquals(PDP1, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
+
+        // should have published a state-change
+        msg2 = getSingletons(3).get(2).getMessage();
+        assertNotNull(msg2);
         assertTrue(msg2 instanceof PdpUpdate);
 
         // update should have null group & subgroup
@@ -318,15 +372,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         assertEquals(PDP1, update.getName());
         assertNull(update.getPdpGroup());
         assertNull(update.getPdpSubgroup());
-
-        // should have published a state-change
-        msg2 = getSingletons(3).get(2).getMessage();
-        assertNotNull(msg2);
-        assertTrue(msg2 instanceof PdpStateChange);
-
-        change = (PdpStateChange) msg2;
-        assertEquals(PDP1, change.getName());
-        assertEquals(PdpState.PASSIVE, change.getState());
     }
 
     @Test
