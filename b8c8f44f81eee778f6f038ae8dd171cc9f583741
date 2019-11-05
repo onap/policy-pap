@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95f9c715_f29cf51c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/notification/PolicyCommonTracker.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-11-05T12:49:41Z",
+      "side": 1,
+      "message": "It might be no harm to use a more descriptive variable name here.",
+      "range": {
+        "startLine": 183,
+        "startChar": 60,
+        "endLine": 183,
+        "endChar": 63
+      },
+      "revId": "b8c8f44f81eee778f6f038ae8dd171cc9f583741",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
