@@ -22,6 +22,29 @@
       "revId": "b8c8f44f81eee778f6f038ae8dd171cc9f583741",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "081fe14a_e5082aa5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-11-05T13:04:47Z",
+      "side": 1,
+      "message": "Great! \nThis will also help CLAMP/API_USER to verify that the policy is deployed or not. Either they can fetch the whole list and check their specific policy status or query for specific policy status.",
+      "range": {
+        "startLine": 64,
+        "startChar": 11,
+        "endLine": 64,
+        "endChar": 28
+      },
+      "revId": "b8c8f44f81eee778f6f038ae8dd171cc9f583741",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
