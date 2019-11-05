@@ -22,7 +22,6 @@ package org.onap.policy.pap.main.comm.msgdata;
 
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 /**
@@ -30,14 +29,6 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
  * of the publishing.
  */
 public interface Request {
-
-    /**
-     * Gets the request priority. Higher priority requests are published before lower
-     * priority requests.
-     *
-     * @return the request priority
-     */
-    public int getPriority();
 
     /**
      * Gets the name with which this data is associated, used for logging purposes. This
@@ -82,37 +73,19 @@ public interface Request {
     public void startPublishing();
 
     /**
-     * Starts the publishing process.
-     *
-     * @param token2 token that can be used when publishing, or {@code null} to allocate a
-     *        new token
-     */
-    public void startPublishing(QueueToken<PdpMessage> token2);
-
-    /**
      * Unregisters the listener, cancels the timer, and removes the message from the
      * queue.
      */
     public void stopPublishing();
 
     /**
-     * Unregisters the listener and cancels the timer.
-     *
-     * @param removeFromQueue {@code true} if the message should be removed from the
-     *        queue, {@code false} otherwise
-     * @return the token that was being used to publish the message, or {@code null} if
-     *         the request was not being published
-     */
-    public QueueToken<PdpMessage> stopPublishing(boolean removeFromQueue);
-
-    /**
      * Reconfigures the fields based on the {@link #message} type. Suspends publishing,
      * updates the configuration, and then resumes publishing.
      *
      * @param newMessage the new message
-     * @param token2 token to use when publishing, or {@code null} to allocate a new token
+     * @return {@code true} if reconfiguration was successful, {@code false} otherwise
      */
-    public void reconfigure(PdpMessage newMessage, QueueToken<PdpMessage> token2);
+    public boolean reconfigure(PdpMessage newMessage);
 
     /**
      * Checks the response to ensure it is as expected.
@@ -121,12 +94,4 @@ public interface Request {
      * @return an error message, if a fatal error has occurred, {@code null} otherwise
      */
     public String checkResponse(PdpStatus response);
-
-    /**
-     * Determines if this request has the same content as another request.
-     *
-     * @param other request against which to compare
-     * @return {@code true} if the requests have the same content, {@code false} otherwise
-     */
-    public boolean isSameContent(Request other);
 }

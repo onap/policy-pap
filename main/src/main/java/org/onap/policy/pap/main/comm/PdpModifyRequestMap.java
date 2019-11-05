@@ -130,10 +130,21 @@ public class PdpModifyRequestMap {
         if (update == null) {
             addRequest(stateChange);
 
-        } else {
+        } else if (stateChange == null) {
+            addRequest(update);
+
+        } else if (stateChange.getState() == PdpState.ACTIVE) {
+            // publish update before activating
             synchronized (modifyLock) {
                 addRequest(update);
                 addRequest(stateChange);
+            }
+
+        } else {
+            // deactivate before publishing update
+            synchronized (modifyLock) {
+                addRequest(stateChange);
+                addRequest(update);
             }
         }
     }

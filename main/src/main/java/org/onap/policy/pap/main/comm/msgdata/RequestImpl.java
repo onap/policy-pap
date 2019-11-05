@@ -122,13 +122,19 @@ public abstract class RequestImpl implements Request {
                         .addAction("enqueue",
                             this::enqueue,
                             () -> {
-                                // do not remove from the queue - token may be re-used
+                                // do not remove from the queue - token may be re-used if re-started
                             });
         // @formatter:on
     }
 
-    @Override
-    public void reconfigure(PdpMessage newMessage, QueueToken<PdpMessage> token2) {
+    /**
+     * Reconfigures the current request with a new message. If it's currently publishing a
+     * message, then it stops publishing, replaces the message, and then starts publishing
+     * the new message.
+     *
+     * @param newMessage the new message
+     */
+    protected void reconfigure2(PdpMessage newMessage) {
         if (newMessage.getClass() != message.getClass()) {
             throw new IllegalArgumentException("expecting " + message.getClass().getSimpleName() + " instead of "
                             + newMessage.getClass().getSimpleName());
@@ -136,13 +142,15 @@ public abstract class RequestImpl implements Request {
 
         logger.info("reconfiguring {} with new message", getName());
 
-        if (svcmgr.isAlive()) {
-            token = stopPublishing(false);
-            message = newMessage;
-            startPublishing(token2);
+        synchronized (params.getModifyLock()) {
+            if (svcmgr.isAlive()) {
+                stopPublishing(false);
+                message = newMessage;
+                startPublishing();
 
-        } else {
-            message = newMessage;
+            } else {
+                message = newMessage;
+            }
         }
     }
 
@@ -153,18 +161,11 @@ public abstract class RequestImpl implements Request {
 
     @Override
     public void startPublishing() {
-        startPublishing(null);
-    }
-
-    @Override
-    public void startPublishing(QueueToken<PdpMessage> token2) {
         if (listener == null) {
             throw new IllegalStateException("listener has not been set");
         }
 
         synchronized (params.getModifyLock()) {
-            replaceToken(token2);
-
             if (svcmgr.isAlive()) {
                 logger.info("{} is already publishing", getName());
 
@@ -175,42 +176,22 @@ public abstract class RequestImpl implements Request {
         }
     }
 
-    /**
-     * Replaces the current token with a new token.
-     * @param newToken the new token
-     */
-    private void replaceToken(QueueToken<PdpMessage> newToken) {
-        if (newToken != null) {
-            if (token == null) {
-                token = newToken;
-
-            } else if (token != newToken) {
-                // already have a token - discard the new token
-                newToken.replaceItem(null);
-            }
-        }
-    }
-
     @Override
     public void stopPublishing() {
         stopPublishing(true);
     }
 
-    @Override
-    public QueueToken<PdpMessage> stopPublishing(boolean removeFromQueue) {
-        if (svcmgr.isAlive()) {
-            svcmgr.stop();
+    private void stopPublishing(boolean removeFromQueue) {
+        synchronized (params.getModifyLock()) {
+            if (svcmgr.isAlive()) {
+                svcmgr.stop();
 
-            if (removeFromQueue) {
-                token.replaceItem(null);
-                token = null;
+                if (removeFromQueue) {
+                    token.replaceItem(null);
+                    token = null;
+                }
             }
         }
-
-        QueueToken<PdpMessage> tok = token;
-        token = null;
-
-        return tok;
     }
 
     /**

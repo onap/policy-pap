@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.pap.main.comm.CommonRequestBase;
 
 public class StateChangeReqTest extends CommonRequestBase {
@@ -41,6 +42,7 @@ public class StateChangeReqTest extends CommonRequestBase {
 
     /**
      * Sets up.
+     *
      * @throws Exception if an error occurs
      */
     @Before
@@ -92,22 +94,25 @@ public class StateChangeReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent() {
+    public void testReconfigure() {
+        // different message type should fail and leave message unchanged
+        assertFalse(data.reconfigure(new PdpUpdate()));
+        assertSame(msg, data.getMessage());
+
+        // same state - should succeed, but leave message unchanged
         PdpStateChange msg2 = new PdpStateChange();
-        msg2.setName("world");
-        msg2.setState(MY_STATE);
-        assertTrue(data.isSameContent(new StateChangeReq(reqParams, MY_REQ_NAME, msg2)));
+        msg2.setState(msg.getState());
+        assertTrue(data.reconfigure(msg2));
+        assertSame(msg, data.getMessage());
 
-        // different state
-        msg2.setState(DIFF_STATE);
-        assertFalse(data.isSameContent(new StateChangeReq(reqParams, MY_REQ_NAME, msg2)));
+        // change old state to active - should fail and leave message unchanged
+        msg2.setState(PdpState.ACTIVE);
+        assertFalse(data.reconfigure(msg2));
+        assertSame(msg, data.getMessage());
 
-        // different request type
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, new PdpUpdate())));
-    }
-
-    @Test
-    public void testGetPriority() {
-        assertTrue(data.getPriority() < new UpdateReq(reqParams, MY_REQ_NAME, new PdpUpdate()).getPriority());
+        // different, inactive state - should succeed and install NEW message
+        msg2.setState(PdpState.PASSIVE);
+        assertTrue(data.reconfigure(msg2));
+        assertSame(msg2, data.getMessage());
     }
 }

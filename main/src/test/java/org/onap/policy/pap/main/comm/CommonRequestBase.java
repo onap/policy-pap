@@ -188,7 +188,6 @@ public class CommonRequestBase {
         UpdateReq req = mock(UpdateReq.class);
 
         when(req.getName()).thenReturn(MY_REQ_NAME);
-        when(req.getPriority()).thenReturn(1);
         when(req.getMessage()).thenReturn(makeUpdate(pdpName, group, subgroup));
 
         return req;
@@ -224,7 +223,6 @@ public class CommonRequestBase {
         StateChangeReq req = mock(StateChangeReq.class);
 
         when(req.getName()).thenReturn(MY_REQ_NAME);
-        when(req.getPriority()).thenReturn(0);
         when(req.getMessage()).thenReturn(makeStateChange(pdpName, state));
 
         return req;

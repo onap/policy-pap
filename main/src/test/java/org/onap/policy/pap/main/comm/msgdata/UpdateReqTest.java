@@ -147,18 +147,32 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
+    public void testReconfigure() {
+        // different message type should fail and leave message unchanged
+        assertFalse(data.reconfigure(new PdpStateChange()));
+        assertSame(update, data.getMessage());
+
+        // same content - should succeed, but leave message unchanged
+        PdpUpdate msg2 = new PdpUpdate(update);
+        assertTrue(data.reconfigure(msg2));
+        assertSame(update, data.getMessage());
+
+        // different content - should succeed and install NEW message
+        msg2.setPdpGroup(DIFFERENT);
+        assertTrue(data.reconfigure(msg2));
+        assertSame(msg2, data.getMessage());
+    }
+
+    @Test
     public void isSameContent() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setName("world");
-        assertTrue(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
-
-        // different request type
-        assertFalse(data.isSameContent(new StateChangeReq(reqParams, MY_REQ_NAME, new PdpStateChange())));
+        assertTrue(data.isSameContent(msg2));
 
         // both policy lists null
         update.setPolicies(null);
         msg2.setPolicies(null);
-        assertTrue(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertTrue(data.isSameContent(msg2));
     }
 
     @Test
@@ -166,7 +180,7 @@ public class UpdateReqTest extends CommonRequestBase {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
         update.setPdpGroup(null);
-        assertTrue(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertTrue(data.isSameContent(msg2));
     }
 
     @Test
@@ -174,33 +188,33 @@ public class UpdateReqTest extends CommonRequestBase {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
         update.setPdpSubgroup(null);
-        assertTrue(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertTrue(data.isSameContent(msg2));
     }
 
     @Test
     public void isSameContent_DiffGroup() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
 
         msg2.setPdpGroup(DIFFERENT);
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
 
         update.setPdpGroup(null);
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
     }
 
     @Test
     public void isSameContent_DiffSubGroup() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
 
         msg2.setPdpSubgroup(DIFFERENT);
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
 
         update.setPdpSubgroup(null);
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
     }
 
     @Test
@@ -211,7 +225,7 @@ public class UpdateReqTest extends CommonRequestBase {
         policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
         msg2.setPolicies(policies);
 
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
     }
 
     @Test
@@ -219,7 +233,7 @@ public class UpdateReqTest extends CommonRequestBase {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPolicies(null);
 
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
+        assertFalse(data.isSameContent(msg2));
     }
 
     @Test
@@ -228,12 +242,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
         update.setPolicies(null);
 
-        assertFalse(data.isSameContent(new UpdateReq(reqParams, MY_REQ_NAME, msg2)));
-    }
-
-    @Test
-    public void testGetPriority() {
-        assertTrue(data.getPriority() > new StateChangeReq(reqParams, MY_REQ_NAME, new PdpStateChange()).getPriority());
+        assertFalse(data.isSameContent(msg2));
     }
 
     @SuppressWarnings("unchecked")

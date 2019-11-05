@@ -20,8 +20,10 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.pap.main.parameters.RequestParams;
 
 /**
@@ -63,17 +65,26 @@ public class StateChangeReq extends RequestImpl {
     }
 
     @Override
-    public boolean isSameContent(Request other) {
-        if (!(other instanceof StateChangeReq)) {
+    public boolean reconfigure(PdpMessage newMessage) {
+        if (!(newMessage instanceof PdpStateChange)) {
+            // not a state change - no change to this request
             return false;
         }
 
-        PdpStateChange message = (PdpStateChange) other.getMessage();
-        return (getMessage().getState() == message.getState());
-    }
+        PdpStateChange newState = (PdpStateChange) newMessage;
+        PdpStateChange current = getMessage();
 
-    @Override
-    public int getPriority() {
-        return 0;
+        if (current.getState() == newState.getState()) {
+            // content hasn't changed - nothing more to do
+            return true;
+        }
+
+        if (newState.getState() == PdpState.ACTIVE) {
+            // can't replace a non-active state with an active state
+            return false;
+        }
+
+        reconfigure2(newMessage);
+        return true;
     }
 }

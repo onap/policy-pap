@@ -23,8 +23,8 @@ package org.onap.policy.pap.main.comm;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,7 +32,6 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
 
@@ -56,6 +55,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     @Test
     public void testPdpRequests_testGetLastGroupName() {
         assertEquals(PDP1, data.getPdpName());
+        assertSame(notifier, data.getNotifier());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class PdpRequestsTest extends CommonRequestBase {
         data.addSingleton(update);
 
         verify(update).setNotifier(notifier);
-        verify(update).startPublishing(any());
+        verify(update).startPublishing();
     }
 
     @Test
@@ -75,35 +75,34 @@ public class PdpRequestsTest extends CommonRequestBase {
         data.addSingleton(req2);
 
         // should not publish duplicate
-        verify(req2, never()).startPublishing(any());
+        verify(req2, never()).startPublishing();
+
+        // should not re-publish original
+        verify(update, times(1)).startPublishing();
     }
 
     @Test
-    public void testAddSingleton_LowerPriority() {
+    public void testAddSingleton_AnotherRequest() {
         data.addSingleton(update);
 
-        // add lower priority request
+        // add another request
         data.addSingleton(change);
 
-        // should not publish lower priority request
-        verify(change, never()).startPublishing(any());
-    }
+        // add duplicate requests
+        StateChangeReq change2 = makeStateChangeReq(PDP1, MY_STATE);
+        when(change.reconfigure(change2.getMessage())).thenReturn(true);
+        data.addSingleton(change2);
 
-    @Test
-    public void testAddSingleton_HigherPriority() {
-        data.addSingleton(change);
+        UpdateReq update2 = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
+        when(update.reconfigure(update2.getMessage())).thenReturn(true);
+        data.addSingleton(update2);
 
-        QueueToken<PdpMessage> token = new QueueToken<>(change.getMessage());
-        when(change.stopPublishing(false)).thenReturn(token);
+        // should still only be publishing the first request
+        verify(update).startPublishing();
 
-        // add higher priority request
-        data.addSingleton(update);
-
-        // should stop publishing lower priority request
-        verify(change).stopPublishing(false);
-
-        // should start publishing higher priority request
-        verify(update).startPublishing(token);
+        verify(change, never()).startPublishing();
+        verify(change2, never()).startPublishing();
+        verify(update2, never()).startPublishing();
     }
 
     @Test
@@ -114,110 +113,53 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckExistingSingleton_DoesNotExist() {
-        data.addSingleton(update);
-        verify(update).startPublishing(any());
-    }
-
-    @Test
-    public void testCheckExistingSingleton_SameContent() {
-        data.addSingleton(update);
-
-        // add duplicate update
-        UpdateReq req2 = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
-        when(update.isSameContent(req2)).thenReturn(true);
-        data.addSingleton(req2);
-
-        // should not publish duplicate
-        verify(req2, never()).startPublishing(any());
-    }
-
-    @Test
-    public void testCheckExistingSingleton_DifferentContent() {
-        data.addSingleton(update);
-
-        // add different update
-        UpdateReq req2 = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
-        when(req2.isSameContent(update)).thenReturn(false);
-        data.addSingleton(req2);
-
-        // should not publish duplicate
-        verify(req2, never()).startPublishing(any());
-
-        // should have re-configured the original
-        verify(update).reconfigure(req2.getMessage(), null);
-
-        // should not have started publishing again
-        verify(update).startPublishing(any());
-    }
-
-    @Test
     public void testStopPublishing() {
+        // nothing in the queue - nothing should happen
+        data.stopPublishing();
+
         data.addSingleton(update);
         data.addSingleton(change);
 
         data.stopPublishing();
 
         verify(update).stopPublishing();
-        verify(change).stopPublishing();
+        verify(change, never()).stopPublishing();
 
         // repeat, but with only one request in the queue
         data.addSingleton(update);
         data.stopPublishing();
         verify(update, times(2)).stopPublishing();
-
-        // should not have been invoked again
-        verify(change).stopPublishing();
-    }
-
-    @Test
-    public void testStopPublishingLowerPriority() {
-        data.addSingleton(change);
-
-        QueueToken<PdpMessage> token = new QueueToken<>(change.getMessage());
-        when(change.stopPublishing(false)).thenReturn(token);
-
-        // add higher priority request
-        data.addSingleton(update);
-
-        // should stop publishing lower priority request
-        verify(change).stopPublishing(false);
-
-        // should start publishing higher priority request, with the old token
-        verify(update).startPublishing(token);
-    }
-
-    @Test
-    public void testStopPublishingLowerPriority_NothingPublishing() {
-        data.addSingleton(change);
-
-        // change will return a null token when stopPublishing(false) is called
-
-        data.addSingleton(update);
-
-        // should stop publishing lower priority request
-        verify(change).stopPublishing(false);
-
-        // should start publishing higher priority request
-        verify(update).startPublishing(null);
+        verify(change, never()).stopPublishing();
     }
 
     @Test
     public void testStartNextRequest_NothingToStart() {
         assertFalse(data.startNextRequest(update));
+
+        // should not have published it
+        verify(update, never()).startPublishing();
     }
 
+    /**
+     * Tests addSingleton() when only one request is in the queue.
+     */
     @Test
-    public void testStartNextRequest_ZapCurrent() {
+    public void testStartNextRequest_OneRequest() {
         data.addSingleton(update);
         assertFalse(data.startNextRequest(update));
 
         // invoke again
         assertFalse(data.startNextRequest(update));
+
+        // should have only been published once
+        verify(update, times(1)).startPublishing();
     }
 
+    /**
+     * Tests addSingleton() when more than one request is in the queue.
+     */
     @Test
-    public void testStartNextRequest_ZapOther() {
+    public void testStartNextRequest_MultipleRequests() {
         data.addSingleton(update);
         data.addSingleton(change);
 
@@ -227,61 +169,15 @@ public class PdpRequestsTest extends CommonRequestBase {
         // invoke again
         assertTrue(data.startNextRequest(change));
 
-        // nothing more once update completes
-        assertFalse(data.startNextRequest(update));
+        // should not have published yet
+        verify(change, never()).startPublishing();
 
+        // should publish "change" once update completes
+        assertTrue(data.startNextRequest(update));
+        verify(change).startPublishing();
+
+        // nothing more in the queue once it completes
         assertFalse(data.startNextRequest(change));
-    }
-
-    @Test
-    public void testStartNextRequest_StartOther() {
-        data.addSingleton(update);
-        data.addSingleton(change);
-
-        assertTrue(data.startNextRequest(change));
-
-        // should have published update twice, with and without a token
-        verify(update).startPublishing(any());
-        verify(update).startPublishing();
-    }
-
-    @Test
-    public void testStartNextRequest_NoOther() {
-        data.addSingleton(update);
-
-        // nothing else to start
-        assertFalse(data.startNextRequest(update));
-
-        verify(update).startPublishing(any());
-        verify(update, never()).startPublishing();
-    }
-
-    @Test
-    public void testHigherPrioritySingleton_True() {
-        data.addSingleton(update);
-        data.addSingleton(change);
-
-        verify(update).startPublishing(any());
-
-        verify(update, never()).startPublishing();
-        verify(change, never()).startPublishing();
-        verify(change, never()).startPublishing(any());
-    }
-
-    @Test
-    public void testHigherPrioritySingleton_FalseWithUpdate() {
-        data.addSingleton(update);
-
-        verify(update).startPublishing(any());
-        verify(update, never()).startPublishing();
-    }
-
-    @Test
-    public void testHigherPrioritySingleton_FalseWithStateChange() {
-        data.addSingleton(change);
-
-        verify(change).startPublishing(any());
-        verify(change, never()).startPublishing();
     }
 
     @Test

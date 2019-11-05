@@ -46,7 +46,6 @@ import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.parameters.RequestParams;
 
 public class RequestImplTest extends CommonRequestBase {
-    private static final int MY_PRIORITY = 10;
 
     private MyRequest req;
     private PdpStatus response;
@@ -86,28 +85,28 @@ public class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testReconfigure_WrongMsgClass() {
-        assertThatIllegalArgumentException().isThrownBy(() -> req.reconfigure(new PdpUpdate(), null))
+    public void testReconfigure2_WrongMsgClass() {
+        assertThatIllegalArgumentException().isThrownBy(() -> req.reconfigure(new PdpUpdate()))
                         .withMessage("expecting PdpStateChange instead of PdpUpdate");
     }
 
     @Test
-    public void testReconfigure_NotPublishing() {
+    public void testReconfigure2_NotPublishing() {
 
         // replace the message with a new message
-        req.reconfigure(new PdpStateChange(), null);
+        req.reconfigure(new PdpStateChange());
 
         // nothing should have been placed in the queue
         assertNull(queue.poll());
     }
 
     @Test
-    public void testRequestImpl_testReconfigure_Publishing() {
+    public void testRequestImpl_testReconfigure2_Publishing() {
         req.startPublishing();
 
         // replace the message with a new message
         PdpStateChange msg2 = new PdpStateChange();
-        req.reconfigure(msg2, null);
+        req.reconfigure(msg2);
 
         // should have cancelled the first timer
         verify(timer).cancel();
@@ -129,45 +128,6 @@ public class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testReconfigure_PublishingNullToken() {
-        req.startPublishing();
-
-        // replace the message with a new message
-        PdpStateChange msg2 = new PdpStateChange();
-        req.reconfigure(msg2, null);
-
-        // should have cancelled the first timer
-        verify(timer).cancel();
-
-        // should only be one token in the queue
-        QueueToken<PdpMessage> token = queue.poll();
-        assertNotNull(token);
-        assertSame(msg2, token.get());
-    }
-
-    @Test
-    public void testReconfigure_PublishingNewToken() {
-        req.startPublishing();
-
-        // null out the original token so it isn't reused
-        QueueToken<PdpMessage> token = queue.poll();
-        assertNotNull(token);
-        token.replaceItem(null);
-
-        QueueToken<PdpMessage> token2 = new QueueToken<>(new PdpStateChange());
-
-        // replace the message with a new message
-        PdpStateChange msg2 = new PdpStateChange();
-        req.reconfigure(msg2, token2);
-
-        // new token should have the new message
-        token = queue.poll();
-        assertSame(msg2, token.get());
-
-        assertNull(queue.poll());
-    }
-
-    @Test
     public void testIsPublishing() {
         assertFalse(req.isPublishing());
 
@@ -176,32 +136,6 @@ public class RequestImplTest extends CommonRequestBase {
 
         req.stopPublishing();
         assertFalse(req.isPublishing());
-    }
-
-    @Test
-    public void testStartPublishingQueueToken() {
-        req.startPublishing(null);
-
-        assertTrue(req.isPublishing());
-
-        verify(dispatcher).register(eq(msg.getRequestId()), any());
-        verify(timers).register(eq(msg.getRequestId()), any());
-        verify(publisher).enqueue(any());
-
-        QueueToken<PdpMessage> token = queue.poll();
-        assertNotNull(token);
-        assertSame(msg, token.get());
-
-
-        // invoking start() again has no effect - invocation counts remain the same
-        req.startPublishing(null);
-        verify(dispatcher, times(1)).register(any(), any());
-        verify(timers, times(1)).register(any(), any());
-        verify(publisher, times(1)).enqueue(any());
-        assertNull(queue.poll());
-
-        // should NOT have cancelled the timer
-        verify(timer, never()).cancel();
     }
 
     @Test
@@ -235,53 +169,6 @@ public class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testReplaceToken_NullNewToken() {
-        req.startPublishing(null);
-        assertSame(msg, queue.poll().get());
-    }
-
-    @Test
-    public void testReplaceToken_NullOldToken() {
-        QueueToken<PdpMessage> token = new QueueToken<>(new PdpStateChange());
-
-        req.startPublishing(token);
-        assertNull(queue.poll());
-        assertSame(msg, token.get());
-    }
-
-    @Test
-    public void testReplaceToken_SameToken() {
-        req.startPublishing();
-
-        QueueToken<PdpMessage> token = queue.poll();
-        req.startPublishing(token);
-
-        // nothing else should have been enqueued
-        assertNull(queue.poll());
-
-        assertSame(msg, token.get());
-    }
-
-    @Test
-    public void testReplaceToken_DifferentToken() {
-        req.startPublishing();
-
-        QueueToken<PdpMessage> token2 = new QueueToken<>(new PdpStateChange());
-        req.startPublishing(token2);
-
-        QueueToken<PdpMessage> token = queue.poll();
-
-        // old token should still have the message
-        assertSame(msg, token.get());
-
-        // should not have added new token to the queue
-        assertNull(queue.poll());
-
-        // new token should have been nulled out
-        assertNull(token2.get());
-    }
-
-    @Test
     public void testStopPublishing() {
         // not publishing yet
         req.stopPublishing();
@@ -304,14 +191,15 @@ public class RequestImplTest extends CommonRequestBase {
 
     @Test
     public void testStopPublishingBoolean_NotPublishing() {
-        assertNull(req.stopPublishing(false));
+        // should not throw an exception
+        req.stopPublishing();
     }
 
     @Test
     public void testStopPublishingBoolean_TruePublishing() {
         req.startPublishing();
 
-        assertNull(req.stopPublishing(true));
+        req.stopPublishing();
 
         // should be nulled out
         QueueToken<PdpMessage> token = queue.poll();
@@ -330,34 +218,12 @@ public class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStopPublishingBoolean_FalsePublishing() {
-        req.startPublishing();
-
-        QueueToken<PdpMessage> token = req.stopPublishing(false);
-        assertNotNull(token);
-        assertSame(token, queue.poll());
-
-        // should not be nulled out
-        assertSame(msg, token.get());
-
-        verify(dispatcher).unregister(eq(msg.getRequestId()));
-        verify(timer).cancel();
-
-        // if start publishing again - should use a new token
-        req.startPublishing();
-        QueueToken<PdpMessage> token2 = queue.poll();
-        assertNotNull(token2);
-        assertTrue(token2 != token);
-        assertSame(msg, token2.get());
-    }
-
-    @Test
     public void testEnqueue() {
         req.startPublishing();
 
         // replace the message with a new message
         PdpStateChange msg2 = new PdpStateChange();
-        req.reconfigure(msg2, null);
+        req.reconfigure(msg2);
 
         // should still only be one token in the queue
         QueueToken<PdpMessage> token = queue.poll();
@@ -370,7 +236,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         // enqueue a new message
         PdpStateChange msg3 = new PdpStateChange();
-        req.reconfigure(msg3, null);
+        req.reconfigure(msg3);
         req.startPublishing();
 
         // a new token should have been placed in the queue
@@ -379,6 +245,18 @@ public class RequestImplTest extends CommonRequestBase {
         assertNull(queue.poll());
         assertNotNull(token2);
         assertSame(msg3, token2.get());
+
+        // zap the token, indicating it's been published
+        token2.replaceItem(null);
+        PdpStateChange msg4 = new PdpStateChange();
+        req.reconfigure(msg4);
+
+        // a new token should have been placed in the queue
+        QueueToken<PdpMessage> token3 = queue.poll();
+        assertTrue(token2 != token3);
+        assertNull(queue.poll());
+        assertNotNull(token3);
+        assertSame(msg4, token3.get());
     }
 
     @Test
@@ -543,7 +421,7 @@ public class RequestImplTest extends CommonRequestBase {
         assertSame(msg, req.getMessage());
 
         PdpStateChange msg2 = new PdpStateChange();
-        req.reconfigure(msg2, null);
+        req.reconfigure(msg2);
         assertSame(msg2, req.getMessage());
     }
 
@@ -559,13 +437,9 @@ public class RequestImplTest extends CommonRequestBase {
         }
 
         @Override
-        public int getPriority() {
-            return MY_PRIORITY;
-        }
-
-        @Override
-        public boolean isSameContent(Request other) {
-            return false;
+        public boolean reconfigure(PdpMessage newMessage) {
+            reconfigure2(newMessage);
+            return true;
         }
     }
 }

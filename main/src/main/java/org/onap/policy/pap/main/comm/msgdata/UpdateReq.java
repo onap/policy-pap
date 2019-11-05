@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
@@ -90,13 +91,25 @@ public class UpdateReq extends RequestImpl {
     }
 
     @Override
-    public boolean isSameContent(Request other) {
-        if (!(other instanceof UpdateReq)) {
+    public boolean reconfigure(PdpMessage newMessage) {
+        if (!(newMessage instanceof PdpUpdate)) {
+            // not an update - no change to this request
             return false;
         }
 
+        PdpUpdate update = (PdpUpdate) newMessage;
+
+        if (isSameContent(update)) {
+            // content hasn't changed - nothing more to do
+            return true;
+        }
+
+        reconfigure2(newMessage);
+        return true;
+    }
+
+    protected final boolean isSameContent(PdpUpdate second) {
         PdpUpdate first = getMessage();
-        PdpUpdate second = (PdpUpdate) other.getMessage();
 
         if (!StringUtils.equals(first.getPdpGroup(), second.getPdpGroup())) {
             return false;
@@ -121,10 +134,5 @@ public class UpdateReq extends RequestImpl {
      */
     private <T> List<T> alwaysList(List<T> list) {
         return (list != null ? list : Collections.emptyList());
-    }
-
-    @Override
-    public int getPriority() {
-        return 1;
     }
 }
