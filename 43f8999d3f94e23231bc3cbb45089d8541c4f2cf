@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e097c96c_4eac2078",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpModifyRequestMap.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-11-06T13:44:18Z",
+      "side": 1,
+      "message": "It seems that this else if and the next else could be compacted in the same code, they do the same.",
+      "revId": "43f8999d3f94e23231bc3cbb45089d8541c4f2cf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1233f88d_423ee71d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpModifyRequestMap.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-11-06T13:44:18Z",
+      "side": 1,
+      "message": "Question: should the \"condition check\" be moved inside the if synchronized section?   Condition may have changed by the time entering the critical section.",
+      "revId": "43f8999d3f94e23231bc3cbb45089d8541c4f2cf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
