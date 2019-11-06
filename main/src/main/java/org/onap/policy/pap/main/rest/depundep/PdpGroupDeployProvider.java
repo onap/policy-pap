@@ -441,6 +441,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         }
 
         result.addResult(validatePolicies(data, dbsub, subgrp));
+        result.addResult(validateSupportedTypes(data, subgrp));
         container.addResult(result);
 
         return result.isValid();
@@ -480,7 +481,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaPolicyTypeIdentifier type : subgrp.getSupportedPolicyTypes()) {
-            if (data.getPolicyType(type) == null) {
+            if (!type.getName().endsWith(".*") && data.getPolicyType(type) == null) {
                 result.addResult(new ObjectValidationResult("policy type", type, ValidationStatus.INVALID,
                                 "unknown policy type"));
             }
@@ -529,7 +530,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
                 result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
                                 "unknown policy"));
 
-            } else if (!subgrp.getSupportedPolicyTypes().contains(policy.getTypeIdentifier())) {
+            } else if (!isPolicySupported(subgrp.getSupportedPolicyTypes(), policy.getTypeIdentifier())) {
                 result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
                                 "not a supported policy for the subgroup"));
 
@@ -613,7 +614,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         return (group, subgroup) -> {
 
-            if (!subgroup.getSupportedPolicyTypes().contains(desiredType)) {
+            if (!isPolicySupported(subgroup.getSupportedPolicyTypes(), desiredType)) {
                 // doesn't support the desired policy type
                 return false;
             }
@@ -640,6 +641,32 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
             return true;
         };
+    }
+
+    /**
+     * Determines if a policy type is supported.
+     *
+     * @param supportedTypes supported policy types, any of which may end with ".*"
+     * @param desiredType policy type of interest
+     * @return {@code true} if the policy type is supported, {@code false} otherwise
+     */
+    private boolean isPolicySupported(List<ToscaPolicyTypeIdentifier> supportedTypes,
+                    ToscaPolicyTypeIdentifier desiredType) {
+
+        if (supportedTypes.contains(desiredType)) {
+            return true;
+        }
+
+        String desiredTypeName = desiredType.getName();
+        for (ToscaPolicyTypeIdentifier type : supportedTypes) {
+            String supType = type.getName();
+            if (supType.endsWith(".*") && desiredTypeName.startsWith(supType.substring(0, supType.length() - 1))) {
+                // matches everything up to, AND INCLUDING, the "."
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

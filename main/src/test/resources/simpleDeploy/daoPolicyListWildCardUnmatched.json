@@ -1,0 +1,10 @@
+{
+    "policies":  [
+        {
+            "name": "policy.some",
+            "version": "1.2.3",
+            "type": "another.type",
+            "type_version": "100.2.3"
+        }
+    ]
+}

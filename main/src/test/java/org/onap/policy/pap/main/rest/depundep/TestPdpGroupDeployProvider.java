@@ -325,7 +325,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
         subgrp.setDesiredInstanceCount(30);
         subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
-        subgrp.getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX", "9.8.7"));
+        subgrp.getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
 
         when(dao.getFilteredPolicyList(any()))
                         .thenReturn(loadPolicies("createGroupNewPolicy.json"))
@@ -416,6 +416,49 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
+    }
+
+    /**
+     * Tests addSubgroup() when the new subgroup has a wild-card policy type.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testAddSubGroupWildCardPolicyType() throws Exception {
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyListWildCard.json"));
+        when(dao.getPolicyTypeList("some.*", "2.3.4")).thenReturn(Collections.emptyList());
+
+        PdpGroups groups = loadPdpGroups("createGroupsWildCard.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        prov.createOrUpdateGroups(groups);
+
+        PdpGroup newgrp = groups.getGroups().get(0);
+
+        PdpSubGroup newsub = newgrp.getPdpSubgroups().get(1);
+        newsub.setCurrentInstanceCount(0);
+        newsub.setPdpInstances(new ArrayList<>(0));
+
+        assertEquals(newgrp.toString(), group.toString());
+    }
+
+    /**
+     * Tests addSubgroup() when the new subgroup has a wild-card policy type, but the
+     * policy doesn't have a matching type.
+     *
+     * @throws PfModelException if an error occurs
+     */
+    @Test
+    public void testAddSubGroupWildCardPolicyTypeUnmatched() throws PfModelException {
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyListWildCardUnmatched.json"));
+        when(dao.getPolicyTypeList("some.*", "2.3.4")).thenReturn(Collections.emptyList());
+
+        PdpGroups groups = loadPdpGroups("createGroupsWildCard.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class);
     }
 
     @Test
@@ -526,7 +569,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup group = new PdpGroup(newgrp);
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
-        newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX", "9.8.7"));
+        newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes()
+                        .add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
 
         prov.createOrUpdateGroups(groups);
 
@@ -650,6 +694,41 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     @Test
     public void testDeployPolicies() throws PfModelException {
         prov.deployPolicies(loadEmptyRequest());
+    }
+
+    /**
+     * Tests deployPolicies() when the supported policy type uses a wild-card.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testDeployPoliciesWildCard() throws Exception {
+        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("deployPoliciesWildCard.json"));
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyListWildCard.json"));
+        when(dao.getPolicyTypeList(any(), any())).thenReturn(Collections.emptyList());
+
+        policy1.setName("policy.some");
+        policy1.setVersion(POLICY1_VERSION);
+        policy1.setType("some.type");
+        policy1.setTypeVersion("100.2.3");
+
+        PdpDeployPolicies depreq = loadRequest();
+        depreq.getPolicies().get(0).setName("policy.some");
+
+        prov.deployPolicies(depreq);
+
+        assertGroup(getGroupUpdates(), GROUP1_NAME);
+
+        List<PdpUpdate> requests = getUpdateRequests(1);
+        assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
+
+        // should have notified of added policy/PDPs
+        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
+        verify(notifier).addDeploymentData(captor.capture());
+        assertDeploymentData(captor, policy1.getIdentifier(), "[pdpB]");
+
+        // no undeployment notifications
+        verify(notifier, never()).addUndeploymentData(any());
     }
 
     @Test
