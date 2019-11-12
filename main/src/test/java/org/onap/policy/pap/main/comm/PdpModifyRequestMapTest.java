@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -335,7 +334,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testDisablePdp() throws Exception {
+    public void testRemovePdp() throws Exception {
         map.addRequest(update);
 
         // put the PDP in a group
@@ -344,8 +343,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
 
-        // indicate failure
-        invokeFailureHandler(1);
+        // indicate retries exhausted
+        invokeLastRetryHandler(1);
 
         // should have stopped publishing
         verify(requests).stopPublishing();
@@ -353,66 +352,58 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // should have generated a notification
         verify(notifier).removePdp(PDP1);
 
-        // should have published a state-change
-        PdpMessage msg2 = getSingletons(3).get(1).getMessage();
-        assertNotNull(msg2);
-        assertTrue(msg2 instanceof PdpStateChange);
-
-        change = (PdpStateChange) msg2;
-        assertEquals(PDP1, change.getName());
-        assertEquals(PdpState.PASSIVE, change.getState());
-
-        // should have published a new update
-        msg2 = getSingletons(3).get(2).getMessage();
-        assertNotNull(msg2);
-        assertTrue(msg2 instanceof PdpUpdate);
-
-        // update should have null group & subgroup
-        update = (PdpUpdate) msg2;
-        assertEquals(PDP1, update.getName());
-        assertNull(update.getPdpGroup());
-        assertNull(update.getPdpSubgroup());
+        // should have removed from the group
+        List<PdpGroup> groups = getGroupUpdates();
+        assertEquals(1, groups.size());
+        assertSame(group, groups.get(0));
+        assertEquals(0, group.getPdpSubgroups().get(0).getCurrentInstanceCount());
     }
 
     @Test
-    public void testDisablePdp_NotInGroup() {
+    public void testRemovePdp_NotInGroup() throws PfModelException {
         map.addRequest(update);
 
-        // indicate failure
-        invokeFailureHandler(1);
+        // indicate retries exhausted
+        invokeLastRetryHandler(1);
 
         // should have stopped publishing
         verify(requests).stopPublishing();
 
-        // should have published a new state-change
-        PdpMessage msg2 = getSingletons(2).get(1).getMessage();
-        assertNotNull(msg2);
-        assertTrue(msg2 instanceof PdpStateChange);
-
-        change = (PdpStateChange) msg2;
-        assertEquals(PDP1, change.getName());
-        assertEquals(PdpState.PASSIVE, change.getState());
+        // should not have done any updates
+        verify(dao, never()).updatePdpGroups(any());
     }
 
     @Test
-    public void testDisablePdp_AlreadyRemoved() {
+    public void testRemovePdp_AlreadyRemovedFromMap() throws PfModelException {
         map.addRequest(change);
         map.stopPublishing(PDP1);
 
-        invokeFailureHandler(1);
+        // put the PDP in a group
+        PdpGroup group = makeGroup(MY_GROUP);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
 
-        // should not have stopped publishing a second time
-        verify(requests, times(1)).stopPublishing();
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        invokeLastRetryHandler(1);
+
+        // should have stopped publishing a second time
+        verify(requests, times(2)).stopPublishing();
+
+        // should NOT have done any updates
+        verify(dao, never()).updatePdpGroups(any());
     }
 
     @Test
-    public void testDisablePdp_NoGroup() {
+    public void testRemovePdp_NoGroup() throws PfModelException {
         map.addRequest(change);
 
-        invokeFailureHandler(1);
+        invokeLastRetryHandler(1);
 
         // should not have stopped publishing
         verify(requests).stopPublishing();
+
+        // should not have done any updates
+        verify(dao, never()).updatePdpGroups(any());
     }
 
     @Test
@@ -425,7 +416,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
 
-        invokeFailureHandler(1);
+        invokeLastRetryHandler(1);
 
         // verify that the PDP was removed from the subgroup
         List<PdpGroup> groups = getGroupUpdates();
@@ -445,7 +436,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         when(dao.getFilteredPdpGroups(any())).thenThrow(new PfModelException(Status.BAD_REQUEST, "expected exception"));
 
-        invokeFailureHandler(1);
+        invokeLastRetryHandler(1);
 
         // should still stop publishing
         verify(requests).stopPublishing();
@@ -459,7 +450,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromGroup_NoGroups() throws Exception {
         map.addRequest(change);
 
-        invokeFailureHandler(1);
+        invokeLastRetryHandler(1);
 
         verify(dao, never()).updatePdpGroups(any());
     }
@@ -473,7 +464,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
 
-        invokeFailureHandler(1);
+        invokeLastRetryHandler(1);
 
         verify(dao, never()).updatePdpGroups(any());
     }
@@ -487,7 +478,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
 
-        invokeFailureHandler(1);
+        invokeLastRetryHandler(1);
 
         // verify that the PDP was removed from the subgroup
         List<PdpGroup> groups = getGroupUpdates();
@@ -519,22 +510,15 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // invoke the method
         invokeFailureHandler(1);
 
-        verify(requests).stopPublishing();
-    }
-
-    @Test
-    public void testSingletonListenerFailure_WrongPdpName() throws Exception {
-        map.addRequest(change);
-
-        // invoke the method - has wrong PDP name
-        when(requests.getPdpName()).thenReturn(DIFFERENT);
-        invokeFailureHandler(1);
-
         verify(requests, never()).stopPublishing();
+
+        // requests should have been removed from the map so this should allocate another
+        map.addRequest(update);
+        assertEquals(2, map.nalloc);
     }
 
     @Test
-    public void testSingletonListenerSuccess_LastRequest() throws Exception {
+    public void testSingletonListenerSuccess() throws Exception {
         map.addRequest(change);
 
         // invoke the method
@@ -548,11 +532,33 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testSingletonListenerSuccess_NameMismatch() throws Exception {
+    public void testRequestCompleted_LastRequest() throws Exception {
         map.addRequest(change);
 
-        // invoke the method - with a different name
+        // invoke the method
+        invokeSuccessHandler(1);
+
+        verify(requests, never()).stopPublishing();
+
+        // requests should have been removed from the map so this should allocate another
+        map.addRequest(update);
+        assertEquals(2, map.nalloc);
+    }
+
+    @Test
+    public void testRequestCompleted_NameMismatch() throws Exception {
+        // use a different name
         when(requests.getPdpName()).thenReturn(DIFFERENT);
+
+        map.addRequest(change);
+
+        // put the PDP in a group
+        PdpGroup group = makeGroup(MY_GROUP);
+        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, DIFFERENT)));
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+
+        // invoke the method - with a different name (i.e., PDP1 instead of DIFFERENT)
         invokeSuccessHandler(1);
 
         verify(requests, never()).stopPublishing();
@@ -560,10 +566,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // no effect on the map
         map.addRequest(update);
         assertEquals(1, map.nalloc);
+
+        // no updates
+        verify(dao, never()).updatePdpGroups(any());
     }
 
     @Test
-    public void testSingletonListenerSuccess_AlreadyStopped() throws Exception {
+    public void testRequestCompleted_AlreadyStopped() throws Exception {
         map.addRequest(change);
 
         map.stopPublishing(PDP1);
@@ -584,7 +593,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         map.addRequest(change);
 
         // invoke the method
-        getListener(getSingletons(1).get(0)).retryCountExhausted();
+        invokeLastRetryHandler(1);
 
         verify(requests).stopPublishing();
     }
@@ -606,6 +615,15 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      */
     private void invokeFailureHandler(int count) {
         getListener(getSingletons(count).get(0)).failure(PDP1, MY_REASON);
+    }
+
+    /**
+     * Invokes the first request's listener.retryCountExhausted() method.
+     *
+     * @param count expected number of requests
+     */
+    private void invokeLastRetryHandler(int count) {
+        getListener(getSingletons(count).get(0)).retryCountExhausted();
     }
 
     /**

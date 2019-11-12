@@ -21,7 +21,6 @@
 package org.onap.policy.pap.main.comm;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -326,27 +325,36 @@ public class PdpModifyRequestMap {
     private class SingletonListener implements RequestListener {
         private final PdpRequests requests;
         private final Request request;
+        private final String pdpName;
 
         public SingletonListener(PdpRequests requests, Request request) {
             this.requests = requests;
             this.request = request;
+            this.pdpName = requests.getPdpName();
         }
 
         @Override
-        public void failure(String pdpName, String reason) {
-            if (requests.getPdpName().equals(pdpName)) {
-                disablePdp(requests);
-            }
+        public void failure(String responsePdpName, String reason) {
+            requestCompleted(responsePdpName);
         }
 
         @Override
-        public void success(String pdpName) {
-            if (requests.getPdpName().equals(pdpName)) {
-                if (pdp2requests.get(requests.getPdpName()) == requests) {
-                    startNextRequest(requests, request);
+        public void success(String responsePdpName) {
+            requestCompleted(responsePdpName);
+        }
+
+        /**
+         * Handles a request completion, starting the next request, if there is one.
+         *
+         * @param responsePdpName name of the PDP provided in the response
+         */
+        private void requestCompleted(String responsePdpName) {
+            if (pdpName.equals(responsePdpName)) {
+                if (pdp2requests.get(pdpName) == requests) {
+                    startNextRequest(request);
 
                 } else {
-                    logger.info("discard old requests for {}", pdpName);
+                    logger.info("discard old requests for {}", responsePdpName);
                     requests.stopPublishing();
                 }
             }
@@ -354,65 +362,42 @@ public class PdpModifyRequestMap {
 
         @Override
         public void retryCountExhausted() {
-            disablePdp(requests);
+            removePdp();
         }
 
         /**
          * Starts the next request associated with a PDP.
          *
-         * @param requests current set of requests
          * @param request the request that just completed
          */
-        private void startNextRequest(PdpRequests requests, Request request) {
+        private void startNextRequest(Request request) {
             if (!requests.startNextRequest(request)) {
-                pdp2requests.remove(requests.getPdpName(), requests);
+                pdp2requests.remove(pdpName, requests);
             }
         }
 
         /**
-         * Disables a PDP by removing it from its subgroup and then sending it a PASSIVE
-         * request.
-         *
-         * @param requests the requests associated with the PDP to be disabled
+         * Removes a PDP from its subgroup.
          */
-        private void disablePdp(PdpRequests requests) {
-
-            policyNotifier.removePdp(requests.getPdpName());
+        private void removePdp() {
+            requests.stopPublishing();
 
             // remove the requests from the map
-            if (!pdp2requests.remove(requests.getPdpName(), requests)) {
-                // don't have the info we need to disable it
-                logger.warn("no requests with which to disable {}", requests.getPdpName());
+            if (!pdp2requests.remove(pdpName, requests)) {
+                // wasn't in the map - the requests must be old
+                logger.warn("discarding old requests for {}", pdpName);
                 return;
             }
 
-            logger.warn("disabling {}", requests.getPdpName());
+            logger.warn("removing {}", pdpName);
 
-            requests.stopPublishing();
+            policyNotifier.removePdp(pdpName);
 
             // remove the PDP from all groups
-            boolean removed = false;
             try {
-                removed = removeFromGroups(requests.getPdpName());
+                removeFromGroups(pdpName);
             } catch (PfModelException e) {
-                logger.info("unable to remove PDP {} from subgroup", requests.getPdpName(), e);
-            }
-
-            // send the state change
-            PdpStateChange change = new PdpStateChange();
-            change.setName(requests.getPdpName());
-            change.setState(PdpState.PASSIVE);
-
-            if (removed) {
-                // send an update, too
-                PdpUpdate update = new PdpUpdate();
-                update.setName(requests.getPdpName());
-                update.setPolicies(Collections.emptyList());
-
-                addRequest(update, change);
-
-            } else {
-                addRequest(change);
+                logger.info("unable to remove PDP {} from subgroup", pdpName, e);
             }
         }
     }
