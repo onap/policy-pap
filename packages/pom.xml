@@ -39,6 +39,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <modules>
+                <module>policy-pap-tarball</module>
+            </modules>
         </profile>
         <profile>
             <id>docker</id>
