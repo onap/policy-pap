@@ -66,7 +66,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     public void handlePdpStatus(final PdpStatus message) {
         synchronized (updateLock) {
             try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-                if (message.getPdpGroup() == null && message.getPdpSubgroup() == null) {
+                if (message.getPdpSubgroup() == null) {
                     handlePdpRegistration(message, databaseProvider);
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
