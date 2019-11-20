@@ -20,6 +20,8 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import java.util.Collection;
+import java.util.Collections;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -28,6 +30,7 @@ import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.utils.services.ServiceManager;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
@@ -307,5 +310,13 @@ public abstract class RequestImpl implements Request {
         }
 
         return null;
+    }
+
+    /**
+     * Just returns an empty list.
+     */
+    @Override
+    public Collection<ToscaPolicyIdentifier> getUndeployPolicies() {
+        return Collections.emptyList();
     }
 }
