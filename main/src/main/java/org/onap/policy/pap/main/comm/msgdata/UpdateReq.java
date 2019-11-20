@@ -20,11 +20,13 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
@@ -38,6 +40,12 @@ import org.onap.policy.pap.main.parameters.RequestParams;
  * Wraps an UPDATE.
  */
 public class UpdateReq extends RequestImpl {
+
+    /**
+     * Policies to be undeployed if the request fails.
+     */
+    @Getter
+    private Collection<ToscaPolicyIdentifier> undeployPolicies = Collections.emptyList();
 
     /**
      * Constructs the object, and validates the parameters.
@@ -59,6 +67,9 @@ public class UpdateReq extends RequestImpl {
 
     @Override
     public String checkResponse(PdpStatus response) {
+        // reset the list
+        undeployPolicies = Collections.emptyList();
+
         String reason = super.checkResponse(response);
         if (reason != null) {
             // response isn't for this PDP - don't generate notifications
@@ -78,12 +89,21 @@ public class UpdateReq extends RequestImpl {
             return "subgroup does not match";
         }
 
+        if (message.getPdpSubgroup() == null) {
+            return null;
+        }
+
         // see if the policies match
 
         Set<ToscaPolicyIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
                         .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
 
         if (!actualSet.equals(expectedSet)) {
+            // need to undeploy the policies that are expected, but missing from the
+            // response
+            undeployPolicies = expectedSet;
+            undeployPolicies.removeAll(actualSet);
+
             return "policies do not match";
         }
 

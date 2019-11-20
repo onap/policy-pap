@@ -20,8 +20,10 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import java.util.Collection;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 /**
@@ -94,4 +96,11 @@ public interface Request {
      * @return an error message, if a fatal error has occurred, {@code null} otherwise
      */
     public String checkResponse(PdpStatus response);
+
+    /**
+     * If a request fails, this gets a list of the policies that should be undeployed.
+     *
+     * @return a list of policies to be undeployed
+     */
+    public Collection<ToscaPolicyIdentifier> getUndeployPolicies();
 }
