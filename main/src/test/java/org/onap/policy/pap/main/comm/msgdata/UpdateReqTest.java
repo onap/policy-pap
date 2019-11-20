@@ -31,7 +31,9 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,12 +81,14 @@ public class UpdateReqTest extends CommonRequestBase {
     @Test
     public void testCheckResponse() {
         assertNull(data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
 
         // both policy lists null
         update.setPolicies(null);
         response.setPolicies(null);
         assertNull(data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
     }
 
     @Test
@@ -92,6 +96,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setName(null);
 
         assertEquals("null PDP name", data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
         verifyNoResponse();
     }
 
@@ -100,6 +105,7 @@ public class UpdateReqTest extends CommonRequestBase {
         update.setName(null);
 
         assertEquals(null, data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
     }
 
@@ -108,6 +114,7 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPdpGroup(DIFFERENT);
 
         assertEquals("group does not match", data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
     }
 
@@ -116,6 +123,20 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPdpSubgroup(DIFFERENT);
 
         assertEquals("subgroup does not match", data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
+        verifyResponse();
+    }
+
+    @Test
+    public void testCheckResponse_NullSubGroup() {
+        update.setPdpSubgroup(null);
+        response.setPdpSubgroup(null);
+
+        // different policy list - should have no impact
+        response.setPolicies(Collections.emptyList());
+
+        assertEquals(null, data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
     }
 
@@ -128,6 +149,10 @@ public class UpdateReqTest extends CommonRequestBase {
 
         assertEquals("policies do not match", data.checkResponse(response));
         verifyResponse();
+
+        // the first policy from the original update is all that should be undeployed
+        assertEquals(Collections.singleton(update.getPolicies().get(0).getIdentifier()).toString(),
+                        data.getUndeployPolicies().toString());
     }
 
     @Test
@@ -135,6 +160,7 @@ public class UpdateReqTest extends CommonRequestBase {
         update.setPolicies(null);
 
         assertEquals("policies do not match", data.checkResponse(response));
+        assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
     }
 
@@ -144,6 +170,10 @@ public class UpdateReqTest extends CommonRequestBase {
 
         assertEquals("policies do not match", data.checkResponse(response));
         verifyResponse();
+
+        // all policies in the update should be undeployed
+        assertEquals(update.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList())
+                        .toString(), new TreeSet<>(data.getUndeployPolicies()).toString());
     }
 
     @Test

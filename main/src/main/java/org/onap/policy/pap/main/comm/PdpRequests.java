@@ -108,6 +108,17 @@ public class PdpRequests {
     }
 
     /**
+     * Determines if a request is the first request in the queue.
+     *
+     * @param request request of interest
+     * @return {@code true} if the request is the first in the queue, {@code false}
+     *         otherwise
+     */
+    public boolean isFirstInQueue(Request request) {
+        return (requests.peek() == request);
+    }
+
+    /**
      * Starts publishing the next request in the queue.
      *
      * @param request the request that just completed
