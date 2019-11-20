@@ -430,6 +430,11 @@ public class RequestImplTest extends CommonRequestBase {
         assertSame(reqParams, req.getParams());
     }
 
+    @Test
+    public void testGetUndeployPolicies() {
+        assertTrue(req.getUndeployPolicies().isEmpty());
+    }
+
     private class MyRequest extends RequestImpl {
 
         public MyRequest(RequestParams params, String name, PdpMessage message) {

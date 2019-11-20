@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -148,10 +149,14 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         when(session.getGroup(GROUP1_NAME)).thenReturn(group);
 
-        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        PfModelException ex = makePfException();
         doThrow(ex).when(session).deleteGroupFromDb(group);
 
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isSameAs(ex);
+    }
+
+    protected PfModelException makePfException() {
+        return new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
     }
 
     @Test
@@ -204,7 +209,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
     @Test
     public void testUndeployPolicy_DaoEx() throws Exception {
-        PfModelException exc = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        PfModelException exc = makePfException();
 
         prov = spy(prov);
         doThrow(exc).when(prov).processPolicy(any(), any());
@@ -220,6 +225,39 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         doThrow(exc).when(prov).processPolicy(any(), any());
 
         assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
+    }
+
+    @Test
+    public void testUndeployPolicies() throws PfModelException {
+        ToscaPolicyIdentifier ident1 = new ToscaPolicyIdentifier("ident-a", "2.3.1");
+        ToscaPolicyIdentifier ident2 = new ToscaPolicyIdentifier("ident-b", "2.3.2");
+        ToscaPolicyIdentifier ident3 = new ToscaPolicyIdentifier("ident-c", "2.3.3");
+        ToscaPolicyIdentifier ident4 = new ToscaPolicyIdentifier("ident-d", "2.3.4");
+
+        /*
+         * provider when first two identifiers throw different types of exceptions, and
+         * the last two succeed
+         */
+        AtomicInteger count = new AtomicInteger(0);
+
+        prov = new MyProvider() {
+            @Override
+            protected void processPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy)
+                            throws PfModelException {
+                switch (count.incrementAndGet()) {
+                    case 0:
+                        throw makePfException();
+                    case 1:
+                        throw new IllegalStateException(EXPECTED_EXCEPTION);
+                    default:
+                        break;
+                }
+            }
+        };
+
+        prov.undeploy(Arrays.asList(ident1, ident2, ident3, ident4));
+
+        assertEquals(4, count.get());
     }
 
     @Test

@@ -56,6 +56,7 @@ import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
 import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
+import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteProvider;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
 
 /**
@@ -218,6 +219,9 @@ public class PapActivator extends ServiceManagerContainer {
                                     .setStateChangeTimers(pdpStChgTimers.get())
                                     .setUpdateTimers(pdpUpdTimers.get())));
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
+
+                // now that it's registered, we can attach a "policy undeploy" provider
+                requestMap.get().setPolicyUndeployer(new PdpGroupDeleteProvider());
             },
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 

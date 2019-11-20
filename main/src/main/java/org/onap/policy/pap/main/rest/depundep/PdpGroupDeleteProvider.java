@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.rest.depundep;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -32,13 +33,14 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.pap.main.comm.PolicyUndeployer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Provider for PAP component to delete PDP groups.
  */
-public class PdpGroupDeleteProvider extends ProviderBase {
+public class PdpGroupDeleteProvider extends ProviderBase implements PolicyUndeployer {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteProvider.class);
 
 
@@ -97,6 +99,14 @@ public class PdpGroupDeleteProvider extends ProviderBase {
     }
 
     /**
+     * Note: This does not throw an exception if it fails to deploy individual policies.
+     */
+    @Override
+    public void undeploy(Collection<ToscaPolicyIdentifier> policies) throws PfModelException {
+        process(policies, this::undeployPolicies);
+    }
+
+    /**
      * Undeploys a policy from its groups.
      *
      * @param data session data
@@ -116,6 +126,26 @@ public class PdpGroupDeleteProvider extends ProviderBase {
             // no need to log the error object here, as it will be logged by the invoker
             logger.warn("failed to undeploy policy: {}", ident);
             throw e;
+        }
+    }
+
+    /**
+     * Undeploys policies from their groups.
+     *
+     * @param data session data
+     * @param policies policies to be undeployed
+     */
+    private void undeployPolicies(SessionData data, Collection<ToscaPolicyIdentifier> policies) {
+
+        for (ToscaPolicyIdentifier policy : policies) {
+            ToscaPolicyIdentifierOptVersion ident =
+                            new ToscaPolicyIdentifierOptVersion(policy.getName(), policy.getVersion());
+            try {
+                processPolicy(data, ident);
+
+            } catch (PfModelException | RuntimeException e) {
+                logger.warn("failed to undeploy policy: {}", ident, e);
+            }
         }
     }
 

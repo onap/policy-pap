@@ -28,6 +28,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,6 +37,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +57,8 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -75,8 +80,17 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Captor
     private ArgumentCaptor<List<PdpGroup>> updateCaptor;
 
+    /**
+     * Used to capture input to undeployer.undeploy().
+     */
+    @Captor
+    private ArgumentCaptor<Collection<ToscaPolicyIdentifier>> undeployCaptor;
+
     @Mock
     private PdpRequests requests;
+
+    @Mock
+    private PolicyUndeployer undeployer;
 
     private MyMap map;
     private PdpUpdate update;
@@ -100,6 +114,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         change = makeStateChange(PDP1, MY_STATE);
 
         when(requests.getPdpName()).thenReturn(PDP1);
+        when(requests.isFirstInQueue(any())).thenReturn(true);
 
         response.setName(MY_NAME);
         response.setState(MY_STATE);
@@ -108,6 +123,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         response.setPolicies(Collections.emptyList());
 
         map = new MyMap(mapParams);
+        map.setPolicyUndeployer(undeployer);
     }
 
     @Test
@@ -434,7 +450,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     public void testRemoveFromGroup_DaoEx() throws Exception {
         map.addRequest(change);
 
-        when(dao.getFilteredPdpGroups(any())).thenThrow(new PfModelException(Status.BAD_REQUEST, "expected exception"));
+        when(dao.getFilteredPdpGroups(any())).thenThrow(makeException());
 
         invokeLastRetryHandler(1);
 
@@ -444,6 +460,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
         assertEquals(2, map.nalloc);
+    }
+
+    protected PfModelException makeException() {
+        return new PfModelException(Status.BAD_REQUEST, "expected exception");
     }
 
     @Test
@@ -510,7 +530,85 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // invoke the method
         invokeFailureHandler(1);
 
+        verify(undeployer, never()).undeploy(any());
         verify(requests, never()).stopPublishing();
+
+        // requests should have been removed from the map so this should allocate another
+        map.addRequest(update);
+        assertEquals(2, map.nalloc);
+    }
+
+    /**
+     * Tests Listener.failure() when something has to be undeployed.
+     */
+    @Test
+    public void testSingletonListenerFailureUndeploy() throws Exception {
+
+        ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier("undeployed", "2.3.4");
+        ToscaPolicy policy = mock(ToscaPolicy.class);
+        when(policy.getIdentifier()).thenReturn(ident);
+
+        // add some policies to the update
+        update.setPolicies(Arrays.asList(policy));
+
+        map.addRequest(update);
+
+        /*
+         * Reconfigure the request when undeploy() is called. Also arrange for undeploy()
+         * to throw an exception.
+         */
+        Request req = getSingletons(1).get(0);
+
+        doAnswer(ans -> {
+            PdpUpdate update2 = new PdpUpdate(update);
+            update2.setPolicies(Collections.emptyList());
+            assertTrue(req.reconfigure(update2));
+            throw makeException();
+        }).when(undeployer).undeploy(any());
+
+        // indicate that all policies failed (because response has no policies)
+        response.setName(PDP1);
+        req.setNotifier(notifier);
+        req.checkResponse(response);
+
+        // invoke the method
+        invokeFailureHandler(1);
+
+        verify(undeployer).undeploy(undeployCaptor.capture());
+        assertEquals(Arrays.asList(ident).toString(), undeployCaptor.getValue().toString());
+
+        // no effect on the map
+        map.addRequest(update);
+        assertEquals(1, map.nalloc);
+    }
+
+    /**
+     * Tests Listener.failure() when something has to be undeployed, but the message
+     * remains unchanged.
+     */
+    @Test
+    public void testSingletonListenerFailureUndeployMessageUnchanged() throws Exception {
+
+        ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier("msg-unchanged", "8.7.6");
+        ToscaPolicy policy = mock(ToscaPolicy.class);
+        when(policy.getIdentifier()).thenReturn(ident);
+
+        // add some policies to the update
+        update.setPolicies(Arrays.asList(policy));
+
+        map.addRequest(update);
+
+        // indicate that all policies failed (because response has no policies)
+        response.setName(PDP1);
+        Request req = getSingletons(1).get(0);
+        req.setNotifier(notifier);
+        req.checkResponse(response);
+
+        // invoke the method
+        invokeFailureHandler(1);
+
+        verify(undeployer).undeploy(undeployCaptor.capture());
+        assertEquals(Arrays.asList(ident).toString(), undeployCaptor.getValue().toString());
 
         // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
@@ -586,6 +684,23 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
         assertEquals(2, map.nalloc);
+    }
+
+    @Test
+    public void testRequestCompleted_NotFirstInQueue() throws Exception {
+        map.addRequest(change);
+
+        when(requests.isFirstInQueue(any())).thenReturn(false);
+
+        // invoke the method
+        invokeSuccessHandler(1);
+
+        // should not have called this
+        verify(requests, never()).stopPublishing();
+
+        // no effect on the map
+        map.addRequest(update);
+        assertEquals(1, map.nalloc);
     }
 
     @Test
