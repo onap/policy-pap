@@ -22,9 +22,8 @@
 package org.onap.policy.pap.main.comm;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -73,11 +72,11 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 }
 
                 /*
-                 * Indicate that a heart beat was received from the PDP. This is invoked
-                 * only if handleXxx() does not throw an exception.
+                 * Indicate that a heart beat was received from the PDP. This is invoked only if handleXxx() does not
+                 * throw an exception.
                  */
                 if (message.getName() != null) {
-                    PdpTracker pdpTracker = Registry.get(PapConstants.REG_PDP_TRACKER);
+                    final PdpTracker pdpTracker = Registry.get(PapConstants.REG_PDP_TRACKER);
                     pdpTracker.add(message.getName());
                 }
             } catch (final PolicyPapException exp) {
@@ -100,45 +99,14 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private boolean findAndUpdatePdpGroup(final PdpStatus message, final PolicyModelsProvider databaseProvider)
             throws PfModelException {
         boolean pdpGroupFound = false;
-        PdpGroup emptyPdpGroup = null;
         final PdpGroupFilter filter =
-                PdpGroupFilter.builder().pdpType(message.getPdpType()).groupState(PdpState.ACTIVE).build();
+                PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
 
-        final TreeMap<Integer, PdpGroup> selectedPdpGroups = new TreeMap<>();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
-        emptyPdpGroup = selectPdpGroupsForRegistration(message, selectedPdpGroups, pdpGroups);
-        if (emptyPdpGroup != null) {
-            pdpGroupFound = registerPdp(message, databaseProvider, emptyPdpGroup);
-        } else if (!selectedPdpGroups.isEmpty()) {
-            final PdpGroup finalizedPdpGroup = selectedPdpGroups.lastEntry().getValue();
-            pdpGroupFound = registerPdp(message, databaseProvider, finalizedPdpGroup);
+        if (!pdpGroups.isEmpty()) {
+            pdpGroupFound = registerPdp(message, databaseProvider, pdpGroups.get(0));
         }
         return pdpGroupFound;
-    }
-
-    private PdpGroup selectPdpGroupsForRegistration(final PdpStatus message,
-            final Map<Integer, PdpGroup> selectedPdpGroups, final List<PdpGroup> pdpGroups) {
-        PdpGroup emptyPdpGroup = null;
-        for (final PdpGroup pdpGroup : pdpGroups) {
-            emptyPdpGroup = selectPdpSubGroupsForRegistration(message, selectedPdpGroups, pdpGroup, emptyPdpGroup);
-        }
-        return emptyPdpGroup;
-    }
-
-    private PdpGroup selectPdpSubGroupsForRegistration(final PdpStatus message,
-                    final Map<Integer, PdpGroup> selectedPdpGroups, final PdpGroup pdpGroup, PdpGroup emptyPdpGroup) {
-        for (final PdpSubGroup pdpSubGroup : pdpGroup.getPdpSubgroups()) {
-            if (message.getSupportedPolicyTypes().containsAll(pdpSubGroup.getSupportedPolicyTypes())) {
-                if (pdpSubGroup.getCurrentInstanceCount() == 0) {
-                    emptyPdpGroup = pdpGroup;
-                } else {
-                    selectedPdpGroups.put(
-                            pdpSubGroup.getDesiredInstanceCount() - pdpSubGroup.getCurrentInstanceCount(),
-                            pdpGroup);
-                }
-            }
-        }
-        return emptyPdpGroup;
     }
 
     private boolean registerPdp(final PdpStatus message, final PolicyModelsProvider databaseProvider,
@@ -258,8 +226,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 .append(message.getPdpSubgroup(), subGroup.getPdpType())
                 .append(message.getPdpType(), subGroup.getPdpType())
                 .append(message.getState(), pdpInstanceDetails.getPdpState())
-                .append(message.getSupportedPolicyTypes().containsAll(subGroup.getSupportedPolicyTypes()), true)
-                .build();
+                .append(message.getPolicies().containsAll(subGroup.getPolicies()), true).build();
     }
 
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
