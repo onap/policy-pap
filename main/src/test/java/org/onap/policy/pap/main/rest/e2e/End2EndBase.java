@@ -1,8 +1,9 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2019 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +25,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,6 +36,7 @@ import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
@@ -51,8 +55,7 @@ public class End2EndBase extends CommonPapRestServer {
     private static final Yaml yaml = new Yaml();
 
     /**
-     * DB connection. This is kept open until {@link #stop()} is invoked so that the
-     * in-memory DB is not destroyed.
+     * DB connection. This is kept open until {@link #stop()} is invoked so that the in-memory DB is not destroyed.
      */
     private static PolicyModelsProvider dbConn;
 
@@ -83,10 +86,10 @@ public class End2EndBase extends CommonPapRestServer {
      * @param shouldStart {@code true} if Main should be started, {@code false} otherwise
      * @throws Exception if an error occurs
      */
-    public static void setUpBeforeClass(boolean shouldStart) throws Exception {
+    public static void setUpBeforeClass(final boolean shouldStart) throws Exception {
         CommonPapRestServer.setUpBeforeClass(shouldStart);
 
-        PapParameterGroup params = new StandardCoder().decode(new File(CONFIG_FILE), PapParameterGroup.class);
+        final PapParameterGroup params = new StandardCoder().decode(new File(CONFIG_FILE), PapParameterGroup.class);
         daoFactory = new PolicyModelsProviderFactoryWrapper(params.getDatabaseProviderParameters());
         dbConn = daoFactory.create();
     }
@@ -98,13 +101,13 @@ public class End2EndBase extends CommonPapRestServer {
     public static void tearDownAfterClass() {
         try {
             dbConn.close();
-        } catch (PfModelException e) {
+        } catch (final PfModelException e) {
             logger.warn("failed to close the DB", e);
         }
 
         try {
             daoFactory.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.warn("failed to close DAO factory", e);
         }
 
@@ -114,12 +117,13 @@ public class End2EndBase extends CommonPapRestServer {
     /**
      * Tears down.
      */
+    @Override
     @After
     public void tearDown() {
         if (context != null) {
             try {
                 context.stop();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.warn("failed to stop end-to-end context", e);
             }
             context = null;
@@ -134,8 +138,8 @@ public class End2EndBase extends CommonPapRestServer {
      * @param yamlFile name of the YAML file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addToscaPolicyTypes(String yamlFile) throws PfModelException {
-        ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
+    public static void addToscaPolicyTypes(final String yamlFile) throws PfModelException {
+        final ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
         dbConn.createPolicyTypes(serviceTemplate);
     }
 
@@ -145,8 +149,8 @@ public class End2EndBase extends CommonPapRestServer {
      * @param yamlFile name of the YAML file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addToscaPolicies(String yamlFile) throws PfModelException {
-        ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
+    public static void addToscaPolicies(final String yamlFile) throws PfModelException {
+        final ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
         dbConn.createPolicies(serviceTemplate);
     }
 
@@ -156,15 +160,25 @@ public class End2EndBase extends CommonPapRestServer {
      * @param jsonFile name of the JSON file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addGroups(String jsonFile) throws PfModelException {
-        PdpGroups groups = loadJsonFile(jsonFile, PdpGroups.class);
+    public static void addGroups(final String jsonFile) throws PfModelException {
+        final PdpGroups groups = loadJsonFile(jsonFile, PdpGroups.class);
 
-        ValidationResult result = groups.validatePapRest();
+        final ValidationResult result = groups.validatePapRest();
         if (!result.isValid()) {
             throw new PolicyPapRuntimeException("cannot init DB groups from " + jsonFile + ":\n" + result.getResult());
         }
 
         dbConn.createPdpGroups(groups.getGroups());
+    }
+
+    /**
+     * Fetch PDP groups from the DB.
+     *
+     * @param name name of the pdpGroup
+     * @throws PfModelException if a DAO error occurs
+     */
+    public static List<PdpGroup> fetchGroups(final String name) throws PfModelException {
+        return dbConn.getPdpGroups(name);
     }
 
     /**
@@ -174,13 +188,13 @@ public class End2EndBase extends CommonPapRestServer {
      * @param clazz the class of the object to be loaded
      * @return the object that was loaded from the file
      */
-    protected static <T> T loadYamlFile(String fileName, Class<T> clazz) {
-        File propFile = new File(ResourceUtils.getFilePath4Resource("e2e/" + fileName));
+    protected static <T> T loadYamlFile(final String fileName, final Class<T> clazz) {
+        final File propFile = new File(ResourceUtils.getFilePath4Resource("e2e/" + fileName));
 
         try (FileInputStream input = new FileInputStream(propFile)) {
-            Object yamlObject = yaml.load(input);
-            String json = coder.encode(yamlObject);
-            T result = coder.decode(json, clazz);
+            final Object yamlObject = yaml.load(input);
+            final String json = coder.encode(yamlObject);
+            final T result = coder.decode(json, clazz);
 
             if (result == null) {
                 throw new PolicyPapRuntimeException("cannot decode " + clazz.getSimpleName() + " from " + fileName);
@@ -188,7 +202,7 @@ public class End2EndBase extends CommonPapRestServer {
 
             return result;
 
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             throw new PolicyPapRuntimeException("cannot find " + fileName, e);
 
         } catch (IOException | CoderException e) {
@@ -203,11 +217,11 @@ public class End2EndBase extends CommonPapRestServer {
      * @param clazz the class of the object to be loaded
      * @return the object that was loaded from the file
      */
-    protected static <T> T loadJsonFile(String fileName, Class<T> clazz) {
-        String fileName2 = (fileName.startsWith("src/") ? fileName : "e2e/" + fileName);
-        File propFile = new File(ResourceUtils.getFilePath4Resource(fileName2));
+    protected static <T> T loadJsonFile(final String fileName, final Class<T> clazz) {
+        final String fileName2 = (fileName.startsWith("src/") ? fileName : "e2e/" + fileName);
+        final File propFile = new File(ResourceUtils.getFilePath4Resource(fileName2));
         try {
-            T result = coder.decode(propFile, clazz);
+            final T result = coder.decode(propFile, clazz);
 
             if (result == null) {
                 throw new PolicyPapRuntimeException("cannot decode " + clazz.getSimpleName() + " from " + fileName);
@@ -215,7 +229,7 @@ public class End2EndBase extends CommonPapRestServer {
 
             return result;
 
-        } catch (CoderException e) {
+        } catch (final CoderException e) {
             throw new RuntimeException(e);
         }
     }
