@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "d003ea29_bc96e39b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-11-21T17:23:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b25ecfc3_9af77f3f",
+      "revId": "20b2fce0ca5751914089305a01206f24eb1d01d8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6780274d_6e104ed5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 1
@@ -47,6 +65,24 @@
       "writtenOn": "2019-11-21T16:33:38Z",
       "side": 1,
       "message": "should it also check the reverse so that it sends a PDP-UPDATE if it has policies that it should not?",
+      "revId": "20b2fce0ca5751914089305a01206f24eb1d01d8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9716d50_8fd6c404",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-11-21T17:23:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6780274d_6e104ed5",
       "revId": "20b2fce0ca5751914089305a01206f24eb1d01d8",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
