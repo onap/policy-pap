@@ -21,10 +21,13 @@
 package org.onap.policy.pap.main.comm;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import lombok.Setter;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -35,6 +38,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
@@ -78,6 +82,17 @@ public class PdpModifyRequestMap {
      * Used to notify when policy updates completes.
      */
     private final PolicyNotifier policyNotifier;
+
+    /**
+     * Used to undeploy policies from the system, when they cannot be deployed to a PDP.
+     *
+     * <p/>
+     * Note: there's a "catch-22" here. The request map needs an undeployer, but the
+     * undeployer needs the request map. Consequently, the request map is created first,
+     * then the undeployer, and finally, this field is set.
+     */
+    @Setter
+    private PolicyUndeployer policyUndeployer;
 
 
     /**
@@ -335,7 +350,34 @@ public class PdpModifyRequestMap {
 
         @Override
         public void failure(String responsePdpName, String reason) {
-            requestCompleted(responsePdpName);
+            Collection<ToscaPolicyIdentifier> undeployPolicies = requestCompleted(responsePdpName);
+            if (undeployPolicies.isEmpty()) {
+                // nothing to undeploy
+                return;
+            }
+
+            /*
+             * Undeploy the extra policies. Note: this will likely cause a new message to
+             * be assigned to the request, thus we must re-start it after making the
+             * change.
+             */
+            PdpMessage oldmsg = request.getMessage();
+
+            try {
+                logger.warn("undeploy policies from {}:{} that failed to deploy: {}", oldmsg.getPdpGroup(),
+                                oldmsg.getPdpSubgroup(), undeployPolicies);
+                policyUndeployer.undeploy(oldmsg.getPdpGroup(), oldmsg.getPdpSubgroup(), undeployPolicies);
+            } catch (PfModelException | RuntimeException e) {
+                logger.error("cannot undeploy policies {}", undeployPolicies, e);
+            }
+
+            if (request.getMessage() == oldmsg) {
+                // message is unchanged - start the next request
+                startNextRequest(request);
+            } else {
+                // message changed - restart the request
+                request.startPublishing();
+            }
         }
 
         @Override
@@ -347,17 +389,31 @@ public class PdpModifyRequestMap {
          * Handles a request completion, starting the next request, if there is one.
          *
          * @param responsePdpName name of the PDP provided in the response
+         * @return a list of policies to be undeployed
          */
-        private void requestCompleted(String responsePdpName) {
-            if (pdpName.equals(responsePdpName)) {
-                if (pdp2requests.get(pdpName) == requests) {
-                    startNextRequest(request);
-
-                } else {
-                    logger.info("discard old requests for {}", responsePdpName);
-                    requests.stopPublishing();
-                }
+        private Collection<ToscaPolicyIdentifier> requestCompleted(String responsePdpName) {
+            if (!pdpName.equals(responsePdpName)) {
+                return Collections.emptyList();
             }
+
+            if (pdp2requests.get(pdpName) != requests) {
+                logger.info("discard old requests for {}", responsePdpName);
+                requests.stopPublishing();
+                return Collections.emptyList();
+            }
+
+            if (!requests.isFirstInQueue(request)) {
+                logger.error("request is not first in the queue {}", request.getMessage());
+                return Collections.emptyList();
+            }
+
+            Collection<ToscaPolicyIdentifier> undeployPolicies = request.getUndeployPolicies();
+            if (undeployPolicies.isEmpty()) {
+                // nothing to undeploy - just start the next request
+                startNextRequest(request);
+            }
+
+            return undeployPolicies;
         }
 
         @Override

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Collections;
+import java.util.List;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 
 public class PdpGroupStateChangeTest extends End2EndBase {
     private static final String PDP1 = "pdpAA_1";
@@ -70,13 +72,17 @@ public class PdpGroupStateChangeTest extends End2EndBase {
     public void testMakePassive() throws Exception {
         addGroups("stateChangeGroupDeactivate.json");
 
+        ToscaPolicyIdentifier policy =
+                        new ToscaPolicyIdentifier("onap.restart.tca", "1.0.0");
+        List<ToscaPolicyIdentifier> policies = Collections.singletonList(policy);
+
         PdpStatus status11 = new PdpStatus();
         status11.setName(PDP1);
         status11.setState(PdpState.ACTIVE);
         status11.setPdpGroup(DEACT_GROUP);
         status11.setPdpType(SUBGROUP1);
         status11.setPdpSubgroup(SUBGROUP1);
-        status11.setPolicies(Collections.emptyList());
+        status11.setPolicies(policies);
 
         PdpStatus status12 = makeCopy(status11);
         status12.setState(PdpState.PASSIVE);
@@ -87,7 +93,7 @@ public class PdpGroupStateChangeTest extends End2EndBase {
         status21.setPdpGroup(DEACT_GROUP);
         status21.setPdpType(SUBGROUP1);
         status21.setPdpSubgroup(SUBGROUP1);
-        status21.setPolicies(Collections.emptyList());
+        status21.setPolicies(policies);
 
         PdpStatus status22 = makeCopy(status21);
         status22.setState(PdpState.PASSIVE);

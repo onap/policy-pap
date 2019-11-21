@@ -181,6 +181,19 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
+    public void testIsFirstInQueue() {
+        // test with empty queue
+        assertFalse(data.isFirstInQueue(update));
+
+        data.addSingleton(update);
+        assertTrue(data.isFirstInQueue(update));
+
+        data.addSingleton(change);
+        assertTrue(data.isFirstInQueue(update));
+        assertFalse(data.isFirstInQueue(change));
+    }
+
+    @Test
     public void testGetPdpName() {
         assertEquals(PDP1, data.getPdpName());
     }
