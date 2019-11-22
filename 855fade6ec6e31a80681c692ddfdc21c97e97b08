@@ -16,6 +16,24 @@
       "revId": "855fade6ec6e31a80681c692ddfdc21c97e97b08",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b8398f3f_4e09be1d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-11-22T17:14:51Z",
+      "side": 1,
+      "message": "Yes, look for the 3rd PdpStatus message. Here pdp_2 thinks it is registered but actually it is not. Then it is registered again n the current instance count goes to 2.",
+      "parentUuid": "7c59c0a6_b8450d43",
+      "revId": "855fade6ec6e31a80681c692ddfdc21c97e97b08",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
