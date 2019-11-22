@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c59c0a6_b8450d43",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-11-22T17:06:54Z",
+      "side": 1,
+      "message": "I\u0027m unsure: Do any of these test the case where the PDP thinks that it\u0027s registered, but it isn\u0027t?",
+      "revId": "855fade6ec6e31a80681c692ddfdc21c97e97b08",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
