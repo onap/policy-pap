@@ -192,6 +192,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
         }
 
         boolean updated = updateField(dbgroup.getDescription(), group.getDescription(), dbgroup::setDescription);
+        updated = updateField(dbgroup.getPdpGroupState(), group.getPdpGroupState(), dbgroup::setPdpGroupState)
+                        || updated;
         updated = notifyPdpsDelSubGroups(data, dbgroup, group) || updated;
         updated = addOrUpdateSubGroups(data, dbgroup, group, result) || updated;
 

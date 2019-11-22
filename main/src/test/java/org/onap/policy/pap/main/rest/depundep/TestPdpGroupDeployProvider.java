@@ -233,6 +233,22 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
+    public void testUpdateGroup_NewState() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+        PdpGroup group = new PdpGroup(newgrp);
+        group.setPdpGroupState(PdpState.TEST);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        prov.createOrUpdateGroups(groups);
+
+        assertGroupUpdateOnly(group);
+
+        assertEquals(PdpState.ACTIVE, group.getPdpGroupState());
+        assertEquals(newgrp.toString(), group.toString());
+    }
+
+    @Test
     public void testUpdateGroup_NewSubGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
