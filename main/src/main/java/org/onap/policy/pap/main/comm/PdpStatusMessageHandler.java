@@ -143,29 +143,26 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void handlePdpHeartbeat(final PdpStatus message, final PolicyModelsProvider databaseProvider)
-            throws PfModelException, PolicyPapException {
-        boolean pdpInstanceFound = false;
+            throws PfModelException {
         Optional<PdpSubGroup> pdpSubgroup = null;
         Optional<Pdp> pdpInstance = null;
+        PdpGroup pdpGroup = null;
 
         final PdpGroupFilter filter =
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
-            final PdpGroup pdpGroup = pdpGroups.get(0);
+            pdpGroup = pdpGroups.get(0);
             pdpSubgroup = findPdpSubGroup(message, pdpGroup);
             if (pdpSubgroup.isPresent()) {
                 pdpInstance = findPdpInstance(message, pdpSubgroup.get());
                 if (pdpInstance.isPresent()) {
                     processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider);
-                    pdpInstanceFound = true;
+                } else {
+                    LOGGER.debug("PdpInstance not Found in DB. Sending Pdp for registration - {}", message);
+                    registerPdp(message, databaseProvider, pdpGroup);
                 }
             }
-        }
-        if (!pdpInstanceFound) {
-            final String errorMessage = "Failed to process heartbeat. No matching PdpGroup/SubGroup Found - ";
-            LOGGER.debug("{}{}", errorMessage, message);
-            throw new PolicyPapException(errorMessage + message);
         }
     }
 

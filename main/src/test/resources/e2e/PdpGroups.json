@@ -102,9 +102,14 @@
               "version": "1.0.0"
             }
           ],
+          "policies": [
+            {
+              "name": "onap.policies.controlloop.operational.Apex.SampleDomain",
+              "version": "1.0.0"
+            }
+          ],
           "currentInstanceCount": 0,
-          "desiredInstanceCount": 1,
-          "policies": []
+          "desiredInstanceCount": 1
         }
       ]
     }

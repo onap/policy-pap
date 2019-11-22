@@ -45,7 +45,7 @@ import org.onap.policy.pap.main.rest.e2e.End2EndBase;
 public class PdpHeartbeatListenerTest extends End2EndBase {
 
     private static final String POLICY_VERSION = "1.0.0";
-    private static final String POLICY_NAME = "onap.restart.tca";
+    private static final String POLICY_NAME = "onap.policies.controlloop.operational.Apex.SampleDomain";
     private static final String APEX_TYPE = "apex";
     private static final String DEFAULT_GROUP = "defaultGroup";
     private static final String PDP_NAME = "pdp_1";
@@ -98,7 +98,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
                 Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
         status3.setPolicies(idents3);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status3);
-        verifyPdpGroup(DEFAULT_GROUP, 1);
+        verifyPdpGroup(DEFAULT_GROUP, 2);
 
         // Testing pdp registration failure case
         final PdpStatus status4 = new PdpStatus();
@@ -111,9 +111,9 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
                 Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
         status4.setPolicies(idents4);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status4);
-        verifyPdpGroup(DEFAULT_GROUP, 1);
+        verifyPdpGroup(DEFAULT_GROUP, 2);
 
-        // Testing pdp heartbeat failure case with pdp mismatch
+        // Testing pdp heartbeat failure case with pdp state mismatch
         final PdpStatus status5 = new PdpStatus();
         status5.setName(PDP_NAME);
         status5.setState(PdpState.PASSIVE);
@@ -125,20 +125,60 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
                 Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
         status5.setPolicies(idents5);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);
-        verifyPdpGroup(DEFAULT_GROUP, 1);
+        verifyPdpGroup(DEFAULT_GROUP, 2);
 
-        // Testing pdp termination case
+        // Testing pdp heartbeat failure case with pdp policies mismatch
         final PdpStatus status6 = new PdpStatus();
         status6.setName(PDP_NAME);
-        status6.setState(PdpState.TERMINATED);
+        status6.setState(PdpState.ACTIVE);
         status6.setPdpGroup(DEFAULT_GROUP);
         status6.setPdpType(APEX_TYPE);
-        status6.setPdpSubgroup(APEX_TYPE);
         status6.setHealthy(PdpHealthStatus.HEALTHY);
+        status6.setPdpSubgroup(APEX_TYPE);
         final List<ToscaPolicyIdentifier> idents6 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION),
+                        new ToscaPolicyIdentifier("onap.restart.tca", POLICY_VERSION));
         status6.setPolicies(idents6);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status6);
+        verifyPdpGroup(DEFAULT_GROUP, 2);
+
+        // Testing pdp heartbeat failure case with pdp no policies
+        final PdpStatus status7 = new PdpStatus();
+        status7.setName(PDP_NAME);
+        status7.setState(PdpState.ACTIVE);
+        status7.setPdpGroup(DEFAULT_GROUP);
+        status7.setPdpType(APEX_TYPE);
+        status7.setHealthy(PdpHealthStatus.HEALTHY);
+        status7.setPdpSubgroup(APEX_TYPE);
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7);
+        verifyPdpGroup(DEFAULT_GROUP, 2);
+
+        // Testing pdp termination case for pdp_1
+        final PdpStatus status8 = new PdpStatus();
+        status8.setName(PDP_NAME);
+        status8.setState(PdpState.TERMINATED);
+        status8.setPdpGroup(DEFAULT_GROUP);
+        status8.setPdpType(APEX_TYPE);
+        status8.setPdpSubgroup(APEX_TYPE);
+        status8.setHealthy(PdpHealthStatus.HEALTHY);
+        final List<ToscaPolicyIdentifier> idents8 =
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        status8.setPolicies(idents8);
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status8);
+        verifyPdpGroup(DEFAULT_GROUP, 1);
+
+        // Testing pdp termination case for pdp_2
+        final PdpStatus status9 = new PdpStatus();
+        status9.setName("pdp_2");
+        status9.setState(PdpState.TERMINATED);
+        status9.setPdpGroup(DEFAULT_GROUP);
+        status9.setPdpType(APEX_TYPE);
+        status9.setPdpSubgroup(APEX_TYPE);
+        status9.setHealthy(PdpHealthStatus.HEALTHY);
+        final List<ToscaPolicyIdentifier> idents9 =
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        status9.setPolicies(idents9);
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status9);
         verifyPdpGroup(DEFAULT_GROUP, 0);
 
     }
