@@ -53,6 +53,7 @@ import org.onap.policy.pap.main.rest.PapStatisticsManager;
 import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
+import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckControllerV1;
 import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
 import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
@@ -244,7 +245,8 @@ public class PapActivator extends ServiceManagerContainer {
                                 PdpGroupStateChangeControllerV1.class,
                                 PdpGroupQueryControllerV1.class,
                                 PdpGroupHealthCheckControllerV1.class,
-                                PolicyStatusControllerV1.class);
+                                PolicyStatusControllerV1.class,
+                                PolicyComponentsHealthCheckControllerV1.class);
                 restServer.set(server);
                 restServer.get().start();
             },

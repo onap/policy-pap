@@ -38,6 +38,12 @@ public class PapConstants {
     public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";
     public static final String TOPIC_POLICY_NOTIFICATION = "POLICY-NOTIFICATION";
 
+    // policy components names
+    public static final String POLICY_API = "Policy API";
+    public static final String POLICY_DISTRIBUTION = "Policy Distribution";
+    public static final String POLICY_PAP = "Policy PAP";
+    public static final String POLICY_PDPS = "Policy PDPs";
+
     private PapConstants() {
         super();
     }
