@@ -22,6 +22,7 @@
 package org.onap.policy.pap.main.rest;
 
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.startstop.PapActivator;
@@ -35,7 +36,7 @@ public class HealthCheckProvider {
 
     private static final String NOT_ALIVE = "not alive";
     private static final String ALIVE = "alive";
-    private static final String URL = "self";
+    private static final String URL = NetworkUtil.getHostname();
     private static final String NAME = "Policy PAP";
 
     /**

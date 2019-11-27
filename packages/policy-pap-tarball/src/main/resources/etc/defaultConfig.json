@@ -44,5 +44,23 @@
             "servers" : [ "message-router" ],
             "topicCommInfrastructure" : "dmaap"
         }]
-    }
+    },
+    "restClientParameters":[{
+        "clientName": "Policy API",
+        "hostname": "0.0.0.0",
+        "port": 6966,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "useHttps": true,
+        "basePath": "policy/api/v1/healthcheck"
+    },
+    {
+        "clientName": "Policy Distribution",
+        "hostname": "0.0.0.0",
+        "port": 6970,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "useHttps": true,
+        "basePath": "healthcheck"
+    }]
 }
