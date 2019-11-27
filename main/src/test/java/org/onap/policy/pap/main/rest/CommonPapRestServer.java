@@ -72,7 +72,7 @@ public class CommonPapRestServer {
 
     public static final String NOT_ALIVE = "not alive";
     public static final String ALIVE = "alive";
-    public static final String SELF = "self";
+    public static final String SELF = NetworkUtil.getHostname();
     public static final String NAME = "Policy PAP";
     public static final String ENDPOINT_PREFIX = "policy/pap/v1/";
 
