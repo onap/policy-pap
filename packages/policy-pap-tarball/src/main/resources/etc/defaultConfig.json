@@ -2,10 +2,10 @@
     "name": "PapGroup",
     "restServerParameters": {
         "host": "0.0.0.0",
-        "port": 6969,
+        "port": 6967,
         "userName": "healthcheck",
         "password": "zb!XztG34",
-        "https": true,
+        "https": false,
         "aaf": false
     },
     "pdpParameters": {
@@ -23,7 +23,7 @@
         "name": "PolicyProviderParameterGroup",
         "implementation": "org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl",
         "databaseDriver": "org.mariadb.jdbc.Driver",
-        "databaseUrl": "jdbc:mariadb://mariadb:3306/policyadmin",
+        "databaseUrl": "jdbc:mariadb://localhost:3306/policyadmin",
         "databaseUser": "policy_user",
         "databasePassword": "cG9saWN5X3VzZXI=",
         "persistenceUnit": "PolicyMariaDb"
@@ -31,18 +31,34 @@
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "message-router" ],
+            "servers" : [ "localhost:3904" ],
             "topicCommInfrastructure" : "dmaap"
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "message-router" ],
+            "servers" : [ "localhost:3904" ],
             "topicCommInfrastructure" : "dmaap"
         },
         {
             "topic" : "POLICY-NOTIFICATION",
-            "servers" : [ "message-router" ],
+            "servers" : [ "localhost:3904" ],
             "topicCommInfrastructure" : "dmaap"
         }]
+    },
+    "apiRestClientParameters": {
+        "host": "0.0.0.0",
+        "port": 6966,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "https": false,
+        "aaf": false
+    },
+    "distributionRestClientParameters": {
+        "host": "0.0.0.0",
+        "port": 6970,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "https": false,
+        "aaf": false
     }
 }

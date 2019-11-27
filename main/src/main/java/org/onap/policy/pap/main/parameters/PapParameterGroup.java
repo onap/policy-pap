@@ -42,6 +42,8 @@ public class PapParameterGroup extends ParameterGroupImpl {
     private PdpParameters pdpParameters;
     private PolicyModelsProviderParameters databaseProviderParameters;
     private TopicParameterGroup topicParameterGroup;
+    private RestServerParameters apiRestClientParameters;
+    private RestServerParameters distributionRestClientParameters;
 
     /**
      * Create the pap parameter group.

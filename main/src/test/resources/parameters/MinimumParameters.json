@@ -37,5 +37,19 @@
             "servers" : [ "message-router" ],
             "topicCommInfrastructure" : "dmaap"
         }]
+    },
+    "apiRestClientParameters": {
+        "host": "0.0.0.0",
+        "port": 6966,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "https": true
+    },
+    "distributionRestClientParameters": {
+        "host": "0.0.0.0",
+        "port": 6970,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "https": true
     }
 }
