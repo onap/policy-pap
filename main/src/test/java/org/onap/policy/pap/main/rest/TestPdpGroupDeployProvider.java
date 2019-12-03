@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest.depundep;
+package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -56,6 +56,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
+import org.onap.policy.pap.main.rest.PdpGroupDeployProvider;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";

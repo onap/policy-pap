@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest.depundep;
+package org.onap.policy.pap.main.rest;
 
 import lombok.Getter;
 import org.onap.policy.models.pdp.concepts.PdpGroup;

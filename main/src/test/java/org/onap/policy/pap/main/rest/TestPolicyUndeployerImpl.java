@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest.depundep;
+package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -43,6 +43,8 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
+import org.onap.policy.pap.main.rest.SessionData;
 
 public class TestPolicyUndeployerImpl extends ProviderSuper {
     private static final String MY_GROUP = "my-group";

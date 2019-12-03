@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest.depundep;
+package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -59,6 +59,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOp
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
+import org.onap.policy.pap.main.rest.SessionData;
 
 public class TestSessionData extends ProviderSuper {
     private static final String GROUP_NAME = "groupA";
