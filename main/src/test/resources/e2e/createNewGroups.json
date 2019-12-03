@@ -1,8 +1,8 @@
 {
     "groups": [
         {
-            "name": "createGroups",
-            "pdpGroupState": "PASSIVE",
+            "name": "newGroup1",
+            "pdpGroupState": "ACTIVE",
             "properties": {
                 "hello": "world"
             },
@@ -11,18 +11,7 @@
                     "pdpType": "pdpTypeA",
                     "desiredInstanceCount": 2,
                     "properties": {},
-                    "pdpInstances": [
-                        {
-                            "instanceId": "pdpAA_1",
-                            "pdpState": "ACTIVE",
-                            "healthy": "HEALTHY"
-                        },
-                        {
-                            "instanceId": "pdpAA_2",
-                            "pdpState": "ACTIVE",
-                            "healthy": "HEALTHY"
-                        }
-                    ],
+                    "pdpInstances": [],
                     "supportedPolicyTypes": [
                         {
                             "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",
@@ -30,18 +19,21 @@
                         }
                     ],
                     "policies": []
-                },
+                }
+            ]
+        },
+        {
+            "name": "newGroup2",
+            "pdpGroupState": "ACTIVE",
+            "properties": {
+                "hello": "world"
+            },
+            "pdpSubgroups": [
                 {
                     "pdpType": "pdpTypeB",
-                    "desiredInstanceCount": 1,
+                    "desiredInstanceCount": 2,
                     "properties": {},
-                    "pdpInstances": [
-                        {
-                            "instanceId": "pdpAB_1",
-                            "pdpState": "ACTIVE",
-                            "healthy": "HEALTHY"
-                        }
-                    ],
+                    "pdpInstances": [],
                     "supportedPolicyTypes": [
                         {
                             "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",

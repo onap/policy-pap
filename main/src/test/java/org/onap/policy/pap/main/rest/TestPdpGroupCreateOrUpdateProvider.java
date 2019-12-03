@@ -2,13 +2,13 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -34,41 +35,27 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.base.PfModelRuntimeException;
-import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
-import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 
-public class TestPdpGroupDeployProvider extends ProviderSuper {
+public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
 
-    private static final String POLICY2_NAME = "policyB";
-    private static final String POLICY1_VERSION = "1.2.3";
-    private static final String GROUP1_NAME = "groupA";
-    private static final String PDP1_TYPE = "pdpTypeA";
-    private static final String PDP2_TYPE = "pdpTypeB";
-    private static final String PDP4_TYPE = "pdpTypeD";
     private static final String PDP2 = "pdpB";
     private static final String PDP4 = "pdpD";
 
-    private PdpGroupDeployProvider prov;
-
+    private PdpGroupCreateOrUpdateProvider prov;
 
     @AfterClass
     public static void tearDownAfterClass() {
@@ -86,10 +73,9 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         super.setUp();
 
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
         when(dao.getPolicyTypeList("typeA", "100.2.3")).thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
 
-        prov = new PdpGroupDeployProvider();
+        prov = new PdpGroupCreateOrUpdateProvider();
     }
 
     @Test
@@ -103,7 +89,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     @Test
     public void testCreateOrUpdateGroups_InvalidRequest() throws Exception {
         assertThatThrownBy(() -> prov.createOrUpdateGroups(new PdpGroups())).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("is null");
+            .hasMessageContaining("is null");
 
         assertNoGroupAction();
     }
@@ -114,7 +100,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("pdpGroupState");
+            .hasMessageContaining("pdpGroupState");
 
         assertNoGroupAction();
     }
@@ -139,7 +125,19 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("pdpGroupState");
+            .hasMessageContaining("pdpGroupState");
+
+        assertNoGroupAction();
+    }
+
+    @Test
+    public void testAddGroup_InvalidSubGroup() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+
+        groups.getGroups().get(0).getPdpSubgroups().get(0).getSupportedPolicyTypes().get(0).setVersion("99.99.99");
+
+        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
+            .hasMessageContaining("unknown policy type");
 
         assertNoGroupAction();
     }
@@ -171,7 +169,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("pdpGroupState");
+            .hasMessageContaining("pdpGroupState");
     }
 
     @Test
@@ -197,7 +195,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("properties");
+            .hasMessageContaining("properties");
 
         assertNoGroupAction();
     }
@@ -235,6 +233,19 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
+    public void testUpdateGroup_NewSubGroup() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        prov.createOrUpdateGroups(groups);
+
+        PdpGroup newgrp = groups.getGroups().get(0);
+        assertEquals(newgrp.toString(), group.toString());
+        assertGroupUpdateOnly(group);
+    }
+
+    @Test
     public void testUpdateGroup_UpdatedSubGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
@@ -251,31 +262,52 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_MultipleChanges() throws Exception {
+    public void testUpdateGroup_notifyPdpsDelSubGroups() throws Exception {
+        PdpGroup dbgroup = new PdpGroup(loadPdpGroups("createGroupsDelSub.json").getGroups().get(0));
+        when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
+
         PdpGroups groups = loadPdpGroups("createGroups.json");
-        PdpGroup newgrp = groups.getGroups().get(0);
-        PdpGroup group = new PdpGroup(newgrp);
-        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
-
-        PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
-        subgrp.setDesiredInstanceCount(30);
-        subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION));
-        subgrp.getSupportedPolicyTypes().add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
-
-        when(dao.getFilteredPolicyList(any()))
-                        .thenReturn(loadPolicies("createGroupNewPolicy.json"))
-                        .thenReturn(loadPolicies("daoPolicyList.json"))
-                        .thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
         prov.createOrUpdateGroups(groups);
 
-        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
-        Collections.sort(group.getPdpSubgroups().get(0).getPolicies());
+        // verify that DB group was updated
+        List<PdpGroup> updates = getGroupUpdates();
+        assertEquals(1, updates.size());
+        dbgroup = updates.get(0);
 
-        assertEquals(newgrp.toString(), group.toString());
+        PdpGroup newgrp = groups.getGroups().get(0);
+
+        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
+        Collections.sort(dbgroup.getPdpSubgroups().get(0).getPolicies());
+
+        assertEquals(newgrp.toString(), dbgroup.toString());
+
+        // no deployment notifications
+        verify(notifier, never()).addDeploymentData(any());
 
         // this requires a PDP UPDATE message
-        assertGroupUpdate(group, subgrp);
+        List<PdpUpdate> pdpUpdates = getUpdateRequests(2);
+        assertEquals(2, pdpUpdates.size());
+
+        PdpUpdate pdpUpdate = pdpUpdates.get(0);
+        assertEquals(PDP2, pdpUpdate.getName());
+        assertNull(pdpUpdate.getPdpGroup());
+
+        pdpUpdate = pdpUpdates.get(1);
+        assertEquals(PDP4, pdpUpdate.getName());
+        assertNull(pdpUpdate.getPdpGroup());
+
+        // it also requires a PDP STATE-CHANGE message
+        List<PdpStateChange> changes = getStateChangeRequests(2);
+        assertEquals(2, changes.size());
+
+        PdpStateChange change = changes.get(0);
+        assertEquals(PDP2, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
+
+        change = changes.get(1);
+        assertEquals(PDP4, change.getName());
+        assertEquals(PdpState.PASSIVE, change.getState());
     }
 
     @Test
@@ -335,6 +367,24 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertGroupUpdateOnly(group);
     }
 
+    @Test
+    public void testAddSubGroup() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
+        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
+        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+
+        prov.createOrUpdateGroups(groups);
+
+        PdpGroup newgrp = groups.getGroups().get(0);
+
+        PdpSubGroup newsub = newgrp.getPdpSubgroups().get(1);
+        newsub.setCurrentInstanceCount(0);
+        newsub.setPdpInstances(new ArrayList<>(0));
+
+        assertEquals(newgrp.toString(), group.toString());
+        assertGroupUpdateOnly(group);
+    }
+
     /**
      * Tests addSubgroup() when the new subgroup has a wild-card policy type.
      *
@@ -358,24 +408,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         newsub.setPdpInstances(new ArrayList<>(0));
 
         assertEquals(newgrp.toString(), group.toString());
-    }
-
-    /**
-     * Tests addSubgroup() when the new subgroup has a wild-card policy type, but the
-     * policy doesn't have a matching type.
-     *
-     * @throws PfModelException if an error occurs
-     */
-    @Test
-    public void testAddSubGroupWildCardPolicyTypeUnmatched() throws PfModelException {
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyListWildCardUnmatched.json"));
-        when(dao.getPolicyTypeList("some.*", "2.3.4")).thenReturn(Collections.emptyList());
-
-        PdpGroups groups = loadPdpGroups("createGroupsWildCard.json");
-        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
-        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
-
-        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class);
     }
 
     @Test
@@ -402,26 +434,23 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddSubGroup_ValidationPolicyNotFound() throws Exception {
-        PdpGroups groups = loadPdpGroups("createGroupsNewSubNotFound.json");
-        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
-        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+    public void testAddSubGroup_ValidateVersionPrefixMatch() throws Exception {
+        PdpGroups groups = loadPdpGroups("createGroups.json");
+        PdpGroup newgrp = groups.getGroups().get(0);
+        PdpGroup dbgroup = new PdpGroup(newgrp);
+        when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
 
-        when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
+        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
+            .thenReturn(loadPolicies("daoPolicyList.json")).thenReturn(loadPolicies("createGroupNewPolicy.json"));
 
-        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).hasMessageContaining("unknown policy");
-    }
+        PdpGroups reqgroups = loadPdpGroups("createGroupsVersPrefix.json");
 
-    @Test
-    public void testAddSubGroup_ValidationPolicyDaoEx() throws Exception {
-        PdpGroups groups = loadPdpGroups("createGroupsNewSubNotFound.json");
-        PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
-        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
+        prov.createOrUpdateGroups(reqgroups);
 
-        PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
-        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
+        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
+        Collections.sort(dbgroup.getPdpSubgroups().get(0).getPolicies());
 
-        assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isSameAs(exc);
+        assertEquals(newgrp.toString(), dbgroup.toString());
     }
 
     @Test
@@ -435,7 +464,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         newgrp.getPdpSubgroups().get(0).setProperties(new TreeMap<>());
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("properties");
+            .hasMessageContaining("properties");
 
         assertNoGroupAction();
     }
@@ -448,7 +477,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes()
-                        .add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
+            .add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
 
         prov.createOrUpdateGroups(groups);
 
@@ -469,48 +498,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertEquals(newgrp.toString(), group.toString());
         assertGroupUpdateOnly(group);
-    }
-
-    @Test
-    public void testUpdateSubGroup_Policies() throws Exception {
-        PdpGroups groups = loadPdpGroups("createGroupsDelPolicy.json");
-        PdpGroup newgrp = groups.getGroups().get(0);
-        PdpGroup group = new PdpGroup(newgrp);
-        when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
-
-        PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
-
-        // delete second policy
-        subgrp.setPolicies(subgrp.getPolicies().subList(0, 1));
-
-        // add new policy
-        ToscaPolicyIdentifier policyId2 = new ToscaPolicyIdentifier(POLICY2_NAME, POLICY1_VERSION);
-        subgrp.getPolicies().add(policyId2);
-
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
-                        .thenReturn(loadPolicies("daoPolicyList.json"))
-                        .thenReturn(loadPolicies("daoPolicyListDelPolicy.json"))
-                        .thenReturn(loadPolicies("createGroupNewPolicy.json"));
-
-        prov.createOrUpdateGroups(groups);
-
-        Collections.sort(newgrp.getPdpSubgroups().get(0).getPolicies());
-        Collections.sort(group.getPdpSubgroups().get(0).getPolicies());
-
-        assertEquals(newgrp.toString(), group.toString());
-
-        // should have notified of added policy/PDPs
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier).addDeploymentData(captor.capture());
-        assertDeploymentData(captor, policyId2, "[pdpA]");
-
-        // should have notified of deleted policy/PDPs
-        captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier).addUndeploymentData(captor.capture());
-        assertDeploymentData(captor, new ToscaPolicyIdentifier("ToBeDeleted", POLICY1_VERSION), "[pdpA]");
-
-        // this requires a PDP UPDATE message
-        assertGroupUpdate(group, subgrp);
     }
 
     @Test
@@ -545,149 +532,10 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         newgrp.setProperties(new TreeMap<>());
 
         assertThatThrownBy(() -> prov.createOrUpdateGroups(groups)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("properties");
+            .hasMessageContaining("properties");
 
         assertNoGroupAction();
     }
-
-    @Test
-    public void testDeployPolicies() throws PfModelException {
-        prov.deployPolicies(loadEmptyRequest());
-    }
-
-    /**
-     * Tests deployPolicies() when the supported policy type uses a wild-card.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void testDeployPoliciesWildCard() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("deployPoliciesWildCard.json"));
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyListWildCard.json"));
-        when(dao.getPolicyTypeList(any(), any())).thenReturn(Collections.emptyList());
-
-        policy1.setName("policy.some");
-        policy1.setVersion(POLICY1_VERSION);
-        policy1.setType("some.type");
-        policy1.setTypeVersion("100.2.3");
-
-        PdpDeployPolicies depreq = loadRequest();
-        depreq.getPolicies().get(0).setName("policy.some");
-
-        prov.deployPolicies(depreq);
-
-        assertGroup(getGroupUpdates(), GROUP1_NAME);
-
-        List<PdpUpdate> requests = getUpdateRequests(1);
-        assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
-
-        // should have notified of added policy/PDPs
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier).addDeploymentData(captor.capture());
-        assertDeploymentData(captor, policy1.getIdentifier(), "[pdpB]");
-
-        // no undeployment notifications
-        verify(notifier, never()).addUndeploymentData(any());
-    }
-
-    @Test
-    public void testDeploySimplePolicies() throws Exception {
-        prov.deployPolicies(loadEmptyRequest());
-    }
-
-    @Test
-    public void testDeploySimplePolicies_DaoEx() throws Exception {
-        PfModelException exc = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
-        when(dao.getFilteredPdpGroups(any())).thenThrow(exc);
-
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isSameAs(exc);
-    }
-
-    @Test
-    public void testDeploySimplePolicies_DaoPfRtEx() throws Exception {
-        PfModelRuntimeException exc = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
-        when(dao.getFilteredPdpGroups(any())).thenThrow(exc);
-
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isSameAs(exc);
-    }
-
-    @Test
-    public void testDeploySimplePolicies_RuntimeEx() throws Exception {
-        RuntimeException exc = new RuntimeException(EXPECTED_EXCEPTION);
-        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
-
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelException.class).hasCause(exc);
-    }
-
-    @Test
-    public void testDeploySimplePolicies_NoGroups() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("emptyGroups.json"));
-
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelException.class)
-                        .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
-    }
-
-    @Test
-    public void testMakeUpdater() throws Exception {
-        /*
-         * Each subgroup has a different PDP type and name.
-         *
-         * Type is not supported by the first subgroup.
-         *
-         * Second subgroup matches.
-         *
-         * Third subgroup already contains the policy.
-         *
-         * Last subgroup matches.
-         */
-
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao.json"));
-
-        prov.deployPolicies(loadRequest());
-
-        assertGroup(getGroupUpdates(), GROUP1_NAME);
-
-        List<PdpUpdate> requests = getUpdateRequests(2);
-        assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
-        assertUpdate(requests, GROUP1_NAME, PDP4_TYPE, PDP4);
-
-        // should have notified of added policy/PDPs
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier).addDeploymentData(captor.capture());
-        assertDeploymentData(captor, policy1.getIdentifier(), "[pdpB, pdpD]");
-
-        // no undeployment notifications
-        verify(notifier, never()).addUndeploymentData(any());
-    }
-
-    @Test
-    public void testMakeUpdater_PolicyVersionMismatch() throws Exception {
-
-        // subgroup has a different version of the Policy
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao_DiffVers.json"));
-
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelRuntimeException.class)
-                        .hasMessageContaining("pdpTypeC").hasMessageContaining("different version already deployed");
-
-        verify(dao, never()).createPdpGroups(any());
-        verify(dao, never()).updatePdpGroups(any());
-        verify(reqmap, never()).addRequest(any(PdpUpdate.class));
-    }
-
-    @Test
-    public void testMakeUpdater_NoPdps() throws Exception {
-
-        // subgroup has no PDPs
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroup_NoPdpsDao.json"));
-
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelRuntimeException.class)
-                        .hasMessage("group " + GROUP1_NAME + " subgroup " + PDP1_TYPE + " has no active PDPs");
-
-        verify(dao, never()).createPdpGroups(any());
-        verify(dao, never()).updatePdpGroups(any());
-        verify(reqmap, never()).addRequest(any(PdpUpdate.class));
-    }
-
 
     protected void assertUpdate(List<PdpUpdate> updates, String groupName, String pdpType, String pdpName) {
 
@@ -705,71 +553,11 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         verify(reqmap, never()).addRequest(any(), any());
     }
 
-    private void assertGroupUpdate(PdpGroup group, PdpSubGroup subgrp) throws Exception {
-        verify(dao, never()).createPdpGroups(any());
-
-        assertEquals(0, getStateChangeRequests(1).size());
-
-        List<PdpUpdate> pdpUpdates = getUpdateRequests(1);
-        assertEquals(1, pdpUpdates.size());
-
-        PdpUpdate pdpUpdate = pdpUpdates.get(0);
-        assertEquals("pdpA", pdpUpdate.getName());
-        assertEquals(group.getName(), pdpUpdate.getPdpGroup());
-
-        assertEquals(subgrp.getPdpType(), pdpUpdate.getPdpSubgroup());
-
-        List<ToscaPolicyIdentifier> pdpPolicies =
-                        pdpUpdate.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList());
-        Collections.sort(pdpPolicies);
-
-        assertEquals(subgrp.getPolicies().toString(), pdpPolicies.toString());
-
-        List<PdpGroup> updates = getGroupUpdates();
-        assertEquals(Arrays.asList(group), updates);
-    }
-
     private void assertGroupUpdateOnly(PdpGroup group) throws Exception {
         verify(dao, never()).createPdpGroups(any());
         verify(reqmap, never()).addRequest(any(), any());
 
         List<PdpGroup> updates = getGroupUpdates();
         assertEquals(Arrays.asList(group), updates);
-    }
-
-    private void assertDeploymentData(ArgumentCaptor<PolicyPdpNotificationData> captor, ToscaPolicyIdentifier policyId,
-                    String expectedPdps) {
-        PolicyPdpNotificationData data = captor.getValue();
-        assertEquals(policyId, data.getPolicyId());
-        assertEquals(policy1.getTypeIdentifier(), data.getPolicyType());
-        assertEquals(expectedPdps, new TreeSet<>(data.getPdps()).toString());
-    }
-
-    /**
-     * Loads a standard request.
-     *
-     * @return a standard request
-     */
-    protected PdpDeployPolicies loadRequest() {
-        return loadRequest("request.json");
-    }
-
-    /**
-     * Loads a request from a JSON file.
-     *
-     * @param fileName name of the file from which to load
-     * @return the request that was loaded
-     */
-    protected PdpDeployPolicies loadRequest(String fileName) {
-        return loadFile(fileName, PdpDeployPolicies.class);
-    }
-
-    /**
-     * Loads an empty request.
-     *
-     * @return an empty request
-     */
-    protected PdpDeployPolicies loadEmptyRequest() {
-        return loadRequest("emptyRequest.json");
     }
 }
