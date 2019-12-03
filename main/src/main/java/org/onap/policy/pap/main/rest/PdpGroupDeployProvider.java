@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest.depundep;
+package org.onap.policy.pap.main.rest;
 
 import com.att.aft.dme2.internal.apache.commons.lang.ObjectUtils;
 import java.util.ArrayList;

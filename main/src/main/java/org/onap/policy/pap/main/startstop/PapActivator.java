@@ -50,14 +50,14 @@ import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.HealthCheckRestControllerV1;
 import org.onap.policy.pap.main.rest.PapAafFilter;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.onap.policy.pap.main.rest.PdpGroupDeleteControllerV1;
+import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
 import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
+import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
-import org.onap.policy.pap.main.rest.depundep.PdpGroupDeleteControllerV1;
-import org.onap.policy.pap.main.rest.depundep.PdpGroupDeployControllerV1;
-import org.onap.policy.pap.main.rest.depundep.PolicyUndeployerImpl;
 
 /**
  * This class activates Policy Administration (PAP) as a complete service together with all its controllers, listeners &
