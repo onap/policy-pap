@@ -51,7 +51,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     private final PdpGroupDeployProvider provider = new PdpGroupDeployProvider();
 
     /**
-     * Deploys or updates a PDP group.
+     * Deploys, undeploys, or updates policies in specific PDP groups.
      *
      * @param requestId request ID used in ONAP logging
      * @param groups PDP group configuration
@@ -60,8 +60,8 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:off
     @POST
     @Path("pdps")
-    @ApiOperation(value = "Deploy or update PDP Groups",
-        notes = "Deploys or updates a PDP Group, returning optional error details",
+    @ApiOperation(value = "Deploy, undeploy, or update policies in specific PDP Groups",
+        notes = "Deploys, undeploys, or updates policies in specific PDP Groups, returning optional error details",
         response = PdpGroupDeployResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
@@ -85,7 +85,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
-        return doOperation(requestId, "create groups failed", () -> provider.createOrUpdateGroups(groups));
+        return doOperation(requestId, "deploy policies to group failed", () -> provider.updateGroupPolicies(groups));
     }
 
     /**
