@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest.depundep;
+package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,7 +27,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
-import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
