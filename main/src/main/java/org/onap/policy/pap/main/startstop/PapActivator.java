@@ -50,6 +50,7 @@ import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.HealthCheckRestControllerV1;
 import org.onap.policy.pap.main.rest.PapAafFilter;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.onap.policy.pap.main.rest.PdpGroupCreateOrUpdateControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupDeleteControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
@@ -239,6 +240,7 @@ public class PapActivator extends ServiceManagerContainer {
                 RestServer server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
                                 HealthCheckRestControllerV1.class,
                                 StatisticsRestControllerV1.class,
+                                PdpGroupCreateOrUpdateControllerV1.class,
                                 PdpGroupDeployControllerV1.class,
                                 PdpGroupDeleteControllerV1.class,
                                 PdpGroupStateChangeControllerV1.class,
