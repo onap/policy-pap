@@ -38,7 +38,7 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
-import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     private final PdpGroupDeployProvider provider = new PdpGroupDeployProvider();
 
     /**
-     * Deploys or updates a PDP group.
+     * Updates policy deployments within specific PDP groups.
      *
      * @param requestId request ID used in ONAP logging
      * @param groups PDP group configuration
@@ -59,9 +59,9 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      */
     // @formatter:off
     @POST
-    @Path("pdps")
-    @ApiOperation(value = "Deploy or update PDP Groups",
-        notes = "Deploys or updates a PDP Group, returning optional error details",
+    @Path("pdps/deployments/batch")
+    @ApiOperation(value = "Updates policy deployments within specific PDP groups",
+        notes = "Updates policy deployments within specific PDP groups, returning optional error details",
         response = PdpGroupDeployResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
@@ -82,10 +82,11 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
                     @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     // @formatter:on
 
-    public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
+    public Response updateGroupPolicies(
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+                    @ApiParam(value = "List of PDP Group Deployments", required = true) DeploymentGroups groups) {
 
-        return doOperation(requestId, "create groups failed", () -> provider.createOrUpdateGroups(groups));
+        return doOperation(requestId, "update policy deployments failed", () -> provider.updateGroupPolicies(groups));
     }
 
     /**

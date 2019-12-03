@@ -32,8 +32,9 @@ import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
-import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.pdp.concepts.DeploymentGroup;
+import org.onap.policy.models.pdp.concepts.DeploymentGroups;
+import org.onap.policy.models.pdp.concepts.DeploymentSubGroup;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 
 /**
@@ -41,7 +42,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOp
  */
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
-    private static final String DEPLOY_GROUP_ENDPOINT = "pdps";
+    private static final String DEPLOY_GROUP_ENDPOINT = "pdps/deployments/batch";
     private static final String DEPLOY_POLICIES_ENDPOINT = "pdps/policies";
 
     @Test
@@ -51,8 +52,8 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeployGroup() throws Exception {
-        Entity<PdpGroup> entgrp = makePdpGroupEntity();
+    public void testUpdateGroupPolicies() throws Exception {
+        Entity<DeploymentGroups> entgrp = makeDeploymentGroupsEntity();
 
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
         Response rawresp = invocationBuilder.post(entgrp);
@@ -88,16 +89,18 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
         checkUnauthRequest(DEPLOY_POLICIES_ENDPOINT, req -> req.post(entgrp));
     }
 
-    private Entity<PdpGroup> makePdpGroupEntity() {
-        PdpSubGroup subgrp = new PdpSubGroup();
+    private Entity<DeploymentGroups> makeDeploymentGroupsEntity() {
+        DeploymentSubGroup subgrp = new DeploymentSubGroup();
         subgrp.setPdpType("drools");
 
-        PdpGroup group = new PdpGroup();
+        DeploymentGroup group = new DeploymentGroup();
         group.setName("drools-group");
-        group.setDescription("my description");
-        group.setPdpSubgroups(Arrays.asList(subgrp));
+        group.setDeploymentSubgroups(Arrays.asList(subgrp));
 
-        return Entity.entity(group, MediaType.APPLICATION_JSON);
+        DeploymentGroups groups = new DeploymentGroups();
+        groups.setGroups(Arrays.asList(group));
+
+        return Entity.entity(groups, MediaType.APPLICATION_JSON);
     }
 
     private Entity<PdpDeployPolicies> makePdpPoliciesEntity() {
