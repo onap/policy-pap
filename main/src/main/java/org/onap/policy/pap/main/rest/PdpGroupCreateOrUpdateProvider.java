@@ -20,13 +20,13 @@
 
 package org.onap.policy.pap.main.rest;
 
-import com.att.aft.dme2.internal.apache.commons.lang.ObjectUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -190,7 +190,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     private ValidationResult updateGroup(SessionData data, PdpGroup dbgroup, PdpGroup group) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult(group.getName(), group);
 
-        if (!ObjectUtils.equals(dbgroup.getProperties(), group.getProperties())) {
+        if (!Objects.equals(dbgroup.getProperties(), group.getProperties())) {
             result.addResult(
                 new ObjectValidationResult("properties", "", ValidationStatus.INVALID, "cannot change properties"));
         }
@@ -398,7 +398,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
 
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
-        if (!ObjectUtils.equals(dbsub.getProperties(), subgrp.getProperties())) {
+        if (!Objects.equals(dbsub.getProperties(), subgrp.getProperties())) {
             result.addResult(
                 new ObjectValidationResult("properties", "", ValidationStatus.INVALID, "cannot change properties"));
         }

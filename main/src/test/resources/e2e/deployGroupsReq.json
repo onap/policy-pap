@@ -1,0 +1,24 @@
+{
+    "groups": [
+        {
+            "name": "deployGroups",
+            "deploymentSubgroups": [
+                {
+                    "pdpType": "pdpTypeA",
+                    "action": "PATCH",
+                    "policies": [
+                        {
+                            "name": "onap.restart.tca",
+                            "version": "1.0.0"
+                        }
+                    ]
+                },
+                {
+                    "pdpType": "pdpTypeB",
+                    "action": "PATCH",
+                    "policies": []
+                }
+            ]
+        }
+    ]
+}

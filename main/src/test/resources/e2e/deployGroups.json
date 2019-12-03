@@ -2,19 +2,23 @@
     "groups": [
         {
             "name": "deployGroups",
-            "pdpGroupState": "ACTIVE",
+            "pdpGroupState": "PASSIVE",
+            "properties": {
+                "hello": "world"
+            },
             "pdpSubgroups": [
                 {
                     "pdpType": "pdpTypeA",
                     "desiredInstanceCount": 2,
+                    "properties": {},
                     "pdpInstances": [
                         {
-                            "instanceId": "pdpBA_1",
+                            "instanceId": "pdpAA_1",
                             "pdpState": "ACTIVE",
                             "healthy": "HEALTHY"
                         },
                         {
-                            "instanceId": "pdpBA_2",
+                            "instanceId": "pdpAA_2",
                             "pdpState": "ACTIVE",
                             "healthy": "HEALTHY"
                         }
@@ -30,9 +34,10 @@
                 {
                     "pdpType": "pdpTypeB",
                     "desiredInstanceCount": 1,
+                    "properties": {},
                     "pdpInstances": [
                         {
-                            "instanceId": "pdpBB_1",
+                            "instanceId": "pdpAB_1",
                             "pdpState": "ACTIVE",
                             "healthy": "HEALTHY"
                         }
@@ -43,12 +48,7 @@
                             "version": "1.0.0"
                         }
                     ],
-                    "policies": [
-                        {
-                            "name": "onap.restart.tca",
-                            "version": "1.0.0"
-                        }
-                    ]
+                    "policies": []
                 }
             ]
         }
