@@ -1,7 +1,7 @@
 {
     "groups": [
         {
-            "name": "createGroups",
+            "name": "deployGroups",
             "pdpGroupState": "PASSIVE",
             "properties": {
                 "hello": "world"
@@ -11,37 +11,25 @@
                     "pdpType": "pdpTypeA",
                     "desiredInstanceCount": 2,
                     "properties": {},
-                    "pdpInstances": [
-                        {
-                            "instanceId": "pdpAA_1",
-                            "pdpState": "ACTIVE",
-                            "healthy": "HEALTHY"
-                        },
-                        {
-                            "instanceId": "pdpAA_2",
-                            "pdpState": "ACTIVE",
-                            "healthy": "HEALTHY"
-                        }
-                    ],
+                    "pdpInstances": [],
                     "supportedPolicyTypes": [
                         {
                             "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",
                             "version": "1.0.0"
                         }
                     ],
-                    "policies": []
+                    "policies": [
+                        {
+                            "name": "onap.restart.tca",
+                            "version": "1.0.0"
+                        }
+                    ]
                 },
                 {
                     "pdpType": "pdpTypeB",
                     "desiredInstanceCount": 1,
                     "properties": {},
-                    "pdpInstances": [
-                        {
-                            "instanceId": "pdpAB_1",
-                            "pdpState": "ACTIVE",
-                            "healthy": "HEALTHY"
-                        }
-                    ],
+                    "pdpInstances": [],
                     "supportedPolicyTypes": [
                         {
                             "name": "onap.policies.monitoring.cdap.tca.hi.lo.app",

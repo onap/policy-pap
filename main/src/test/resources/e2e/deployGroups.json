@@ -1,7 +1,7 @@
 {
     "groups": [
         {
-            "name": "createGroups",
+            "name": "deployGroups",
             "pdpGroupState": "PASSIVE",
             "properties": {
                 "hello": "world"

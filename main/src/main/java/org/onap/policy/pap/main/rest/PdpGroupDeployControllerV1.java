@@ -31,6 +31,7 @@ import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -51,7 +52,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     private final PdpGroupDeployProvider provider = new PdpGroupDeployProvider();
 
     /**
-     * Deploys or updates a PDP group.
+     * Adds policies to specific PDP groups.
      *
      * @param requestId request ID used in ONAP logging
      * @param groups PDP group configuration
@@ -59,9 +60,9 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      */
     // @formatter:off
     @POST
-    @Path("pdps")
-    @ApiOperation(value = "Deploy or update PDP Groups",
-        notes = "Deploys or updates a PDP Group, returning optional error details",
+    @Path("pdps/deployments")
+    @ApiOperation(value = "Add policies to specific PDP Groups",
+        notes = "Adds policies to specific PDP Groups, returning optional error details",
         response = PdpGroupDeployResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
@@ -82,10 +83,50 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
                     @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     // @formatter:on
 
-    public Response deployGroup(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+    public Response addGroupPolicies(
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
-        return doOperation(requestId, "create groups failed", () -> provider.createOrUpdateGroups(groups));
+        return doOperation(requestId, "add policies to group failed", () -> provider.addGroupPolicies(groups));
+    }
+
+    /**
+     * Updates policies in specific PDP groups.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @param groups PDP group configuration
+     * @return a response
+     */
+    // @formatter:off
+    @PUT
+    @Path("pdps/deployments")
+    @ApiOperation(value = "Update policies in specific PDP Groups",
+        notes = "Updates policies in specific PDP Groups, returning optional error details",
+        response = PdpGroupDeployResponse.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response updateGroupPolicies(
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+                    @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
+
+        return doOperation(requestId, "update policies in group failed", () -> provider.updateGroupPolicies(groups));
     }
 
     /**

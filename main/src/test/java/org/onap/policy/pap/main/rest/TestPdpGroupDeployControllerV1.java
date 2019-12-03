@@ -41,7 +41,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOp
  */
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
-    private static final String DEPLOY_GROUP_ENDPOINT = "pdps";
+    private static final String DEPLOY_GROUP_ENDPOINT = "pdps/deployments";
     private static final String DEPLOY_POLICIES_ENDPOINT = "pdps/policies";
 
     @Test
@@ -51,7 +51,7 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeployGroup() throws Exception {
+    public void testAddGroupPolicies() throws Exception {
         Entity<PdpGroup> entgrp = makePdpGroupEntity();
 
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
@@ -67,6 +67,25 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(DEPLOY_GROUP_ENDPOINT, req -> req.post(entgrp));
+    }
+
+    @Test
+    public void testUpdateGroupPolicies() throws Exception {
+        Entity<PdpGroup> entgrp = makePdpGroupEntity();
+
+        Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
+        Response rawresp = invocationBuilder.put(entgrp);
+        PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
+
+        rawresp = invocationBuilder.put(entgrp);
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(DEPLOY_GROUP_ENDPOINT, req -> req.put(entgrp));
     }
 
     @Test
