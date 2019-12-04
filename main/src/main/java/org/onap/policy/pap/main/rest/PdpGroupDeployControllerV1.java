@@ -29,10 +29,13 @@ import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.models.base.PfModelException;
@@ -88,6 +91,45 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "List of PDP Group Configuration", required = true) PdpGroups groups) {
 
         return doOperation(requestId, "add policies to group failed", () -> provider.addGroupPolicies(groups));
+    }
+
+    /**
+     * Deletes policies from specific PDP groups.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @param groups PDP group configuration
+     * @return a response
+     */
+    // @formatter:off
+    @DELETE
+    @Path("pdps/deployments/{groups}")
+    @ApiOperation(value = "Delete policies from specific PDP Groups",
+        notes = "Deletes policies from specific PDP Groups, returning optional error details",
+        response = PdpGroupDeployResponse.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response deleteGroupPolicies(
+                    @HeaderParam(REQUEST_ID_NAME) @QueryParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+                    @PathParam("groups") PdpGroups groups) {
+
+        return doOperation(requestId, "delete policies from group failed", () -> provider.deleteGroupPolicies(groups));
     }
 
     /**

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import javax.ws.rs.client.Entity;
@@ -34,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -144,6 +146,73 @@ public class PdpGroupDeployTest extends End2EndBase {
         group.setName("unknown-group");
         group.setProperties(null);
         rawresp = invocationBuilder.post(entity);
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertTrue(resp.getErrorDetails().contains("unknown group"));
+    }
+
+    @Test
+    public void testDeleteGroupPolicies() throws Exception {
+
+        addGroups("deployGroups2.json");
+
+        PdpStatus status11 = new PdpStatus();
+        status11.setName("pdpAA_1");
+        status11.setState(PdpState.ACTIVE);
+        status11.setPdpGroup("deployPolicies");
+        status11.setPdpType(DEPLOY_SUBGROUP);
+        status11.setPdpSubgroup(DEPLOY_SUBGROUP);
+
+        List<ToscaPolicyIdentifier> idents = Arrays.asList(new ToscaPolicyIdentifier("onap.restart.tca", "1.0.0"));
+        status11.setPolicies(idents);
+
+        PdpStatus status12 = new PdpStatus();
+        status12.setName("pdpAA_2");
+        status12.setState(PdpState.ACTIVE);
+        status12.setPdpGroup("deployPolicies");
+        status12.setPdpType(DEPLOY_SUBGROUP);
+        status12.setPdpSubgroup(DEPLOY_SUBGROUP);
+        status12.setPolicies(idents);
+
+        context.addPdp("pdpAA_1", DEPLOY_SUBGROUP).addReply(status11);
+        context.addPdp("pdpAA_2", DEPLOY_SUBGROUP).addReply(status12);
+        context.addPdp("pdpAB_1", "pdpTypeA");
+
+        context.startThreads();
+
+        PdpGroups groups = loadJsonFile("deployGroupsReq2.json", PdpGroups.class);
+
+        String urljson = URLEncoder.encode(new StandardCoder().encode(groups), "UTF-8");
+        String uri = DEPLOY_GROUP_ENDPOINT + "/" + urljson;
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+
+        Response rawresp = invocationBuilder.delete();
+        PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertNull(resp.getErrorDetails());
+
+        context.await();
+
+        // one of the PDPs should not have handled any requests
+        assertEquals(1, context.getPdps().stream().filter(pdp -> pdp.getHandled().isEmpty()).count());
+
+        // repeat - should be OK
+        rawresp = invocationBuilder.delete();
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertNull(resp.getErrorDetails());
+
+        // repeat with unknown group - should fail
+        PdpGroup group = groups.getGroups().get(0);
+        group.setName("unknown-group");
+        group.setProperties(null);
+
+        urljson = URLEncoder.encode(new StandardCoder().encode(groups), "UTF-8");
+        uri = DEPLOY_GROUP_ENDPOINT + "/" + urljson;
+        invocationBuilder = sendRequest(uri);
+
+        rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertTrue(resp.getErrorDetails().contains("unknown group"));

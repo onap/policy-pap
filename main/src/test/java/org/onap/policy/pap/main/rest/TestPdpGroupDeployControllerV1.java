@@ -24,12 +24,15 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.net.URLEncoder;
 import java.util.Arrays;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
+import org.onap.policy.common.utils.coder.StandardCoder;
+import org.onap.policy.common.utils.coder.StandardYamlCoder;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -67,6 +70,37 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(DEPLOY_GROUP_ENDPOINT, req -> req.post(entgrp));
+    }
+
+    @Test
+    public void testDeleteGroupPolicies() throws Exception {
+        PdpGroup group = makePdpGroupEntity().getEntity();
+        String json = new StandardCoder().encode(group);
+        String uri = DEPLOY_GROUP_ENDPOINT + "/" + URLEncoder.encode(json, "UTF-8");
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.delete();
+        PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
+
+        rawresp = invocationBuilder.delete();
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
+
+        // repeat once using YAML instead of JSON
+        String yaml = new StandardYamlCoder().encode(group);
+        uri = DEPLOY_GROUP_ENDPOINT + "/" + URLEncoder.encode(yaml, "UTF-8");
+
+        invocationBuilder = sendRequest(uri);
+        rawresp = invocationBuilder.delete();
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        assertNotNull(resp.getErrorDetails());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.delete());
     }
 
     @Test
