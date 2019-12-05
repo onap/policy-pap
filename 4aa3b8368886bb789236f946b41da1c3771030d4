@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "8ac286b5_59aa73d9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-05T10:06:23Z",
+      "side": 1,
+      "message": "May be this should also come from PapParameterGroup to avoid code changes when URI path is changed.",
+      "range": {
+        "startLine": 64,
+        "startChar": 3,
+        "endLine": 66,
+        "endChar": 90
+      },
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b2270ee5_4a949d4f",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 1
