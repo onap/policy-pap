@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b695b0aa_35a7b722",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2019-12-05T13:43:19Z",
+      "side": 1,
+      "message": "I know Jim should be making changes to this file. Here, I am just removing some test cases to make the build pass.\nThe test cases related to the create/update API is in a different test class TestPdpGroupCreateOrUpdateProvider.",
+      "range": {
+        "startLine": 58,
+        "startChar": 13,
+        "endLine": 58,
+        "endChar": 40
+      },
+      "revId": "fac843b848e41fe23249f6e4e682b8608fc551ad",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
