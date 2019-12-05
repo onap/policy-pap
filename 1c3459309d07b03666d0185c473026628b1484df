@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd3e6c6a_6b641ea9",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupCreateOrUpdateControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T16:32:49Z",
+      "side": 1,
+      "message": "the original test file has an error here - this should be Entity\u003cPdpGroups\u003e instead",
+      "revId": "1c3459309d07b03666d0185c473026628b1484df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "94065e63_e5ccb81f",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupCreateOrUpdateControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T16:32:49Z",
+      "side": 1,
+      "message": "the original test file has an error here - this should be Entity\u003cPdpGroups\u003e instead",
+      "revId": "1c3459309d07b03666d0185c473026628b1484df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "115ceed0_950851b2",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupCreateOrUpdateControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T16:32:49Z",
+      "side": 1,
+      "message": "the original test file has an error here - this should return a PdpGroups instead of a PdpGroup",
+      "revId": "1c3459309d07b03666d0185c473026628b1484df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
