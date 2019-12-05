@@ -2,6 +2,57 @@
   "comments": [
     {
       "key": {
+        "uuid": "10df54a4_2015142a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "maybe just make an array of BusTopicParams, with one item for each client to be checked.  That would also avoid converting the RestServerParameters to BusTopicParams prior to invoking clientFactory.build()",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "550f927c_e7089088",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "this particular provider is not re-entrant (due to \"isHealthy\" flag), thus a new one should be created with each request",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aca99e3a_93703d26",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "\"policy/components/healthcheck\"?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ac286b5_59aa73d9",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
@@ -25,6 +76,142 @@
     },
     {
       "key": {
+        "uuid": "02b289b6_9c5b7465",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "rename this variable so it\u0027s more descriptive",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80a1edb8_5eedbd29",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "may need to run these checks in parallel to avoid the client timing PAP out - though we may be able to do that later as an enhancement",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a6214d3_325483b6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "could invoke this directly and avoid the network overhead",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a40b7a44_7582fac6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "combine lines 109 \u0026 110",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd383575_e1470b1e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "this will overwrite if the same pdp type appears in more than one group",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4c6dc5f1_4e505dc6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "\"Heal\" \u003d\u003e \"Health\"",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3e9397a9_8be71788",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "we may need to use a shorter timeout than the default so that we time this request out before the client that invoked the PAP REST API times out waiting for PAP",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7882d878_08397eed",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "more tests later?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ef9f9df_fdad99f5",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 1
@@ -36,6 +223,24 @@
       "writtenOn": "2019-12-05T13:07:43Z",
       "side": 1,
       "message": "I\u0027m not sure these changes are right.",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e09f8da0_2c0958c8",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "agreed.  Only the api \u0026 distribution parameters should be added; everything else should be unchanged",
+      "parentUuid": "6ef9f9df_fdad99f5",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
@@ -85,6 +290,40 @@
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afeb21d4_71ac2f4b",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "6969?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2181bca9_f0e1f6c3",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-05T21:19:38Z",
+      "side": 1,
+      "message": "6969?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
