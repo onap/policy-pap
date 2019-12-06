@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "11b5c00c_af3e3f53",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2019-12-06T09:06:54Z",
+      "side": 1,
+      "message": "I think the host should be the component\u0027s service name as per the kubernetes deployment which is \"policy-api\"\nand, port should be 6969.\nhttps://policy-api:6969/........ this should be able to hit the API\u0027s healthcheck from the PAP pod.",
+      "range": {
+        "startLine": 50,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 21
+      },
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b66de656_48a91c31",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2019-12-06T09:06:54Z",
+      "side": 1,
+      "message": "This should be\nhost: policy-distribution\nport: 6969",
+      "range": {
+        "startLine": 59,
+        "startChar": 8,
+        "endLine": 60,
+        "endChar": 21
+      },
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
