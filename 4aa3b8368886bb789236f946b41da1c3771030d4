@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "322aa4e1_552b2c01",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "10df54a4_2015142a",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "550f927c_e7089088",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "0f76b9a7_f6bdba69",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "550f927c_e7089088",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aca99e3a_93703d26",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "\"policy/components/healthcheck\"?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f613c626_abd98d68",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "then url would become as /policy/pap/v1/policy/components/healthcheck, that includes two policy items. \nHow about components/healthcheck and /policy/pap/v1/components/healthcheck?",
+      "parentUuid": "aca99e3a_93703d26",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "66465212_808bc44c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8ac286b5_59aa73d9",
+      "range": {
+        "startLine": 64,
+        "startChar": 3,
+        "endLine": 66,
+        "endChar": 90
+      },
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "02b289b6_9c5b7465",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
@@ -87,6 +165,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "rename this variable so it\u0027s more descriptive",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "00b59c14_1687bb55",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "02b289b6_9c5b7465",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -110,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "a87d73dc_4e65f676",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "80a1edb8_5eedbd29",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a6214d3_325483b6",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
@@ -121,6 +235,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "could invoke this directly and avoid the network overhead",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "198a2a44_15203236",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2a6214d3_325483b6",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -144,6 +276,24 @@
     },
     {
       "key": {
+        "uuid": "24254fac_ad47a0b2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a40b7a44_7582fac6",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd383575_e1470b1e",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
@@ -161,6 +311,24 @@
     },
     {
       "key": {
+        "uuid": "4759726e_c9ea3942",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cd383575_e1470b1e",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4c6dc5f1_4e505dc6",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
@@ -172,6 +340,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "\"Heal\" \u003d\u003e \"Health\"",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8d957b35_b152a6a3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4c6dc5f1_4e505dc6",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -206,6 +392,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "more tests later?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1ffe9276_fedd59e0",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "yes, I create a new ticket https://jira.onap.org/browse/POLICY-2287 to focus on the unit test and to ensure the code coverage of epic https://jira.onap.org/browse/POLICY-2025.",
+      "parentUuid": "7882d878_08397eed",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -247,6 +451,24 @@
     },
     {
       "key": {
+        "uuid": "b2979961_276774a5",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Yes, I forgot to remove my verify code before push, will clean it.",
+      "parentUuid": "e09f8da0_2c0958c8",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b2270ee5_4a949d4f",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 1
@@ -267,6 +489,30 @@
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bbc37de1_f0271243",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b2270ee5_4a949d4f",
+      "range": {
+        "startLine": 5,
+        "startChar": 5,
+        "endLine": 9,
+        "endChar": 20
+      },
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -293,6 +539,30 @@
     },
     {
       "key": {
+        "uuid": "daf65594_20cb1431",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1ac4bd57_19ffb952",
+      "range": {
+        "startLine": 34,
+        "startChar": 27,
+        "endLine": 34,
+        "endChar": 41
+      },
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "afeb21d4_71ac2f4b",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 1
@@ -304,6 +574,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "6969?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "555df01c_2f12446d",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-06T08:57:07Z",
+      "side": 1,
+      "message": "Using different port, to indicate that they are from different services(api, distribution).\nWhat do you think?",
+      "parentUuid": "afeb21d4_71ac2f4b",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
