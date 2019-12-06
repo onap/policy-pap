@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6fde76ac_40ae2789",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupCreateOrUpdateProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2019-12-06T22:04:06Z",
+      "side": 1,
+      "message": "Oh whoops - I should have waited. Let\u0027s patch this for Ajith since he is now out for the year.",
+      "parentUuid": "c23b41a2_09245e33",
+      "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61ced756_1c89e343",
         "filename": "main/src/test/resources/simpleDeploy/createGroups.json",
         "patchSetId": 6
