@@ -64,6 +64,10 @@
             {
               "name": "onap.policies.optimization.VnfPolicy",
               "version": "1.0.0"
+            },
+            {
+              "name": "onap.policies.native.Xacml",
+              "version": "1.0.0"
             }
           ],
           "currentInstanceCount": 0,
@@ -76,6 +80,10 @@
             {
               "name": "onap.policies.controlloop.Operational",
               "version": "1.0.0"
+            },
+            {
+              "name": "onap.policies.native.Drools",
+              "version": "1.0.0"
             }
           ],
           "currentInstanceCount": 0,
@@ -87,6 +95,10 @@
           "supportedPolicyTypes": [
             {
               "name": "onap.policies.controlloop.operational.Apex",
+              "version": "1.0.0"
+            },
+            {
+              "name": "onap.policies.native.Apex",
               "version": "1.0.0"
             }
           ],
