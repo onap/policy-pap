@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "712dce0b_340cba80",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupCreateOrUpdateProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T22:13:45Z",
+      "side": 1,
+      "message": "I\u0027ll do it as part of my review",
+      "parentUuid": "6fde76ac_40ae2789",
+      "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61ced756_1c89e343",
         "filename": "main/src/test/resources/simpleDeploy/createGroups.json",
         "patchSetId": 6
