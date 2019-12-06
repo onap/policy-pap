@@ -46,6 +46,30 @@
       "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7745ac7c_26ec2825",
+        "filename": "main/src/test/resources/simpleDeploy/createGroups.json",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-06T11:36:43Z",
+      "side": 1,
+      "message": "Sure, thanks !",
+      "parentUuid": "3ceeeac9_da54c16d",
+      "range": {
+        "startLine": 29,
+        "startChar": 20,
+        "endLine": 29,
+        "endChar": 34
+      },
+      "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
