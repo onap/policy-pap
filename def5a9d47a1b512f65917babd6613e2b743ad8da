@@ -22,6 +22,30 @@
       "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3ceeeac9_da54c16d",
+        "filename": "main/src/test/resources/simpleDeploy/createGroups.json",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2019-12-06T10:58:45Z",
+      "side": 1,
+      "message": "Agreed. A test case with policies passed, and the API doing only creating/updating the group and not deploying the policies can be added. Will do later.",
+      "parentUuid": "61ced756_1c89e343",
+      "range": {
+        "startLine": 29,
+        "startChar": 20,
+        "endLine": 29,
+        "endChar": 34
+      },
+      "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
