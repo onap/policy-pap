@@ -598,6 +598,24 @@
     },
     {
       "key": {
+        "uuid": "15ee63a2_b728f520",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2019-12-06T09:13:38Z",
+      "side": 1,
+      "message": "This works when you are running different policy components locally on different ports. But when it comes to kubernetes deployment (oom), or docker-compose(the csit way), each component has its own service.\nAPI and Distribution components have its own service, and all these components have exposed 6969 as their port.\nJust providing the correct service name as host amd 6969 as port should work I believe.",
+      "parentUuid": "555df01c_2f12446d",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2181bca9_f0e1f6c3",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 1
