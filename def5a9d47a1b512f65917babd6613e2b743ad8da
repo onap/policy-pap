@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "c23b41a2_09245e33",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupCreateOrUpdateProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2019-12-06T21:52:17Z",
+      "side": 1,
+      "message": "this import leaked in, use ObjectUtils from apache commons instead.",
+      "revId": "def5a9d47a1b512f65917babd6613e2b743ad8da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61ced756_1c89e343",
         "filename": "main/src/test/resources/simpleDeploy/createGroups.json",
         "patchSetId": 6
