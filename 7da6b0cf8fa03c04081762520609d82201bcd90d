@@ -2,6 +2,108 @@
   "comments": [
     {
       "key": {
+        "uuid": "408c9aab_8186cb00",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T14:32:06Z",
+      "side": 1,
+      "message": "maybe add \"healthCheck\" to the field name so it\u0027s more obvious what this is used for?",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e26a01e_b433cbe6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T14:32:06Z",
+      "side": 1,
+      "message": "Maybe add a note that a new provider object must be created for each request.",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dc3381b2_9fdf692a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T14:32:06Z",
+      "side": 1,
+      "message": "fyi: could use ParameterService.get instead, to directly access the parameters without going through the activator",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0e76a026_63233a31",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T14:32:06Z",
+      "side": 1,
+      "message": "wow, streams made that easy - cool!",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f1aad4e_291c031f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T14:32:06Z",
+      "side": 1,
+      "message": "sonar: use this::fetchPolicyComponentHealthStatus",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "68d5b9a4_fc71905f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-06T14:32:06Z",
+      "side": 1,
+      "message": "maybe do a flat map to a single List\u003cPdp\u003e?  then could use isEmpty() and avoid invoking flat map a second time in the \"if\" condition",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11b5c00c_af3e3f53",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 2
