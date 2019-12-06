@@ -26,12 +26,7 @@
                             "instanceId": "pdpA"
                         }
                     ],
-                    "policies": [
-                        {
-                            "name": "policyA",
-                            "version": "1.2.3"
-                        }
-                    ]
+                    "policies": []
                 }
             ]
         }
