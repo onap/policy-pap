@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1917670f_8ca9f64d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "408c9aab_8186cb00",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e26a01e_b433cbe6",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "4625177e_424f8d11",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e26a01e_b433cbe6",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc3381b2_9fdf692a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2019-12-06T14:32:06Z",
       "side": 1,
       "message": "fyi: could use ParameterService.get instead, to directly access the parameters without going through the activator",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "487b2962_82aae6f5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc3381b2_9fdf692a",
       "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -87,6 +141,24 @@
     },
     {
       "key": {
+        "uuid": "32448c5e_6354eab9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f1aad4e_291c031f",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "68d5b9a4_fc71905f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -98,6 +170,24 @@
       "writtenOn": "2019-12-06T14:32:06Z",
       "side": 1,
       "message": "maybe do a flat map to a single List\u003cPdp\u003e?  then could use isEmpty() and avoid invoking flat map a second time in the \"if\" condition",
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "45ef49ea_f7c0f9f3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68d5b9a4_fc71905f",
       "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -127,6 +217,30 @@
     },
     {
       "key": {
+        "uuid": "6451e64c_818da526",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Thanks Ajith, got your point.",
+      "parentUuid": "11b5c00c_af3e3f53",
+      "range": {
+        "startLine": 50,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 21
+      },
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b66de656_48a91c31",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 2
@@ -147,6 +261,30 @@
       "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2596d2d0_b837d1be",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b66de656_48a91c31",
+      "range": {
+        "startLine": 59,
+        "startChar": 8,
+        "endLine": 60,
+        "endChar": 21
+      },
+      "revId": "7da6b0cf8fa03c04081762520609d82201bcd90d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
