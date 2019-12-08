@@ -616,6 +616,24 @@
     },
     {
       "key": {
+        "uuid": "87a6b3c6_158572ac",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Thanks for explainations, got your point.",
+      "parentUuid": "15ee63a2_b728f520",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2181bca9_f0e1f6c3",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 1
@@ -627,6 +645,24 @@
       "writtenOn": "2019-12-05T21:19:38Z",
       "side": 1,
       "message": "6969?",
+      "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d05e30f0_8340ecc3",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-08T05:27:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2181bca9_f0e1f6c3",
       "revId": "4aa3b8368886bb789236f946b41da1c3771030d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
