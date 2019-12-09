@@ -30,39 +30,39 @@
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.AffinityPolicy",
+              "name": "onap.policies.optimization.resource.AffinityPolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.DistancePolicy",
+              "name": "onap.policies.optimization.resource.DistancePolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.HpaPolicy",
+              "name": "onap.policies.optimization.resource.HpaPolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.OptimizationPolicy",
+              "name": "onap.policies.optimization.resource.OptimizationPolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.PciPolicy",
+              "name": "onap.policies.optimization.resource.PciPolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.QueryPolicy",
+              "name": "onap.policies.optimization.service.QueryPolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.SubscriberPolicy",
+              "name": "onap.policies.optimization.service.SubscriberPolicy",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.Vim_fit",
+              "name": "onap.policies.optimization.resource.Vim_fit",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.optimization.VnfPolicy",
+              "name": "onap.policies.optimization.resource.VnfPolicy",
               "version": "1.0.0"
             },
             {
