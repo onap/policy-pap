@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cbd76ed2_f358f3d0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2019-12-09T10:21:51Z",
+      "side": 1,
+      "message": "Does result need to be a field, can it not just be a local variable?\n\nWhat would happen to result if the fetchPolicyComponentsHealthStatus() method was called more than once on a PolicyComponentsHealthCheckProvider instance?",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 57
+      },
+      "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
