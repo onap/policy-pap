@@ -93,6 +93,30 @@
       "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1552743_87ea378f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-10T14:31:27Z",
+      "side": 1,
+      "message": "looks like a common method could be extracted to populate most of the report fields",
+      "parentUuid": "8c8d485c_31ebbef7",
+      "range": {
+        "startLine": 130,
+        "startChar": 1,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
