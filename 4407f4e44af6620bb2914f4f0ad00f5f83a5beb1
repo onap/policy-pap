@@ -69,6 +69,30 @@
       "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c8d485c_31ebbef7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-10T05:13:43Z",
+      "side": 1,
+      "message": "Hi Pam, compared with below method, exceptions are happened at different stages. So the sources of data to create a HealthCheckReport are different. \nYes, we can check if it violate sonar rules later.",
+      "parentUuid": "70e91e98_a52d69bf",
+      "range": {
+        "startLine": 130,
+        "startChar": 1,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
