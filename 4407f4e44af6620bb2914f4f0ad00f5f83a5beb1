@@ -117,6 +117,30 @@
       "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1d32faa_1604b89d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2019-12-11T03:42:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1552743_87ea378f",
+      "range": {
+        "startLine": 130,
+        "startChar": 1,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "4407f4e44af6620bb2914f4f0ad00f5f83a5beb1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
