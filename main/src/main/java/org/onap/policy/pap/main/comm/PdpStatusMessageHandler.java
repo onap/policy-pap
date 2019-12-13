@@ -21,6 +21,8 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +33,7 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -70,7 +73,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
                 }
-
                 /*
                  * Indicate that a heart beat was received from the PDP. This is invoked only if handleXxx() does not
                  * throw an exception.
@@ -147,6 +149,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         Optional<PdpSubGroup> pdpSubgroup = null;
         Optional<Pdp> pdpInstance = null;
         PdpGroup pdpGroup = null;
+        PdpStatistics pdpStatistics = message.getStatistics();
 
         final PdpGroupFilter filter =
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
@@ -157,7 +160,8 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             if (pdpSubgroup.isPresent()) {
                 pdpInstance = findPdpInstance(message, pdpSubgroup.get());
                 if (pdpInstance.isPresent()) {
-                    processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider);
+                    processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider,
+                            pdpStatistics);
                 } else {
                     LOGGER.debug("PdpInstance not Found in DB. Sending Pdp for registration - {}", message);
                     registerPdp(message, databaseProvider, pdpGroup);
@@ -189,12 +193,20 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void processPdpDetails(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider, final PdpStatistics pdpStatistics)
+            throws PfModelException {
         if (PdpState.TERMINATED.equals(message.getState())) {
             processPdpTermination(pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
             LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
+
+            if (validatePdpStatisticsDetails(pdpStatistics, pdpInstance, pdpGroup, pdpSubGroup)) {
+                LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}", pdpStatistics);
+                createPdpStatistics(pdpStatistics, databaseProvider);
+            } else {
+                LOGGER.debug("PdpStatistics details are not correct.");
+            }
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
@@ -214,7 +226,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private boolean validatePdpDetails(final PdpStatus message, final PdpGroup pdpGroup, final PdpSubGroup subGroup,
             final Pdp pdpInstanceDetails) {
-
         /*
          * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check policies. Nevertheless, it does the
          * job and provides a convenient way to build a bunch of comparisons.
@@ -227,6 +238,18 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 .append(subGroup.getPolicies().containsAll(message.getPolicies()), true).build();
     }
 
+    private boolean validatePdpStatisticsDetails(final PdpStatistics pdpStatistics, final Pdp pdpInstanceDetails,
+            final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup) {
+
+        return new EqualsBuilder().append(pdpStatistics.getPdpInstanceId() != null, true)
+                .append(pdpStatistics.getTimeStamp() != null, true)
+                .append(pdpStatistics.getPdpGroupName() != null, true)
+                .append(pdpStatistics.getPdpSubGroupName() != null, true)
+                .append(pdpStatistics.getPdpInstanceId(), pdpInstanceDetails.getInstanceId())
+                .append(pdpStatistics.getPdpGroupName(), pdpGroup.getName())
+                .append(pdpStatistics.getPdpSubGroupName(), pdpSubGroup.getPdpType()).build();
+    }
+
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpInstance.setHealthy(message.getHealthy());
@@ -235,6 +258,14 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
     }
 
+    private void createPdpStatistics(final PdpStatistics pdpStatistics, final PolicyModelsProvider databaseProvider)
+            throws PfModelException {
+        List<PdpStatistics> createdPdpStatisticList = Arrays.asList(pdpStatistics);
+        databaseProvider.createPdpStatistics(createdPdpStatisticList);
+        LOGGER.debug("Create pdpStatistics in DB - {}", pdpStatistics);
+    }
+
+    // add update and change message pair into a map
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
             final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
         final PdpUpdate pdpUpdatemessage =
