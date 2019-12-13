@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -70,7 +72,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
                 }
-
                 /*
                  * Indicate that a heart beat was received from the PDP. This is invoked only if handleXxx() does not
                  * throw an exception.
@@ -195,6 +196,14 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
             LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
+
+            if (validatePdpStatisticsDetails(message, pdpInstance, pdpGroup, pdpSubGroup)) {
+                LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}",
+                        message.getStatistics());
+                createPdpStatistics(message.getStatistics(), databaseProvider);
+            } else {
+                LOGGER.debug("PdpStatistics details are not correct - {}", message.getStatistics());
+            }
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
@@ -214,7 +223,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private boolean validatePdpDetails(final PdpStatus message, final PdpGroup pdpGroup, final PdpSubGroup subGroup,
             final Pdp pdpInstanceDetails) {
-
         /*
          * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check policies. Nevertheless, it does the
          * job and provides a convenient way to build a bunch of comparisons.
@@ -227,12 +235,37 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 .append(subGroup.getPolicies().containsAll(message.getPolicies()), true).build();
     }
 
+    private boolean validatePdpStatisticsDetails(final PdpStatus message, final Pdp pdpInstanceDetails,
+            final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup) {
+        if (message.getStatistics() != null) {
+            return new EqualsBuilder()
+                    .append(message.getStatistics().getPdpInstanceId(), pdpInstanceDetails.getInstanceId())
+                    .append(message.getStatistics().getPdpGroupName(), pdpGroup.getName())
+                    .append(message.getStatistics().getPdpSubGroupName(), pdpSubGroup.getPdpType())
+                    .append(message.getStatistics().getPolicyDeployCount() < 0, false)
+                    .append(message.getStatistics().getPolicyDeployFailCount() < 0, false)
+                    .append(message.getStatistics().getPolicyDeploySuccessCount() < 0, false)
+                    .append(message.getStatistics().getPolicyExecutedCount() < 0, false)
+                    .append(message.getStatistics().getPolicyExecutedFailCount() < 0, false)
+                    .append(message.getStatistics().getPolicyExecutedSuccessCount() < 0, false).build();
+        } else {
+            LOGGER.debug("PdpStatistics is null");
+            return false;
+        }
+    }
+
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpInstance.setHealthy(message.getHealthy());
         databaseProvider.updatePdp(pdpGroup.getName(), pdpSubgroup.getPdpType(), pdpInstance);
 
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
+    }
+
+    private void createPdpStatistics(final PdpStatistics pdpStatistics, final PolicyModelsProvider databaseProvider)
+            throws PfModelException {
+        databaseProvider.createPdpStatistics(Arrays.asList(pdpStatistics));
+        LOGGER.debug("Created PdpStatistics in DB - {}", pdpStatistics);
     }
 
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
