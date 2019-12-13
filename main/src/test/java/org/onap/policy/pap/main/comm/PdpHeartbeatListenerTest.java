@@ -30,6 +30,7 @@ import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
@@ -180,7 +181,66 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status9.setPolicies(idents9);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status9);
         verifyPdpGroup(DEFAULT_GROUP, 0);
+    }
 
+    @Test
+    public void testPdpStatistics() throws CoderException, PfModelException {
+        addGroups("PdpGroups.json");
+        pdpHeartbeatListener = new PdpHeartbeatListener();
+
+        final PdpStatus status1 = new PdpStatus();
+        status1.setName(PDP_NAME);
+        status1.setState(PdpState.ACTIVE);
+        status1.setPdpGroup(DEFAULT_GROUP);
+        status1.setPdpType(APEX_TYPE);
+        status1.setHealthy(PdpHealthStatus.HEALTHY);
+        final List<ToscaPolicyIdentifier> idents1 =
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        status1.setPolicies(idents1);
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status1);
+        verifyPdpGroup(DEFAULT_GROUP, 1);
+
+        // Testing pdp statistics success case
+        final PdpStatus status2 = new PdpStatus();
+        status2.setName(PDP_NAME);
+        status2.setState(PdpState.ACTIVE);
+        status2.setPdpGroup(DEFAULT_GROUP);
+        status2.setPdpType(APEX_TYPE);
+        status2.setHealthy(PdpHealthStatus.HEALTHY);
+        status2.setPdpSubgroup(APEX_TYPE);
+        final List<ToscaPolicyIdentifier> idents2 =
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        status2.setPolicies(idents2);
+
+        PdpStatistics pdpStatistics01 = new PdpStatistics();
+        pdpStatistics01.setPdpInstanceId("pdp_1");
+        pdpStatistics01.setPdpGroupName(DEFAULT_GROUP);
+        pdpStatistics01.setPdpSubGroupName(APEX_TYPE);
+        status2.setStatistics(pdpStatistics01);
+
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status2);
+        verifyPdpGroup(DEFAULT_GROUP, 1);
+
+        // Testing pdp statistics failure case
+        final PdpStatus status3 = new PdpStatus();
+        status3.setName(PDP_NAME);
+        status3.setState(PdpState.ACTIVE);
+        status3.setPdpGroup(DEFAULT_GROUP);
+        status3.setPdpType(APEX_TYPE);
+        status3.setHealthy(PdpHealthStatus.HEALTHY);
+        status3.setPdpSubgroup(APEX_TYPE);
+        final List<ToscaPolicyIdentifier> idents3 =
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        status3.setPolicies(idents3);
+
+        PdpStatistics pdpStatistics02 = new PdpStatistics();
+        pdpStatistics02.setPdpInstanceId("pdp_2");
+        pdpStatistics02.setPdpGroupName(DEFAULT_GROUP);
+        pdpStatistics02.setPdpSubGroupName(APEX_TYPE);
+        status3.setStatistics(pdpStatistics02);
+
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status3);
+        verifyPdpGroup(DEFAULT_GROUP, 1);
     }
 
     private void verifyPdpGroup(final String name, final int count) throws PfModelException {
