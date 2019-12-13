@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2019 Nordix Foundation.
+ * Modifications Copyright (C) 2019-2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
@@ -179,6 +180,19 @@ public class End2EndBase extends CommonPapRestServer {
      */
     public static List<PdpGroup> fetchGroups(final String name) throws PfModelException {
         return dbConn.getPdpGroups(name);
+    }
+
+    /**
+     * Fetch PDP statistics from the DB.
+     *
+     * @param instanceId name of the pdpStatistics
+     * @param groupName name of the pdpGroup
+     * @param subGroupName name of the pdpSubGroup
+     * @throws PfModelException if a DAO error occurs
+     */
+    public static List<PdpStatistics> fetchPdpStatistics(final String instanceId, final String groupName,
+           final String subGroupName) throws PfModelException {
+        return dbConn.getFilteredPdpStatistics(instanceId, groupName, subGroupName, null, null, null, 0);
     }
 
     /**
