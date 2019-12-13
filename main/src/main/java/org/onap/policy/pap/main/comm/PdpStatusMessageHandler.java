@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -70,7 +72,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
                 }
-
                 /*
                  * Indicate that a heart beat was received from the PDP. This is invoked only if handleXxx() does not
                  * throw an exception.
@@ -147,6 +148,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         Optional<PdpSubGroup> pdpSubgroup = null;
         Optional<Pdp> pdpInstance = null;
         PdpGroup pdpGroup = null;
+        PdpStatistics pdpStatistics = message.getStatistics();
 
         final PdpGroupFilter filter =
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
@@ -163,6 +165,12 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                     registerPdp(message, databaseProvider, pdpGroup);
                 }
             }
+        }
+
+        if (pdpStatistics != null) {
+            processPdpStatisticsDetails(message, pdpStatistics, pdpSubgroup.get(), databaseProvider);
+        } else {
+            LOGGER.debug("PdpStatistics not exit. Sending PdpStatistics for registration - {}", message);
         }
     }
 
@@ -202,6 +210,17 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         }
     }
 
+    private void processPdpStatisticsDetails(final PdpStatus message, final PdpStatistics pdpStatistics,
+            final PdpSubGroup subGroup, PolicyModelsProvider databaseProvider) throws PfModelException {
+        if (validatePdpStatisticsDetails(pdpStatistics)) {
+            LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}", pdpStatistics);
+            createPdpStatistics(pdpStatistics, databaseProvider);
+            sendPdpMessage(message.getPdpGroup(), subGroup, pdpStatistics.getPdpInstanceId(), null, databaseProvider);
+        } else {
+            LOGGER.debug("PdpStatistics details are not correct. Sending PdpStatistics message - {}", pdpStatistics);
+        }
+    }
+
     private void processPdpTermination(final PdpSubGroup pdpSubGroup, final Pdp pdpInstance, final PdpGroup pdpGroup,
             final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpSubGroup.getPdpInstances().remove(pdpInstance);
@@ -214,7 +233,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private boolean validatePdpDetails(final PdpStatus message, final PdpGroup pdpGroup, final PdpSubGroup subGroup,
             final Pdp pdpInstanceDetails) {
-
         /*
          * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check policies. Nevertheless, it does the
          * job and provides a convenient way to build a bunch of comparisons.
@@ -227,6 +245,13 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 .append(subGroup.getPolicies().containsAll(message.getPolicies()), true).build();
     }
 
+    private boolean validatePdpStatisticsDetails(final PdpStatistics pdpStatistics) {
+        return pdpStatistics.getPdpInstanceId() != null
+                && pdpStatistics.getTimeStamp() != null
+                && pdpStatistics.getPdpGroupName() != null
+                && pdpStatistics.getPdpSubGroupName() != null;
+    }
+
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpInstance.setHealthy(message.getHealthy());
@@ -235,6 +260,17 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
     }
 
+    private void createPdpStatistics(final PdpStatistics  pdpStatistics, final PolicyModelsProvider databaseProvider)
+            throws PfModelException {
+        List<PdpStatistics> createdPdpStatisticList = new ArrayList<>();
+        if (pdpStatistics != null) {
+            createdPdpStatisticList.add(pdpStatistics);
+        }
+        databaseProvider.createPdpStatistics(createdPdpStatisticList);
+        LOGGER.debug("Create pdpStatistics in DB - {}", createdPdpStatisticList);
+    }
+
+    // add update and change message pair into a map
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
             final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
         final PdpUpdate pdpUpdatemessage =
