@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.HttpURLConnection;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
@@ -54,6 +55,41 @@ public class StatisticsTest extends End2EndBase {
         assertEquals(report.getTotalPolicyDownloadCount() + 1, report2.getTotalPolicyDownloadCount());
         assertEquals(report.getPolicyDeploySuccessCount() + 1, report2.getPolicyDeploySuccessCount());
         assertEquals(report.getPolicyDeployFailureCount() + 1, report2.getPolicyDeployFailureCount());
+    }
+
+    @Test
+    public void testDb() throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics");
+        Response testResponse = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), testResponse.getStatus());
+    }
+
+    @Test
+    public void testDbWithGroup() throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/group");
+        Response testResponse = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), testResponse.getStatus());
+    }
+
+    @Test
+    public void testDbWithSubGroup() throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/group/subgroup");
+        Response testResponse = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), testResponse.getStatus());
+    }
+
+    @Test
+    public void testDbWithPdp() throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/group/subgroup/pdp");
+        Response testResponse = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), testResponse.getStatus());
+    }
+
+    @Test
+    public void testDbWithPdpLatest() throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/group/subgroup/pdp/latest");
+        Response testResponse = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), testResponse.getStatus());
     }
 
     private void updateDistributionStatistics() {
