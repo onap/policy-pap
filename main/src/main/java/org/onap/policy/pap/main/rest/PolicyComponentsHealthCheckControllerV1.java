@@ -39,7 +39,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Class to provide REST end point for PAP component to fetch all policy components, including PAP,
- * API, Distribution, and PDPs
+ * API, Distribution, and PDPs.
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */

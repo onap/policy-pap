@@ -194,7 +194,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent() {
+    public void testIsSameContent() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setName("world");
         assertTrue(data.isSameContent(msg2));
@@ -206,7 +206,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_BothGroupNamesNull() {
+    public void testIsSameContent_BothGroupNamesNull() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
         update.setPdpGroup(null);
@@ -214,7 +214,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_BothSubGroupNamesNull() {
+    public void testIsSameContent_BothSubGroupNamesNull() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
         update.setPdpSubgroup(null);
@@ -222,7 +222,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_DiffGroup() {
+    public void testIsSameContent_DiffGroup() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
         assertFalse(data.isSameContent(msg2));
@@ -235,7 +235,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_DiffSubGroup() {
+    public void testIsSameContent_DiffSubGroup() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
         assertFalse(data.isSameContent(msg2));
@@ -248,7 +248,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_DiffPolicies() {
+    public void testIsSameContent_DiffPolicies() {
         PdpUpdate msg2 = new PdpUpdate(update);
 
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
@@ -259,7 +259,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_DiffPolicies_NotNull_Null() {
+    public void testIsSameContent_DiffPolicies_NotNull_Null() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPolicies(null);
 
@@ -267,7 +267,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void isSameContent_DiffPolicies_Null_NotNull() {
+    public void testIsSameContent_DiffPolicies_Null_NotNull() {
         PdpUpdate msg2 = new PdpUpdate(update);
 
         update.setPolicies(null);

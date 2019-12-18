@@ -43,7 +43,7 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void queryAllDeployedPolicies() throws Exception {
+    public void testQueryAllDeployedPolicies() throws Exception {
         String uri = POLICY_STATUS_ENDPOINT;
 
         // verify it fails when no authorization info is included
@@ -63,7 +63,7 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void queryDeployedPolicy() throws Exception {
+    public void testQueryDeployedPolicy() throws Exception {
         String uri = POLICY_STATUS_ENDPOINT + "/my-name/1.2.3";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
