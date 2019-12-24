@@ -1,0 +1,242 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b1cb71b5_212d6299",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "seems like start \u0026 end times should be parameters instead of hard coded",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4f5b3dbf_8a8c9e09",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "doesn\u0027t appear to be used",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4cbe312a_78a6e7c7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "seems like the exception should be re-thrown, or perhaps not even caught",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c73d871d_6238253c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "@param num",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "263fe987_25357d41",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "rename \"num\" to something meaningful",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a633be55_7288d2e1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "doesn\u0027t appear to be used",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7836c273_7b690558",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "how many records might this retrieve?  are we sure we want to do this?",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "260e6538_8c7184cf",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "could just return here and eliminate the \"sortedList\" variable",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b22285e4_7ecb3a49",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "seems like the exception should be re-thrown, or perhaps not even caught",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b05fcad1_1dbb9f60",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "get the map and use it in the subsequent calls to avoid additional look-ups",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a02f1fe6_164372a5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "get the array and use it in the subsequent calls to avoid additional look-ups",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9acb1d0e_4ba5775f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "exp may indicate something other than not-found; should probably return the error code indicated by exp.\n\nsame comment for the other methods below",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0f86ef4f_be62f7ad",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "rename \"num\" to something more meaningful.\n\nseems like this should be a query parameter instead of a path parameter.  That would also eliminate the need for pdpInstanceLatestStatistics()",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6e7a57c4_9b1e7270",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/StatisticsTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:01:22Z",
+      "side": 1,
+      "message": "should verify the output contains the expected data\n\nsame comment for the other test cases",
+      "revId": "70806fd19cf74dd993ccbcb01e4bfb4b5a79001e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
