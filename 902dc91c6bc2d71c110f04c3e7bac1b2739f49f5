@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b1cd8aec_d7ca92fb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:12:30Z",
+      "side": 1,
+      "message": "pdpSubgroup could be null here",
+      "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "531d2383_e637a4fe",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:12:30Z",
+      "side": 1,
+      "message": "why are we sending a message to the PDP at this point?",
+      "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "924bbc96_d77a76a2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2019-12-24T14:12:30Z",
+      "side": 1,
+      "message": "why even do this if pdpStatistics\u003dnull?",
+      "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
