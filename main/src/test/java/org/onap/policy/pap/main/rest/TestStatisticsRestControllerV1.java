@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,10 +36,15 @@ import org.onap.policy.pap.main.PapConstants;
 public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
 
     private static final String STATISTICS_ENDPOINT = "statistics";
+    private static final String STATISTICS_DB_ENDPOINT = "pdps/statistics";
 
     @Test
     public void testSwagger() throws Exception {
         super.testSwagger(STATISTICS_ENDPOINT);
+        super.testSwagger(STATISTICS_DB_ENDPOINT);
+        super.testSwagger(STATISTICS_DB_ENDPOINT + "/{group}");
+        super.testSwagger(STATISTICS_DB_ENDPOINT + "/{group}" + "/{type}");
+        super.testSwagger(STATISTICS_DB_ENDPOINT + "/{group}" + "/{type}" + "/{pdp}");
     }
 
     @Test
