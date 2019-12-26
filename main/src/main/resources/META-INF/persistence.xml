@@ -31,6 +31,7 @@
         <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpGroup</class>
         <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpSubGroup</class>
         <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdp</class>
+        <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpStatistics</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create" />
