@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "305e6162_05bda5e3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-26T06:39:22Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b1cd8aec_d7ca92fb",
+      "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "531d2383_e637a4fe",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "85940090_dd550c1b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-26T06:39:22Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "531d2383_e637a4fe",
+      "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "924bbc96_d77a76a2",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2019-12-24T14:12:30Z",
       "side": 1,
       "message": "why even do this if pdpStatistics\u003dnull?",
+      "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e242233b_ce496f2a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-26T06:39:22Z",
+      "side": 1,
+      "message": "pdpStatistics will not be null here, I will delete the if situation.",
+      "parentUuid": "924bbc96_d77a76a2",
       "revId": "902dc91c6bc2d71c110f04c3e7bac1b2739f49f5",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
