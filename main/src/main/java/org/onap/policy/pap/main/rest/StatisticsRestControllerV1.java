@@ -22,12 +22,22 @@
 package org.onap.policy.pap.main.rest;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+import java.util.List;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
+import org.onap.policy.models.pdp.concepts.PdpStatistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide REST endpoints for PAP component statistics.
@@ -36,15 +46,192 @@ import javax.ws.rs.core.Response;
  */
 public class StatisticsRestControllerV1 extends PapRestControllerV1 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsRestControllerV1.class);
+    private static final String GET_STATISTICS_ERR_MSG = "get pdpStatistics failed";
+
+
     @GET
     @Path("statistics")
     @ApiOperation(value = "Fetch current statistics",
-                    notes = "Returns current statistics of the Policy Administration component",
-                    response = StatisticsReport.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+            notes = "Returns current statistics of the Policy Administration component",
+            response = StatisticsReport.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
     @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     public Response statistics() {
-        return Response.status(Response.Status.OK).entity(new StatisticsProvider().fetchCurrentStatistics()).build();
+        return Response.status(Response.Status.OK).entity(new StatisticsRestProvider().fetchCurrentStatistics())
+                .build();
     }
+
+    /**
+     * get all statistics of PDP groups.
+     *
+     *
+     * @return a response
+     */
+    @GET
+    @Path("pdps/statistics")
+    @ApiOperation(value = "Fetch  statistics for all PDP Groups and subgroups in the system",
+            notes = "Returns for all PDP Groups and subgroups statistics of the Policy Administration component",
+            response = Map.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    public Response pdpStatistics() {
+        try {
+            return Response.status(Response.Status.OK)
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(null, null, null)).build();
+        } catch (final PfModelException exp) {
+            LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * get all statistics of a PDP group.
+     *
+     * @param groupName name of the PDP group
+     * @return a response
+     */
+    @GET
+    @Path("pdps/statistics/{group}")
+    @ApiOperation(value = "Fetch current statistics for given PDP Group",
+            notes = "Returns statistics for given PDP Group of the Policy Administration component",
+            response = Map.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    public Response pdpGroupStatistics(
+            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName) {
+        try {
+            return Response.status(Response.Status.OK)
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, null, null)).build();
+        } catch (final PfModelException exp) {
+            LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
+            return Response.status(exp.getErrorResponse().getResponseCode()).build();
+        }
+    }
+
+    /**
+     * get all statistics of sub PDP group.
+     *
+     * @param groupName name of the PDP group
+     * @param subType type of the sub PDP group
+     * @return a response
+     */
+    @GET
+    @Path("pdps/statistics/{group}/{type}")
+    @ApiOperation(value = "Fetch statistics for the specified subgroup",
+            notes = "Returns  statistics for the specified subgroup of the Policy Administration component",
+            response = Map.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    public Response pdpSubGroupStatistics(
+            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
+            @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType) {
+        try {
+            return Response.status(Response.Status.OK)
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, subType, null)).build();
+        } catch (final PfModelException exp) {
+            LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
+            return Response.status(exp.getErrorResponse().getResponseCode()).build();
+        }
+    }
+
+    /**
+     * get all statistics of one PDP.
+     *
+     * @param groupName name of the PDP group
+     * @param subType type of the sub PDP group
+     * @param pdpName the name of the PDP
+     * @return a response
+     */
+    @GET
+    @Path("pdps/statistics/{group}/{type}/{pdp}")
+    @ApiOperation(value = "Fetch statistics for the specified pdp",
+            notes = "Returns  statistics for the specified pdp of the Policy Administration component",
+            response = Map.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    public Response pdpInstanceStatistics(
+            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
+            @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType,
+            @ApiParam(value = "PDP Instance name", required = true) @PathParam("pdp") final String pdpName) {
+        try {
+            return Response.status(Response.Status.OK)
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, subType, pdpName)).build();
+        } catch (final PfModelException exp) {
+            LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
+            return Response.status(exp.getErrorResponse().getResponseCode()).build();
+        }
+    }
+
+    /**
+     * get specified latest statistics of one PDP.
+     *
+     * @param groupName name of the PDP group
+     * @param subType type of the sub PDP group
+     * @param pdpName the name of the PDP
+     * @param recordCount the number to read
+     * @return a response
+     */
+    @GET
+    @Path("pdps/statistics/{group}/{type}/{pdp}/{recordCount}")
+    @ApiOperation(value = "Fetch specified latest statistics for the specified pdp",
+            notes = "Returns specified latest statistics for the specified pdp of the Policy Administration component",
+            response = List.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    public Response pdpInstanceLatestStatistics(
+            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
+            @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType,
+            @ApiParam(value = "PDP Instance name", required = true) @PathParam("pdp") final String pdpName,
+            @ApiParam(value = "statistics num to read",
+                    required = true) @PathParam("recordCount") final int recordCount) {
+        try {
+            return Response.status(Response.Status.OK).entity(
+                    new StatisticsRestProvider().fetchLatestDatabaseStatistics(groupName, subType, pdpName,
+                            recordCount))
+                    .build();
+        } catch (final PfModelException exp) {
+            LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
+            return Response.status(exp.getErrorResponse().getResponseCode()).build();
+        }
+    }
+
+    /**
+     * get the latest statistics of one PDP.
+     *
+     * @param groupName name of the PDP group
+     * @param subType type of the sub PDP group
+     * @param pdpName the name of the PDP
+     * @return a response
+     */
+    @GET
+    @Path("pdps/statistics/{group}/{type}/{pdp}/latest")
+    @ApiOperation(value = "Fetch the latest statistics of one PDP",
+            notes = "Returns  the latest statistics for given PDP of the Policy Administration component",
+            response = List.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    public Response pdpInstanceLatestStatistics(
+            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
+            @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType,
+            @ApiParam(value = "PDP Instance name", required = true) @PathParam("pdp") final String pdpName) {
+        try {
+            return Response.status(Response.Status.OK)
+                    .entity(new StatisticsRestProvider().fetchLatestDatabaseStatistics(groupName, subType, pdpName, 1))
+                    .build();
+        } catch (final PfModelException exp) {
+            LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
+            return Response.status(exp.getErrorResponse().getResponseCode()).build();
+        }
+
+
+    }
+
 }
