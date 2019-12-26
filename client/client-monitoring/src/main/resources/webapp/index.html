@@ -1,0 +1,82 @@
+<!--
+  ============LICENSE_START=======================================================
+   Copyright (C) 2019 Nordix Foundation.
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  SPDX-License-Identifier: Apache-2.0
+  ============LICENSE_END=========================================================
+-->
+
+<html>
+    <head>
+    <meta charset="UTF-8">
+
+    <title>ONAP Policy Client Monitoring</title>
+
+    <!-- interface style -->
+    <link rel="stylesheet" type="text/css" href="css/interfaceAssets.css">
+    <!-- ChartLib style -->
+    <link rel="stylesheet" type="text/css" href="css/papChartLib.css">
+    <!-- Pdp services client style -->
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+
+    <script type="text/javascript" src="js/MonitoringUtils.js"></script>
+
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <div class="ebSystemBar">
+                    <img class="onapLogo" src="images/logo_onap.png" alt="ONAP">
+                    <div class="ebSystemBar-topMenuName">ONAP Policy Framework PDP Monitoring</div>
+                    <div class="ebSystemBar-config"></div>
+                </div>
+            </header>
+            <div class="pdps">
+                <h2>PDP List</h2>
+                <ul class="pdps__list">
+                </ul>
+            </div>
+            <div class="statistics">
+                <div class="layoutWrapper">
+                    <div id="content" class="content">
+                        <h2>PDP (Policy Decision Point) Information</h2>
+                        <div class="engineService"></div>
+                        <h2>PDP Aggregated Statistics</h2>
+                        <div class="engineSummary"></div>
+                        <h2>PDP Engine Worker Statistics</h2>
+                        <div class="engineStatus"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- jQuery -->
+        <script src="jquery/jquery-3.4.1.min.js"></script>
+
+        <!-- D3 -->
+        <script type="text/javascript" src="js/d3/d3.min.js"></script>
+
+        <!-- Apex services client JS files -->
+        <script type="text/javascript" src="js/MonitoringAjax.js"></script>
+        <script type="text/javascript" src="js/MonitoringTable.js"></script>
+        <script type="text/javascript" src="js/MonitoringChart.js"></script>
+        <script type="text/javascript" src="js/PdpInformation.js"></script>
+        <script type="text/javascript" src="js/PdpStatisticsSummary.js"></script>
+        <script type="text/javascript" src="js/PdpEngineWorkerStatus.js"></script>
+        <script type="text/javascript" src="js/PdpListView.js"></script>
+        <script type="text/javascript" src="js/MonitoringMain.js"></script>
+
+    </body>
+</html>
