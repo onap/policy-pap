@@ -48,7 +48,6 @@
         <module>main</module>
         <module>packages</module>
         <module>testsuites</module>
-        <module>client</module>
     </modules>
 
     <dependencies>
