@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5e5d14d9_5ac2adbe",
+        "filename": "client/client-monitoring/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-29T15:15:49Z",
+      "side": 1,
+      "message": "extra spaces, also in other files.\nMay be check your eclipse formatter settings.",
+      "range": {
+        "startLine": 38,
+        "startChar": 21,
+        "endLine": 38,
+        "endChar": 29
+      },
+      "revId": "1b9eecbc470b18b26e37715f25b3d82d89549981",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6041454d_32c1a161",
+        "filename": "client/client-monitoring/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-29T15:15:49Z",
+      "side": 1,
+      "message": "Better to use RestServer class in policy/common to create and manage REST server.",
+      "range": {
+        "startLine": 49,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "1b9eecbc470b18b26e37715f25b3d82d89549981",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4e94fb5d_6b3da56d",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-29T15:15:49Z",
+      "side": 1,
+      "message": "Better to use the RestServer class from policy/common. Refer PapActivator class (line 239) and check how it creates the rest server.",
+      "range": {
+        "startLine": 61,
+        "startChar": 8,
+        "endLine": 69,
+        "endChar": 103
+      },
+      "revId": "1b9eecbc470b18b26e37715f25b3d82d89549981",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
