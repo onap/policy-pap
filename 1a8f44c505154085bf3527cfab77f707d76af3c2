@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ad48aea_7a457ae8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-30T14:29:19Z",
+      "side": 1,
+      "message": "Better to log the pdpStatistics object as well in order to know the content while debugging.",
+      "range": {
+        "startLine": 208,
+        "startChar": 29,
+        "endLine": 208,
+        "endChar": 69
+      },
+      "revId": "1a8f44c505154085bf3527cfab77f707d76af3c2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "14c2c289_00903fb7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-30T14:29:19Z",
+      "side": 1,
+      "message": "Do we really need to check null for group, subgroup \u0026 instanceId? Because if they are NOT expected to be null in heartbeat and the processing won\u0027t reach until this point.",
+      "range": {
+        "startLine": 246,
+        "startChar": 16,
+        "endLine": 247,
+        "endChar": 73
+      },
+      "revId": "1a8f44c505154085bf3527cfab77f707d76af3c2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9120d339_71566b5d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-30T14:29:19Z",
+      "side": 1,
+      "message": "I think we can use \"Arrays.asList(pdpStatistics)\" directly here.",
+      "range": {
+        "startLine": 264,
+        "startChar": 45,
+        "endLine": 264,
+        "endChar": 68
+      },
+      "revId": "1a8f44c505154085bf3527cfab77f707d76af3c2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9fc007a3_8131e20a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2019-12-30T14:29:19Z",
+      "side": 1,
+      "message": "Is this needed?",
+      "range": {
+        "startLine": 268,
+        "startChar": 4,
+        "endLine": 268,
+        "endChar": 52
+      },
+      "revId": "1a8f44c505154085bf3527cfab77f707d76af3c2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
