@@ -48,6 +48,54 @@
     },
     {
       "key": {
+        "uuid": "dbaa1dab_5b3b2a53",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4cf4d81d_be7497b7",
+      "range": {
+        "startLine": 173,
+        "startChar": 26,
+        "endLine": 173,
+        "endChar": 48
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "03f6197a_61e03980",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c294ae96_7a403a09",
+      "range": {
+        "startLine": 173,
+        "startChar": 50,
+        "endLine": 173,
+        "endChar": 88
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3d54817d_97eb4c40",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2019-12-29T15:03:22Z",
       "side": 1,
       "message": "This should not be called here, instead processPdpStatisticsDetails should be called inside the flow of processPdpDetails where we update the health status of Pdp after all validations.\nAlso, PdpStatistics is expected to be null at the time of registration. So no point keeping this check here.",
+      "range": {
+        "startLine": 170,
+        "startChar": 8,
+        "endLine": 174,
+        "endChar": 9
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0ff61432_49533340",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3d54817d_97eb4c40",
       "range": {
         "startLine": 170,
         "startChar": 8,
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "75b0bcc2_0358fa41",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7e24fd4e_74d570f3",
+      "range": {
+        "startLine": 219,
+        "startChar": 64,
+        "endLine": 219,
+        "endChar": 94
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0dfbc68_f2c6e26d",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 3
@@ -129,6 +225,30 @@
       "writtenOn": "2019-12-29T15:03:22Z",
       "side": 1,
       "message": "I think we should also check if the pdpInstanceId, pdpGroupName \u0026 pdpSubGroupName matches with the corresponding identifiers in the PdpStatus message.",
+      "range": {
+        "startLine": 248,
+        "startChar": 15,
+        "endLine": 251,
+        "endChar": 62
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b1eb09c4_a7c26401",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b0dfbc68_f2c6e26d",
       "range": {
         "startLine": 248,
         "startChar": 15,
@@ -164,6 +284,30 @@
     },
     {
       "key": {
+        "uuid": "bd840aef_57df0eba",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e08cfb49_f6f8bb9d",
+      "range": {
+        "startLine": 264,
+        "startChar": 8,
+        "endLine": 265,
+        "endChar": 51
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "692b2f33_dc796249",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 3
@@ -175,6 +319,30 @@
       "writtenOn": "2019-12-29T15:03:22Z",
       "side": 1,
       "message": "May be better to log pdpStatistics object here.",
+      "range": {
+        "startLine": 267,
+        "startChar": 56,
+        "endLine": 267,
+        "endChar": 79
+      },
+      "revId": "30b06379affffe62a8fbf4fc980adc8aa9d5a49a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b3964e97_a07b6b3d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2019-12-30T07:10:36Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "692b2f33_dc796249",
       "range": {
         "startLine": 267,
         "startChar": 56,
