@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "610a192d_429d17ae",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-01-02T15:57:05Z",
+      "side": 1,
+      "message": "I thought we stopped using grizzly and were using jersey?",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
