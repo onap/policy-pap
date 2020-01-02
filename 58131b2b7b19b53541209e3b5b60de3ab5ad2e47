@@ -22,6 +22,30 @@
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6924bf60_94bf480e",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-02T20:56:54Z",
+      "side": 1,
+      "message": "Agree Pam, I have asked Yehui to change it from grizzly to policy/common way of starting \u0026 managing http server.",
+      "parentUuid": "610a192d_429d17ae",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
