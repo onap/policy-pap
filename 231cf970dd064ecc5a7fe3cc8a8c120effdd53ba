@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "88aba228_2a9e310c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2020-01-02T05:32:59Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a2056377_550081fb",
+      "revId": "231cf970dd064ecc5a7fe3cc8a8c120effdd53ba",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a71cc294_6e055742",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2019-12-31T18:06:09Z",
       "side": 1,
       "message": "pdpStatics may be null in the PdpStatus message, I would assume, this is an optional argument, could this return a null pointer exception ?",
+      "revId": "231cf970dd064ecc5a7fe3cc8a8c120effdd53ba",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f884f463_90abe4c8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2020-01-02T05:32:59Z",
+      "side": 1,
+      "message": "Good point, I did not consider it. I will check if nullable before the return.",
+      "parentUuid": "a71cc294_6e055742",
       "revId": "231cf970dd064ecc5a7fe3cc8a8c120effdd53ba",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
