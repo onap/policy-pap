@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c0ff17b5_0129874b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-02T10:50:29Z",
+      "side": 1,
+      "message": "Don\u0027t need this - \"- {}\"",
+      "range": {
+        "startLine": 205,
+        "startChar": 67,
+        "endLine": 205,
+        "endChar": 68
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "776654f8_593d89cb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-02T10:50:29Z",
+      "side": 1,
+      "message": "\"Create\" -\u003e \"Created\"",
+      "range": {
+        "startLine": 262,
+        "startChar": 22,
+        "endLine": 262,
+        "endChar": 28
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d16eb472_196024cd",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-02T10:50:29Z",
+      "side": 1,
+      "message": "Better to use the constant PDP_NAME",
+      "range": {
+        "startLine": 216,
+        "startChar": 42,
+        "endLine": 216,
+        "endChar": 47
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a691ab74_4484bca2",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-02T10:50:29Z",
+      "side": 1,
+      "message": "I think we should really populate some statistics in the PdpStatistics object and verify them. May be create a new method called verifyPdpStatistics.",
+      "range": {
+        "startLine": 222,
+        "startChar": 7,
+        "endLine": 222,
+        "endChar": 41
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e2d7c984_5d7af935",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-02T10:50:29Z",
+      "side": 1,
+      "message": "Is this really a failure case for PdpStatistics?\nBecause as part of heartbeat processing, when the pdpInstance is not found in DB then the heartbeat message is passed to the pdp registration flow. And this will result in no calls being made to PdpStatistics update flow which is kind of known.\n\nFailure cases can be:\n1) having the pdpStatistics null in the heartbeat for already registered pdp\n2) passing different pdpGroup, PdpSubGroup \u0026 pdpInstanceId as compared to the one\u0027s in PdpStatus message.\n3) having the actual counts null in the pdpStatistics object passed.",
+      "range": {
+        "startLine": 224,
+        "startChar": 8,
+        "endLine": 243,
+        "endChar": 41
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
