@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e84f9bc6_fb45543a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-06T14:57:38Z",
+      "side": 1,
+      "message": "need to add logging \u0026 control headers.\n\ncan this through a PfModelRuntimeException.  If so, then should wrap it in a try/catch.  Otherwise, it\u0027s fine as is",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "38cc6cda_fe21fe3e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-06T14:57:38Z",
+      "side": 1,
+      "message": "need to add logging \u0026 control headers\n\nsame comment below",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eacdeab4_c100c82e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-06T14:57:38Z",
+      "side": 1,
+      "message": "doesn\u0027t look like this variable is needed",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "af230015_e8dc6ec3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-06T14:57:38Z",
+      "side": 1,
+      "message": "add \", exp\" so stack trace is logged",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a5898cd8_f131ba4d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-06T14:57:38Z",
+      "side": 1,
+      "message": "use computeIfAbsent to combine this line with the next",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d17fe5f5_3ea17f47",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-06T14:57:38Z",
+      "side": 1,
+      "message": "use computeIfAbsent to combine this line with the next",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
