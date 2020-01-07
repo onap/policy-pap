@@ -70,6 +70,29 @@
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "518f63cb_d2fedf51",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2020-01-07T13:01:59Z",
+      "side": 1,
+      "message": "Maybe change the name of this variable to be more meaningful",
+      "range": {
+        "startLine": 92,
+        "startChar": 58,
+        "endLine": 92,
+        "endChar": 62
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
