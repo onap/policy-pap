@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "97e41115_51222fa7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2020-01-07T13:06:23Z",
+      "side": 1,
+      "message": "I think we should log the statistics. It would help to discover why they were not valid.",
+      "parentUuid": "8f8dbdfa_cc1c5231",
+      "range": {
+        "startLine": 205,
+        "startChar": 67,
+        "endLine": 205,
+        "endChar": 68
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "776654f8_593d89cb",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 6
