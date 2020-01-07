@@ -46,6 +46,30 @@
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64f769b3_26d26f15",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-01-07T08:14:46Z",
+      "side": 1,
+      "message": "Yes, I would use Jetty and Jersey to provide server container and webservice.",
+      "parentUuid": "6924bf60_94bf480e",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
