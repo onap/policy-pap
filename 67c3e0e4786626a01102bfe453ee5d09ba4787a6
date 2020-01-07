@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "5333ca25_22819601",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-07T15:17:31Z",
+      "side": 1,
+      "message": "Agree Liam, my comment was to add \"- {}\"",
+      "parentUuid": "97e41115_51222fa7",
+      "range": {
+        "startLine": 205,
+        "startChar": 67,
+        "endLine": 205,
+        "endChar": 68
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "776654f8_593d89cb",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 6
