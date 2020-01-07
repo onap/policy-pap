@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a05968f_3b60edbc",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-01-07T14:29:13Z",
+      "side": 1,
+      "message": "New file - would not need this.",
+      "range": {
+        "startLine": 3,
+        "startChar": 18,
+        "endLine": 3,
+        "endChar": 23
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84ed6916_7700ea3c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-01-07T14:29:13Z",
+      "side": 1,
+      "message": "The name of this variable is a little confusing as we use Pair in other parts of the code to return multiple objects. Can you rename it to indicate that it is a map of PDP statistics?",
+      "range": {
+        "startLine": 87,
+        "startChar": 54,
+        "endLine": 87,
+        "endChar": 58
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7dd8da75_e6161776",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-01-07T14:29:13Z",
+      "side": 1,
+      "message": "These are always null, don\u0027t see where they are set to anything. Do you need to declare them?",
+      "range": {
+        "startLine": 89,
+        "startChar": 12,
+        "endLine": 90,
+        "endChar": 32
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f8db933_73950e79",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/StatisticsTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-01-07T14:29:13Z",
+      "side": 1,
+      "message": "Wondering if putting this in a @Before is appropriate? Maybe not since you have one test method that doesn\u0027t use it.",
+      "range": {
+        "startLine": 74,
+        "startChar": 8,
+        "endLine": 74,
+        "endChar": 19
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
