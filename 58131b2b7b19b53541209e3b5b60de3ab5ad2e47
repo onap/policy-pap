@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "2af0a798_6c45a212",
+        "filename": "client/client-monitoring/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "is this needed?",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "610a192d_429d17ae",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
         "patchSetId": 3
@@ -73,6 +90,642 @@
     },
     {
       "key": {
+        "uuid": "b9d14bcf_954841ab",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "May want to use RestServer, as well, which is a higher level abstraction",
+      "parentUuid": "64f769b3_26d26f15",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ae67cac_7963098a",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use @NonNull instead",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "81266ce7_7be70ac2",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use a logger instead of a stream",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "29785452_e6936ebe",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use !isEmpty() instead",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0bf907e4_c6c0fc37",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "why is this needed?",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "746a5561_417b328b",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use lombok",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "67deaa30_e3c80c4b",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameterParser.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "\"final\"",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fba9fae2_0ce259d9",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameters.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use lombok\n\nsame comment for methods below",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca475509_99368c76",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use \"Map\" instead of \"HashMap\" in the variable declaration",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93ecf344_3a54cdb4",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "missing \"id\"",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93f8088f_1cd92163",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "if possible, read straight into the target entity type instead of into a String",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2b78fed5_a13714d5",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "store this as a static variable",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "615d3238_6bb0fd04",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "it would be better to define and return a data structure.  If that\u0027s not possible, then use Map/List instead of JsonObject/JsonArray.",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e8f04ed_e60a5aed",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "seems like we should be able to store the data without doing a json conversion; perhaps last_policy_duration should be defined as a list",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c7e6a629_cc484cfe",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "hmm.  Something called \"useHttps\" should typically contain a boolean value",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "131213ec_f49db598",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "need \"synchronized\" or make cache into a Concurrent map.  May also have to synchronize the list while adding to it and make a copy to return",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3f6bbb0d_339c89dd",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "change type to \"List\", then the cast on line 185 will not be needed",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4efa002e_565535ab",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use computeIfAbsent and eliminate all of the containsKey/get/put calls",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "95199237_24cbc5c4",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use apache CircularFifoQueue instead",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8211b914_816eb6c4",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use lombok for equals \u0026 hashCode",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8dae27b_bc692712",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "add \"final\" for both fields",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8e64a0a8_87841b0b",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use lombok",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cb4d89dc_98747391",
+        "filename": "client/client-monitoring/src/main/resources/webapp/index.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "trailing space",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7e275ad2_287c9e4c",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringAjax.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "reverse the test order as \"\u003d\u003d 404\" is a faster operation than indexOf",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f92f2946_49a95440",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringAjax.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "this looks similar (identical?) to ajax_get - extract a common method",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "810810e1_ade9ed2d",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringChart.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "perhaps use an auto-formatter for these lines",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ee5f5ad5_87915c8d",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringChart.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "what\u0027s the point of these lines?  seems like the first is a NO-OP, while the second MIGHT do a numeric conversion",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "18e1139c_7c3246c9",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringChart.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "same questions as before",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "75f658aa_96960c93",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "\"papDialogForm_activate\" - seems like we should either stick with \"_\" or stick with camel case rather than mixing the two\n\nsame comment for other methods below",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ec882259_a5841b33",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "not sure the length checks are necessary - aren\u0027t empty strings treated as false?",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f80ad057_0d920031",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "not sure why leftChain and rightChain are needed",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4aed0e92_0a9cb7d7",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "is this really needed?  Doesn\u0027t \"\u003d\u003d\" do the same thing?",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "22391c75_af1c5f31",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringExceptionTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use policy/common/utils ExceptionsTester to test exception classes",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4408559a_7426387e",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestExtraTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "need to test the other methods, too",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6fce2c1c_2c75d465",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "remove try/catch wrapper.  If desired, could use assertj assertThatCode().doesNotThrow() instead, but it\u0027s unnecessary",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dfdc04b1_6bc938c8",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "sonar: use logger",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7149dff4_24140240",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "prefer to use assertj instead of try/catch.\n\nsame comment through-out",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "518f63cb_d2fedf51",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
         "patchSetId": 3
@@ -93,6 +746,115 @@
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4d737cb_b30d083d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "for that matter, this variable could be eliminated and just return the results directly in lines 94 \u0026 96",
+      "parentUuid": "518f63cb_d2fedf51",
+      "range": {
+        "startLine": 92,
+        "startChar": 58,
+        "endLine": 92,
+        "endChar": 62
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea61929f_cf20dd98",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "should probably be \"error\" instead of \"debug\"\n\nsame comment below",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0456e66f_52dc9134",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "add \"num\" and rename it to something meaningful",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e690c027_733ee2ae",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "hmm, I\u0027ve seen this code before.  It seems like we should either change the client side to provide start \u0026 end times (instead of a count), or we should modify getFilteredPdpStatistics() to take a count instead of times",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd67c880_7a9419c6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use computeIfAbsent instead of putIfAbsent/get",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "77c41f0c_d24de148",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-01-07T17:39:10Z",
+      "side": 1,
+      "message": "use the version from https://gerrit.onap.org/r/#/c/policy/pap/+/99655/ instead, as it already has a lot of comments incorporated",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
