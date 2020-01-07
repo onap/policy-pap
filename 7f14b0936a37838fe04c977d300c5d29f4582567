@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a3dfa82b_091b1fc1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-07T03:19:27Z",
+      "side": 1,
+      "message": "Add Logging\u0026control header done.\nThis rest API fetch the statistics already stored in PAP, and there is no PfModelRuntimeException.",
+      "parentUuid": "e84f9bc6_fb45543a",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "38cc6cda_fe21fe3e",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
         "patchSetId": 6
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-06T14:57:38Z",
       "side": 1,
       "message": "need to add logging \u0026 control headers\n\nsame comment below",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c4fc2aec_a5249d2c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-07T03:19:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "38cc6cda_fe21fe3e",
       "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "080ce649_a08989ec",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-07T03:19:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eacdeab4_c100c82e",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "af230015_e8dc6ec3",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
         "patchSetId": 6
@@ -64,6 +118,24 @@
       "writtenOn": "2020-01-06T14:57:38Z",
       "side": 1,
       "message": "add \", exp\" so stack trace is logged",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5056aa27_ddc1915c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-07T03:19:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af230015_e8dc6ec3",
       "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "9d10bfa9_51bccf7d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-07T03:19:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5898cd8_f131ba4d",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d17fe5f5_3ea17f47",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
         "patchSetId": 6
@@ -98,6 +188,24 @@
       "writtenOn": "2020-01-06T14:57:38Z",
       "side": 1,
       "message": "use computeIfAbsent to combine this line with the next",
+      "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a4af3f00_d27367a9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-07T03:19:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d17fe5f5_3ea17f47",
       "revId": "7f14b0936a37838fe04c977d300c5d29f4582567",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
