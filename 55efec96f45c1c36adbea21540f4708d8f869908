@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8bd783aa_78833d40",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2020-01-08T12:03:34Z",
+      "side": 1,
+      "message": "2019-2020\n\nPlease check other files as well.",
+      "range": {
+        "startLine": 3,
+        "startChar": 18,
+        "endLine": 3,
+        "endChar": 22
+      },
+      "revId": "55efec96f45c1c36adbea21540f4708d8f869908",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
