@@ -402,6 +402,30 @@
       "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "672a80cd_fc0d21ee",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2020-01-08T09:52:41Z",
+      "side": 1,
+      "message": "Yes, negative is unreasonable. But zero can be accpeted.",
+      "parentUuid": "43c367df_cb005329",
+      "range": {
+        "startLine": 224,
+        "startChar": 8,
+        "endLine": 243,
+        "endChar": 41
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
