@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "de61e0ea_75f2f67e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-08T05:26:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a05968f_3b60edbc",
+      "range": {
+        "startLine": 3,
+        "startChar": 18,
+        "endLine": 3,
+        "endChar": 23
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "84ed6916_7700ea3c",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f2e312ae_fde8cfbd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-08T05:26:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84ed6916_7700ea3c",
+      "range": {
+        "startLine": 87,
+        "startChar": 54,
+        "endLine": 87,
+        "endChar": 58
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7dd8da75_e6161776",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
         "patchSetId": 7
@@ -59,6 +107,30 @@
       "writtenOn": "2020-01-07T14:29:13Z",
       "side": 1,
       "message": "These are always null, don\u0027t see where they are set to anything. Do you need to declare them?",
+      "range": {
+        "startLine": 89,
+        "startChar": 12,
+        "endLine": 90,
+        "endChar": 32
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ece9b063_31a161a8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-08T05:26:32Z",
+      "side": 1,
+      "message": "Hi Pamela, here we need to declare startTime/endtime because \"null\" cannot be used directly as \"Date\" type",
+      "parentUuid": "7dd8da75_e6161776",
       "range": {
         "startLine": 89,
         "startChar": 12,
@@ -91,6 +163,30 @@
       "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "043c4304_36825ceb",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/StatisticsTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 5259
+      },
+      "writtenOn": "2020-01-08T05:26:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0f8db933_73950e79",
+      "range": {
+        "startLine": 74,
+        "startChar": 8,
+        "endLine": 74,
+        "endChar": 19
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
