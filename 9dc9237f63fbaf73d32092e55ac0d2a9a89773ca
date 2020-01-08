@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "52044722_09bed043",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-01-08T13:29:03Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ece9b063_31a161a8",
+      "range": {
+        "startLine": 89,
+        "startChar": 12,
+        "endLine": 90,
+        "endChar": 32
+      },
+      "revId": "9dc9237f63fbaf73d32092e55ac0d2a9a89773ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f8db933_73950e79",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/StatisticsTest.java",
         "patchSetId": 7
