@@ -354,6 +354,30 @@
       "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d039caf_01835137",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpHeartbeatListenerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 5307
+      },
+      "writtenOn": "2020-01-08T06:27:44Z",
+      "side": 1,
+      "message": "3) having the actual counts null in the pdpStatistics object passed.\nThe actual counts in pdpStatitics will never be null as it was a long type.",
+      "parentUuid": "42d3f2d9_d223d00b",
+      "range": {
+        "startLine": 224,
+        "startChar": 8,
+        "endLine": 243,
+        "endChar": 41
+      },
+      "revId": "67c3e0e4786626a01102bfe453ee5d09ba4787a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
