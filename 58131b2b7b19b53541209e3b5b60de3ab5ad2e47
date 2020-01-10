@@ -216,6 +216,29 @@
     },
     {
       "key": {
+        "uuid": "632fc713_d857111d",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameters.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2020-01-10T14:28:52Z",
+      "side": 1,
+      "message": "I think localhost could be replaced with 0.0.0.0 , as this will have problems accessing.",
+      "range": {
+        "startLine": 33,
+        "startChar": 66,
+        "endLine": 33,
+        "endChar": 75
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fba9fae2_0ce259d9",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameters.java",
         "patchSetId": 3
