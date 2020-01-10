@@ -48,11 +48,13 @@
         <class>org.onap.policy.models.dao.converters.CDataConditioner</class>
         <class>org.onap.policy.models.dao.converters.Uuid2String</class>
         <class>org.onap.policy.models.base.PfConceptKey</class>
+        <class>org.onap.policy.models.tosca.simple.concepts.JpaToscaDataType</class>
         <class>org.onap.policy.models.tosca.simple.concepts.JpaToscaPolicyType</class>
         <class>org.onap.policy.models.tosca.simple.concepts.JpaToscaPolicy</class>
         <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpGroup</class>
         <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpSubGroup</class>
         <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdp</class>
+        <class>org.onap.policy.models.pdp.persistence.concepts.JpaPdpStatistics</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create" />
