@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -101,8 +101,8 @@ public class ProviderSuper {
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(groups);
 
-        when(dao.createPdpGroups(any())).thenAnswer(answer -> answer.getArgumentAt(0, List.class));
-        when(dao.updatePdpGroups(any())).thenAnswer(answer -> answer.getArgumentAt(0, List.class));
+        when(dao.createPdpGroups(any())).thenAnswer(answer -> answer.getArgument(0, List.class));
+        when(dao.updatePdpGroups(any())).thenAnswer(answer -> answer.getArgument(0, List.class));
 
         Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, lockit);
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);

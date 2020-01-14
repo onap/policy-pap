@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +40,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Class to provide REST end point for PAP component to fetch all policy components, including PAP,
- * API, Distribution, and PDPs
+ * API, Distribution, and PDPs.
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */

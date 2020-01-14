@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ package org.onap.policy.pap.main.notification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -316,7 +316,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
     private Answer<Void> addStatus(int listIndex, PolicyStatus... status) {
         return invocation -> {
             @SuppressWarnings("unchecked")
-            List<PolicyStatus> statusList = invocation.getArgumentAt(listIndex, List.class);
+            List<PolicyStatus> statusList = invocation.getArgument(listIndex, List.class);
             statusList.addAll(Arrays.asList(status));
             return null;
         };
