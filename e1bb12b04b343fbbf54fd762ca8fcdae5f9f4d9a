@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cbb4976d_8736d3ed",
+        "filename": "testsuites/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-01-15T09:29:05Z",
+      "side": 1,
+      "message": "this is cool ! No need to worry about these modules.",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 17
+      },
+      "revId": "e1bb12b04b343fbbf54fd762ca8fcdae5f9f4d9a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
