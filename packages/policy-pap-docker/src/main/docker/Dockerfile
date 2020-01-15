@@ -1,4 +1,4 @@
-FROM onap/policy-common-alpine:1.4.0
+FROM onap/policy-jre-debian
 
 LABEL maintainer="Policy Team"
 
