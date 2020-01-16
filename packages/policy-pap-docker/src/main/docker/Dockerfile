@@ -1,4 +1,4 @@
-FROM onap/policy-jre-debian
+FROM onap/policy-jre-alpine
 
 LABEL maintainer="Policy Team"
 
@@ -8,9 +8,8 @@ ENV POLICY_LOGS=$POLICY_LOGS
 ENV POLICY_HOME=$POLICY_HOME/pap
 
 RUN mkdir -p $POLICY_HOME $POLICY_LOGS $POLICY_HOME/bin && \
-    chown  -R policy:policy $POLICY_HOME $POLICY_LOGS
-
-RUN mkdir /packages
+    chown  -R policy:policy $POLICY_HOME $POLICY_LOGS && \
+    mkdir /packages
 COPY /maven/* /packages
 RUN tar xvfz /packages/policy-pap.tar.gz --directory $POLICY_HOME \
     && rm /packages/policy-pap.tar.gz
