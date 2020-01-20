@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonPapRestServer {
 
-    protected static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
+    public static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonPapRestServer.class);
 

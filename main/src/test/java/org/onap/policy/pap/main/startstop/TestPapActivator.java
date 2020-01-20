@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,16 +31,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.comm.PdpTracker;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
+import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 
@@ -60,10 +59,10 @@ public class TestPapActivator {
      */
     @Before
     public void setUp() throws Exception {
+        CommonPapRestServer.setUpBeforeClass(false);
         Registry.newRegistry();
-        HttpServletServerFactoryInstance.getServerFactory().destroy();
 
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        final String[] papConfigParameters = {"-c", CommonPapRestServer.CONFIG_FILE};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
 
@@ -83,7 +82,7 @@ public class TestPapActivator {
     }
 
     @Test
-    public void testPapActivator() throws PolicyPapException {
+    public void testPapActivator() throws Exception {
         assertFalse(activator.isAlive());
         activator.start();
         assertTrue(activator.isAlive());
