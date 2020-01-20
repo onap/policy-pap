@@ -2,6 +2,7 @@
     "groups": [
         {
             "name": "group-X",
+            "pdpGroupState": "ACTIVE",
             "pdpSubgroups": [
                 {
                     "pdpType": "apex",
@@ -26,6 +27,7 @@
         },
         {
             "name": "group-Y",
+            "pdpGroupState": "PASSIVE",
             "pdpSubgroups": [
                 {
                     "pdpType": "apex",
