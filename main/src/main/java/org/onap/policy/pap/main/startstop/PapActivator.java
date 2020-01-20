@@ -22,6 +22,10 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
@@ -62,36 +66,32 @@ import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
 
 /**
- * This class activates Policy Administration (PAP) as a complete service together with all its controllers, listeners &
- * handlers.
+ * This class activates Policy Administration (PAP) as a complete service together with
+ * all its controllers, listeners & handlers.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapActivator extends ServiceManagerContainer {
-    private static final String[] MSG_TYPE_NAMES = { "messageName" };
-    private static final String[] REQ_ID_NAMES = { "response", "responseTo" };
-
-    /**
-     * Max number of heat beats that can be missed before PAP removes a PDP.
-     */
-    private static final int MAX_MISSED_HEARTBEATS = 3;
+    private static final String[] MSG_TYPE_NAMES = {"messageName"};
+    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
 
     private final PapParameterGroup papParameterGroup;
 
     /**
-     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message, and then dispatches them to
-     * {@link #reqIdDispatcher}.
+     * Listens for messages on the topic, decodes them into a {@link PdpStatus} message,
+     * and then dispatches them to {@link #reqIdDispatcher}.
      */
     private final MessageTypeDispatcher msgDispatcher;
 
     /**
-     * Listens for {@link PdpStatus} messages and then routes them to the listener associated with the ID of the
-     * originating request.
+     * Listens for {@link PdpStatus} messages and then routes them to the listener
+     * associated with the ID of the originating request.
      */
     private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
 
     /**
-     * Listener for anonymous {@link PdpStatus} messages either for registration or heartbeat.
+     * Listener for anonymous {@link PdpStatus} messages either for registration or
+     * heartbeat.
      */
     private final PdpHeartbeatListener pdpHeartbeatListener;
 
@@ -119,11 +119,13 @@ public class PapActivator extends ServiceManagerContainer {
 
         final Object pdpUpdateLock = new Object();
         final PdpParameters pdpParams = papParameterGroup.getPdpParameters();
+        final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<>();
         final AtomicReference<Publisher<PdpMessage>> pdpPub = new AtomicReference<>();
         final AtomicReference<Publisher<PolicyNotification>> notifyPub = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
-        final AtomicReference<TimerManager> heartBeatTimers = new AtomicReference<>();
+        final AtomicReference<PdpTracker> pdpTracker = new AtomicReference<>();
+        final AtomicReference<ScheduledFuture<?>> heartBeatTimer = new AtomicReference<>();
         final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
         final AtomicReference<RestServer> restServer = new AtomicReference<>();
@@ -133,6 +135,10 @@ public class PapActivator extends ServiceManagerContainer {
         addAction("PAP parameters",
             () -> ParameterService.register(papParameterGroup),
             () -> ParameterService.deregister(papParameterGroup.getName()));
+
+        addAction("Scheduled Executor Service",
+            () -> executor.set(makeScheduledExecutor()),
+            () -> executor.get().shutdownNow());
 
         addAction("DAO Factory",
             () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(
@@ -182,14 +188,6 @@ public class PapActivator extends ServiceManagerContainer {
             () -> Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier.get()),
             () -> Registry.unregister(PapConstants.REG_POLICY_NOTIFIER));
 
-        addAction("PDP heart beat timers",
-            () -> {
-                long maxWaitHeartBeatMs = MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs();
-                heartBeatTimers.set(new TimerManager("heart beat", maxWaitHeartBeatMs));
-                startThread(heartBeatTimers.get());
-            },
-            () -> heartBeatTimers.get().stop());
-
         addAction("PDP update timers",
             () -> {
                 pdpUpdTimers.set(new TimerManager("update", pdpParams.getUpdateParameters().getMaxWaitMs()));
@@ -228,13 +226,22 @@ public class PapActivator extends ServiceManagerContainer {
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
         addAction("PDP heart beat tracker",
-            () -> Registry.register(PapConstants.REG_PDP_TRACKER, PdpTracker.builder()
-                                    .daoFactory(daoFactory.get())
-                                    .timers(heartBeatTimers.get())
-                                    .modifyLock(pdpUpdateLock)
-                                    .requestMap(requestMap.get())
-                                    .build()),
+            () -> {
+                pdpTracker.set(PdpTracker.builder()
+                                .daoFactory(daoFactory.get())
+                                .modifyLock(pdpUpdateLock)
+                                .requestMap(requestMap.get())
+                                .build());
+                Registry.register(PapConstants.REG_PDP_TRACKER, pdpTracker.get());
+            },
             () -> Registry.unregister(PapConstants.REG_PDP_TRACKER));
+
+        addAction("PDP heart beat timer",
+            () -> heartBeatTimer.set(
+                    executor.get().scheduleWithFixedDelay(pdpTracker.get(),
+                                        pdpParams.getHeartBeatMs(), pdpParams.getHeartBeatMs(),
+                                        TimeUnit.MILLISECONDS)),
+            () -> heartBeatTimer.get().cancel(true));
 
         addAction("REST server",
             () -> {
@@ -282,7 +289,7 @@ public class PapActivator extends ServiceManagerContainer {
      */
     private void registerMsgDispatcher() {
         for (final TopicSource source : TopicEndpointManager.getManager()
-                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.register(msgDispatcher);
         }
     }
@@ -292,8 +299,14 @@ public class PapActivator extends ServiceManagerContainer {
      */
     private void unregisterMsgDispatcher() {
         for (final TopicSource source : TopicEndpointManager.getManager()
-                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+                        .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.unregister(msgDispatcher);
         }
+    }
+
+    // this may be overriden by junit tests
+
+    protected ScheduledExecutorService makeScheduledExecutor() {
+        return Executors.newSingleThreadScheduledExecutor();
     }
 }
