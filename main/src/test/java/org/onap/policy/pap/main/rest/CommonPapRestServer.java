@@ -1,7 +1,7 @@
 /*
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonPapRestServer {
 
-    protected static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
+    public static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonPapRestServer.class);
 

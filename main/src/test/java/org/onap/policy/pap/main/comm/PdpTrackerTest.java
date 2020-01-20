@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,16 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import org.junit.Before;
@@ -43,14 +44,23 @@ import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
-import org.onap.policy.pap.main.comm.TimerManager.Timer;
 
 public class PdpTrackerTest {
-    private static final String PDP1 = "pdp1";
-    private static final String PDP2 = "pdp2";
+    private static final String GROUP1 = "group-X";
+    private static final String GROUP2 = "group-Y";
+    private static final String SUBGRP11 = "apex";
+    private static final String SUBGRP12 = "drools";
+    private static final String SUBGRP21 = "apex";
+
+    private static final String PDP111 = "pdp-A";
+    private static final String PDP112 = "pdp-B";
+    private static final String PDP121 = "pdp-C";
+    private static final String PDP211 = "pdp-D";
 
     private PdpTracker tracker;
     private PdpTracker.PdpTrackerBuilder builder;
@@ -64,19 +74,10 @@ public class PdpTrackerTest {
     private PdpModifyRequestMap requestMap;
 
     @Mock
-    private TimerManager timers;
-
-    @Mock
     private PolicyModelsProviderFactoryWrapper daoFactory;
 
     @Mock
     private PolicyModelsProvider dao;
-
-    @Mock
-    private Timer timer1;
-
-    @Mock
-    private Timer timer2;
 
     /**
      * Sets up.
@@ -89,23 +90,16 @@ public class PdpTrackerTest {
 
         modifyLock = new Object();
 
-        builder = PdpTracker.builder().daoFactory(daoFactory).modifyLock(modifyLock).requestMap(requestMap)
-                        .timers(timers);
+        builder = PdpTracker.builder().daoFactory(daoFactory).modifyLock(modifyLock).requestMap(requestMap);
 
         when(daoFactory.create()).thenReturn(dao);
 
-        when(dao.getPdpGroups(null)).thenReturn(Collections.emptyList());
-
-        when(timers.register(eq(PDP1), any())).thenReturn(timer1);
-        when(timers.register(eq(PDP2), any())).thenReturn(timer2);
+        // arrange for DAO to return a couple of groups
+        String groupsJson = ResourceUtils.getResourceAsString("comm/PdpTracker.json");
+        List<PdpGroup> groups = new StandardCoder().decode(groupsJson, PdpGroups.class).getGroups();
+        when(dao.getPdpGroups(null)).thenReturn(groups);
 
         tracker = builder.build();
-    }
-
-    @Test
-    public void testPdpTracker() throws Exception {
-        // verify that PDPs were loaded
-        verify(dao).getPdpGroups(null);
     }
 
     @Test
@@ -124,29 +118,8 @@ public class PdpTrackerTest {
     }
 
     @Test
-    public void testPdpTracker_MissingTimers() throws Exception {
-        assertThatThrownBy(() -> builder.timers(null).build()).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
     public void testPdpTracker_MissingDaoFactory() throws Exception {
         assertThatThrownBy(() -> builder.daoFactory(null).build()).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void testLoadPdps_testLoadPdpsFromGroup() throws Exception {
-        // arrange for DAO to return a couple of groups
-        String groupsJson = ResourceUtils.getResourceAsString("comm/PdpTracker.json");
-        List<PdpGroup> groups = new StandardCoder().decode(groupsJson, PdpGroups.class).getGroups();
-        when(dao.getPdpGroups(null)).thenReturn(groups);
-
-        tracker = builder.build();
-
-        // verify that all PDPs were registered
-        verify(timers).register(eq("pdp-A"), any());
-        verify(timers).register(eq("pdp-B"), any());
-        verify(timers).register(eq("pdp-C"), any());
-        verify(timers).register(eq("pdp-D"), any());
     }
 
     @Test
@@ -155,58 +128,168 @@ public class PdpTrackerTest {
         PfModelException ex = mock(PfModelException.class);
         when(daoFactory.create()).thenThrow(ex);
 
-        assertThatThrownBy(() -> builder.build()).isInstanceOf(PolicyPapRuntimeException.class).hasCause(ex);
+        assertThatThrownBy(() -> tracker.run()).isInstanceOf(PolicyPapRuntimeException.class).hasCause(ex);
     }
 
+    /**
+     * Tests run() when messages are received from all PDPs.
+     * @throws Exception if an error occurs
+     */
     @Test
-    public void testAdd() {
-        tracker.add(PDP1);
-        verify(timers).register(eq(PDP1), any());
-        verify(timer1, never()).cancel();
+    public void testRunAllOk() throws Exception {
+        // run with everything ok
+        tracker.add(PDP111);
+        tracker.add(PDP112);
+        tracker.add(PDP121);
+        tracker.add(PDP211);
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 0);
 
-        tracker.add(PDP2);
-        verify(timers).register(eq(PDP2), any());
-        verify(timer1, never()).cancel();
-        verify(timer2, never()).cancel();
+        // repeat, after clearing
+        tracker.add(PDP111);
+        tracker.add(PDP112);
+        tracker.add(PDP121);
+        tracker.add(PDP211);
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 0);
 
-        // re-add PDP1 - old timer should be canceled and a new timer added
-        Timer timer3 = mock(Timer.class);
-        when(timers.register(eq(PDP1), any())).thenReturn(timer3);
-        tracker.add(PDP1);
-        verify(timer1).cancel();
-        verify(timer2, never()).cancel();
-        verify(timer3, never()).cancel();
+        // one more time should trigger messages
+        runHeartbeats(1);
+        Iterator<PdpStateChange> changeIt = getChanges(0, 4).iterator();
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP111, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP112, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP1, SUBGRP12, PDP121, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP2, SUBGRP21, PDP211, PdpState.PASSIVE);
+
+        // one more time - no additional messages
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 4);
     }
 
+    /**
+     * Tests run() when messages are received from some PDPs.
+     * @throws Exception if an error occurs
+     */
     @Test
-    public void testHandleTimeout() throws Exception {
-        tracker.add(PDP1);
-        tracker.add(PDP2);
+    public void testRunSomeOk() throws Exception {
+        // run once so counts are added to the map
+        runHeartbeats(1);
 
-        verify(timers).register(eq(PDP1), handlerCaptor.capture());
+        // first and last are ok
+        tracker.add(PDP111);
+        tracker.add(PDP211);
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        Iterator<PdpStateChange> changeIt = getChanges(0, 2).iterator();
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP112, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP1, SUBGRP12, PDP121, PdpState.ACTIVE);
 
-        handlerCaptor.getValue().accept(PDP1);
+        // first and last are still ok, thus no additional messages
+        tracker.add(PDP111);
+        tracker.add(PDP211);
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 2);
 
-        verify(requestMap).removeFromGroups(PDP1);
-
-        // now we'll re-add PDP1 - the original timer should not be canceled
-        Timer timer3 = mock(Timer.class);
-        when(timers.register(eq(PDP1), any())).thenReturn(timer3);
-        tracker.add(PDP1);
-        verify(timer1, never()).cancel();
+        // one more time should trigger a message for these two
+        runHeartbeats(1);
+        changeIt = getChanges(2, 2).iterator();
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP111, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP2, SUBGRP21, PDP211, PdpState.PASSIVE);
     }
 
+    /**
+     * Tests run() when no messages are received from any PDPs.
+     * @throws Exception if an error occurs
+     */
     @Test
-    public void testHandleTimeout_MapException() throws Exception {
-        tracker.add(PDP1);
+    public void testRunNoneOk() throws Exception {
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 0);
 
-        verify(timers).register(eq(PDP1), handlerCaptor.capture());
+        // one more time should trigger messages
+        runHeartbeats(1);
+        Iterator<PdpStateChange> changeIt = getChanges(0, 4).iterator();
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP111, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP112, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP1, SUBGRP12, PDP121, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP2, SUBGRP21, PDP211, PdpState.PASSIVE);
 
-        // arrange for request map to throw an exception
-        PfModelException ex = mock(PfModelException.class);
-        when(requestMap.removeFromGroups(PDP1)).thenThrow(ex);
+        // more runs should NOT generate more messages
+        runHeartbeats(3 * PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 4);
+    }
 
-        // exception should be caught, but not re-thrown
-        handlerCaptor.getValue().accept(PDP1);
+    /**
+     * Tests run() when some PDPs are removed from the DB.
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testRunSomeRemovedFromDb() throws Exception {
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 0);
+
+        // remove those in the first subgroup from the DB
+        String groupsJson = ResourceUtils.getResourceAsString("comm/PdpTracker.json");
+        List<PdpGroup> groups = new StandardCoder().decode(groupsJson, PdpGroups.class).getGroups();
+        groups.get(0).getPdpSubgroups().get(0).getPdpInstances().clear();
+        when(dao.getPdpGroups(null)).thenReturn(groups);
+
+        // one more time should trigger messages, but only for the remaining two
+        runHeartbeats(1);
+        Iterator<PdpStateChange> changeIt = getChanges(0, 2).iterator();
+        verifyChange(changeIt.next(), GROUP1, SUBGRP12, PDP121, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP2, SUBGRP21, PDP211, PdpState.PASSIVE);
+
+        // a couple more times to ensure no additional messages
+        runHeartbeats(3 * PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 2);
+
+        // put them all back into the DB
+        groups = new StandardCoder().decode(groupsJson, PdpGroups.class).getGroups();
+        when(dao.getPdpGroups(null)).thenReturn(groups);
+
+        // no messages yet
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS);
+        getChanges(0, 2);
+
+        // one more time should trigger messages for the other two
+        runHeartbeats(PdpTracker.MAX_MISSED_HEARTBEATS + 1);
+        changeIt = getChanges(2, 2).iterator();
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP111, PdpState.ACTIVE);
+        verifyChange(changeIt.next(), GROUP1, SUBGRP11, PDP112, PdpState.ACTIVE);
+    }
+
+    /**
+     * Runs the heart beat timer multiple times.
+     *
+     * @param ntimes number of times to run the timer
+     */
+    private void runHeartbeats(int ntimes) {
+        for (int count = 0; count < ntimes; ++count) {
+            tracker.run();
+        }
+    }
+
+    private void verifyChange(PdpStateChange change, String groupName, String pdpType, String pdpName, PdpState state) {
+        assertEquals(pdpName, change.getName());
+        assertEquals(state, change.getState());
+        assertEquals(groupName, change.getPdpGroup());
+        assertEquals(pdpType, change.getPdpSubgroup());
+    }
+
+    /**
+     * Gets change requests that were issued.
+     *
+     * @param nskip number of requests to be skipped
+     * @param ndesired number of requests desired
+     * @return the desired requests, sorted by PDP name
+     */
+    private List<PdpStateChange> getChanges(int nskip, int ndesired) {
+        ArgumentCaptor<PdpStateChange> captor = ArgumentCaptor.forClass(PdpStateChange.class);
+        verify(requestMap, times(nskip + ndesired)).addRequest(captor.capture());
+
+        List<PdpStateChange> lst = new ArrayList<>(captor.getAllValues()).subList(nskip, nskip + ndesired);
+        Collections.sort(lst, (left, right) -> left.getName().compareTo(right.getName()));
+
+        return lst;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
+import org.onap.policy.pap.main.rest.CommonPapRestServer;
 
 /**
  * Class to perform unit test of {@link Main}}.
@@ -44,11 +44,12 @@ public class TestMain {
 
     /**
      * Set up.
+     * @throws Exception if an error occurs
      */
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        CommonPapRestServer.setUpBeforeClass(false);
         Registry.newRegistry();
-        HttpServletServerFactoryInstance.getServerFactory().destroy();
     }
 
     /**
@@ -66,7 +67,7 @@ public class TestMain {
 
     @Test
     public void testMain() throws PolicyPapException {
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        final String[] papConfigParameters = {"-c", CommonPapRestServer.CONFIG_FILE};
         main = new Main(papConfigParameters);
         assertTrue(main.getParameters().isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, main.getParameters().getName());
@@ -86,7 +87,7 @@ public class TestMain {
 
     @Test
     public void testMain_InvalidArguments() {
-        final String[] papConfigParameters = {"parameters/PapConfigParameters.json"};
+        final String[] papConfigParameters = {CommonPapRestServer.CONFIG_FILE};
         main = new Main(papConfigParameters);
         assertTrue(main.getParameters() == null);
     }
