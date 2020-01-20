@@ -8,7 +8,7 @@
         "https": true
     },
     "pdpParameters": {
-        "heartBeatMs": 5000,
+        "heartBeatMs": 60000,
         "updateParameters": {
             "maxRetryCount": 0,
             "maxWaitMs": 5000

@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
+import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.comm.PdpTracker;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
@@ -83,9 +83,10 @@ public class TestPapActivator {
     }
 
     @Test
-    public void testPapActivator() throws PolicyPapException {
+    public void testPapActivator() throws Exception {
         assertFalse(activator.isAlive());
         activator.start();
+        waitActive();
         assertTrue(activator.isAlive());
         assertTrue(activator.getParameterGroup().isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, activator.getParameterGroup().getName());
@@ -106,6 +107,7 @@ public class TestPapActivator {
     @Test
     public void testTerminate() throws Exception {
         activator.start();
+        waitActive();
         activator.stop();
         assertFalse(activator.isAlive());
 
@@ -119,5 +121,11 @@ public class TestPapActivator {
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.stop());
         assertFalse(activator.isAlive());
+    }
+
+    private void waitActive() throws InterruptedException {
+        if (!NetworkUtil.isTcpPortOpen("localhost", 6969, 120, 500L)) {
+            throw new IllegalStateException("server is not listening on port 6969");
+        }
     }
 }
