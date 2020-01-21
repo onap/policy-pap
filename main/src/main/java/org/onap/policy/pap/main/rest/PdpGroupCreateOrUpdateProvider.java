@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 Nordix Foundation.
+ * Copyright (C) 2019-2020 Nordix Foundation.
  * Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,8 +77,8 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     public void createOrUpdateGroups(PdpGroups groups) throws PfModelException {
-        ValidationResult result = groups.validatePapRest();
-
+        BeanValidationResult result = new BeanValidationResult("groups", groups);
+        groups.checkForDuplicateGroups(result);
         if (!result.isValid()) {
             String msg = result.getResult().trim();
             logger.warn(msg);
@@ -110,12 +109,24 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
 
         for (PdpGroup group : groups.getGroups()) {
             PdpGroup dbgroup = data.getGroup(group.getName());
-
+            ValidationResult groupValidationResult;
             if (dbgroup == null) {
-                result.addResult(addGroup(data, group));
+                // create group flow
+                groupValidationResult = group.validatePapRest(false);
+                if (groupValidationResult.isValid()) {
+                    result.addResult(addGroup(data, group));
+                } else {
+                    result.addResult(groupValidationResult);
+                }
 
             } else {
-                result.addResult(updateGroup(data, dbgroup, group));
+                // update group flow
+                groupValidationResult = group.validatePapRest(true);
+                if (groupValidationResult.isValid()) {
+                    result.addResult(updateGroup(data, dbgroup, group));
+                } else {
+                    result.addResult(groupValidationResult);
+                }
             }
         }
 
@@ -376,11 +387,18 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
             return false;
         }
 
-        boolean updated = updateList(dbsub.getSupportedPolicyTypes(), subgrp.getSupportedPolicyTypes(),
-            dbsub::setSupportedPolicyTypes);
+        if (null != subgrp.getSupportedPolicyTypes() && !new HashSet<>(dbsub.getSupportedPolicyTypes())
+            .equals(new HashSet<>(subgrp.getSupportedPolicyTypes()))) {
+            logger.warn("Supported policy types cannot be updated while updating PdpGroup. "
+                + "Hence, ignoring the new set of supported policy types.");
+        }
 
+        // while updating PdpGroup, list of policies (already deployed ones) and supported policies (the ones provided
+        // during PdpGroup creation) has to be retained
+        subgrp.setSupportedPolicyTypes(dbsub.getSupportedPolicyTypes());
+        subgrp.setPolicies(dbsub.getPolicies());
         return updateField(dbsub.getDesiredInstanceCount(), subgrp.getDesiredInstanceCount(),
-            dbsub::setDesiredInstanceCount) || updated;
+            dbsub::setDesiredInstanceCount);
     }
 
     /**
@@ -404,36 +422,13 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
                 new ObjectValidationResult("properties", "", ValidationStatus.INVALID, "cannot change properties"));
         }
 
-        result.addResult(validateSupportedTypes(data, subgrp));
         container.addResult(result);
 
         return result.isValid();
     }
 
     /**
-     * Updates a DB list with items from a new list.
-     *
-     * @param dblist the list from the DB
-     * @param newList the new list
-     * @param setter function to set the new list
-     * @return {@code true} if the list changed, {@code false} if the lists were the same
-     */
-    private <T> boolean updateList(List<T> dblist, List<T> newList, Consumer<List<T>> setter) {
-
-        Set<T> dbTypes = new HashSet<>(dblist);
-        Set<T> newTypes = new HashSet<>(newList);
-
-        if (dbTypes.equals(newTypes)) {
-            return false;
-        }
-
-        setter.accept(new ArrayList<>(newTypes));
-
-        return true;
-    }
-
-    /**
-     * Performs additional validations of the supported policy types within a subgroup.
+     * Performs validations of the supported policy types within a subgroup.
      *
      * @param data session data
      * @param subgrp the subgroup to be validated
@@ -442,7 +437,6 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      */
     private ValidationResult validateSupportedTypes(SessionData data, PdpSubGroup subgrp) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
-
         for (ToscaPolicyTypeIdentifier type : subgrp.getSupportedPolicyTypes()) {
             if (!type.getName().endsWith(".*") && data.getPolicyType(type) == null) {
                 result.addResult(
