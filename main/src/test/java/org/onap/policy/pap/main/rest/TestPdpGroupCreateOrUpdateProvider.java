@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 Nordix Foundation.
+ * Copyright (C) 2019-2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -479,10 +479,13 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes()
             .add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
 
+        // the group is updated with a new supported policy type in subgroup
+        assertEquals(2, newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes().size());
         prov.createOrUpdateGroups(groups);
-
+        // PdpGroup update doesn't allow supported policy type modifications
+        // during pdp group update, the ones in db is maintained
+        assertEquals(1, newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes().size());
         assertEquals(newgrp.toString(), group.toString());
-        assertGroupUpdateOnly(group);
     }
 
     @Test
