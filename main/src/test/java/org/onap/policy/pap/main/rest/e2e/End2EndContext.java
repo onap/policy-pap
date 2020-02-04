@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class End2EndContext {
     /**
      * Time, in milliseconds, to wait for everything to complete.
      */
-    private static final long WAIT_MS = 10000;
+    private static final long WAIT_MS = 1000000;
 
     /**
      * Messages to be sent to PAP. Messages are removed from the queue by the ToPapThread

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,16 @@ public class PolicyTrackerData {
     }
 
     /**
+     * Determines if everything has succeeded.
+     *
+     * @return {@code true} if this is complete <i>and</i> nothing has failed,
+     *         {@code false} otherwise
+     */
+    public boolean allSucceeded() {
+        return (failPdps.isEmpty() && incompletePdps.isEmpty());
+    }
+
+    /**
      * Determines if all of the sets within the data are empty (i.e., contain no PDPs).
      *
      * @return {@code true} if the data is completely empty, {@code false} otherwise
@@ -112,26 +122,28 @@ public class PolicyTrackerData {
      * Removes PDPs from the sets.
      *
      * @param pdps PDPs to be removed
-     * @return {@code true} if the policy is now complete, {@code false} otherwise
+     * @return {@code true} if anything changed and the policy is now complete, {@code false} otherwise
      */
     public boolean removePdps(Collection<String> pdps) {
-        successPdps.removeAll(pdps);
-        failPdps.removeAll(pdps);
+        boolean changed = successPdps.removeAll(pdps);
+        changed = failPdps.removeAll(pdps) || changed;
+        changed = incompletePdps.removeAll(pdps) || changed;
 
-        return (incompletePdps.removeAll(pdps) && incompletePdps.isEmpty());
+        return (changed && incompletePdps.isEmpty());
     }
 
     /**
      * Removes a PDP from all sets.
      *
      * @param pdp PDP to be removed
-     * @return {@code true} if the policy is now complete, {@code false} otherwise
+     * @return {@code true} if anything changed and the policy is now complete, {@code false} otherwise
      */
     public boolean removePdp(String pdp) {
-        successPdps.remove(pdp);
-        failPdps.remove(pdp);
+        boolean changed = successPdps.remove(pdp);
+        changed = failPdps.remove(pdp) || changed;
+        changed = incompletePdps.remove(pdp) || changed;
 
-        return (incompletePdps.remove(pdp) && incompletePdps.isEmpty());
+        return (changed && incompletePdps.isEmpty());
     }
 
     /**

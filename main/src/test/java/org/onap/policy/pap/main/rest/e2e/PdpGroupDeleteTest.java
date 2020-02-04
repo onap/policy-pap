@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,27 @@
 package org.onap.policy.pap.main.rest.e2e;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicFactories;
+import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicSink;
+import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
+import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.pap.main.PapConstants;
 
 public class PdpGroupDeleteTest extends End2EndBase {
     private static final String DELETE_GROUP_ENDPOINT = "pdps/groups";
@@ -112,6 +123,13 @@ public class PdpGroupDeleteTest extends End2EndBase {
 
         context.startThreads();
 
+        // arrange to catch notifications
+        LinkedBlockingQueue<String> notifications = new LinkedBlockingQueue<>();
+        NoopTopicSink notifier = NoopTopicFactories.getSinkFactory().get(PapConstants.TOPIC_POLICY_NOTIFICATION);
+        notifier.register((infra, topic, msg) -> {
+            notifications.add(msg);
+        });
+
         String uri = DELETE_POLICIES_ENDPOINT + "/onap.restart.tcaB";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -121,6 +139,20 @@ public class PdpGroupDeleteTest extends End2EndBase {
         assertNull(resp.getErrorDetails());
 
         context.await();
+
+        // wait for the notification
+        String json = notifications.poll(5, TimeUnit.SECONDS);
+        PolicyNotification notify = new StandardCoder().decode(json, PolicyNotification.class);
+        assertNotNull(notify.getAdded());
+        assertNotNull(notify.getDeleted());
+        assertTrue(notify.getAdded().isEmpty());
+        assertEquals(1, notify.getDeleted().size());
+
+        PolicyStatus deleted = notify.getDeleted().get(0);
+        assertEquals(2, deleted.getSuccessCount());
+        assertEquals(0, deleted.getFailureCount());
+        assertEquals(0, deleted.getIncompleteCount());
+        assertEquals(new ToscaPolicyIdentifier("onap.restart.tcaB", "1.0.0"), deleted.getPolicy());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);

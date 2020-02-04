@@ -8,14 +8,14 @@
         "https": true
     },
     "pdpParameters": {
-        "heartBeatMs": 5000,
+        "heartBeatMs": 5000000,
         "updateParameters": {
             "maxRetryCount": 0,
-            "maxWaitMs": 5000
+            "maxWaitMs": 5000000
         },
         "stateChangeParameters": {
             "maxRetryCount": 0,
-            "maxWaitMs": 5000
+            "maxWaitMs": 5000000
         }
     },
     "databaseProviderParameters": {

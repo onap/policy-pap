@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,29 @@ public class PolicyTrackerDataTest {
 
         data.fail(PDP2);
         assertTrue(data.isComplete());
+    }
+
+    @Test
+    public void testAllSucceeded() {
+        assertTrue(data.allSucceeded());
+
+        data.addPdps(Arrays.asList(PDP1, PDP2));
+        assertFalse(data.allSucceeded());
+
+        data.success(PDP1);
+        assertFalse(data.allSucceeded());
+
+        data.fail(PDP2);
+        assertFalse(data.allSucceeded());
+
+        data.success(PDP2);
+        assertTrue(data.allSucceeded());
+
+        data.fail(PDP2);
+        assertFalse(data.allSucceeded());
+
+        data.success(PDP2);
+        assertTrue(data.allSucceeded());
     }
 
     @Test
@@ -143,6 +166,9 @@ public class PolicyTrackerDataTest {
         data.fail(PDP4);
         assertFalse(data.removePdps(Arrays.asList(PDP1, PDP3, PDP5)));
         assertEquals("[1, 1, 1]", getCounts().toString());
+
+        assertTrue(data.removePdps(Arrays.asList(PDP6)));
+        assertEquals("[1, 1, 0]", getCounts().toString());
     }
 
     /**
@@ -165,6 +191,48 @@ public class PolicyTrackerDataTest {
         data.addPdps(Arrays.asList(PDP1, PDP2, PDP3));
         assertFalse(data.removePdps(Arrays.asList(PDP1)));
         assertTrue(data.removePdps(Arrays.asList(PDP2, PDP3)));
+    }
+
+    /**
+     * Tests removePdps() with more variations.
+     */
+    @Test
+    public void testRemovePdpsVariations() {
+        data.addPdps(Arrays.asList(PDP1, PDP2, PDP3));
+        data.success(PDP1);
+        data.fail(PDP2);
+        assertEquals("[1, 1, 1]", getCounts().toString());
+
+        // remove PDP1, which checks removal from "success" set, while incomplete
+        assertFalse(data.removePdps(Arrays.asList(PDP1)));
+        assertEquals("[0, 1, 1]", getCounts().toString());
+
+        // remove PDP2, which checks removal from "failure" set, while incomplete
+        assertFalse(data.removePdps(Arrays.asList(PDP2)));
+        assertEquals("[0, 0, 1]", getCounts().toString());
+
+        // re-add 1 & 2
+        data.addPdps(Arrays.asList(PDP1, PDP2));
+        data.success(PDP1);
+        data.fail(PDP2);
+        assertEquals("[1, 1, 1]", getCounts().toString());
+
+        // remove PDP3, which checks removal from "incomplete" set
+        assertTrue(data.removePdps(Arrays.asList(PDP3)));
+        assertEquals("[1, 1, 0]", getCounts().toString());
+
+        // remove PDP1, which checks removal from "success" set, while complete
+        assertTrue(data.removePdps(Arrays.asList(PDP1)));
+        assertEquals("[0, 1, 0]", getCounts().toString());
+
+        // remove PDP2, which checks removal from "failure" set, while complete
+        assertTrue(data.removePdps(Arrays.asList(PDP2)));
+        assertEquals("[0, 0, 0]", getCounts().toString());
+
+        // re-add 1 and then remove it again
+        data.addPdps(Arrays.asList(PDP1));
+        assertTrue(data.removePdps(Arrays.asList(PDP1)));
+        assertEquals("[0, 0, 0]", getCounts().toString());
     }
 
     @Test
@@ -212,6 +280,48 @@ public class PolicyTrackerDataTest {
         assertFalse(data.removePdp(PDP1));
 
         assertTrue(data.removePdp(PDP2));
+    }
+
+    /**
+     * Tests removePdp() with more variations.
+     */
+    @Test
+    public void testRemovePdpVariations() {
+        data.addPdps(Arrays.asList(PDP1, PDP2, PDP3));
+        data.success(PDP1);
+        data.fail(PDP2);
+        assertEquals("[1, 1, 1]", getCounts().toString());
+
+        // remove PDP1, which checks removal from "success" set, while incomplete
+        assertFalse(data.removePdp(PDP1));
+        assertEquals("[0, 1, 1]", getCounts().toString());
+
+        // remove PDP2, which checks removal from "failure" set, while incomplete
+        assertFalse(data.removePdp(PDP2));
+        assertEquals("[0, 0, 1]", getCounts().toString());
+
+        // re-add 1 & 2
+        data.addPdps(Arrays.asList(PDP1, PDP2));
+        data.success(PDP1);
+        data.fail(PDP2);
+        assertEquals("[1, 1, 1]", getCounts().toString());
+
+        // remove PDP3, which checks removal from "incomplete" set
+        assertTrue(data.removePdp(PDP3));
+        assertEquals("[1, 1, 0]", getCounts().toString());
+
+        // remove PDP1, which checks removal from "success" set, while complete
+        assertTrue(data.removePdp(PDP1));
+        assertEquals("[0, 1, 0]", getCounts().toString());
+
+        // remove PDP2, which checks removal from "failure" set, while complete
+        assertTrue(data.removePdp(PDP2));
+        assertEquals("[0, 0, 0]", getCounts().toString());
+
+        // re-add 1 and then remove it again
+        data.addPdps(Arrays.asList(PDP1));
+        assertTrue(data.removePdp(PDP1));
+        assertEquals("[0, 0, 0]", getCounts().toString());
     }
 
     @Test
