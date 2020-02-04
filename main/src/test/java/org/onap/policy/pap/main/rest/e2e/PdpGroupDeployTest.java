@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,35 +21,38 @@
 package org.onap.policy.pap.main.rest.e2e;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicFactories;
+import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicSink;
+import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
+import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.DeploymentGroup;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.onap.policy.pap.main.PapConstants;
 
 public class PdpGroupDeployTest extends End2EndBase {
-    private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployTest.class);
-
     private static final String DEPLOY_GROUP_ENDPOINT = "pdps/deployments/batch";
     private static final String DEPLOY_POLICIES_ENDPOINT = "pdps/policies";
-    private static final String DELETE_GROUP_ENDPOINT = "pdps/groups";
     private static final String DEPLOY_SUBGROUP = "pdpTypeA";
 
     /**
@@ -75,21 +78,6 @@ public class PdpGroupDeployTest extends End2EndBase {
         context = new End2EndContext();
     }
 
-    /**
-     * Deletes the deployed group.
-     */
-    @After
-    public void tearDown() {
-        // delete the group that was inserted
-        try {
-            sendRequest(DELETE_GROUP_ENDPOINT + "/deployGroups").delete();
-        } catch (Exception e) {
-            logger.warn("cannot delete group: deployGroups", e);
-        }
-
-        super.tearDown();
-    }
-
     @Test
     public void testUpdateGroupPolicies() throws Exception {
 
@@ -98,7 +86,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         PdpStatus status11 = new PdpStatus();
         status11.setName("pdpAA_1");
         status11.setState(PdpState.ACTIVE);
-        status11.setPdpGroup("deployPolicies");
+        status11.setPdpGroup("deployGroups");
         status11.setPdpType(DEPLOY_SUBGROUP);
         status11.setPdpSubgroup(DEPLOY_SUBGROUP);
 
@@ -108,7 +96,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         PdpStatus status12 = new PdpStatus();
         status12.setName("pdpAA_2");
         status12.setState(PdpState.ACTIVE);
-        status12.setPdpGroup("deployPolicies");
+        status12.setPdpGroup("deployGroups");
         status12.setPdpType(DEPLOY_SUBGROUP);
         status12.setPdpSubgroup(DEPLOY_SUBGROUP);
         status12.setPolicies(idents);
@@ -159,7 +147,9 @@ public class PdpGroupDeployTest extends End2EndBase {
         status11.setPdpType(DEPLOY_SUBGROUP);
         status11.setPdpSubgroup(DEPLOY_SUBGROUP);
 
-        List<ToscaPolicyIdentifier> idents = Arrays.asList(new ToscaPolicyIdentifier("onap.restart.tca", "1.0.0"));
+        final ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier("onap.restart.tcaB", "1.0.0");
+
+        List<ToscaPolicyIdentifier> idents = Arrays.asList(ident);
         status11.setPolicies(idents);
 
         PdpStatus status12 = new PdpStatus();
@@ -176,9 +166,16 @@ public class PdpGroupDeployTest extends End2EndBase {
 
         context.startThreads();
 
+        // arrange to catch notifications
+        LinkedBlockingQueue<String> notifications = new LinkedBlockingQueue<>();
+        NoopTopicSink notifier = NoopTopicFactories.getSinkFactory().get(PapConstants.TOPIC_POLICY_NOTIFICATION);
+        notifier.register((infra, topic, msg) -> {
+            notifications.add(msg);
+        });
+
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
 
-        PdpDeployPolicies policies = loadJsonFile("deployPoliciesReq.json", PdpDeployPolicies.class);
+        PdpDeployPolicies policies = loadJsonFile("deployPoliciesReq2.json", PdpDeployPolicies.class);
         Entity<PdpDeployPolicies> entity = Entity.entity(policies, MediaType.APPLICATION_JSON);
         Response rawresp = invocationBuilder.post(entity);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
@@ -187,6 +184,20 @@ public class PdpGroupDeployTest extends End2EndBase {
         assertNull(resp.getErrorDetails());
 
         context.await();
+
+        // wait for the notification
+        String json = notifications.poll(5, TimeUnit.SECONDS);
+        PolicyNotification notify = new StandardCoder().decode(json, PolicyNotification.class);
+        assertNotNull(notify.getAdded());
+        assertNotNull(notify.getDeleted());
+        assertTrue(notify.getDeleted().isEmpty());
+        assertEquals(1, notify.getAdded().size());
+
+        PolicyStatus added = notify.getAdded().get(0);
+        assertEquals(2, added.getSuccessCount());
+        assertEquals(0, added.getFailureCount());
+        assertEquals(0, added.getIncompleteCount());
+        assertEquals(ident, added.getPolicy());
 
         // one of the PDPs should not have handled any requests
         assertEquals(1, context.getPdps().stream().filter(pdp -> pdp.getHandled().isEmpty()).count());

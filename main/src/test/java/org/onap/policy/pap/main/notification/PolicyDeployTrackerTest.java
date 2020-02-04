@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,12 +58,12 @@ public class PolicyDeployTrackerTest extends PolicyCommonSupport {
         tracker = new PolicyDeployTracker();
     }
 
+    /**
+     * Simple test with one PDP that immediately responds with success.
+     */
     @Test
-    public void test() {
-        tracker.addData(makeData(policy1, PDP1, PDP2));
-
-        // indicate that PDP2 has succeeded
-        tracker.processResponse(PDP2, Arrays.asList(policy1), new ArrayList<>(0));
+    public void testSimpleImmediateSuccess() {
+        tracker.addData(makeData(policy1, PDP1));
 
         // indicate that PDP1 has succeeded
         List<PolicyStatus> statusList = new ArrayList<>();
@@ -72,15 +72,143 @@ public class PolicyDeployTrackerTest extends PolicyCommonSupport {
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
         assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has succeeded again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate failure
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[0, 1, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has failed again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate that PDP1 has succeeded again
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+    }
+
+    /**
+     * Simple test with one PDP that immediately responds with success.
+     */
+    @Test
+    public void testSimpleImmediateFail() {
+        tracker.addData(makeData(policy1, PDP1));
+
+        // indicate that PDP1 has failed
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[0, 1, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has failed again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate success
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has succeeded again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+    }
+
+    /**
+     * Simple test where PDP is removed and then it responds.
+     */
+    @Test
+    public void testSimpleRemove() {
+        tracker.addData(makeData(policy1, PDP1));
+
+        // remove the PDP
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.removePdp(PDP1, statusList);
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[0, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        /*
+         * indicate that PDP1 has succeeded - should be no message since PDP was removed
+         * from the policy
+         */
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+
+        /*
+         * indicate that PDP1 has failed - should be no message since PDP was removed
+         * from the policy
+         */
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+    }
+
+    /**
+     * Test with multiple PDPs.
+     */
+    @Test
+    public void testMulti() {
+        tracker.addData(makeData(policy1, PDP1, PDP2));
+
+        // indicate that PDP2 has succeeded
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.processResponse(PDP2, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate that PDP1 has succeeded
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
 
-        // indicate that PDP1 has failed - should get a notification, if still in the map
+        // indicate that PDP1 has failed - should get a notification
         statusList.clear();
         tracker.processResponse(PDP1, Collections.emptyList(), statusList);
         assertEquals(1, statusList.size());
         assertEquals(policy1, statusList.get(0).getPolicy());
         assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[1, 1, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has succeeded
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // remove PDP2 - expect message
+        statusList.clear();
+        tracker.removePdp(PDP2, statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // re-add PDP2
+        tracker.addData(makeData(policy1, PDP2));
+
+        // indicate that PDP2 has succeeded; PDP1 should still be ok
+        statusList.clear();
+        tracker.processResponse(PDP2, Arrays.asList(policy1), statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
     }
 
     @Test

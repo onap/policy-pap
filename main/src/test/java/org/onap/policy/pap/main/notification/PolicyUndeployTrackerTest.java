@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,117 @@ public class PolicyUndeployTrackerTest extends PolicyCommonSupport {
         tracker = new PolicyUndeployTracker();
     }
 
+    /**
+     * Simple test with one PDP that immediately responds with success.
+     */
     @Test
-    public void test() {
+    public void testSimpleImmediateSuccess() {
+        tracker.addData(makeData(policy1, PDP1));
+
+        // indicate that PDP1 has succeeded (i.e., undeployed)
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has succeeded again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate failure (i.e., still deployed) - no output, because no longer tracked
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate that PDP1 has failed again - still no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate that PDP1 has succeeded again - still no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+    }
+
+    /**
+     * Simple test with one PDP that immediately responds with success.
+     */
+    @Test
+    public void testSimpleImmediateFail() {
+        tracker.addData(makeData(policy1, PDP1));
+
+        // indicate that PDP1 has failed (i.e., still deployed)
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[0, 1, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has failed again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate success (i.e., undeployed)
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // indicate that PDP1 has succeeded again - should be no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+
+        // indicate that PDP1 has failed again - still no output
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+    }
+
+    /**
+     * Simple test where PDP is removed and then it responds.
+     */
+    @Test
+    public void testSimpleRemove() {
+        tracker.addData(makeData(policy1, PDP1));
+
+        // remove the PDP
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.removePdp(PDP1, statusList);
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[0, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        /*
+         * indicate that PDP1 has succeeded (i.e., undeployed) - should be no message
+         * since PDP was removed from the policy
+         */
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(0, statusList.size());
+
+        /*
+         * indicate that PDP1 has failed (i.e., still deployed) - should be no message
+         * since PDP was removed from the policy
+         */
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+        assertEquals(0, statusList.size());
+    }
+
+    /**
+     * Test with multiple PDPs.
+     */
+    @Test
+    public void testMulti() {
         tracker.addData(makeData(policy1, PDP1, PDP2));
 
         // indicate that PDP2 has been undeployed
@@ -74,12 +183,48 @@ public class PolicyUndeployTrackerTest extends PolicyCommonSupport {
         assertEquals(type, statusList.get(0).getPolicyType());
         assertEquals("[2, 0, 0]", getCounts(statusList.get(0)).toString());
 
-        // indicate that PDP1 has been re-deployed - should not get a notification,
-        // because policy
-        // is gone
+        /*
+         * indicate that PDP1 has been re-deployed - should not get a notification,
+         * because policy is gone
+         */
         statusList.clear();
         tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
         assertTrue(statusList.isEmpty());
+    }
+
+    /**
+     * Test with multiple PDPs, and one is removed while it is in a failure state.
+     */
+    @Test
+    public void testMultiRemove() {
+        tracker.addData(makeData(policy1, PDP1, PDP2));
+
+        // indicate that PDP2 has been undeployed
+        tracker.processResponse(PDP2, Collections.emptyList(), new ArrayList<>(0));
+
+        // indicate that PDP1 has failed (i.e., still deployed)
+        List<PolicyStatus> statusList = new ArrayList<>();
+        tracker.processResponse(PDP1, Arrays.asList(policy1), statusList);
+
+        assertEquals(1, statusList.size());
+        assertEquals(policy1, statusList.get(0).getPolicy());
+        assertEquals(type, statusList.get(0).getPolicyType());
+        assertEquals("[1, 1, 0]", getCounts(statusList.get(0)).toString());
+
+        // remove PDP1 - expect message AND policy should be removed
+        statusList.clear();
+        tracker.removePdp(PDP1, statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
+
+        // re-add PDP1
+        tracker.addData(makeData(policy1, PDP1));
+
+        // indicate that PDP1 has succeeded; policy is now new, so doesn't include PDP2
+        statusList.clear();
+        tracker.processResponse(PDP1, Arrays.asList(), statusList);
+        assertEquals(1, statusList.size());
+        assertEquals("[1, 0, 0]", getCounts(statusList.get(0)).toString());
     }
 
     @Test
@@ -112,8 +257,8 @@ public class PolicyUndeployTrackerTest extends PolicyCommonSupport {
         // when data is not complete
         assertFalse(tracker.shouldRemove(data));
 
-        // when data is complete
-        when(data.isComplete()).thenReturn(true);
+        // when data has succeeded
+        when(data.allSucceeded()).thenReturn(true);
         assertTrue(tracker.shouldRemove(data));
     }
 }

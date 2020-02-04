@@ -1,7 +1,7 @@
 {
     "groups": [
         {
-            "name": "deployGroups",
+            "name": "deployPolicies",
             "pdpGroupState": "ACTIVE",
             "pdpSubgroups": [
                 {
@@ -45,7 +45,7 @@
                     ],
                     "policies": [
                         {
-                            "name": "onap.restart.tca",
+                            "name": "onap.restart.tcaB",
                             "version": "1.0.0"
                         }
                     ]
