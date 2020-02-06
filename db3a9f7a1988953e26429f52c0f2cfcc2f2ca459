@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "063498c2_59be07ab",
+        "filename": "testsuites/performance/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-02-06T15:20:32Z",
+      "side": 1,
+      "message": "does that need \"pap-\" prefix?",
+      "range": {
+        "startLine": 26,
+        "startChar": 20,
+        "endLine": 26,
+        "endChar": 30
+      },
+      "revId": "db3a9f7a1988953e26429f52c0f2cfcc2f2ca459",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
