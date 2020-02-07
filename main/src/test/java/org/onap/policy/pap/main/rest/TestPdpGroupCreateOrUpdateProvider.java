@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import javax.ws.rs.core.Response.Status;
+import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,8 +68,8 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
-    @Override
     @Before
+    @Override
     public void setUp() throws Exception {
 
         super.setUp();
@@ -143,24 +144,24 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testValidateGroupOnly_NullState() throws PfModelException {
+    public void testValidateGroupOnly_NullState() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(null);
-        prov.createOrUpdateGroups(groups);
+        Assertions.assertThatCode(() -> prov.createOrUpdateGroups(groups)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testValidateGroupOnly_Active() throws PfModelException {
+    public void testValidateGroupOnly_Active() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.ACTIVE);
-        prov.createOrUpdateGroups(groups);
+        Assertions.assertThatCode(() -> prov.createOrUpdateGroups(groups)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testValidateGroupOnly_Passive() throws PfModelException {
+    public void testValidateGroupOnly_Passive() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.PASSIVE);
-        prov.createOrUpdateGroups(groups);
+        Assertions.assertThatCode(() -> prov.createOrUpdateGroups(groups)).doesNotThrowAnyException();
     }
 
     @Test
@@ -212,7 +213,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
 
         assertGroupUpdateOnly(group);
 
-        assertEquals(group.getDescription(), "my description");
+        assertEquals("my description", group.getDescription());
         assertEquals(newgrp.toString(), group.toString());
     }
 

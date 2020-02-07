@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,9 +29,7 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
-
 import java.util.UUID;
-
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -39,7 +37,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
@@ -54,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryControllerV1.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeControllerV1.class);
 
     private final PdpGroupStateChangeProvider provider = new PdpGroupStateChangeProvider();
 
