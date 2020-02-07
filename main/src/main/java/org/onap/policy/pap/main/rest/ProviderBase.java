@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +39,6 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Super class of providers that deploy and undeploy PDP groups. The following items must
@@ -51,10 +50,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public abstract class ProviderBase {
-    private static final String DEPLOY_FAILED = "failed to deploy/undeploy policies";
     public static final String DB_ERROR_MSG = "DB error";
-
-    private static final Logger logger = LoggerFactory.getLogger(ProviderBase.class);
 
     /**
      * Lock used when updating PDPs.
@@ -108,11 +104,9 @@ public abstract class ProviderBase {
                 data.updateDb();
 
             } catch (PfModelException | PfModelRuntimeException e) {
-                logger.warn(DEPLOY_FAILED, e);
                 throw e;
 
             } catch (RuntimeException e) {
-                logger.warn(DEPLOY_FAILED, e);
                 throw new PfModelException(Status.INTERNAL_SERVER_ERROR, "request failed", e);
             }
 

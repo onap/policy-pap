@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +26,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.core.Response.Status;
+import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,6 +82,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
 
@@ -155,8 +158,8 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUndeploy_testUndeployPolicy() throws Exception {
-        prov.undeploy(optIdent);
+    public void testUndeploy_testUndeployPolicy(){
+        Assertions.assertThatCode(() -> prov.undeploy(optIdent)).doesNotThrowAnyException();
     }
 
     /**

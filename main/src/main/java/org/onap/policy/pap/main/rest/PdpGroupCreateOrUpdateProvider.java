@@ -272,7 +272,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
                 dbgroup.getPdpSubgroups().add(subgrp);
 
             } else {
-                updated = updateSubGroup(data, dbsub, subgrp, subResult) || updated;
+                updated = updateSubGroup(dbsub, subgrp, subResult) || updated;
             }
 
             result.addResult(subResult);
@@ -371,20 +371,17 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Updates an existing subgroup.
      *
-     * @param data session data
      * @param dbsub the subgroup, from the DB
      * @param subgrp the subgroup to be updated, updated to fully qualified versions upon
      *        return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup content was changed, {@code false} if there
      *         were no changes
-     * @throws PfModelException if an error occurred
      */
-    private boolean updateSubGroup(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp,
-        BeanValidationResult container) throws PfModelException {
+    private boolean updateSubGroup(PdpSubGroup dbsub, PdpSubGroup subgrp, BeanValidationResult container) {
 
         // perform additional validations first
-        if (!validateSubGroup(data, dbsub, subgrp, container)) {
+        if (!validateSubGroup(dbsub, subgrp, container)) {
             return false;
         }
 
@@ -405,16 +402,13 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Performs additional validations of a subgroup.
      *
-     * @param data session data
      * @param dbsub the subgroup, from the DB
      * @param subgrp the subgroup to be validated, updated to fully qualified versions
      *        upon return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup is valid, {@code false} otherwise
-     * @throws PfModelException if an error occurred
      */
-    private boolean validateSubGroup(SessionData data, PdpSubGroup dbsub, PdpSubGroup subgrp,
-        BeanValidationResult container) throws PfModelException {
+    private boolean validateSubGroup(PdpSubGroup dbsub, PdpSubGroup subgrp, BeanValidationResult container) {
 
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 

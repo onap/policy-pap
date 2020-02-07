@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +27,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -102,6 +104,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -164,7 +167,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testAddRequestPdpUpdatePdpStateChange_BothNull() {
         // nulls should be ok
-        map.addRequest(null, null);
+        Assertions.assertThatCode(() -> map.addRequest(null, null)).doesNotThrowAnyException();
     }
 
     @Test
