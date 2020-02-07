@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +30,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
@@ -55,6 +57,7 @@ public class RequestImplTest extends CommonRequestBase {
      * Sets up.
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -192,7 +195,7 @@ public class RequestImplTest extends CommonRequestBase {
     @Test
     public void testStopPublishingBoolean_NotPublishing() {
         // should not throw an exception
-        req.stopPublishing();
+        Assertions.assertThatCode(() -> req.stopPublishing()).doesNotThrowAnyException();
     }
 
     @Test
