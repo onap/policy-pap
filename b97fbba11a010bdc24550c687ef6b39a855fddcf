@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3e129f67_d5c21ed4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-02-10T16:07:33Z",
+      "side": 1,
+      "message": "might as well remove the message from the end of this string, too",
+      "revId": "b97fbba11a010bdc24550c687ef6b39a855fddcf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7cc74a47_970845f1",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpModifyRequestMapTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-02-10T16:07:33Z",
+      "side": 1,
+      "message": "FYI: My preference is to put \"@Before\" first, since that\u0027s a more important annotation, highlighting the particular method\n\nsame comment in the other junits",
+      "revId": "b97fbba11a010bdc24550c687ef6b39a855fddcf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "041a2c8c_2c187bf8",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-02-10T16:07:33Z",
+      "side": 1,
+      "message": "use assertNull",
+      "revId": "b97fbba11a010bdc24550c687ef6b39a855fddcf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
