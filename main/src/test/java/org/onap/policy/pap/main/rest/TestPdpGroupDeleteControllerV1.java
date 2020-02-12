@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
+
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 
@@ -72,12 +73,12 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         Response rawresp = invocationBuilder.delete();
         PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
-        assertEquals("cannot find policy: my-name null", resp.getErrorDetails());
+        assertEquals("service template not found in database", resp.getErrorDetails());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
-        assertEquals("cannot find policy: my-name null", resp.getErrorDetails());
+        assertEquals("service template not found in database", resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.delete());
@@ -91,12 +92,12 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         Response rawresp = invocationBuilder.delete();
         PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
-        assertEquals("cannot find policy: my-name 3", resp.getErrorDetails());
+        assertEquals("service template not found in database", resp.getErrorDetails());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
-        assertEquals("cannot find policy: my-name 3", resp.getErrorDetails());
+        assertEquals("service template not found in database", resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.delete());

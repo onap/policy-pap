@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.ws.rs.core.Response.Status;
+
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -66,7 +71,6 @@ public class PolicyNotifier {
      */
     private final PolicyUndeployTracker undeployTracker = makeUndeploymentTracker();
 
-
     /**
      * Constructs the object. Loads all deployed policies into the internal cache.
      *
@@ -74,8 +78,8 @@ public class PolicyNotifier {
      * @param daoFactory factory used to load policy deployment data from the DB
      * @throws PfModelException if a DB error occurs
      */
-    public PolicyNotifier(Publisher<PolicyNotification> publisher, PolicyModelsProviderFactoryWrapper daoFactory)
-                    throws PfModelException {
+    public PolicyNotifier(Publisher<PolicyNotification> publisher,
+            PolicyModelsProviderFactoryWrapper daoFactory) throws PfModelException {
 
         this.publisher = publisher;
 
@@ -93,11 +97,23 @@ public class PolicyNotifier {
      * @throws PfModelException if a DB error occurs
      */
     private Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> loadPolicyTypes(PolicyModelsProvider dao)
-                    throws PfModelException {
+            throws PfModelException {
 
         Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type = new HashMap<>();
 
-        for (ToscaPolicy policy : dao.getFilteredPolicyList(ToscaPolicyFilter.builder().build())) {
+        List<ToscaPolicy> policyList;
+
+        try {
+            policyList = dao.getFilteredPolicyList(ToscaPolicyFilter.builder().build());
+        } catch (PfModelException | PfModelRuntimeException pfme) {
+            if (Status.NOT_FOUND.equals(pfme.getErrorResponse().getResponseCode())) {
+                return id2type;
+            } else {
+                throw pfme;
+            }
+        }
+
+        for (ToscaPolicy policy : policyList) {
             id2type.put(policy.getIdentifier(), policy.getTypeIdentifier());
         }
 
@@ -112,7 +128,7 @@ public class PolicyNotifier {
      * @throws PfModelException if a DB error occurs
      */
     private void loadPolicies(PolicyModelsProvider dao, Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type)
-                    throws PfModelException {
+            throws PfModelException {
         for (PdpGroup group : dao.getPdpGroups(null)) {
             for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
                 loadPolicies(id2type, group, subgrp);
@@ -128,14 +144,14 @@ public class PolicyNotifier {
      * @param subgrp subgroup whose policies are to be loaded
      */
     private void loadPolicies(Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type, PdpGroup group,
-                    PdpSubGroup subgrp) {
+            PdpSubGroup subgrp) {
 
         for (ToscaPolicyIdentifier policyId : subgrp.getPolicies()) {
 
             ToscaPolicyTypeIdentifier type = id2type.get(policyId);
             if (type == null) {
                 logger.error("group {}:{} refers to non-existent policy {}:{}", group.getName(), subgrp.getPdpType(),
-                                policyId.getName(), policyId.getVersion());
+                        policyId.getName(), policyId.getVersion());
                 continue;
             }
 
@@ -175,8 +191,8 @@ public class PolicyNotifier {
     }
 
     /**
-     * Adds data to the deployment tracker. If a PDP appears within the undeployment
-     * tracker, then it's removed from there.
+     * Adds data to the deployment tracker. If a PDP appears within the undeployment tracker, then it's removed from
+     * there.
      *
      * @param data data to be added
      */
@@ -190,8 +206,8 @@ public class PolicyNotifier {
     }
 
     /**
-     * Adds data to the undeployment tracker. If a PDP appears within the deployment
-     * tracker, then it's removed from there.
+     * Adds data to the undeployment tracker. If a PDP appears within the deployment tracker, then it's removed from
+     * there.
      *
      * @param data data to be added
      */
@@ -208,8 +224,7 @@ public class PolicyNotifier {
      * Processes a response from a PDP.
      *
      * @param pdp PDP of interest
-     * @param activePolicies policies that are still active on the PDP, as specified in
-     *        the response
+     * @param activePolicies policies that are still active on the PDP, as specified in the response
      */
     public synchronized void processResponse(String pdp, Collection<ToscaPolicyIdentifier> activePolicies) {
         processResponse(pdp, new HashSet<>(activePolicies));
@@ -219,8 +234,7 @@ public class PolicyNotifier {
      * Processes a response from a PDP.
      *
      * @param pdp PDP of interest
-     * @param activePolicies policies that are still active on the PDP, as specified in
-     *        the response
+     * @param activePolicies policies that are still active on the PDP, as specified in the response
      */
     public synchronized void processResponse(String pdp, Set<ToscaPolicyIdentifier> activePolicies) {
         PolicyNotification notification = new PolicyNotification();
@@ -232,8 +246,8 @@ public class PolicyNotifier {
     }
 
     /**
-     * Removes a PDP from any policies still awaiting responses from it, generating
-     * notifications for any of those policies that become complete as a result.
+     * Removes a PDP from any policies still awaiting responses from it, generating notifications for any of those
+     * policies that become complete as a result.
      *
      * @param pdp PDP to be removed
      */
@@ -256,7 +270,6 @@ public class PolicyNotifier {
             publisher.enqueue(new QueueToken<>(notification));
         }
     }
-
 
     // the following methods may be overridden by junit tests
 
