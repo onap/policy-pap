@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ws.rs.core.Response;
@@ -52,9 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provider for PAP to fetch health status of all Policy components, including PAP, API,
- * Distribution, and PDPs. Note: a new provider {@link PolicyComponentsHealthCheckProvider} must be
- * created for each request.
+ * Provider for PAP to fetch health status of all Policy components, including PAP, API, Distribution, and PDPs. Note: a
+ * new provider {@link PolicyComponentsHealthCheckProvider} must be created for each request.
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */
@@ -66,8 +66,27 @@ public class PolicyComponentsHealthCheckProvider {
     private static final Pattern IP_REPLACEMENT_PATTERN = Pattern.compile("//(\\S+):");
     private static final String POLICY_PAP_HEALTHCHECK_URI = "/policy/pap/v1/healthcheck";
     private PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
-    private boolean isHealthy = true;
-    private Map<String, Object> result = new HashMap<>();
+    private volatile boolean isHealthy = true;
+    private Map<String, Object> result = new ConcurrentHashMap<>();
+    private HttpClientFactory clientFactory;
+
+    /**
+     * Constructs the object.
+     */
+    public PolicyComponentsHealthCheckProvider() {
+        clientFactory = HttpClientFactoryInstance.getClientFactory();
+    }
+
+    /**
+     * Constructs the object with provided http client factory.
+     *
+     * <p>This constructor is for unit test to use a mock {@link HttpClientFactory}.
+     *
+     * @param clientFactory factory used to construct http client
+     */
+    PolicyComponentsHealthCheckProvider(HttpClientFactory clientFactory) {
+        this.clientFactory = clientFactory;
+    }
 
     /**
      * Returns health status of all Policy components.
@@ -78,10 +97,14 @@ public class PolicyComponentsHealthCheckProvider {
     public Pair<Status, Map<String, Object>> fetchPolicyComponentsHealthStatus() {
         getHttpClients(papParameterGroup.getHealthCheckRestClientParameters()).parallelStream()
                 .forEach(this::fetchPolicyComponentHealthStatus);
+        clientFactory.destroy();
         HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck();
         RestServerParameters restServerParameters = papParameterGroup.getRestServerParameters();
         papReport.setUrl((restServerParameters.isHttps() ? "https://" : "http://") + papReport.getUrl() + ":"
                 + restServerParameters.getPort() + POLICY_PAP_HEALTHCHECK_URI);
+        if (!papReport.isHealthy()) {
+            isHealthy = false;
+        }
         result.put(PapConstants.POLICY_PAP, papReport);
         try {
             Map<String, List<Pdp>> pdpListWithType = fetchPdpsHealthStatus();
@@ -116,7 +139,6 @@ public class PolicyComponentsHealthCheckProvider {
     }
 
     private List<HttpClient> getHttpClients(List<BusTopicParams> restClientParameters) {
-        HttpClientFactory clientFactory = HttpClientFactoryInstance.getClientFactory();
         for (BusTopicParams params : restClientParameters) {
             try {
                 params.setManaged(true);
@@ -137,19 +159,19 @@ public class PolicyComponentsHealthCheckProvider {
             Response resp = httpClient.get();
             if (resp.getStatus() != HttpURLConnection.HTTP_OK) {
                 isHealthy = false;
-                result.put(httpClient.getName(),
-                        replaceIpWithHostname(resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl()));
-            } else {
-                result.put(httpClient.getName(),
-                        replaceIpWithHostname(resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl()));
             }
+            HealthCheckReport clientReport = replaceIpWithHostname(
+                    resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl());
+            if (!clientReport.isHealthy()) {
+                isHealthy = false;
+            }
+            result.put(httpClient.getName(), clientReport);
         } catch (RuntimeException e) {
             LOGGER.warn("{} connection error", httpClient.getName());
             storeUnHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(),
                     HttpURLConnection.HTTP_INTERNAL_ERROR, e.getMessage());
         }
     }
-
 
     private void storeUnHealthCheckReport(String name, String url, int code, String message) {
         HealthCheckReport report = new HealthCheckReport();
