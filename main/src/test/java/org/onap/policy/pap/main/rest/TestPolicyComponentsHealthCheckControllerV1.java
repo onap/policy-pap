@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,20 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import org.junit.Test;
+import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
+import org.onap.policy.common.parameters.ParameterService;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.powermock.reflect.Whitebox;
 
 /**
  * Class to perform unit test of {@link PolicyComponentsHealthCheckControllerV1}.
@@ -34,5 +47,22 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
     @Test
     public void testSwagger() throws Exception {
         super.testSwagger(ENDPOINT);
+    }
+
+    @Test
+    public void testPolicyComponentsHealthCheck() throws Exception {
+        // To skip calling to the remote components
+        PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
+        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup,
+            "healthCheckRestClientParameters");
+        lo.clear();
+
+        Invocation.Builder invocationBuilder = sendRequest(ENDPOINT);
+        Response response = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        Map<String, Object> result = new HashMap<>();
+        result = (Map<String, Object>) response.readEntity(GenericType.forInstance(result));
+        // No PDP configured, healthy is false
+        assertFalse((Boolean) result.get("healthy"));
     }
 }
