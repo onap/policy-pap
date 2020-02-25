@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0809b449_37f55707",
+        "filename": "client/client-monitoring/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2af0a798_6c45a212",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "610a192d_429d17ae",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
         "patchSetId": 3
@@ -114,6 +132,30 @@
     },
     {
       "key": {
+        "uuid": "3e526244_6aedefed",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b9d14bcf_954841ab",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ae67cac_7963098a",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
         "patchSetId": 3
@@ -125,6 +167,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "use @NonNull instead",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd645e76_4f21281c",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5ae67cac_7963098a",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -148,6 +208,24 @@
     },
     {
       "key": {
+        "uuid": "d6d9e7a3_9939f171",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "81266ce7_7be70ac2",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "29785452_e6936ebe",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
         "patchSetId": 3
@@ -159,6 +237,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "use !isEmpty() instead",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5480829a_78b31766",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "29785452_e6936ebe",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -182,6 +278,24 @@
     },
     {
       "key": {
+        "uuid": "465c0ecb_e1123647",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "timeRemaining * 1 second is alive time.",
+      "parentUuid": "0bf907e4_c6c0fc37",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "746a5561_417b328b",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
         "patchSetId": 3
@@ -199,6 +313,24 @@
     },
     {
       "key": {
+        "uuid": "ae91aacc_b145fa89",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestMain.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "746a5561_417b328b",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67deaa30_e3c80c4b",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameterParser.java",
         "patchSetId": 3
@@ -210,6 +342,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "\"final\"",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ce14086_68679745",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameterParser.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "67deaa30_e3c80c4b",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -239,6 +389,30 @@
     },
     {
       "key": {
+        "uuid": "feaf3b3f_2ad946e5",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameters.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "632fc713_d857111d",
+      "range": {
+        "startLine": 33,
+        "startChar": 66,
+        "endLine": 33,
+        "endChar": 75
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fba9fae2_0ce259d9",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameters.java",
         "patchSetId": 3
@@ -250,6 +424,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "use lombok\n\nsame comment for methods below",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "369d607d_c625f1d2",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestParameters.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fba9fae2_0ce259d9",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -273,6 +465,24 @@
     },
     {
       "key": {
+        "uuid": "33a1b12a_7f85ddb2",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ca475509_99368c76",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "93ecf344_3a54cdb4",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
         "patchSetId": 3
@@ -284,6 +494,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "missing \"id\"",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e60ebec4_a7e7c59d",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "93ecf344_3a54cdb4",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -324,6 +552,24 @@
     },
     {
       "key": {
+        "uuid": "f5f99de1_714d8b84",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2b78fed5_a13714d5",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "615d3238_6bb0fd04",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
         "patchSetId": 3
@@ -352,6 +598,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "seems like we should be able to store the data without doing a json conversion; perhaps last_policy_duration should be defined as a list",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2bb5f164_6b387030",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "If last_policy_duration was changed to list, I concern that it is not dynamically mornitorning, but display history data. Meanwhile the whole data cache mechanism in js chart and table would be refactored.",
+      "parentUuid": "1e8f04ed_e60a5aed",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -392,6 +656,24 @@
     },
     {
       "key": {
+        "uuid": "46518a18_62df74f0",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "131213ec_f49db598",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3f6bbb0d_339c89dd",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
         "patchSetId": 3
@@ -409,6 +691,24 @@
     },
     {
       "key": {
+        "uuid": "59610613_2cd4b38d",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3f6bbb0d_339c89dd",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4efa002e_565535ab",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
         "patchSetId": 3
@@ -420,6 +720,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "use computeIfAbsent and eliminate all of the containsKey/get/put calls",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ff694094_be53fecd",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4efa002e_565535ab",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -460,6 +778,24 @@
     },
     {
       "key": {
+        "uuid": "562307ab_825f9054",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8211b914_816eb6c4",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8dae27b_bc692712",
         "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
         "patchSetId": 3
@@ -471,6 +807,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "add \"final\" for both fields",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2acef865_f87410bd",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a8dae27b_bc692712",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -494,6 +848,24 @@
     },
     {
       "key": {
+        "uuid": "866f5a8c_3851f8d4",
+        "filename": "client/client-monitoring/src/main/java/org/onap/policy/pap/client/monitoring/rest/PapMonitoringRestResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8e64a0a8_87841b0b",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cb4d89dc_98747391",
         "filename": "client/client-monitoring/src/main/resources/webapp/index.html",
         "patchSetId": 3
@@ -505,6 +877,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "trailing space",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20496c61_d616777c",
+        "filename": "client/client-monitoring/src/main/resources/webapp/index.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cb4d89dc_98747391",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -528,6 +918,24 @@
     },
     {
       "key": {
+        "uuid": "8094a57c_b976e97f",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringAjax.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7e275ad2_287c9e4c",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f92f2946_49a95440",
         "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringAjax.js",
         "patchSetId": 3
@@ -539,6 +947,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "this looks similar (identical?) to ajax_get - extract a common method",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "821d3a35_ea85b817",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringAjax.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "the number of parameters, parameter types and error handlings are different. I prefer to reserving these two methods.",
+      "parentUuid": "f92f2946_49a95440",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -579,6 +1005,24 @@
     },
     {
       "key": {
+        "uuid": "7e5f307a_a6441630",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringChart.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "To prevent non-number value appeared from exceptional case. \nhttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus_2",
+      "parentUuid": "ee5f5ad5_87915c8d",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "18e1139c_7c3246c9",
         "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringChart.js",
         "patchSetId": 3
@@ -613,6 +1057,24 @@
     },
     {
       "key": {
+        "uuid": "aced3d5a_7b23c235",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "75f658aa_96960c93",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ec882259_a5841b33",
         "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
         "patchSetId": 3
@@ -627,6 +1089,47 @@
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "962680af_8f1bb24f",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ec882259_a5841b33",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "edfde549_e1053a57",
+        "filename": "client/client-monitoring/src/main/resources/webapp/js/MonitoringUtils.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "not needed by monitorning, will remove.",
+      "range": {
+        "startLine": 223,
+        "startChar": 9,
+        "endLine": 223,
+        "endChar": 20
+      },
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     },
     {
       "key": {
@@ -681,6 +1184,24 @@
     },
     {
       "key": {
+        "uuid": "f2b0a478_000b3a87",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringExceptionTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "22391c75_af1c5f31",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4408559a_7426387e",
         "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestExtraTest.java",
         "patchSetId": 3
@@ -692,6 +1213,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "need to test the other methods, too",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5579d4ec_3a29295b",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestExtraTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4408559a_7426387e",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -715,6 +1254,24 @@
     },
     {
       "key": {
+        "uuid": "28224fd2_e689cb62",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6fce2c1c_2c75d465",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dfdc04b1_6bc938c8",
         "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
         "patchSetId": 3
@@ -732,6 +1289,24 @@
     },
     {
       "key": {
+        "uuid": "01be9a44_0c8c9544",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "dfdc04b1_6bc938c8",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7149dff4_24140240",
         "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
         "patchSetId": 3
@@ -743,6 +1318,24 @@
       "writtenOn": "2020-01-07T17:39:10Z",
       "side": 1,
       "message": "prefer to use assertj instead of try/catch.\n\nsame comment through-out",
+      "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e780670_fcfcf6b5",
+        "filename": "client/client-monitoring/src/test/java/org/onap/policy/pap/client/monitoring/rest/MonitoringRestMainTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 5240
+      },
+      "writtenOn": "2020-02-25T06:51:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7149dff4_24140240",
       "revId": "58131b2b7b19b53541209e3b5b60de3ab5ad2e47",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
