@@ -37,6 +37,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
 
 /**
  * Class to provide REST end point for PAP component to fetch all policy components, including PAP,
@@ -46,10 +47,19 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class PolicyComponentsHealthCheckControllerV1 extends PapRestControllerV1 {
 
+    private PolicyComponentsHealthCheckProvider provider;
+
+    /**
+     * Constructs the object.
+     *
+     * @throws HttpClientConfigException if creating http client failed
+     */
+    public PolicyComponentsHealthCheckControllerV1() throws HttpClientConfigException {
+        provider = new PolicyComponentsHealthCheckProvider();
+    }
+
     /**
      * Returns health status of all Policy components, including PAP, API, Distribution, and PDPs.
-     * Note: a new provider {@link PolicyComponentsHealthCheckProvider} must be created for each
-     * request.
      *
      * @param requestId request ID used in ONAP logging
      * @return a response
@@ -82,7 +92,7 @@ public class PolicyComponentsHealthCheckControllerV1 extends PapRestControllerV1
     public Response policyComponentsHealthCheck(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
         final Pair<Status, Map<String, Object>> pair =
-                new PolicyComponentsHealthCheckProvider().fetchPolicyComponentsHealthStatus();
+                provider.fetchPolicyComponentsHealthStatus();
         return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                 .entity(pair.getRight()).build();
     }
