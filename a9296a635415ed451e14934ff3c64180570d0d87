@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "8ac88bd7_53547e5e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-02-25T13:53:32Z",
+      "side": 1,
+      "message": "Can you outline the workings of a few things here: \n- what components use http for the healthcheck?  \n- How does this work for the parallel stream, \n- if executed in parallel, how does the result get put together uniformly for all components?   \n- why the reference to itself in this method?",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f88db93_7a501efe",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -36,6 +53,23 @@
     },
     {
       "key": {
+        "uuid": "eb36087e_6d8c2c3b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-02-25T13:53:32Z",
+      "side": 1,
+      "message": "Is this right to destroy the factory each time the health status need to be exercised?   If so, it must be masking a bug.",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b4de3a16_61c2e65f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -47,6 +81,23 @@
       "writtenOn": "2020-02-25T13:43:53Z",
       "side": 1,
       "message": "shouldn\u0027t assume that all clients in the factory are clients of interest to health check.  Need to create a list from those returned by build()",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ffc33317_15ba89d2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-02-25T13:53:32Z",
+      "side": 1,
+      "message": "can you remind me what is for the \"replaceIpWithHostname\" ?",
       "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
