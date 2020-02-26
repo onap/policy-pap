@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e811b231_fe7408e0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "Hi Jim,\n\nOK, thanks for the information. Maybe we can just use regular sequence call since we only have clients to call. Or any other suggestion to make it better?\n\nI agree, we should rework on all usages of HttpClientFactory.",
+      "parentUuid": "41f2356f_99d00967",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ac88bd7_53547e5e",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-25T13:53:32Z",
       "side": 1,
       "message": "Can you outline the workings of a few things here: \n- what components use http for the healthcheck?  \n- How does this work for the parallel stream, \n- if executed in parallel, how does the result get put together uniformly for all components?   \n- why the reference to itself in this method?",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2eb6b910_bb43ca2a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "Hi Jorge,\n(1) it calls policy-api and policy-distribution for their health report.\n(2) Using parallel stream to call two components in parallel to reduce response time.\n(3) After two components return response, the reports will be put in a shared Map.\n(4) forEach need a function with one argument. fetchPolicyComponentHealthStatus has actually two arguments, one is *this*, one is httpClient. \"this::fetchPolicyComponentHealthStatus\" is the way to bind *this* as the first argument to fetchPolicyComponentHealthStatus.",
+      "parentUuid": "8ac88bd7_53547e5e",
       "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -70,6 +106,42 @@
     },
     {
       "key": {
+        "uuid": "e8dbaf7a_a27e0731",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "I agree. It tried to fix the problem of repeating calling to getHttpClients. It does not work well.\nPolicyComponentsHealthCheckProvider is created per request. \nhttps://git.onap.org/policy/pap/tree/main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckControllerV1.java#n85",
+      "parentUuid": "1f88db93_7a501efe",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0f94c16_56cc1427",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "Yes, it was to mask a bug, and failed :-)",
+      "parentUuid": "eb36087e_6d8c2c3b",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b4de3a16_61c2e65f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -81,6 +153,24 @@
       "writtenOn": "2020-02-25T13:43:53Z",
       "side": 1,
       "message": "shouldn\u0027t assume that all clients in the factory are clients of interest to health check.  Need to create a list from those returned by build()",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "67ee6318_642c3b2e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "Yes, I will rework on this.",
+      "parentUuid": "b4de3a16_61c2e65f",
       "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "5914f42a_1eef1c1c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "I do not quite understand why we need this. Seems it is for untypical deployment.\nThere was a discussion in this review. Any one could help to clarify?\nhttps://gerrit.onap.org/r/c/policy/pap/+/99193/1/packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+      "parentUuid": "ffc33317_15ba89d2",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f2b4a0e1_a75386f5",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckControllerV1.java",
         "patchSetId": 2
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "7d25d720_1056b30d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f2b4a0e1_a75386f5",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b8e25ad4_e205e66b",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -132,6 +258,24 @@
       "writtenOn": "2020-02-25T13:43:53Z",
       "side": 1,
       "message": "FYI: could make this static",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "203f52fc_568953be",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T06:06:09Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b8e25ad4_e205e66b",
       "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
