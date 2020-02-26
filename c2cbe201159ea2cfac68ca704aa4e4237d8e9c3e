@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3872d96c_deaf9033",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-02-26T12:41:08Z",
+      "side": 1,
+      "message": "Nesting too deep - may be why part of it was in a separate method. Notably the nested try-catch will be caught by sonar.",
+      "range": {
+        "startLine": 98,
+        "startChar": 8,
+        "endLine": 120,
+        "endChar": 0
+      },
+      "revId": "c2cbe201159ea2cfac68ca704aa4e4237d8e9c3e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
