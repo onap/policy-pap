@@ -22,6 +22,30 @@
       "revId": "27d6b4c803a4b0e384e25f08fabf44964db5cd7a",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30136b9a_9d5deb54",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-26T09:16:27Z",
+      "side": 1,
+      "message": "Yes, I use IntelliJ and have installed SonarLint. But there\u0027s a problem like this. I\u0027m still trouble shooting on this.\n1 source files to be analyzed\nUnable to create symbol table for : C:\\Users\\ehuajin\\nordix\\pap\\main\\src\\main\\java\\org\\onap\\policy\\pap\\main\\rest\\PolicyComponentsHealthCheckProvider.java\njava.lang.IllegalArgumentException: Unsupported class file major version 55\n...\n\nI formatted the code before commit. It looks good to me, 4 spaces, no tab, 120 chars per line. Could you indicate which line is in problem? Is that line 110 and 112, 8 spaces indentation?",
+      "parentUuid": "204f2a5d_7d9cfde5",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 119,
+        "endChar": 9
+      },
+      "revId": "27d6b4c803a4b0e384e25f08fabf44964db5cd7a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
