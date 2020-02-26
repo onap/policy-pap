@@ -46,6 +46,30 @@
       "revId": "27d6b4c803a4b0e384e25f08fabf44964db5cd7a",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2364b405_7cf0af13",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2020-02-26T09:27:38Z",
+      "side": 1,
+      "message": "Aah yes, there is a bug in the latest released SonarLint plugin and Lombok. This was discussed by Jim Hahn on the Policy Rocketchat but you may not be on there yet.\n\nHere\u0027s the fix:\nanyone running into issues with sonarlint, lombok, and eclipse 2019? I was and went looking on the web for a fix just this morning, and found a lombok patch to fix it that was released just this morning - good timing! https://github.com/rzwitserloot/lombok/issues/2351",
+      "parentUuid": "30136b9a_9d5deb54",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 119,
+        "endChar": 9
+      },
+      "revId": "27d6b4c803a4b0e384e25f08fabf44964db5cd7a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
