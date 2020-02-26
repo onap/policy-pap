@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "204f2a5d_7d9cfde5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2020-02-26T08:56:36Z",
+      "side": 1,
+      "message": "There\u0027s a lot of indentation here, I think it will throw a Sonar issue. Have you installed the SonarLint plugin onto your Eclipse?",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 119,
+        "endChar": 9
+      },
+      "revId": "27d6b4c803a4b0e384e25f08fabf44964db5cd7a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
