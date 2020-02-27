@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "70065d5e_562e7544",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-27T02:39:16Z",
+      "side": 1,
+      "message": "Could you elaborate on this? \nHttpClientConfigException indicates some configuration issue. Can we just fail to start (fail fast) if the exception happens? And it is not good to see many \"httpClient creation error\" in logs.",
+      "parentUuid": "d86e894b_9b9a2364",
+      "revId": "c2cbe201159ea2cfac68ca704aa4e4237d8e9c3e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3872d96c_deaf9033",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 4
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "28391394_692f3d4a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-27T02:39:16Z",
+      "side": 1,
+      "message": "Yes, it should be in a function, thanks",
+      "parentUuid": "3872d96c_deaf9033",
+      "range": {
+        "startLine": 98,
+        "startChar": 8,
+        "endLine": 120,
+        "endChar": 0
+      },
+      "revId": "c2cbe201159ea2cfac68ca704aa4e4237d8e9c3e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "40cf032d_4ae4e593",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckProvider.java",
         "patchSetId": 4
@@ -53,6 +95,24 @@
       "writtenOn": "2020-02-26T14:35:21Z",
       "side": 1,
       "message": "static?",
+      "revId": "c2cbe201159ea2cfac68ca704aa4e4237d8e9c3e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d5a4cf04_8ed1f38d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-27T02:39:16Z",
+      "side": 1,
+      "message": "Can we keep it here? I want keep the definition close to usage. \nAlso it is trivial to create the object.\nclass StandardCoder() {\n   ...\n    public StandardCoder() {\n    }\n   ...\n}",
+      "parentUuid": "40cf032d_4ae4e593",
       "revId": "c2cbe201159ea2cfac68ca704aa4e4237d8e9c3e",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
