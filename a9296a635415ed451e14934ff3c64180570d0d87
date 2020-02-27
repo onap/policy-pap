@@ -248,6 +248,24 @@
     },
     {
       "key": {
+        "uuid": "be413db7_d8b108d0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-02-27T02:56:01Z",
+      "side": 1,
+      "message": "Yes, I agree. But it should not be a problem in normal deployment.\nI\u0027m also not sure why we need URL here.",
+      "parentUuid": "2fd5de80_ce120d88",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f2b4a0e1_a75386f5",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyComponentsHealthCheckControllerV1.java",
         "patchSetId": 2
