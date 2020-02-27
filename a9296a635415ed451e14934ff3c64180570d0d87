@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "96ca59ea_d1a02ace",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-02-27T00:50:03Z",
+      "side": 1,
+      "message": "Thank you for explaining!   Gotcha is calling fetchPolicyComponentHealthStatus with no \"s\", I thought it was calling this same method (which has the name but with \"s\") and was amazed that was working, calling itself recursively.",
+      "parentUuid": "2eb6b910_bb43ca2a",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f88db93_7a501efe",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 2
@@ -206,6 +224,24 @@
       "side": 1,
       "message": "I do not quite understand why we need this. Seems it is for untypical deployment.\nThere was a discussion in this review. Any one could help to clarify?\nhttps://gerrit.onap.org/r/c/policy/pap/+/99193/1/packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
       "parentUuid": "ffc33317_15ba89d2",
+      "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2fd5de80_ce120d88",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-02-27T00:50:03Z",
+      "side": 1,
+      "message": "Not sure about the background, but I don\u0027t see a reason to replace with an IP, I think it will be more confusing, as the hostnames used in docker/kubernetes pretty much tells you the component that is working with.",
+      "parentUuid": "5914f42a_1eef1c1c",
       "revId": "a9296a635415ed451e14934ff3c64180570d0d87",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
