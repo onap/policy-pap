@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "66de91b7_4ff43e9e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-02-28T13:29:05Z",
+      "side": 1,
+      "message": "we should probably add a backlog JIRA to do this in parallel",
+      "revId": "d06303fdf857d7d9cf50f301fb0e956a65319475",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "410c1576_f381e582",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-02-28T13:29:05Z",
+      "side": 1,
+      "message": "could just include it in the client list and then eliminate this block of code",
+      "revId": "d06303fdf857d7d9cf50f301fb0e956a65319475",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
