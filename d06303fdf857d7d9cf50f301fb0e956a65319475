@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5b658549_00c0b62e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-03-02T03:54:42Z",
+      "side": 1,
+      "message": "Yes, it is good to reduce the latency. Do we have async HTTP client available to use in the project? That would be better than using extra threads for parallel.",
+      "parentUuid": "66de91b7_4ff43e9e",
+      "revId": "d06303fdf857d7d9cf50f301fb0e956a65319475",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "410c1576_f381e582",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 8
@@ -30,6 +48,24 @@
       "writtenOn": "2020-02-28T13:29:05Z",
       "side": 1,
       "message": "could just include it in the client list and then eliminate this block of code",
+      "revId": "d06303fdf857d7d9cf50f301fb0e956a65319475",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b15b1e51_638ca81d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 6351
+      },
+      "writtenOn": "2020-03-02T03:54:42Z",
+      "side": 1,
+      "message": "It could be an option. One concern is so we have to put those rest parameters in config file. It is a bit confusing to put PAP itself\u0027s information in PAP\u0027s config file.",
+      "parentUuid": "410c1576_f381e582",
       "revId": "d06303fdf857d7d9cf50f301fb0e956a65319475",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
