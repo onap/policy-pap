@@ -10,15 +10,15 @@
           "pdpType": "xacml",
           "supportedPolicyTypes": [
             {
-              "name": "onap.policies.controlloop.guard.FrequencyLimiter",
+              "name": "onap.policies.controlloop.guard.common.FrequencyLimiter",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.controlloop.guard.MinMax",
+              "name": "onap.policies.controlloop.guard.common.MinMax",
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.controlloop.guard.Blacklist",
+              "name": "onap.policies.controlloop.guard.common.Blacklist",
               "version": "1.0.0"
             },
             {
