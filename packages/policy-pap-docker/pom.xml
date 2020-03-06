@@ -61,20 +61,19 @@
                         </goals>
                         <configuration>
                             <source>
-                                println 'Project version: ' + project.properties['dist.project.version']
-                                if (project.properties['dist.project.version'] != null) {
-                                    def versionArray = project.properties['dist.project.version'].split('-')
-                                    def minMaxVersionArray = versionArray[0].tokenize('.')
-                                    if (project.properties['dist.project.version'].endsWith("-SNAPSHOT")) {
-                                        project.properties['project.docker.latest.minmax.tag.version'] =
-                                            minMaxVersionArray[0] + "." + minMaxVersionArray[1] + "-SNAPSHOT-latest"
-                                    } else {
-                                        project.properties['project.docker.latest.minmax.tag.version'] =
-                                            minMaxVersionArray[0] + "." + minMaxVersionArray[1] + "-STAGING-latest"
-                                    }
-                                    println 'New tag for docker: ' + project.properties['project.docker.latest.minmax.tag.version']
+                                println 'Project version: ' + project.properties['dist.project.version'];
+                                def versionArray;
+                                if ( project.properties['dist.project.version'] != null ) {
+                                    versionArray = project.properties['dist.project.version'].split('-');
                                 }
-                                println 'The arch is: ' + System.properties['os.arch'];
+
+                                if ( project.properties['dist.project.version'].endsWith("-SNAPSHOT") ) {
+                                    project.properties['project.docker.latesttag.version']=versionArray[0] + "-SNAPSHOT-latest";
+                                } else {
+                                    project.properties['project.docker.latesttag.version']=versionArray[0] + "-STAGING-latest";
+                                }
+
+                                println 'New tag for docker: ' + project.properties['project.docker.latesttag.version'];
                                 if ( "aarch64".equals(System.properties['os.arch']) ) {
                                     project.properties['project.docker.arch'] = "arm64";
                                 } else {
@@ -104,9 +103,8 @@
                                 <cleanup>try</cleanup>
                                 <dockerFile>Dockerfile</dockerFile>
                                 <tags>
-                                    <tag>${project.version}</tag>
                                     <tag>${project.version}-${project.docker.arch}</tag>
-                                    <tag>${project.docker.latest.minmax.tag.version}-${project.docker.arch}</tag>
+                                    <tag>${project.docker.latesttag.version}-${project.docker.arch}</tag>
                                 </tags>
                                 <assembly>
                                     <inline>
