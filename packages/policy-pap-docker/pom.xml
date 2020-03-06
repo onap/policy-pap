@@ -74,6 +74,7 @@
                                     }
                                     println 'New tag for docker: ' + project.properties['project.docker.latest.minmax.tag.version']
                                 }
+                                println 'The arch is: ' + System.properties['os.arch'];
                                 if ( "aarch64".equals(System.properties['os.arch']) ) {
                                     project.properties['project.docker.arch'] = "arm64";
                                 } else {
