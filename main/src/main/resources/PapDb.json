@@ -82,7 +82,15 @@
               "version": "1.0.0"
             },
             {
-              "name": "onap.policies.native.Drools",
+              "name": "onap.policies.controlloop.operational.common.Drools",
+              "version": "1.0.0"
+            },
+            {
+              "name": "onap.policies.native.drools.Controller",
+              "version": "1.0.0"
+            },
+            {
+              "name": "onap.policies.native.drools.Artifact",
               "version": "1.0.0"
             }
           ],
