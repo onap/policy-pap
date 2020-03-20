@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f10cbbe0_52269441",
+        "filename": "packages/policy-pap-docker/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-03-20T15:15:41Z",
+      "side": 1,
+      "message": "oops",
+      "revId": "63e876ab122e9cb77be9baad41afc58eb07440c3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
