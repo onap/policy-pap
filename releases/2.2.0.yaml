@@ -1,0 +1,4 @@
+distribution_type: 'maven'
+version: '2.2.0'
+project: 'policy-pap'
+log_dir: 'policy-pap-maven-stage-master/280/'
