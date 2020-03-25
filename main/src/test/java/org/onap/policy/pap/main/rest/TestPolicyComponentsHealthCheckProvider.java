@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2020 Nordix Foundation.
+ *  Modifications Copyright (C) 2020 AT&T Corp.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,18 +122,16 @@ public class TestPolicyComponentsHealthCheckProvider {
         when(client1.getName()).thenReturn(CLIENT_1);
         when(client1.getBaseUrl()).thenReturn("url1");
         when(response1.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
-        when(response1.readEntity(HealthCheckReport.class))
-            .thenReturn(createReport(HttpURLConnection.HTTP_OK, true));
+        when(response1.readEntity(HealthCheckReport.class)).thenReturn(createReport(HttpURLConnection.HTTP_OK, true));
         when(client1.get()).thenReturn(response1);
 
         when(client2.getName()).thenReturn("client2");
         when(client2.getBaseUrl()).thenReturn("url2");
         when(response2.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
-        when(response2.readEntity(HealthCheckReport.class))
-            .thenReturn(createReport(HttpURLConnection.HTTP_OK, true));
+        when(response2.readEntity(HealthCheckReport.class)).thenReturn(createReport(HttpURLConnection.HTTP_OK, true));
         when(client2.get()).thenReturn(response2);
 
-        PapParameterGroup papParameterGroup =  ParameterService.get(PAP_GROUP_PARAMS_NAME);
+        PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
         List<BusTopicParams> params = papParameterGroup.getHealthCheckRestClientParameters();
         when(clientFactory.build(params.get(0))).thenReturn(client1);
         when(clientFactory.build(params.get(1))).thenReturn(client2);
@@ -162,26 +161,25 @@ public class TestPolicyComponentsHealthCheckProvider {
     public void testFetchPolicyComponentsHealthStatus_unhealthyClient() throws Exception {
         when(response1.getStatus()).thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
         when(response1.readEntity(HealthCheckReport.class))
-            .thenReturn(createReport(HttpURLConnection.HTTP_INTERNAL_ERROR, false));
+                .thenReturn(createReport(HttpURLConnection.HTTP_INTERNAL_ERROR, false));
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
         assertFalse((Boolean) result.get("healthy"));
         HealthCheckReport report = (HealthCheckReport) result.get(CLIENT_1);
         assertFalse(report.isHealthy());
 
         when(response1.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
-        when(response1.readEntity(HealthCheckReport.class))
-            .thenReturn(createReport(HttpURLConnection.HTTP_OK, false));
+        when(response1.readEntity(HealthCheckReport.class)).thenReturn(createReport(HttpURLConnection.HTTP_OK, false));
         Map<String, Object> result2 = callFetchPolicyComponentsHealthStatus();
         assertFalse((Boolean) result2.get("healthy"));
         HealthCheckReport report2 = (HealthCheckReport) result.get(CLIENT_1);
-        assertFalse(report.isHealthy());
+        assertFalse(report2.isHealthy());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testFetchPolicyComponentsHealthStatus_unhealthyPdps() throws Exception {
-        //Get a PDP and set it unhealthy
-        groups.get(0).getPdpSubgroups().get(0)
-            .getPdpInstances().get(0).setHealthy(PdpHealthStatus.NOT_HEALTHY);
+        // Get a PDP and set it unhealthy
+        groups.get(0).getPdpSubgroups().get(0).getPdpInstances().get(0).setHealthy(PdpHealthStatus.NOT_HEALTHY);
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
         Map<String, List<Pdp>> pdpListWithType = (Map<String, List<Pdp>>) result.get(PapConstants.POLICY_PDPS);
         assertEquals(2, pdpListWithType.size());

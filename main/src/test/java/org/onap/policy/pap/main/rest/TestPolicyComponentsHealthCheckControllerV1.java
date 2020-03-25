@@ -55,8 +55,7 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
     public static void setUpClass() {
         // To skip calling to the remote components
         PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
-        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup,
-            "healthCheckRestClientParameters");
+        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
         savedBusTopicParams = new ArrayList<>(lo);
         lo.clear();
     }
@@ -67,8 +66,7 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
     @AfterClass
     public static void tearDownClass() {
         PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
-        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup,
-            "healthCheckRestClientParameters");
+        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
         lo.addAll(savedBusTopicParams);
     }
 
@@ -77,6 +75,7 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
         super.testSwagger(ENDPOINT);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testPolicyComponentsHealthCheck() throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(ENDPOINT);
