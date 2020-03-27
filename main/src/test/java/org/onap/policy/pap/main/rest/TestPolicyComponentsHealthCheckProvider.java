@@ -153,7 +153,7 @@ public class TestPolicyComponentsHealthCheckProvider {
     public void testFetchPolicyComponentsHealthStatus_allHealthy() throws Exception {
         PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider(clientFactory);
         Pair<Status, Map<String, Object>> ret = provider.fetchPolicyComponentsHealthStatus();
-        assertEquals(ret.getLeft(), Response.Status.OK);
+        assertEquals(Response.Status.OK, ret.getLeft());
         assertTrue((Boolean) ret.getRight().get("healthy"));
     }
 
