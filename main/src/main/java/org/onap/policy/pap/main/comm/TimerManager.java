@@ -303,6 +303,8 @@ public class TimerManager implements Runnable {
      * @throws InterruptedException if this thread is interrupted while sleeping
      */
     protected void sleep(long timeMs) throws InterruptedException {
-        stopper.await(timeMs, TimeUnit.MILLISECONDS);
+        if (stopper.await(timeMs, TimeUnit.MILLISECONDS)) {
+            logger.info("sleep finishing due to stop()");
+        }
     }
 }

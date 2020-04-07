@@ -103,7 +103,7 @@ public class Publisher<T> implements Runnable {
 
             if (stopNow) {
                 // unblock any other publisher threads
-                queue.offer(new QueueToken<>(null));
+                queue.add(new QueueToken<>(null));
                 break;
             }
 
