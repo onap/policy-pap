@@ -80,7 +80,12 @@
           ],
           "currentInstanceCount": 0,
           "desiredInstanceCount": 1,
-          "policies": []
+          "policies": [
+            {
+              "name": "SDNC_Policy.ONAP_VNF_NAMING_TIMESTAMP",
+              "version": "1.0.0"
+            }
+          ]
         },
         {
           "pdpType": "drools",
