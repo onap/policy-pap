@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
@@ -347,7 +347,12 @@ public class SessionData {
      * @throws PfModelException if an error occurred
      */
     public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaPolicyTypeIdentifier type) throws PfModelException {
-        List<GroupData> data = type2groups.get(type);
+        /*
+         * Cannot use computeIfAbsent() because the enclosed code throws an unchecked
+         * exception and handling that would obfuscate the code too much, thus disabling
+         * the sonar.
+         */
+        List<GroupData> data = type2groups.get(type);   // NOSONAR
         if (data == null) {
             PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
                             .groupState(PdpState.ACTIVE).build();
