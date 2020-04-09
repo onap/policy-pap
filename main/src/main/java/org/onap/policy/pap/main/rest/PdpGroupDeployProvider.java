@@ -263,8 +263,6 @@ public class PdpGroupDeployProvider extends ProviderBase {
         }
 
 
-        // TODO add code to ensure that dbsub has at least one PDP instance if policies is not empty
-
         Set<String> pdps = dbsub.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaPolicyIdentifier policyId : deployed) {

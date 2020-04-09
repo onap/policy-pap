@@ -156,7 +156,11 @@ public class Main {
      *
      * @param args the arguments
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] args) {      // NOSONAR
+        /*
+         * NOTE: arguments are validated by the constructor, thus sonar is disabled.
+         */
+
         new Main(args);
     }
 }
