@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -82,15 +81,9 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
 
     private void handleActiveState(final String groupName) throws PfModelException {
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            final PdpGroupFilter filter = PdpGroupFilter.builder().name(groupName).groupState(PdpState.ACTIVE).build();
-            final List<PdpGroup> activePdpGroups = databaseProvider.getFilteredPdpGroups(filter);
             final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName);
-            if (activePdpGroups.isEmpty() && !pdpGroups.isEmpty()) {
+            if (!pdpGroups.isEmpty() && !PdpState.ACTIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
                 updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.ACTIVE);
-                sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
-            } else if (!pdpGroups.isEmpty() && !activePdpGroups.isEmpty()) {
-                updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.ACTIVE);
-                updatePdpGroup(databaseProvider, activePdpGroups, PdpState.PASSIVE);
                 sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
             }
         }
@@ -104,14 +97,6 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
                 sendPdpMessage(pdpGroups.get(0), PdpState.PASSIVE, databaseProvider);
             }
         }
-    }
-
-    private void updatePdpGroup(final PolicyModelsProvider databaseProvider, final List<PdpGroup> pdpGroups,
-            final PdpState pdpState) throws PfModelException {
-        pdpGroups.get(0).setPdpGroupState(pdpState);
-        databaseProvider.updatePdpGroups(pdpGroups);
-
-        LOGGER.debug("Updated PdpGroup in DB - {} ", pdpGroups);
     }
 
     private void updatePdpGroupAndPdp(final PolicyModelsProvider databaseProvider, final List<PdpGroup> pdpGroups,
