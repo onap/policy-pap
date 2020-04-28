@@ -250,6 +250,11 @@ public abstract class RequestImpl implements Request {
                 return;
             }
 
+            if (!message.getRequestId().equals(response.getResponse().getResponseTo())) {
+                logger.info("{} ignore old response via {} {}: {}", getName(), infra, topic, response.getRequestId());
+                return;
+            }
+
             svcmgr.stop();
 
             String reason = checkResponse(response);

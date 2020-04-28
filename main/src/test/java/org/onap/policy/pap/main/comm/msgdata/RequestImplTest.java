@@ -40,6 +40,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
+import org.onap.policy.models.pdp.concepts.PdpResponseDetails;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -65,7 +66,9 @@ public class RequestImplTest extends CommonRequestBase {
         response = new PdpStatus();
         msg = new PdpStateChange();
 
-        response.setName(PDP1);
+        response.setName(PDP1);;
+        response.setResponse(new PdpResponseDetails());
+        response.getResponse().setResponseTo(msg.getRequestId());
         msg.setName(PDP1);
 
         req = new MyRequest(reqParams, MY_REQ_NAME, msg);
@@ -303,6 +306,19 @@ public class RequestImplTest extends CommonRequestBase {
 
         verify(listener, never()).success(any());
         verify(listener, never()).failure(any(), any());
+    }
+
+    @Test
+    public void testProcessResponse_WrongRequest() {
+        req.startPublishing();
+
+        response.getResponse().setResponseTo(DIFFERENT);
+
+        invokeProcessResponse(response);
+
+        verify(listener, never()).success(any());
+        verify(listener, never()).failure(any(), any());
+        verify(timer, never()).cancel();
     }
 
     @Test
