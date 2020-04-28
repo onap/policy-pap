@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "deb52706_5b364e37",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpRequests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-04-28T21:45:12Z",
+      "side": 1,
+      "message": "License!!!",
+      "range": {
+        "startLine": 5,
+        "startChar": 17,
+        "endLine": 5,
+        "endChar": 21
+      },
+      "revId": "36a8f62a2f2e2248d94f9effc1d0f33b8dcdfee7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
