@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -247,6 +247,16 @@ public abstract class RequestImpl implements Request {
 
             if (!svcmgr.isAlive()) {
                 // this particular request must have been discarded
+                return;
+            }
+
+            /*
+             * Note: don't have to verify that getResponse() != null, as this code won't
+             * even be reached if that's the case.
+             */
+            if (!message.getRequestId().equals(response.getResponse().getResponseTo())) {
+                logger.info("{} ignore old response via {} {}: {}", getName(), infra, topic,
+                                response.getResponse().getResponseTo());
                 return;
             }
 

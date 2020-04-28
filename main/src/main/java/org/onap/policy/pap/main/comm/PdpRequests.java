@@ -80,12 +80,9 @@ public class PdpRequests {
         }
 
         // try to reconfigure an existing request with the new message
-        //
-        // don't reconfigure the first request
         PdpMessage newMessage = request.getMessage();
-        int count = 0;
         for (Request req : requests) {
-            if (count++ > 0 && req.reconfigure(newMessage)) {
+            if (req.reconfigure(newMessage)) {
                 return;
             }
         }
