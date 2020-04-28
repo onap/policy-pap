@@ -50,8 +50,8 @@ public class PdpRequests {
 
     /**
      * Queue of requests to be published. The first item in the queue is currently being
-     * published. Currently, there will be at most three messages in the queue: PASSIVE,
-     * ACTIVE, and UPDATE.
+     * published. Currently, there will be at most four messages in the queue: the request
+     * being worked, one PASSIVE request, one ACTIVE, and one UPDATE.
      */
     private final Queue<Request> requests = new ArrayDeque<>(3);
 
@@ -80,9 +80,12 @@ public class PdpRequests {
         }
 
         // try to reconfigure an existing request with the new message
+        //
+        // don't reconfigure the first request
         PdpMessage newMessage = request.getMessage();
+        int count = 0;
         for (Request req : requests) {
-            if (req.reconfigure(newMessage)) {
+            if (count++ > 0 && req.reconfigure(newMessage)) {
                 return;
             }
         }
