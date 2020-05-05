@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,12 +181,8 @@ public class PolicyNotifier {
      * @param data data to be added
      */
     public synchronized void addDeploymentData(PolicyPdpNotificationData data) {
-        PolicyNotification notification = new PolicyNotification();
-
-        undeployTracker.removeData(data, notification.getDeleted());
+        undeployTracker.removeData(data);
         deployTracker.addData(data);
-
-        publish(notification);
     }
 
     /**
@@ -196,12 +192,8 @@ public class PolicyNotifier {
      * @param data data to be added
      */
     public synchronized void addUndeploymentData(PolicyPdpNotificationData data) {
-        PolicyNotification notification = new PolicyNotification();
-
-        deployTracker.removeData(data, notification.getAdded());
+        deployTracker.removeData(data);
         undeployTracker.addData(data);
-
-        publish(notification);
     }
 
     /**

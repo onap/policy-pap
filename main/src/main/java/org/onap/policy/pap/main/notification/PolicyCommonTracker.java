@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,10 +104,8 @@ public abstract class PolicyCommonTracker {
      * Removes a set of PDPs from all policies within the tracker.
      *
      * @param notifyData data identifying the policy and the PDPs to be removed from it
-     * @param statusList status messages are added here if policies become complete as a
-     *        result of this operation
      */
-    public void removeData(PolicyPdpNotificationData notifyData, List<PolicyStatus> statusList) {
+    public void removeData(PolicyPdpNotificationData notifyData) {
 
         policy2data.computeIfPresent(notifyData.getPolicyId(), (policyId, data) -> {
 
@@ -116,9 +114,7 @@ public abstract class PolicyCommonTracker {
                 return data;
             }
 
-            // this policy is complete - notify
-            statusList.add(makeStatus(policyId, data));
-
+            // this policy is complete
             return (shouldRemove(data) ? null : data);
         });
     }
