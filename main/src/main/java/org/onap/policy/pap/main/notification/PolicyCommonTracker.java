@@ -104,10 +104,8 @@ public abstract class PolicyCommonTracker {
      * Removes a set of PDPs from all policies within the tracker.
      *
      * @param notifyData data identifying the policy and the PDPs to be removed from it
-     * @param statusList status messages are added here if policies become complete as a
-     *        result of this operation
      */
-    public void removeData(PolicyPdpNotificationData notifyData, List<PolicyStatus> statusList) {
+    public void removeData(PolicyPdpNotificationData notifyData) {
 
         policy2data.computeIfPresent(notifyData.getPolicyId(), (policyId, data) -> {
 
@@ -116,9 +114,7 @@ public abstract class PolicyCommonTracker {
                 return data;
             }
 
-            // this policy is complete - notify
-            statusList.add(makeStatus(policyId, data));
-
+            // this policy is complete
             return (shouldRemove(data) ? null : data);
         });
     }

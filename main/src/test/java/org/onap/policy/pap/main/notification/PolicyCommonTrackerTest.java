@@ -141,9 +141,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.addData(makeData(policy2, PDP1, PDP3));
 
         // remove a policy that isn't in the map
-        List<PolicyStatus> statusList = new ArrayList<>();
-        tracker.removeData(makeData(policy3, PDP1), statusList);
-        assertTrue(statusList.isEmpty());
+        tracker.removeData(makeData(policy3, PDP1));
         assertEquals(2, map.size());
     }
 
@@ -155,10 +153,8 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.addData(makeData(policy1, PDP1, PDP2));
         tracker.addData(makeData(policy2, PDP1, PDP3));
 
-        // remove some PDPs from a policy - no notifications and no changes to the map
-        List<PolicyStatus> statusList = new ArrayList<>();
-        tracker.removeData(makeData(policy2, PDP1), statusList);
-        assertTrue(statusList.isEmpty());
+        // remove some PDPs from a policy - no changes to the map
+        tracker.removeData(makeData(policy2, PDP1));
         assertTrue(map.containsKey(policy1));
         assertTrue(map.containsKey(policy2));
     }
@@ -180,11 +176,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.addData(makeData(policy2, PDP1, PDP3));
 
         // remove all the PDPs from one policy, but do NOT remove the policy
-        List<PolicyStatus> statusList = new ArrayList<>();
-        tracker.removeData(makeData(policy2, PDP1, PDP3), statusList);
-        assertEquals(1, statusList.size());
-        assertEquals(policy2, statusList.get(0).getPolicy());
-        assertEquals(type, statusList.get(0).getPolicyType());
+        tracker.removeData(makeData(policy2, PDP1, PDP3));
         assertTrue(map.containsKey(policy1));
         assertTrue(map.containsKey(policy2));
     }
@@ -198,11 +190,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.addData(makeData(policy2, PDP1, PDP3));
 
         // remove all the PDPs from one policy, and remove the policy
-        List<PolicyStatus> statusList = new ArrayList<>();
-        tracker.removeData(makeData(policy1, PDP1, PDP2, PDP3), statusList);
-        assertEquals(1, statusList.size());
-        assertEquals(policy1, statusList.get(0).getPolicy());
-        assertEquals(type, statusList.get(0).getPolicyType());
+        tracker.removeData(makeData(policy1, PDP1, PDP2, PDP3));
         assertFalse(map.containsKey(policy1));
         assertTrue(map.containsKey(policy2));
     }

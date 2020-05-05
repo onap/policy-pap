@@ -22,7 +22,6 @@ package org.onap.policy.pap.main.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -223,32 +222,20 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
 
     @Test
     public void testAddDeploymentData() {
-        doAnswer(addStatus(1, status1, status2)).when(undeploy).removeData(any(), any());
-
         PolicyPdpNotificationData data = makeData(policy1, PDP1, PDP2);
         notifier.addDeploymentData(data);
 
         verify(deploy).addData(data);
-        verify(undeploy).removeData(eq(data), any());
-
-        PolicyNotification notification = getNotification();
-        assertEquals(Arrays.asList(status1, status2), notification.getDeleted());
-        assertTrue(notification.getAdded().isEmpty());
+        verify(undeploy).removeData(eq(data));
     }
 
     @Test
     public void testAddUndeploymentData() {
-        doAnswer(addStatus(1, status1, status2)).when(deploy).removeData(any(), any());
-
         PolicyPdpNotificationData data = makeData(policy1, PDP1, PDP2);
         notifier.addUndeploymentData(data);
 
         verify(undeploy).addData(data);
-        verify(deploy).removeData(eq(data), any());
-
-        PolicyNotification notification = getNotification();
-        assertEquals(Arrays.asList(status1, status2), notification.getAdded());
-        assertTrue(notification.getDeleted().isEmpty());
+        verify(deploy).removeData(eq(data));
     }
 
     @Test

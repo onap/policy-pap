@@ -181,12 +181,8 @@ public class PolicyNotifier {
      * @param data data to be added
      */
     public synchronized void addDeploymentData(PolicyPdpNotificationData data) {
-        PolicyNotification notification = new PolicyNotification();
-
-        undeployTracker.removeData(data, notification.getDeleted());
+        undeployTracker.removeData(data);
         deployTracker.addData(data);
-
-        publish(notification);
     }
 
     /**
@@ -196,12 +192,8 @@ public class PolicyNotifier {
      * @param data data to be added
      */
     public synchronized void addUndeploymentData(PolicyPdpNotificationData data) {
-        PolicyNotification notification = new PolicyNotification();
-
-        deployTracker.removeData(data, notification.getAdded());
+        deployTracker.removeData(data);
         undeployTracker.addData(data);
-
-        publish(notification);
     }
 
     /**
