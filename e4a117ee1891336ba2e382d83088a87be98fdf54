@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2c700742_ba0aaffe",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6458
+      },
+      "writtenOn": "2020-05-06T17:23:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "68b0a21f_38e5d305",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c8882ae_ba112c54",
         "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
         "patchSetId": 3
@@ -66,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "41d585e8_369cd4d9",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6458
+      },
+      "writtenOn": "2020-05-06T17:23:46Z",
+      "side": 1,
+      "message": "Replacing with latest for now . Created JIRA \u003cPOLICY-2544\u003e to add the release version as an environment variable.",
+      "parentUuid": "977ac1be_7a806896",
+      "range": {
+        "startLine": 34,
+        "startChar": 312,
+        "endLine": 34,
+        "endChar": 318
+      },
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e8c44656_36b8c531",
         "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/OnapPfConfig.json",
         "patchSetId": 3
@@ -80,6 +122,24 @@
       "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58ad6018_fb15d997",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/OnapPfConfig.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6458
+      },
+      "writtenOn": "2020-05-06T17:23:46Z",
+      "side": 1,
+      "message": "removed and tested. works fine.",
+      "parentUuid": "e8c44656_36b8c531",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +177,24 @@
     },
     {
       "key": {
+        "uuid": "ab584f85_8af12fdc",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/setup_components.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 6458
+      },
+      "writtenOn": "2020-05-06T17:23:46Z",
+      "side": 1,
+      "message": "This is to start the Pdp Instance.. this is a one time activity done at the setup phase.\nThe newly added script is executed with the test plan to start a new Pdp Instance with sampleGroup.",
+      "parentUuid": "f6bbf59e_8fe0422a",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8326ca31_6fdacbf8",
         "filename": "testsuites/stability/src/main/resources/testplans/pdp_sim_stop.sh",
         "patchSetId": 3
@@ -131,6 +209,24 @@
       "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0fd0515_004f4a91",
+        "filename": "testsuites/stability/src/main/resources/testplans/pdp_sim_stop.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6458
+      },
+      "writtenOn": "2020-05-06T17:23:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8326ca31_6fdacbf8",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
