@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c8882ae_ba112c54",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-05-06T11:53:01Z",
+      "side": 1,
+      "message": "I noticed this in the api testsuite also. I think that Bilal had figured a way (via script) to pull this from the pom.xml and put it in an env variable. Not saying you need to change this now - but perhaps we add a task to do that. Or maybe switch to using \"latest\"??",
+      "range": {
+        "startLine": 34,
+        "startChar": 312,
+        "endLine": 34,
+        "endChar": 318
+      },
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
