@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a8707aae_26bbd3cd",
+        "filename": "testsuites/stability/src/main/resources/testplans/pdp_sim_startup.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 6593
+      },
+      "writtenOn": "2020-05-06T11:31:13Z",
+      "side": 1,
+      "message": "Should be 2020",
+      "revId": "16342761f6c74efab3a1ab40f2cc1a7a09177cfd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f837ea3a_f029f5aa",
+        "filename": "testsuites/stability/src/main/resources/testplans/pdp_sim_stop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 6593
+      },
+      "writtenOn": "2020-05-06T11:31:13Z",
+      "side": 1,
+      "message": "2020",
+      "revId": "16342761f6c74efab3a1ab40f2cc1a7a09177cfd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
