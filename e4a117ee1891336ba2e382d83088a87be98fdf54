@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "68b0a21f_38e5d305",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-06T13:09:14Z",
+      "side": 1,
+      "message": "tabs \u003d\u003e spaces",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5c8882ae_ba112c54",
         "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
         "patchSetId": 3
@@ -19,6 +36,74 @@
         "endLine": 34,
         "endChar": 318
       },
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8c44656_36b8c531",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/OnapPfConfig.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-06T13:09:14Z",
+      "side": 1,
+      "message": "sure this port number is needed?\n\nsame question below",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb468e54_6bec10d7",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/setup_components.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-06T13:09:14Z",
+      "side": 1,
+      "message": "is this \"sleep\" needed for the pdp-simulator?",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6bbf59e_8fe0422a",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/setup_components.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-06T13:09:14Z",
+      "side": 1,
+      "message": "seems like this appears here AND in the next script - maybe only needed in one of them?  (And if it\u0027s removed from here, then the previous \"sleep\" is not needed.)",
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8326ca31_6fdacbf8",
+        "filename": "testsuites/stability/src/main/resources/testplans/pdp_sim_stop.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-06T13:09:14Z",
+      "side": 1,
+      "message": "can remove this comment",
       "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true

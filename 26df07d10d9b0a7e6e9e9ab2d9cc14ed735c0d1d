@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4939cb1_fd982e20",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-06T13:09:14Z",
+      "side": 0,
+      "message": "sure we don\u0027t want the \"--rm\" flag?",
+      "revId": "26df07d10d9b0a7e6e9e9ab2d9cc14ed735c0d1d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
