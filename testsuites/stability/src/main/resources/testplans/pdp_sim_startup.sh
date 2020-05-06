@@ -18,17 +18,5 @@
 # ============LICENSE_END=========================================================
 
 # the directory of the script
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-echo ${DIR}
-
-if [ "$#" -lt 2 ]; then
-	echo "PAP and MariaDB IPs should be passed as two parameters. PAP IP goes first."
-	exit 1
-else
-    PAP=$1
-    echo "PAP IP: ${PAP}"
-    MARIADB=$2
-    echo "MariaDB IP: ${MARIADB}"
-fi
-
-docker run -p 9090:9090 -p 6969:6969 -e "PAP_HOST=${PAP}" -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/defaultConfig.json:/opt/app/policy/pap/etc/defaultConfig.json --add-host mariadb:${MARIADB} --name policy-pap -d  nexus3.onap.org:10001/onap/policy-pap:2.2.3-SNAPSHOT
+echo $1
+docker run -v $1/config/pdp:/opt/app/policy/pdp-sim/etc/config/ --link message-router:message-router -d --rm --name pdp-simulator_sample pdp/simulator:latest

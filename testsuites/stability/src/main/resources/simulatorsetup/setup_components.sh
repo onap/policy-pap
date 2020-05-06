@@ -59,6 +59,7 @@ cd ${DIR}
 rm -rf ${WORK_DIR}
 
 docker run -p 3306:3306 -v ${DIR}/config/db:/docker-entrypoint-initdb.d --name mariadb  --env-file ${DIR}/config/db/db.conf -d --rm mariadb:10.2.14 --lower-case-table-names=1 --wait_timeout=28800
-docker run -p 3904:3904 -d --name dmaap-simulator --rm dmaap/simulator:latest
-docker run -v ${DIR}/config/pdp:/opt/app/policy/pdp-sim/etc/config/ -d --name pdp-simulator --rm pdp/simulator:latest
+docker run -p 3904:3904 -d --name message-router --rm dmaap/simulator:latest
+sleep 10
+docker run --link message-router:message-router -d --name pdp-simulator --rm pdp/simulator:latest
 docker run -p 6969:6969 --link mariadb:mariadb --name policy-api -d --rm nexus3.onap.org:10001/onap/policy-api
