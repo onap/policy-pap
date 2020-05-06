@@ -1,7 +1,8 @@
 {
     "name":"OnapPfParameterGroup",
-    "pdpStatusParameters":{
-        "timeIntervalMs": 120000,
+    "pdpStatusParameters": {
+        "pdpGroup": "sampleGroup",
+        "timeIntervalMs": 30000,
         "pdpType":"apex",
         "description":"Pdp Heartbeat",
         "supportedPolicyTypes":[{"name":"onap.policies.controlloop.operational.Apex","version":"1.0.0"}]
@@ -9,12 +10,12 @@
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "message-router" ],
+            "servers" : [ "message-router:3904" ],
             "topicCommInfrastructure" : "dmaap"
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "message-router" ],
+            "servers" : [ "message-router:3904" ],
             "topicCommInfrastructure" : "dmaap"
         }]
     }
