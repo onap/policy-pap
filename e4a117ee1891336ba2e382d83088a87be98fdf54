@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "977ac1be_7a806896",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-05-06T14:59:40Z",
+      "side": 1,
+      "message": "Following up in Pam\u0027s comment, check this reference for example:  https://git.onap.org/integration/csit/tree/plans/policy/drools-pdp/setup.sh",
+      "parentUuid": "5c8882ae_ba112c54",
+      "range": {
+        "startLine": 34,
+        "startChar": 312,
+        "endLine": 34,
+        "endChar": 318
+      },
+      "revId": "e4a117ee1891336ba2e382d83088a87be98fdf54",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e8c44656_36b8c531",
         "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/OnapPfConfig.json",
         "patchSetId": 3
