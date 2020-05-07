@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "71d7c0bb_29ffd55b",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-07T12:16:25Z",
+      "side": 1,
+      "message": "now the indentation seems too little - should typically be 4 spaces",
+      "revId": "8648107e9d426b5a5197ddb986b58d0cf9ec7cc6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
