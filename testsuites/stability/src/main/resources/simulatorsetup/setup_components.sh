@@ -21,6 +21,14 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo ${DIR}
 
+# get the PAP_HOST from the command line
+read -p 'PAP_HOST : ' PAP_HOST
+
+# setting hostname to environment variable
+echo "export API_HOST=`hostname -I | awk '{print $1}'`" >> ~/.bashrc
+echo "export PAP_HOST=$PAP_HOST" >> ~/.bashrc
+source ~/.bashrc
+
 # the temp directory used, within $DIR
 # omit the -p parameter to create a temporal directory in the default location
 WORK_DIR=`mktemp -d -p "$DIR"`
