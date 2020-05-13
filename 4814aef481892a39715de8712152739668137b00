@@ -69,6 +69,29 @@
       "revId": "4814aef481892a39715de8712152739668137b00",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cabf84d_82fbfd76",
+        "filename": "testsuites/performance/src/main/resources/testplans/perf.jmx",
+        "patchSetId": 1
+      },
+      "lineNbr": 16416,
+      "author": {
+        "id": 6593
+      },
+      "writtenOn": "2020-05-13T13:19:46Z",
+      "side": 1,
+      "message": "You could point this to be local to the jmeter tests location to avoid this being dependent on your environment, same with the one\u0027s above",
+      "range": {
+        "startLine": 16416,
+        "startChar": 36,
+        "endLine": 16416,
+        "endChar": 73
+      },
+      "revId": "4814aef481892a39715de8712152739668137b00",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
