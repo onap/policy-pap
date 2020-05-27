@@ -31,4 +31,10 @@ else
     echo "MariaDB IP: ${MARIADB}"
 fi
 
-docker run -p 9090:9090 -p 6969:6969 -e "PAP_HOST=${PAP}" -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/defaultConfig.json:/opt/app/policy/pap/etc/defaultConfig.json --add-host mariadb:${MARIADB} --name policy-pap -d --rm nexus3.onap.org:10001/onap/policy-pap:2.2-SNAPSHOT-latest
+GERRIT_BRANCH=`curl -s https://git.onap.org/policy/pap/plain/.gitreview | grep defaultbranch | awk '{split($0,a,"="); print a[2]}'`
+
+sudo apt-get -y install libxml2-utils
+POLICY_PAP_VERSION_EXTRACT="$(curl -q --silent https://git.onap.org/policy/pap/plain/pom.xml?h=${GERRIT_BRANCH} | xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' -)"
+PAP_IMAGE=policy-pap:${POLICY_PAP_VERSION_EXTRACT:0:3}-SNAPSHOT-latest
+
+docker run -p 9090:9090 -p 6969:6969 -e "PAP_HOST=${PAP}" -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/defaultConfig.json:/opt/app/policy/pap/etc/defaultConfig.json --add-host mariadb:${MARIADB} --name policy-pap -d  nexus3.onap.org:10001/onap/${PAP_IMAGE}
