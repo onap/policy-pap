@@ -31,4 +31,8 @@ else
     echo "MariaDB IP: ${MARIADB}"
 fi
 
-docker run -p 9090:9090 -p 6969:6969 -e "PAP_HOST=${PAP}" -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/defaultConfig.json:/opt/app/policy/pap/etc/defaultConfig.json --add-host mariadb:${MARIADB} --name policy-pap -d --rm nexus3.onap.org:10001/onap/policy-pap:2.2-SNAPSHOT-latest
+GIT_TOP=$(git rev-parse --show-toplevel)
+POLICY_PAP_VERSION_EXTRACT=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' "${GIT_TOP}"/pom.xml)
+PAP_IMAGE=policy-pap:${POLICY_PAP_VERSION_EXTRACT:0:3}-SNAPSHOT-latest
+
+docker run -p 9090:9090 -p 6969:6969 -e "PAP_HOST=${PAP}" -v ${DIR}/config/pap/bin/policy-pap.sh:/opt/app/policy/pap/bin/policy-pap.sh -v ${DIR}/config/pap/etc/defaultConfig.json:/opt/app/policy/pap/etc/defaultConfig.json --add-host mariadb:${MARIADB} --name policy-pap -d  nexus3.onap.org:10001/onap/${PAP_IMAGE}
