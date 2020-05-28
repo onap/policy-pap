@@ -16,6 +16,24 @@
       "revId": "0350e9d32950d3edfd215d4b4660a2dc358434df",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f0ded60_364cb3d4",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6458
+      },
+      "writtenOn": "2020-05-28T11:16:14Z",
+      "side": 1,
+      "message": "The CSIT file which I referred had the GERRIT_BRANCH set as master, hence followed the same.\nAs suggested, its good to obtain the same from .gitreview file , fixed in patch 2.",
+      "parentUuid": "ca9bb40f_88f41c87",
+      "revId": "0350e9d32950d3edfd215d4b4660a2dc358434df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
