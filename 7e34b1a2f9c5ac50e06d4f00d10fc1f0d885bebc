@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1cec9eb8_276fb30b",
+        "filename": "testsuites/stability/src/main/resources/papsetup/setup_pap.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-05-28T12:07:39Z",
+      "side": 1,
+      "message": "I don\u0027t think this will work as gerrit will make an assumption about which branch to pull from (probably master), which defeats the purpose.  So I guess we have a choice as to how to run the stability test:\n1) if we just want to copy the relevant files (e.g., setup_pap.sh, jmx) to the target VM,\n   then we can just leave the branch hard-coded, as you had it before; or\n2) if we use git-clone to pull the whole pap repo onto the target VM, then we don\u0027t even need\n   to determine the branch and can extract the version directly from the pom in the cloned\n   repo.  Something like:\n     GIT_TOP\u003d$(git rev-parse --show-toplevel)\n     POLICY_PAP_VERSION_EXTRACT\u003d$(xmllint --xpath\n       \u0027/*[local-name()\u003d\"project\"]/*[local-name()\u003d\"version\"]/text()\u0027\n       \"${GIT_TOP}\"/pom.xml)",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 195
+      },
+      "revId": "7e34b1a2f9c5ac50e06d4f00d10fc1f0d885bebc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
