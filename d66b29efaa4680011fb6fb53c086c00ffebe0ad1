@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "37805001_0735bb63",
+        "filename": "postman/pap-api-collection.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-06-02T21:52:51Z",
+      "side": 1,
+      "message": "Removed tabs manually, they are added by postman export.",
+      "parentUuid": "77c7432a_e5eaf4af",
+      "revId": "d66b29efaa4680011fb6fb53c086c00ffebe0ad1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cb4ed871_9f387aa6",
         "filename": "postman/pap-api-collection.json",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2020-06-02T11:56:39Z",
       "side": 1,
       "message": "Could we have a parameter here to avoid a clear password ?",
+      "revId": "d66b29efaa4680011fb6fb53c086c00ffebe0ad1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65915343_2edb82e8",
+        "filename": "postman/pap-api-collection.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2020-06-02T21:52:51Z",
+      "side": 1,
+      "message": "Done, moved the authorization from individual test cases to collection level. \nAlso, added variable in collection for USER \u0026 PASSWORD.",
+      "parentUuid": "cb4ed871_9f387aa6",
       "revId": "d66b29efaa4680011fb6fb53c086c00ffebe0ad1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
