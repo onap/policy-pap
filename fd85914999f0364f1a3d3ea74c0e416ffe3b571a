@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8920b514_31e89e18",
+        "filename": "postman/pap-api-collection.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 681,
+      "author": {
+        "id": 5658
+      },
+      "writtenOn": "2020-06-03T02:13:12Z",
+      "side": 1,
+      "message": "This is good that the authentication is now at one place only for all requests!\n\nI thought that we could have even been further by leaving the values empty or providing just a place-holder here, without keeping any real username \u0026 password in clear in the repo.\n\nThe price for that is that any user who want to run the collection needs to know authentication data and has to set the value in his/her postman variable. \n\nThis is the recurring trade-off between security and convenience ;)",
+      "revId": "fd85914999f0364f1a3d3ea74c0e416ffe3b571a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
