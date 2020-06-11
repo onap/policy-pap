@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -439,9 +440,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
             // add the policy to the subgroup
             subgroup.getPolicies().add(desiredIdent);
 
-            logger.info("add policy {} {} to subgroup {} {} count={}", desiredIdent.getName(),
-                            desiredIdent.getVersion(), group.getName(), subgroup.getPdpType(),
-                            subgroup.getPolicies().size());
+            logger.info("add policy {} to subgroup {} {} count={}", desiredIdent, group.getName(),
+                            subgroup.getPdpType(), subgroup.getPolicies().size());
 
             Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
             data.trackDeploy(desiredIdent, pdps);
@@ -505,8 +505,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
             }
 
             // already has the desired policy & version
-            logger.info("subgroup {} {} already contains policy {} {}", group.getName(), subgroup.getPdpType(), desnm,
-                            desvers);
+            logger.info("subgroup {} {} already contains policy {}", group.getName(), subgroup.getPdpType(),
+                        desiredIdent);
             return true;
         }
 
