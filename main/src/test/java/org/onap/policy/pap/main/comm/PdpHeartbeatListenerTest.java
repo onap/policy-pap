@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.utils.coder.CoderException;
@@ -156,6 +156,21 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status7.setHealthy(PdpHealthStatus.HEALTHY);
         status7.setPdpSubgroup(APEX_TYPE);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7);
+        verifyPdpGroup(DEFAULT_GROUP, 2);
+
+        // Testing old message for pdp_1 - should have no effect
+        final PdpStatus status7b = new PdpStatus();
+        status7b.setTimestampMs(System.currentTimeMillis() - PdpStatusMessageHandler.MAX_AGE_MS - 1);
+        status7b.setName(PDP_NAME);
+        status7b.setState(PdpState.TERMINATED);
+        status7b.setPdpGroup(DEFAULT_GROUP);
+        status7b.setPdpType(APEX_TYPE);
+        status7b.setPdpSubgroup(APEX_TYPE);
+        status7b.setHealthy(PdpHealthStatus.HEALTHY);
+        final List<ToscaPolicyIdentifier> idents7b =
+                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        status7b.setPolicies(idents7b);
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7b);
         verifyPdpGroup(DEFAULT_GROUP, 2);
 
         // Testing pdp termination case for pdp_1
