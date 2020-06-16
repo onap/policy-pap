@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +24,7 @@ package org.onap.policy.pap.main.comm;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
+import org.onap.policy.pap.main.parameters.PdpParameters;
 
 /**
  * Listener for PDP Status messages which either represent registration or heart beat.
@@ -31,10 +33,21 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
  */
 public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
+    private final PdpParameters params;
+
+    /**
+     * Constructs the object.
+     *
+     * @param params PDP parameters
+     */
+    public PdpHeartbeatListener(PdpParameters params) {
+        this.params = params;
+    }
+
     @Override
     public void onTopicEvent(final CommInfrastructure infra, final String topic, final PdpStatus message) {
 
-        final PdpStatusMessageHandler handler = new PdpStatusMessageHandler();
+        final PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
         handler.handlePdpStatus(message);
     }
 }

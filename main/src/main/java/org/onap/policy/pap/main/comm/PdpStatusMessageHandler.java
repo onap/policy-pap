@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ package org.onap.policy.pap.main.comm;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -40,6 +40,7 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,11 +53,16 @@ import org.slf4j.LoggerFactory;
 public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpStatusMessageHandler.class);
 
+    private final PdpParameters params;
+
     /**
      * Constructs the object.
+     *
+     * @param params PDP parameters
      */
-    public PdpStatusMessageHandler() {
+    public PdpStatusMessageHandler(PdpParameters params) {
         super(true);
+        this.params = params;
     }
 
     /**
@@ -65,6 +71,13 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
      * @param message the PdpStatus message
      */
     public void handlePdpStatus(final PdpStatus message) {
+        long diffms = System.currentTimeMillis() - message.getTimestampMs();
+        if (diffms > params.getMaxMessageAgeMs()) {
+            long diffsec = TimeUnit.SECONDS.convert(diffms, TimeUnit.MILLISECONDS);
+            LOGGER.info("discarding status message from {} age {}s", message.getName(), diffsec);
+            return;
+        }
+
         synchronized (updateLock) {
             try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
                 if (message.getPdpSubgroup() == null) {

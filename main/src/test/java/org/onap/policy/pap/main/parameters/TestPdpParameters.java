@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,11 @@ public class TestPdpParameters {
         assertEquals(5, state.getMaxWaitMs());
 
         assertEquals(6L, params.getHeartBeatMs());
+
+        assertEquals(20000L, params.getMaxMessageAgeMs());
+
+        // check default value
+        assertEquals(600000L, new PdpParameters().getMaxMessageAgeMs());
     }
 
     @Test
@@ -66,6 +71,13 @@ public class TestPdpParameters {
         assertFalse(result.isValid());
         assertTrue(result.getResult().contains(
                         "field 'heartBeatMs' type 'long' value '0' INVALID, must be >= 1".replace('\'', '"')));
+
+        // invalid max message age
+        json2 = json.replaceFirst(": 20000", ": 0");
+        result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
+        assertFalse(result.isValid());
+        assertTrue(result.getResult().contains(
+                        "field 'maxMessageAgeMs' type 'long' value '0' INVALID, must be >= 1".replace('\'', '"')));
 
         // no update params
         json2 = testData.nullifyField(json, "updateParameters");

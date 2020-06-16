@@ -16,7 +16,8 @@
             "maxRetryCount": 1,
             "maxWaitMs": 5
         },
-        "heartBeatMs": 6
+        "heartBeatMs": 6,
+        "maxMessageAgeMs": 20000
     },
     "databaseProviderParameters": {
         "name": "PolicyModelsProviderParameters",
