@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -219,7 +220,7 @@ public class RequestImplTest extends CommonRequestBase {
         req.startPublishing();
         QueueToken<PdpMessage> token2 = queue.poll();
         assertNotNull(token2);
-        assertTrue(token2 != token);
+        assertNotSame(token, token2);
         assertSame(msg, token2.get());
     }
 
@@ -247,7 +248,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         // a new token should have been placed in the queue
         QueueToken<PdpMessage> token2 = queue.poll();
-        assertTrue(token != token2);
+        assertNotSame(token, token2);
         assertNull(queue.poll());
         assertNotNull(token2);
         assertSame(msg3, token2.get());
@@ -259,7 +260,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         // a new token should have been placed in the queue
         QueueToken<PdpMessage> token3 = queue.poll();
-        assertTrue(token2 != token3);
+        assertNotSame(token2, token3);
         assertNull(queue.poll());
         assertNotNull(token3);
         assertSame(msg4, token3.get());

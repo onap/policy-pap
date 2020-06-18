@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.notification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -126,7 +127,7 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         assertFalse(data.isComplete());
 
         // policy 2 should have its own data
-        assertTrue(map.get(policy2) != data);
+        assertNotSame(data, map.get(policy2));
         data = map.get(policy2);
         assertNotNull(data);
         assertFalse(data.isComplete());
