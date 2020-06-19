@@ -21,12 +21,20 @@
 package org.onap.policy.pap.main.rest;
 
 import java.net.HttpURLConnection;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,6 +48,7 @@ import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -100,19 +109,38 @@ public class PolicyComponentsHealthCheckProvider {
         Map<String, Object> result = new HashMap<>();
 
         // Check remote components
-        for (HttpClient client : clients) {
-            HealthCheckReport report = fetchPolicyComponentHealthStatus(client);
-            if (!report.isHealthy()) {
-                isHealthy = false;
+        if (!clients.isEmpty()) {
+            ExecutorService executor = Executors.newFixedThreadPool(clients.size());
+            List<Callable<Entry<String, Object>>> tasks = new ArrayList<>();
+
+            for (HttpClient client : clients) {
+                tasks.add(() -> {
+                    return new AbstractMap.SimpleEntry<>(client.getName(), fetchPolicyComponentHealthStatus(client));
+                });
             }
-            result.put(client.getName(), report);
+            try {
+                List<Future<Entry<String, Object>>> futures = executor.invokeAll(tasks);
+                result = futures.stream().map(entryFuture -> {
+                    try {
+                        return entryFuture.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        Thread.currentThread().interrupt();
+                        throw new PfModelRuntimeException(Status.BAD_REQUEST, "Client Health check interrupted ", e);
+                    }
+                }).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+                isHealthy = result.values().stream().allMatch(o -> ((HealthCheckReport) o).isHealthy());
+            } catch (InterruptedException exp) {
+                LOGGER.error("Client Health request failed", exp, Status.INTERNAL_SERVER_ERROR);
+                Thread.currentThread().interrupt();
+            }
         }
 
         // Check PAP itself
         HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck();
         RestServerParameters restServerParameters = papParameterGroup.getRestServerParameters();
-        papReport.setUrl((restServerParameters.isHttps() ? "https://" : "http://") + papReport.getUrl() + ":"
-            + restServerParameters.getPort() + POLICY_PAP_HEALTHCHECK_URI);
+        papReport.setUrl(
+            (restServerParameters.isHttps() ? "https://" : "http://") + papReport.getUrl() + ":" + restServerParameters
+                .getPort() + POLICY_PAP_HEALTHCHECK_URI);
         if (!papReport.isHealthy()) {
             isHealthy = false;
         }
@@ -133,13 +161,13 @@ public class PolicyComponentsHealthCheckProvider {
 
         result.put(HEALTH_STATUS, isHealthy);
         LOGGER.debug("Policy Components HealthCheck Response - {}", result);
-        return Pair.of(Response.Status.OK, result);
+        return Pair.of(Status.OK, result);
     }
 
     private Map<String, List<Pdp>> fetchPdpsHealthStatus() throws PfModelException {
         Map<String, List<Pdp>> pdpListWithType = new HashMap<>();
-        final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-            Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+        final PolicyModelsProviderFactoryWrapper modelProviderWrapper = Registry
+            .get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
             final List<PdpGroup> groups = databaseProvider.getPdpGroups(null);
             for (final PdpGroup group : groups) {
@@ -156,8 +184,7 @@ public class PolicyComponentsHealthCheckProvider {
         HealthCheckReport clientReport;
         try {
             Response resp = httpClient.get();
-            clientReport = replaceIpWithHostname(
-                resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl());
+            clientReport = replaceIpWithHostname(resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl());
 
             // A health report is read successfully when HTTP status is not OK, it is also not healthy
             // even in the report it says healthy.
