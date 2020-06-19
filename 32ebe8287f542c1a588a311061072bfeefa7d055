@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "066d2295_d3bd5ccb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-19T20:10:47Z",
+      "side": 1,
+      "message": "add a blank line between this line and the next",
+      "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dafef2b2_a66beed8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-19T20:10:47Z",
+      "side": 1,
+      "message": "sonar: don\u0027t need enclosing \"{}\" nor \"return\"",
+      "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "69181dba_80118808",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 5
@@ -13,6 +47,30 @@
       "writtenOn": "2020-06-19T19:42:28Z",
       "side": 1,
       "message": "this will overwrite it with the last value - should it just set it if one is false?",
+      "range": {
+        "startLine": 131,
+        "startChar": 16,
+        "endLine": 131,
+        "endChar": 104
+      },
+      "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bcd8b62_eb9a7bf1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-19T20:10:47Z",
+      "side": 1,
+      "message": "looks correct to me - isHealthy will be set to true if isHealthy for ALL of the individual items is true",
+      "parentUuid": "69181dba_80118808",
       "range": {
         "startLine": 131,
         "startChar": 16,
@@ -42,6 +100,23 @@
         "endLine": 133,
         "endChar": 59
       },
+      "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a86170c_ef690c51",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-19T20:10:47Z",
+      "side": 1,
+      "message": "need a \"finally\" block to destroy the executor service",
       "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
