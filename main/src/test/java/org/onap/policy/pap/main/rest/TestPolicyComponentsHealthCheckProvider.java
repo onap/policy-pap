@@ -65,6 +65,7 @@ public class TestPolicyComponentsHealthCheckProvider {
     private static final String CLIENT_1 = "client1";
     private static final String PDP_GROUP_DATA_FILE = "rest/pdpGroup.json";
     private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
+    private static final String HEALTHY="healthy";
 
     @Mock
     private PolicyModelsProvider dao;
@@ -135,6 +136,9 @@ public class TestPolicyComponentsHealthCheckProvider {
         List<BusTopicParams> params = papParameterGroup.getHealthCheckRestClientParameters();
         when(clientFactory.build(params.get(0))).thenReturn(client1);
         when(clientFactory.build(params.get(1))).thenReturn(client2);
+
+        PolicyComponentsHealthCheckProvider.initializeClientHealthCheckExecutorService(papParameterGroup,
+            clientFactory);
     }
 
     /**
@@ -147,56 +151,58 @@ public class TestPolicyComponentsHealthCheckProvider {
         } else {
             ParameterService.deregister(PAP_GROUP_PARAMS_NAME);
         }
+        PolicyComponentsHealthCheckProvider.cleanup();
     }
 
+
     @Test
-    public void testFetchPolicyComponentsHealthStatus_allHealthy() throws Exception {
-        PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider(clientFactory);
+    public void testFetchPolicyComponentsHealthStatus_allHealthy() {
+        PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider();
         Pair<Status, Map<String, Object>> ret = provider.fetchPolicyComponentsHealthStatus();
         assertEquals(Response.Status.OK, ret.getLeft());
-        assertTrue((Boolean) ret.getRight().get("healthy"));
+        assertTrue((Boolean) ret.getRight().get(HEALTHY));
     }
 
     @Test
-    public void testFetchPolicyComponentsHealthStatus_unhealthyClient() throws Exception {
+    public void testFetchPolicyComponentsHealthStatus_unhealthyClient() {
         when(response1.getStatus()).thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
         when(response1.readEntity(HealthCheckReport.class))
-                .thenReturn(createReport(HttpURLConnection.HTTP_INTERNAL_ERROR, false));
+            .thenReturn(createReport(HttpURLConnection.HTTP_INTERNAL_ERROR, false));
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
-        assertFalse((Boolean) result.get("healthy"));
+        assertFalse((Boolean) result.get(HEALTHY));
         HealthCheckReport report = (HealthCheckReport) result.get(CLIENT_1);
         assertFalse(report.isHealthy());
 
         when(response1.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
         when(response1.readEntity(HealthCheckReport.class)).thenReturn(createReport(HttpURLConnection.HTTP_OK, false));
         Map<String, Object> result2 = callFetchPolicyComponentsHealthStatus();
-        assertFalse((Boolean) result2.get("healthy"));
+        assertFalse((Boolean) result2.get(HEALTHY));
         HealthCheckReport report2 = (HealthCheckReport) result.get(CLIENT_1);
         assertFalse(report2.isHealthy());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFetchPolicyComponentsHealthStatus_unhealthyPdps() throws Exception {
+    public void testFetchPolicyComponentsHealthStatus_unhealthyPdps() {
         // Get a PDP and set it unhealthy
         groups.get(0).getPdpSubgroups().get(0).getPdpInstances().get(0).setHealthy(PdpHealthStatus.NOT_HEALTHY);
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
         Map<String, List<Pdp>> pdpListWithType = (Map<String, List<Pdp>>) result.get(PapConstants.POLICY_PDPS);
         assertEquals(2, pdpListWithType.size());
-        assertFalse((Boolean) result.get("healthy"));
+        assertFalse((Boolean) result.get(HEALTHY));
     }
 
     @Test
-    public void testFetchPolicyComponentsHealthStatus_unhealthyPap() throws Exception {
+    public void testFetchPolicyComponentsHealthStatus_unhealthyPap() {
         when(papActivator.isAlive()).thenReturn(false);
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
-        assertFalse((Boolean) result.get("healthy"));
+        assertFalse((Boolean) result.get(HEALTHY));
         HealthCheckReport report = (HealthCheckReport) result.get(PapConstants.POLICY_PAP);
         assertFalse(report.isHealthy());
     }
 
-    private Map<String, Object> callFetchPolicyComponentsHealthStatus() throws Exception {
-        PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider(clientFactory);
+    private Map<String, Object> callFetchPolicyComponentsHealthStatus() {
+        PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider();
         return provider.fetchPolicyComponentsHealthStatus().getRight();
     }
 
