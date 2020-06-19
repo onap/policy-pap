@@ -21,7 +21,6 @@
 package org.onap.policy.pap.main.rest;
 
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
