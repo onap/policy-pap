@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
 import org.onap.policy.common.endpoints.http.server.RestServer;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
@@ -57,6 +58,7 @@ import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
 import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckControllerV1;
+import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckProvider;
 import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
 import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
@@ -68,8 +70,9 @@ import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PapActivator extends ServiceManagerContainer {
-    private static final String[] MSG_TYPE_NAMES = { "messageName" };
-    private static final String[] REQ_ID_NAMES = { "response", "responseTo" };
+
+    private static final String[] MSG_TYPE_NAMES = {"messageName"};
+    private static final String[] REQ_ID_NAMES = {"response", "responseTo"};
 
     /**
      * Max number of heat beats that can be missed before PAP removes a PDP.
@@ -130,129 +133,95 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<PolicyNotifier> notifier = new AtomicReference<>();
 
         // @formatter:off
-        addAction("PAP parameters",
-            () -> ParameterService.register(papParameterGroup),
+        addAction("PAP parameters", () -> ParameterService.register(papParameterGroup),
             () -> ParameterService.deregister(papParameterGroup.getName()));
 
-        addAction("DAO Factory",
-            () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(
-                                    papParameterGroup.getDatabaseProviderParameters())),
+        addAction("DAO Factory", () -> daoFactory
+                .set(new PolicyModelsProviderFactoryWrapper(papParameterGroup.getDatabaseProviderParameters())),
             () -> daoFactory.get().close());
 
         addAction("DAO Factory registration",
             () -> Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daoFactory.get()),
             () -> Registry.unregister(PapConstants.REG_PAP_DAO_FACTORY));
 
-        addAction("Pdp Heartbeat Listener",
-            () -> reqIdDispatcher.register(pdpHeartbeatListener),
+        addAction("Pdp Heartbeat Listener", () -> reqIdDispatcher.register(pdpHeartbeatListener),
             () -> reqIdDispatcher.unregister(pdpHeartbeatListener));
 
         addAction("Request ID Dispatcher",
             () -> msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher),
             () -> msgDispatcher.unregister(PdpMessageType.PDP_STATUS.name()));
 
-        addAction("Message Dispatcher",
-            this::registerMsgDispatcher,
-            this::unregisterMsgDispatcher);
+        addAction("Message Dispatcher", this::registerMsgDispatcher, this::unregisterMsgDispatcher);
 
-        addAction("topics",
-            TopicEndpointManager.getManager()::start,
-            TopicEndpointManager.getManager()::shutdown);
+        addAction("topics", TopicEndpointManager.getManager()::start, TopicEndpointManager.getManager()::shutdown);
 
         addAction("PAP statistics",
             () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
             () -> Registry.unregister(PapConstants.REG_STATISTICS_MANAGER));
 
-        addAction("PDP publisher",
-            () -> {
-                pdpPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_PDP_PAP));
-                startThread(pdpPub.get());
-            },
-            () -> pdpPub.get().stop());
+        addAction("PDP publisher", () -> {
+            pdpPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_PDP_PAP));
+            startThread(pdpPub.get());
+        }, () -> pdpPub.get().stop());
 
-        addAction("Policy Notification publisher",
-            () -> {
-                notifyPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_NOTIFICATION));
-                startThread(notifyPub.get());
-                notifier.set(new PolicyNotifier(notifyPub.get(), daoFactory.get()));
-            },
-            () -> notifyPub.get().stop());
+        addAction("Policy Notification publisher", () -> {
+            notifyPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_NOTIFICATION));
+            startThread(notifyPub.get());
+            notifier.set(new PolicyNotifier(notifyPub.get(), daoFactory.get()));
+        }, () -> notifyPub.get().stop());
 
-        addAction("Policy Notifier",
-            () -> Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier.get()),
+        addAction("Policy Notifier", () -> Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier.get()),
             () -> Registry.unregister(PapConstants.REG_POLICY_NOTIFIER));
 
-        addAction("PDP heart beat timers",
-            () -> {
-                long maxWaitHeartBeatMs = MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs();
-                heartBeatTimers.set(new TimerManager("heart beat", maxWaitHeartBeatMs));
-                startThread(heartBeatTimers.get());
-            },
-            () -> heartBeatTimers.get().stop());
+        addAction("PDP heart beat timers", () -> {
+            long maxWaitHeartBeatMs = MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs();
+            heartBeatTimers.set(new TimerManager("heart beat", maxWaitHeartBeatMs));
+            startThread(heartBeatTimers.get());
+        }, () -> heartBeatTimers.get().stop());
 
-        addAction("PDP update timers",
-            () -> {
-                pdpUpdTimers.set(new TimerManager("update", pdpParams.getUpdateParameters().getMaxWaitMs()));
-                startThread(pdpUpdTimers.get());
-            },
-            () -> pdpUpdTimers.get().stop());
+        addAction("PDP update timers", () -> {
+            pdpUpdTimers.set(new TimerManager("update", pdpParams.getUpdateParameters().getMaxWaitMs()));
+            startThread(pdpUpdTimers.get());
+        }, () -> pdpUpdTimers.get().stop());
 
-        addAction("PDP state-change timers",
-            () -> {
-                pdpStChgTimers.set(new TimerManager("state-change", pdpParams.getUpdateParameters().getMaxWaitMs()));
-                startThread(pdpStChgTimers.get());
-            },
-            () -> pdpStChgTimers.get().stop());
+        addAction("PDP state-change timers", () -> {
+            pdpStChgTimers.set(new TimerManager("state-change", pdpParams.getUpdateParameters().getMaxWaitMs()));
+            startThread(pdpStChgTimers.get());
+        }, () -> pdpStChgTimers.get().stop());
 
-        addAction("PDP modification lock",
-            () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
+        addAction("PDP modification lock", () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
 
-        addAction("PDP modification requests",
-            () -> {
-                requestMap.set(new PdpModifyRequestMap(
-                            new PdpModifyRequestMapParams()
-                                    .setDaoFactory(daoFactory.get())
-                                    .setModifyLock(pdpUpdateLock)
-                                    .setParams(pdpParams)
-                                    .setPolicyNotifier(notifier.get())
-                                    .setPdpPublisher(pdpPub.get())
-                                    .setResponseDispatcher(reqIdDispatcher)
-                                    .setStateChangeTimers(pdpStChgTimers.get())
-                                    .setUpdateTimers(pdpUpdTimers.get())));
-                Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
+        addAction("PDP modification requests", () -> {
+            requestMap.set(new PdpModifyRequestMap(
+                new PdpModifyRequestMapParams().setDaoFactory(daoFactory.get()).setModifyLock(pdpUpdateLock)
+                    .setParams(pdpParams).setPolicyNotifier(notifier.get()).setPdpPublisher(pdpPub.get())
+                    .setResponseDispatcher(reqIdDispatcher).setStateChangeTimers(pdpStChgTimers.get())
+                    .setUpdateTimers(pdpUpdTimers.get())));
+            Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
 
-                // now that it's registered, we can attach a "policy undeploy" provider
-                requestMap.get().setPolicyUndeployer(new PolicyUndeployerImpl());
-            },
-            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
+            // now that it's registered, we can attach a "policy undeploy" provider
+            requestMap.get().setPolicyUndeployer(new PolicyUndeployerImpl());
+        }, () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
-        addAction("PDP heart beat tracker",
-            () -> Registry.register(PapConstants.REG_PDP_TRACKER, PdpTracker.builder()
-                                    .daoFactory(daoFactory.get())
-                                    .timers(heartBeatTimers.get())
-                                    .modifyLock(pdpUpdateLock)
-                                    .requestMap(requestMap.get())
-                                    .build()),
-            () -> Registry.unregister(PapConstants.REG_PDP_TRACKER));
+        addAction("PDP heart beat tracker", () -> Registry.register(PapConstants.REG_PDP_TRACKER,
+            PdpTracker.builder().daoFactory(daoFactory.get()).timers(heartBeatTimers.get()).modifyLock(pdpUpdateLock)
+                .requestMap(requestMap.get()).build()), () -> Registry.unregister(PapConstants.REG_PDP_TRACKER));
 
-        addAction("REST server",
-            () -> {
-                RestServer server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
-                                HealthCheckRestControllerV1.class,
-                                StatisticsRestControllerV1.class,
-                                PdpGroupCreateOrUpdateControllerV1.class,
-                                PdpGroupDeployControllerV1.class,
-                                PdpGroupDeleteControllerV1.class,
-                                PdpGroupStateChangeControllerV1.class,
-                                PdpGroupQueryControllerV1.class,
-                                PdpGroupHealthCheckControllerV1.class,
-                                PolicyStatusControllerV1.class,
-                                PolicyComponentsHealthCheckControllerV1.class);
-                restServer.set(server);
-                restServer.get().start();
-            },
-            () -> restServer.get().stop());
+        addAction("PAP client executor", () -> PolicyComponentsHealthCheckProvider
+            .initializeClientHealthCheckExecutorService(papParameterGroup,
+                HttpClientFactoryInstance.getClientFactory()), PolicyComponentsHealthCheckProvider::cleanup);
+
+        addAction("REST server", () -> {
+            RestServer server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
+                HealthCheckRestControllerV1.class, StatisticsRestControllerV1.class,
+                PdpGroupCreateOrUpdateControllerV1.class, PdpGroupDeployControllerV1.class,
+                PdpGroupDeleteControllerV1.class, PdpGroupStateChangeControllerV1.class,
+                PdpGroupQueryControllerV1.class, PdpGroupHealthCheckControllerV1.class, PolicyStatusControllerV1.class,
+                PolicyComponentsHealthCheckControllerV1.class);
+            restServer.set(server);
+            restServer.get().start();
+        }, () -> restServer.get().stop());
         // @formatter:on
     }
 
@@ -282,7 +251,7 @@ public class PapActivator extends ServiceManagerContainer {
      */
     private void registerMsgDispatcher() {
         for (final TopicSource source : TopicEndpointManager.getManager()
-                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+            .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.register(msgDispatcher);
         }
     }
@@ -292,7 +261,7 @@ public class PapActivator extends ServiceManagerContainer {
      */
     private void unregisterMsgDispatcher() {
         for (final TopicSource source : TopicEndpointManager.getManager()
-                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
+            .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
             source.unregister(msgDispatcher);
         }
     }
