@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "69181dba_80118808",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-06-19T19:42:28Z",
+      "side": 1,
+      "message": "this will overwrite it with the last value - should it just set it if one is false?",
+      "range": {
+        "startLine": 131,
+        "startChar": 16,
+        "endLine": 131,
+        "endChar": 104
+      },
+      "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb8c9ed8_8b639568",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-06-19T19:42:28Z",
+      "side": 1,
+      "message": "Is this missing {}\u0027s?",
+      "range": {
+        "startLine": 133,
+        "startChar": 29,
+        "endLine": 133,
+        "endChar": 59
+      },
+      "revId": "32ebe8287f542c1a588a311061072bfeefa7d055",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
