@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "34d3c267_2fae0db6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-22T19:47:32Z",
+      "side": 1,
+      "message": "could have the following to decrease one level of indentation, it may bite back with future sonars in code below:\n\nif (clients.isEmpty()) {\n   return ..\n}\n\n..",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87bf94b4_3648c249",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-22T19:47:32Z",
+      "side": 1,
+      "message": "may want to make executor a class variable so to not create one executor instance at each healthcheck invokation.",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cbc98ac_58a940cd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-22T19:47:32Z",
+      "side": 1,
+      "message": "may want to separate InterruptedException and ExecutionException in different catches as interrupt() should only apply to InterruptedException.",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8cf3aed_7fabc247",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-22T19:47:32Z",
+      "side": 1,
+      "message": "This will be an uncaught exception in the executor\u0027s thread, may be just simply log \"e\".",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
