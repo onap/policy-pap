@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "114579c5_8892aca2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-23T13:56:39Z",
+      "side": 1,
+      "message": "no comment, read too quickly, thought method ended in line 138.",
+      "parentUuid": "34d3c267_2fae0db6",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "87bf94b4_3648c249",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
@@ -64,6 +82,24 @@
       "writtenOn": "2020-06-22T19:47:32Z",
       "side": 1,
       "message": "This will be an uncaught exception in the executor\u0027s thread, may be just simply log \"e\".",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a98f432d_9ce8a9a5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-23T13:56:39Z",
+      "side": 1,
+      "message": "taking back this comment, does not apply.",
+      "parentUuid": "b8cf3aed_7fabc247",
       "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
