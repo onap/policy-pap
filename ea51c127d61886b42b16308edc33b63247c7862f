@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "91f5a874_c4e2c0f2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-24T15:31:00Z",
+      "side": 1,
+      "message": "Yes, the ForkJoinPool could be used instead, but then asynchronous web calls would have to be used.  I suggested that in the abandoned review, as a future enhancement since it\u0027s a little bit more complicated.",
+      "parentUuid": "75ba65e3_28601c9b",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8cbc98ac_58a940cd",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
