@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "8d32f814_b927fb98",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 6738
+      },
+      "writtenOn": "2020-06-24T10:20:16Z",
+      "side": 1,
+      "message": "that can be done if we are expecting continuos requests to be coming in. Also, please suggest where \u0027executor shutdown\u0027 should be done if the executor is made a class variable.",
+      "parentUuid": "87bf94b4_3648c249",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8cbc98ac_58a940cd",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
