@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "75ba65e3_28601c9b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-06-24T15:00:40Z",
+      "side": 1,
+      "message": "Yes, you could expect monitoring tooling to send periodic requests to check on health of the components.   For example the drools legacy healthcheck is exercised every 15 seconds if you look at the logs:\n\n[2020-06-24T14:42:01.930+00:00|qtp381930033-50]10.42.11.8 - demo@people.osaaf.org [24/Jun/2020:14:42:01 +0000] \"GET /healthcheck HTTP/1.1\" 200 190 \"-\" \"Consul Health Check\"\n[2020-06-24T14:42:16.964+00:00|qtp381930033-43]10.42.11.8 - demo@people.osaaf.org [24/Jun/2020:14:42:16 +0000] \"GET /healthcheck HTTP/1.1\" 200 190 \"-\" \"Consul Health Check\"\n[2020-06-24T14:42:32.006+00:00|qtp381930033-47]10.42.11.8 - demo@people.osaaf.org [24/Jun/2020:14:42:32 +0000] \"GET /healthcheck HTTP/1.1\" 200 190 \"-\" \"Consul Health Check\"\n\nThe other option to consider is the ForkJoinPool.commonPool() maintained by the JVM itself that works with CompletableFutures.\n\nFor the location, Jim/Ram are best to suggest a location for it.",
+      "parentUuid": "8d32f814_b927fb98",
+      "revId": "ea51c127d61886b42b16308edc33b63247c7862f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8cbc98ac_58a940cd",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
         "patchSetId": 1
