@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95fd3420_71bfb296",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-26T13:01:34Z",
+      "side": 1,
+      "message": "I think size() and \"1\" should be swapped",
+      "revId": "97c24253b62d2f396ad9544917e565c54d37a0df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39983a0b_00c72b47",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-26T13:01:34Z",
+      "side": 1,
+      "message": "should probably be a different message here",
+      "range": {
+        "startLine": 117,
+        "startChar": 75,
+        "endLine": 117,
+        "endChar": 107
+      },
+      "revId": "97c24253b62d2f396ad9544917e565c54d37a0df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9b97748_68190af5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-26T13:01:34Z",
+      "side": 1,
+      "message": "and then throw PfModelRuntimeException to match the other cases?",
+      "revId": "97c24253b62d2f396ad9544917e565c54d37a0df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b02f31df_1f7385f7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-06-26T13:01:34Z",
+      "side": 1,
+      "message": "the executor service must be initialized BEFORE the REST service is started on line 211",
+      "revId": "97c24253b62d2f396ad9544917e565c54d37a0df",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
