@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,22 +115,22 @@ public class PdpTrackerTest {
 
     @Test
     public void testPdpTracker_MissingRequestMap() throws Exception {
-        assertThatThrownBy(() -> builder.requestMap(null).build()).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.requestMap(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     public void testPdpTracker_MissingModifyLock() throws Exception {
-        assertThatThrownBy(() -> builder.modifyLock(null).build()).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.modifyLock(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     public void testPdpTracker_MissingTimers() throws Exception {
-        assertThatThrownBy(() -> builder.timers(null).build()).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.timers(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     public void testPdpTracker_MissingDaoFactory() throws Exception {
-        assertThatThrownBy(() -> builder.daoFactory(null).build()).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.daoFactory(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
