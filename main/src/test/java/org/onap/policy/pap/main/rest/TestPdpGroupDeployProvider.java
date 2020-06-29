@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -594,7 +594,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // subgroup has a different version of the Policy
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao_DiffVers.json"));
 
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelRuntimeException.class)
+        PdpDeployPolicies req = loadRequest();
+        assertThatThrownBy(() -> prov.deployPolicies(req)).isInstanceOf(PfModelRuntimeException.class)
                         .hasMessageContaining("pdpTypeC").hasMessageContaining("different version already deployed");
 
         verify(dao, never()).createPdpGroups(any());
@@ -608,7 +609,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // subgroup has no PDPs
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroup_NoPdpsDao.json"));
 
-        assertThatThrownBy(() -> prov.deployPolicies(loadRequest())).isInstanceOf(PfModelRuntimeException.class)
+        PdpDeployPolicies req = loadRequest();
+        assertThatThrownBy(() -> prov.deployPolicies(req)).isInstanceOf(PfModelRuntimeException.class)
                         .hasMessage("group " + GROUP1_NAME + " subgroup " + PDP1_TYPE + " has no active PDPs");
 
         verify(dao, never()).createPdpGroups(any());
