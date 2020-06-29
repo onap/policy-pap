@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "52dd3586_49282111",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6738
+      },
+      "writtenOn": "2020-06-29T11:10:00Z",
+      "side": 1,
+      "message": "Sonarlint does not report this on my local. As suggested will check sonar after merge.",
+      "parentUuid": "b211d4d1_f893e3bd",
+      "range": {
+        "startLine": 111,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 0
+      },
+      "revId": "d2d8aeb7f7ad86f1c1a5df8feb516b3eda9462dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4f8a01a7_297fcafe",
         "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "d2d8aeb7f7ad86f1c1a5df8feb516b3eda9462dc",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e66a9f9_28868414",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 6738
+      },
+      "writtenOn": "2020-06-29T11:10:00Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4f8a01a7_297fcafe",
+      "range": {
+        "startLine": 135,
+        "startChar": 8,
+        "endLine": 225,
+        "endChar": 24
+      },
+      "revId": "d2d8aeb7f7ad86f1c1a5df8feb516b3eda9462dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
