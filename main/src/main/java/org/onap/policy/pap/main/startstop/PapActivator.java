@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
+import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
 import org.onap.policy.common.endpoints.http.server.RestServer;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
@@ -57,6 +58,7 @@ import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
 import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
 import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckControllerV1;
+import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckProvider;
 import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
 import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
 import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
@@ -235,6 +237,12 @@ public class PapActivator extends ServiceManagerContainer {
                                     .requestMap(requestMap.get())
                                     .build()),
             () -> Registry.unregister(PapConstants.REG_PDP_TRACKER));
+
+        addAction("PAP client executor",
+            () ->
+                PolicyComponentsHealthCheckProvider.initializeClientHealthCheckExecutorService(papParameterGroup,
+                                HttpClientFactoryInstance.getClientFactory()),
+                PolicyComponentsHealthCheckProvider::cleanup);
 
         addAction("REST server",
             () -> {
