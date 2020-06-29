@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "625e4c8f_2c9a3cdb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyComponentsHealthCheckProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 6738
+      },
+      "writtenOn": "2020-06-29T11:37:14Z",
+      "side": 1,
+      "message": "Because of the lambda expression , the inner try catch had to be included. In case sonar reports this , will add a wrapper to handle this.",
+      "parentUuid": "52dd3586_49282111",
+      "range": {
+        "startLine": 111,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 0
+      },
+      "revId": "d2d8aeb7f7ad86f1c1a5df8feb516b3eda9462dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4f8a01a7_297fcafe",
         "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
         "patchSetId": 4
