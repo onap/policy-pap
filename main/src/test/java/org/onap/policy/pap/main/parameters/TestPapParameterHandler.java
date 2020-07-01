@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2020 Nordix Foundation
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,6 @@ package org.onap.policy.pap.main.parameters;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
 import org.junit.Test;
@@ -46,13 +46,9 @@ public class TestPapParameterHandler {
         final PapCommandLineArguments noArguments = new PapCommandLineArguments();
         noArguments.parse(noArgumentString);
 
-        try {
-            new PapParameterHandler().getParameters(noArguments);
-            fail("test should throw an exception here");
-        } catch (final Exception e) {
-            assertTrue(e.getCause() instanceof CoderException);
-            assertTrue(e.getCause().getCause() instanceof FileNotFoundException);
-        }
+        assertThatThrownBy(() -> new PapParameterHandler().getParameters(noArguments))
+            .hasCauseInstanceOf(CoderException.class)
+            .hasRootCauseInstanceOf(FileNotFoundException.class);
     }
 
     @Test
@@ -62,12 +58,8 @@ public class TestPapParameterHandler {
         final PapCommandLineArguments emptyArguments = new PapCommandLineArguments();
         emptyArguments.parse(emptyArgumentString);
 
-        try {
-            new PapParameterHandler().getParameters(emptyArguments);
-            fail("test should throw an exception here");
-        } catch (final Exception e) {
-            assertEquals("no parameters found in \"parameters/EmptyParameters.json\"", e.getMessage());
-        }
+        assertThatThrownBy(() -> new PapParameterHandler().getParameters(emptyArguments))
+            .hasMessageContaining("no parameters found in \"parameters/EmptyParameters.json\"");
     }
 
     @Test
@@ -77,14 +69,9 @@ public class TestPapParameterHandler {
         final PapCommandLineArguments invalidArguments = new PapCommandLineArguments();
         invalidArguments.parse(invalidArgumentString);
 
-        try {
-            new PapParameterHandler().getParameters(invalidArguments);
-            fail("test should throw an exception here");
-        } catch (final Exception e) {
-            assertTrue(e.getMessage().startsWith(
-                            "error reading parameters from \"parameters/InvalidParameters.json\""));
-            assertTrue(e.getCause() instanceof CoderException);
-        }
+        assertThatThrownBy(() -> new PapParameterHandler().getParameters(invalidArguments))
+            .hasMessageStartingWith("error reading parameters from \"parameters/InvalidParameters.json\"")
+            .hasCauseInstanceOf(CoderException.class);
     }
 
     @Test
@@ -127,13 +114,9 @@ public class TestPapParameterHandler {
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
         arguments.parse(papConfigParameters);
 
-        try {
-            new PapParameterHandler().getParameters(arguments);
-            fail("test should throw an exception here");
-        } catch (final Exception e) {
-            assertTrue(e.getMessage().contains(
-                    "field \"name\" type \"java.lang.String\" value \" \" INVALID, must be a non-blank string"));
-        }
+        assertThatThrownBy(() -> new PapParameterHandler().getParameters(arguments))
+            .hasMessageContaining("field \"name\" type \"java.lang.String\" value \" \" "
+                + "INVALID, must be a non-blank string");
     }
 
     @Test
@@ -156,10 +139,7 @@ public class TestPapParameterHandler {
     public void testPapInvalidOption() throws PolicyPapException {
         final String[] papConfigParameters = { "-d" };
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
-        try {
-            arguments.parse(papConfigParameters);
-        } catch (final Exception exp) {
-            assertTrue(exp.getMessage().startsWith("invalid command line arguments specified"));
-        }
+        assertThatThrownBy(() -> arguments.parse(papConfigParameters))
+            .hasMessageStartingWith("invalid command line arguments specified");
     }
 }
