@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "395b9d48_bedff8b4",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/TestPapParameterHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6722
+      },
+      "writtenOn": "2020-07-06T12:58:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f2daf7dd_7210d0af",
+      "revId": "91fbcc9c2ac5a09c249bfaf26b7a4666d2b04caa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "50ee463d_350ebd1b",
         "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/TestPapParameterHandler.java",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "91fbcc9c2ac5a09c249bfaf26b7a4666d2b04caa",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "922abc7c_754eb1c3",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/TestPapParameterHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 6722
+      },
+      "writtenOn": "2020-07-06T12:58:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "50ee463d_350ebd1b",
+      "revId": "91fbcc9c2ac5a09c249bfaf26b7a4666d2b04caa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
