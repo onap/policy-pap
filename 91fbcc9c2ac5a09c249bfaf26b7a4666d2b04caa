@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f2daf7dd_7210d0af",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/TestPapParameterHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-07-06T12:45:59Z",
+      "side": 1,
+      "message": "sonar: remove \"{\" and \"}\"\n\nsame comment below",
+      "revId": "91fbcc9c2ac5a09c249bfaf26b7a4666d2b04caa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50ee463d_350ebd1b",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/TestPapParameterHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-07-06T12:45:59Z",
+      "side": 1,
+      "message": "FYI: assert-j has a \"startsWith\" equivalent, if that\u0027s what you want to test (though I\u0027m fine with hasMessageContaining, too)",
+      "revId": "91fbcc9c2ac5a09c249bfaf26b7a4666d2b04caa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
