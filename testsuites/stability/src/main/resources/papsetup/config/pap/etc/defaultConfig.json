@@ -32,7 +32,8 @@
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
             "servers" : [ "10.2.0.41:3904" ],
-            "topicCommInfrastructure" : "dmaap"
+            "topicCommInfrastructure" : "dmaap",
+            "fetchTimeout": 15000
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
