@@ -88,7 +88,7 @@ public class TestPdpGroupHealthCheckProvider {
     }
 
     private void verifyPdps(final List<Pdp> pdpList, final List<PdpGroup> groups) {
-        assertEquals(5, pdpList.size());
+        assertEquals(6, pdpList.size());
         for (final PdpGroup group : groups) {
             for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
                 pdpList.containsAll(subGroup.getPdpInstances());

@@ -192,6 +192,15 @@ public class TestPolicyComponentsHealthCheckProvider {
         assertFalse((Boolean) result.get(HEALTHY));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testFetchPolicyComponentsHealthStatus_PdpDown() {
+        // Set currentInstanceCount as 0 to simulate PDP down
+        groups.get(0).getPdpSubgroups().get(0).setCurrentInstanceCount(0);
+        Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
+        assertFalse((Boolean) result.get(HEALTHY));
+    }
+
     @Test
     public void testFetchPolicyComponentsHealthStatus_unhealthyPap() {
         when(papActivator.isAlive()).thenReturn(false);
