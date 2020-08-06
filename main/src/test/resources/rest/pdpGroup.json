@@ -25,6 +25,11 @@
                             "instanceId": "pdpAA_2",
                             "pdpState": "PASSIVE",
                             "healthy": "HEALTHY"
+                        },
+                        {
+                            "instanceId": "pdpAA_3",
+                            "pdpState": "PASSIVE",
+                            "healthy": "HEALTHY"
                         }
                     ],
                     "supportedPolicyTypes": [
@@ -42,6 +47,7 @@
                 },
                 {
                     "pdpType": "pdpTypeB",
+                    "currentInstanceCount": 1,
                     "desiredInstanceCount": 1,
                     "pdpInstances": [
                         {
@@ -66,6 +72,7 @@
             "pdpSubgroups": [
                 {
                     "pdpType": "pdpTypeA",
+                    "currentInstanceCount": 2,
                     "desiredInstanceCount": 2,
                     "pdpInstances": [
                         {
