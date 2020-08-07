@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,9 +142,10 @@ public class PolicyComponentsHealthCheckProvider {
 
         // Check PDPs, read status from DB
         try {
-            Map<String, List<Pdp>> pdpListWithType = fetchPdpsHealthStatus();
-            if (isHealthy && (pdpListWithType.isEmpty() || pdpListWithType.values().stream().flatMap(List::stream)
-                .anyMatch(pdp -> !PdpHealthStatus.HEALTHY.equals(pdp.getHealthy())))) {
+            List<PdpGroup> groups = fetchPdpGroups();
+            Map<String, List<Pdp>> pdpListWithType = fetchPdpsHealthStatus(groups);
+            if (isHealthy && (!verifyNumberOfPdps(groups) || pdpListWithType.values().stream().flatMap(List::stream)
+                            .anyMatch(pdp -> !PdpHealthStatus.HEALTHY.equals(pdp.getHealthy())))) {
                 isHealthy = false;
             }
             result.put(PapConstants.POLICY_PDPS, pdpListWithType);
@@ -157,20 +159,38 @@ public class PolicyComponentsHealthCheckProvider {
         return Pair.of(Status.OK, result);
     }
 
-    private Map<String, List<Pdp>> fetchPdpsHealthStatus() throws PfModelException {
+    private Map<String, List<Pdp>> fetchPdpsHealthStatus(List<PdpGroup> groups) {
         Map<String, List<Pdp>> pdpListWithType = new HashMap<>();
-        final PolicyModelsProviderFactoryWrapper modelProviderWrapper = Registry
-            .get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            final List<PdpGroup> groups = databaseProvider.getPdpGroups(null);
-            for (final PdpGroup group : groups) {
-                for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
-                    List<Pdp> pdpList = new ArrayList<>(subGroup.getPdpInstances());
-                    pdpListWithType.computeIfAbsent(subGroup.getPdpType(), k -> new ArrayList<>()).addAll(pdpList);
-                }
+        for (final PdpGroup group : groups) {
+            for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
+                List<Pdp> pdpList = new ArrayList<>(subGroup.getPdpInstances());
+                pdpListWithType.computeIfAbsent(subGroup.getPdpType(), k -> new ArrayList<>()).addAll(pdpList);
             }
         }
         return pdpListWithType;
+    }
+
+    private boolean verifyNumberOfPdps(List<PdpGroup> groups) {
+        boolean flag = true;
+        for (final PdpGroup group : groups) {
+            for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
+                if (subGroup.getCurrentInstanceCount() < subGroup.getDesiredInstanceCount()) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        return flag;
+    }
+
+    private List<PdpGroup> fetchPdpGroups() throws PfModelException {
+        List<PdpGroup> groups = new ArrayList<>();
+        final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
+                        Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
+            groups = databaseProvider.getPdpGroups(null);
+        }
+        return groups;
     }
 
     private HealthCheckReport fetchPolicyComponentHealthStatus(HttpClient httpClient) {
