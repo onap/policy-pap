@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "0228f944_6e9e0bf7",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-08-07T15:23:15Z",
+      "side": 1,
+      "message": "and yet another option is to wrap System.exit() in a method and then override the method in the junits so that it doesn\u0027t actually invoke exit().  The dummy method could set a flag with the exit status so that the tests could verify the value.  This avoids the permission manager altogether",
+      "parentUuid": "3e31c8a6_eee50fd8",
+      "revId": "dce1eb054f6545cd8a0e22468557862fb2e701b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "83a02614_f73bc3cc",
         "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
         "patchSetId": 2
