@@ -1,13 +1,14 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ * Copyright (C) 2019-2020 Nordix Foundation.
+ * Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +22,7 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -33,6 +35,7 @@ import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInst
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 
 /**
@@ -54,6 +57,7 @@ public class TestMain {
 
     /**
      * Shuts "main" down.
+     *
      * @throws Exception if an error occurs
      */
     @After
@@ -81,15 +85,16 @@ public class TestMain {
     @Test
     public void testMain_NoArguments() {
         final String[] papConfigParameters = {};
-        main = new Main(papConfigParameters);
-        assertNull(main.getParameters());
+        assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
+            .hasMessage("start of policy pap service failed, used parameters are []");
     }
 
     @Test
     public void testMain_InvalidArguments() {
         final String[] papConfigParameters = {"parameters/PapConfigParameters.json"};
-        main = new Main(papConfigParameters);
-        assertNull(main.getParameters());
+        assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
+            .hasMessage(
+                "start of policy pap service failed,  used parameters are [parameters/PapConfigParameters.json]");
     }
 
     @Test
@@ -102,7 +107,8 @@ public class TestMain {
     @Test
     public void testMain_InvalidParameters() {
         final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters_InvalidName.json"};
-        main = new Main(papConfigParameters);
-        assertNull(main.getParameters());
+        assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
+            .hasMessage("start of policy pap service failed, "
+                + "used parameters are [-c, parameters/PapConfigParameters_InvalidName.json]");
     }
 }
