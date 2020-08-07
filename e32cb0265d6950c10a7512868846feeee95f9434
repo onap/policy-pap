@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ed3a3755_8b842476",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2020-08-07T15:19:10Z",
+      "side": 0,
+      "message": "One thought is that we could differentiate error codes depending on the type of issue.   For example for DB errors, do a System.exit(1), for the configuration issue above, System.exit(2).  The application error codes themselves can be standardize across policy projects in policy/common in an enumeration or constants class, to try to have consistency on their meaning.",
+      "revId": "e32cb0265d6950c10a7512868846feeee95f9434",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
