@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "41aa2ec0_c04a91bd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-08-07T14:56:20Z",
+      "side": 1,
+      "message": "occurs to me - it could just throw an exception.  That would cause a non-zero exit without causing sonar complaints or hassles in junit tests.",
+      "revId": "dce1eb054f6545cd8a0e22468557862fb2e701b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83a02614_f73bc3cc",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-08-07T14:56:20Z",
+      "side": 1,
+      "message": "maybe move this to an @After method",
+      "revId": "dce1eb054f6545cd8a0e22468557862fb2e701b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
