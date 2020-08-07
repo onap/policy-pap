@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,38 +65,25 @@ public class Main {
             }
             // Validate that the arguments are sane
             arguments.validate();
-        } catch (final PolicyPapException e) {
-            LOGGER.error(START_FAILED, e);
-            return;
-        }
 
-        // Read the parameters
-        try {
+            // Read the parameters
             parameterGroup = new PapParameterHandler().getParameters(arguments);
-        } catch (final Exception e) {
-            LOGGER.error(START_FAILED, e);
-            return;
-        }
 
-        // Initialize database
-        try {
+            // Initialize database
             new PapDatabaseInitializer().initializePapDatabase(parameterGroup.getDatabaseProviderParameters());
-        } catch (final PolicyPapException exp) {
-            LOGGER.error(START_FAILED + ", used parameters are {}", Arrays.toString(args), exp);
-            return;
-        }
 
-        // Now, create the activator for the policy pap service
-        activator = new PapActivator(parameterGroup);
-        Registry.register(PapConstants.REG_PAP_ACTIVATOR, activator);
+            // Now, create the activator for the policy pap service
+            activator = new PapActivator(parameterGroup);
+            Registry.register(PapConstants.REG_PAP_ACTIVATOR, activator);
 
-        // Start the activator
-        try {
+            // Start the activator
             activator.start();
-        } catch (final RuntimeException e) {
-            LOGGER.error("start of policy pap service failed, used parameters are {}", Arrays.toString(args), e);
-            Registry.unregister(PapConstants.REG_PAP_ACTIVATOR);
-            return;
+        } catch (Exception exp) {
+            if (null != activator) {
+                Registry.unregister(PapConstants.REG_PAP_ACTIVATOR);
+            }
+            LOGGER.error(START_FAILED + ", used parameters are {}", Arrays.toString(args), exp);
+            System.exit(1);
         }
 
         // Add a shutdown hook to shut everything down in an orderly manner
