@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5218cd00_910b26b7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2020-08-07T17:34:44Z",
+      "side": 1,
+      "message": "Ok, I didn\u0027t know that. I can test that and verify and then do it that way. I agree System.exit is not the right choice for sure if we are not concerned about specific exitCodes.\nHow about Jorge\u0027s comment about specific exitCodes  specific to error types? If that is needed, then we will have to stick to System.exit I think.",
+      "parentUuid": "41aa2ec0_c04a91bd",
+      "revId": "dce1eb054f6545cd8a0e22468557862fb2e701b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3e31c8a6_eee50fd8",
         "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
         "patchSetId": 2
