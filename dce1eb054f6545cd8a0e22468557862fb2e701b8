@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "3e31c8a6_eee50fd8",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2020-08-07T14:58:31Z",
+      "side": 1,
+      "message": "Another option is to add the below dependancy\n       \u003cdependency\u003e\n            \u003cgroupId\u003ecom.github.stefanbirkner\u003c/groupId\u003e\n            \u003cartifactId\u003esystem-rules\u003c/artifactId\u003e\n            \u003cversion\u003e1.19.0\u003c/version\u003e\n            \u003cscope\u003etest\u003c/scope\u003e\n        \u003c/dependency\u003e\nmaybe to parent pom since we will need this in all repos, and then in test classes,\ndefine a Rule:\n    @Rule\n    public final ExpectedSystemExit exit \u003d ExpectedSystemExit.none();\nand in each test case where System.exit is expected,add\n    exit.expectSystemExitWithStatus(1);\n\nI defined the SecurityManager and did the current way to avoid adding these kind of dependencies.",
+      "revId": "dce1eb054f6545cd8a0e22468557862fb2e701b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "83a02614_f73bc3cc",
         "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
         "patchSetId": 2
