@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +22,13 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.security.Permission;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +45,22 @@ import org.onap.policy.pap.main.parameters.CommonTestData;
  */
 public class TestMain {
     private Main main;
+
+    private final SecurityManager originalSecurityManager = System.getSecurityManager();
+    private final SecurityManager noExitSecurityManager = new SecurityManager() {
+        @Override
+        public void checkPermission(Permission perm) {
+        }
+
+        @Override
+        public void checkPermission(Permission perm, Object context) {
+        }
+
+        @Override
+        public void checkExit(int exitCode) {
+            throw new SecurityException("System.exit called with exitCode " + exitCode);
+        }
+    };
 
     /**
      * Set up.
@@ -81,15 +100,17 @@ public class TestMain {
     @Test
     public void testMain_NoArguments() {
         final String[] papConfigParameters = {};
-        main = new Main(papConfigParameters);
-        assertNull(main.getParameters());
+        System.setSecurityManager(noExitSecurityManager);
+        assertThatThrownBy(() -> new Main(papConfigParameters)).hasMessage("System.exit called with exitCode 1");
+        System.setSecurityManager(originalSecurityManager);
     }
 
     @Test
     public void testMain_InvalidArguments() {
         final String[] papConfigParameters = {"parameters/PapConfigParameters.json"};
-        main = new Main(papConfigParameters);
-        assertNull(main.getParameters());
+        System.setSecurityManager(noExitSecurityManager);
+        assertThatThrownBy(() -> new Main(papConfigParameters)).hasMessage("System.exit called with exitCode 1");
+        System.setSecurityManager(originalSecurityManager);
     }
 
     @Test
@@ -102,7 +123,8 @@ public class TestMain {
     @Test
     public void testMain_InvalidParameters() {
         final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters_InvalidName.json"};
-        main = new Main(papConfigParameters);
-        assertNull(main.getParameters());
+        System.setSecurityManager(noExitSecurityManager);
+        assertThatThrownBy(() -> new Main(papConfigParameters)).hasMessage("System.exit called with exitCode 1");
+        System.setSecurityManager(originalSecurityManager);
     }
 }
