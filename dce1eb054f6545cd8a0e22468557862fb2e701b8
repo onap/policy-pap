@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "9e057cc0_3a34e7f2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-08-07T18:28:19Z",
+      "side": 1,
+      "message": "We could have a specific exception in policy/common that has the enumeration in it.",
+      "parentUuid": "5218cd00_910b26b7",
+      "revId": "dce1eb054f6545cd8a0e22468557862fb2e701b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3e31c8a6_eee50fd8",
         "filename": "main/src/test/java/org/onap/policy/pap/main/startstop/TestMain.java",
         "patchSetId": 2
