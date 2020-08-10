@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "36b10bdb_a824a747",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/Main.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-08-10T12:33:41Z",
+      "side": 1,
+      "message": "maybe just use string concatenation?",
+      "revId": "03a9ed47536c0163c0415052916726a0a23aa054",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
