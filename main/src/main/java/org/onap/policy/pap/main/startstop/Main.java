@@ -23,6 +23,7 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
+import org.onap.policy.common.utils.resources.MessageConstants;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -38,8 +39,6 @@ import org.slf4j.LoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class Main {
-
-    private static final String START_FAILED = "start of policy pap service failed";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -83,12 +82,14 @@ public class Main {
             if (null != activator) {
                 Registry.unregister(PapConstants.REG_PAP_ACTIVATOR);
             }
-            throw new PolicyPapRuntimeException(START_FAILED + ", used parameters are " + Arrays.toString(args), exp);
+            throw new PolicyPapRuntimeException(
+                String.format(MessageConstants.START_FAILURE_MSG, MessageConstants.POLICY_PAP), exp);
         }
 
         // Add a shutdown hook to shut everything down in an orderly manner
         Runtime.getRuntime().addShutdownHook(new PolicyPapShutdownHookClass());
-        LOGGER.info("Started policy pap service");
+        String successMsg = String.format(MessageConstants.START_SUCCESS_MSG, MessageConstants.POLICY_PAP);
+        LOGGER.info(successMsg);
     }
 
     /**

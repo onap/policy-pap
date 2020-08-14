@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
+import org.onap.policy.common.utils.resources.MessageConstants;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -86,15 +87,14 @@ public class TestMain {
     public void testMain_NoArguments() {
         final String[] papConfigParameters = {};
         assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
-            .hasMessage("start of policy pap service failed, used parameters are []");
+            .hasMessage(String.format(MessageConstants.START_FAILURE_MSG, MessageConstants.POLICY_PAP));
     }
 
     @Test
     public void testMain_InvalidArguments() {
         final String[] papConfigParameters = {"parameters/PapConfigParameters.json"};
         assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
-            .hasMessage(
-                "start of policy pap service failed, used parameters are [parameters/PapConfigParameters.json]");
+            .hasMessage(String.format(MessageConstants.START_FAILURE_MSG, MessageConstants.POLICY_PAP));
     }
 
     @Test
@@ -108,7 +108,6 @@ public class TestMain {
     public void testMain_InvalidParameters() {
         final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters_InvalidName.json"};
         assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
-            .hasMessage("start of policy pap service failed, "
-                + "used parameters are [-c, parameters/PapConfigParameters_InvalidName.json]");
+            .hasMessage(String.format(MessageConstants.START_FAILURE_MSG, MessageConstants.POLICY_PAP));
     }
 }
