@@ -22,6 +22,10 @@
               "version": "1.0.0"
             },
             {
+              "name": "onap.policies.controlloop.guard.common.Filter",
+              "version": "1.0.0"
+            },
+            {
               "name": "onap.policies.controlloop.guard.coordination.FirstBlocksSecond",
               "version": "1.0.0"
             },
