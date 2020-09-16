@@ -40,8 +40,8 @@
     <description>Code that implements the Policy Administration Backend.</description>
 
     <properties>
-        <policy.common.version>1.7.1</policy.common.version>
-        <policy.models.version>2.3.1</policy.models.version>
+        <policy.common.version>1.7.2-SNAPSHOT</policy.common.version>
+        <policy.models.version>2.3.2-SNAPSHOT</policy.models.version>
     </properties>
 
     <modules>
