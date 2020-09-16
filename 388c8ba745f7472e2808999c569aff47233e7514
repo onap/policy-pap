@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "78e0cb95_65f183cb",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-09-16T16:35:05Z",
+      "side": 1,
+      "message": "Probably not bump this yet also",
+      "range": {
+        "startLine": 43,
+        "startChar": 36,
+        "endLine": 43,
+        "endChar": 46
+      },
+      "revId": "388c8ba745f7472e2808999c569aff47233e7514",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
