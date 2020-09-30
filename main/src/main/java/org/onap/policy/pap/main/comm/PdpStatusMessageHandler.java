@@ -158,18 +158,15 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private void handlePdpHeartbeat(final PdpStatus message, final PolicyModelsProvider databaseProvider)
             throws PfModelException {
-        Optional<PdpSubGroup> pdpSubgroup = null;
-        Optional<Pdp> pdpInstance = null;
-        PdpGroup pdpGroup = null;
 
         final PdpGroupFilter filter =
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
-            pdpGroup = pdpGroups.get(0);
-            pdpSubgroup = findPdpSubGroup(message, pdpGroup);
+            PdpGroup pdpGroup = pdpGroups.get(0);
+            Optional<PdpSubGroup> pdpSubgroup = findPdpSubGroup(message, pdpGroup);
             if (pdpSubgroup.isPresent()) {
-                pdpInstance = findPdpInstance(message, pdpSubgroup.get());
+                Optional<Pdp> pdpInstance = findPdpInstance(message, pdpSubgroup.get());
                 if (pdpInstance.isPresent()) {
                     processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider);
                 } else {
