@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,43 +71,28 @@ public class StatisticsTest extends End2EndBase {
 
     @Test
     public void testDb() throws Exception {
-        setupEnv();
-        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics");
-        Response testResponse = invocationBuilder.get();
-        verifyResponse(testResponse);
+        verifyResponse("pdps/statistics");
     }
 
     @Test
     public void testDbWithGroup() throws Exception {
-        setupEnv();
-        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/defaultGroup");
-        Response testResponse = invocationBuilder.get();
-        verifyResponse(testResponse);
+        verifyResponse("pdps/statistics/defaultGroup");
 
     }
 
     @Test
     public void testDbWithSubGroup() throws Exception {
-        setupEnv();
-        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/defaultGroup/apex");
-        Response testResponse = invocationBuilder.get();
-        verifyResponse(testResponse);
+        verifyResponse("pdps/statistics/defaultGroup/apex");
     }
 
     @Test
     public void testDbWithPdp() throws Exception {
-        setupEnv();
-        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/defaultGroup/apex/pdp1");
-        Response testResponse = invocationBuilder.get();
-        verifyResponse(testResponse);
+        verifyResponse("pdps/statistics/defaultGroup/apex/pdp1");
     }
 
     @Test
     public void testDbWithPdpLatest() throws Exception {
-        setupEnv();
-        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics/defaultGroup/apex/pdp1?recordCount=5");
-        Response testResponse = invocationBuilder.get();
-        verifyResponse(testResponse);
+        verifyResponse("pdps/statistics/defaultGroup/apex/pdp1?recordCount=5");
     }
 
     private void updateDistributionStatistics() {
@@ -144,6 +129,12 @@ public class StatisticsTest extends End2EndBase {
         } catch (final PfModelException exp) {
             throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, exp.getMessage());
         }
+    }
+
+    private void verifyResponse(String endpoint) throws Exception {
+        setupEnv();
+        Invocation.Builder invocationBuilder = sendRequest("pdps/statistics");
+        verifyResponse(invocationBuilder.get());
     }
 
     private void verifyResponse(Response testResponse) {

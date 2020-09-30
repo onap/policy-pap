@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- * Copyright (C) 2019 AT&T Intellectual Property.  All rights reserved.
+ * Copyright (C) 2019-2020 AT&T Intellectual Property.  All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,59 +22,74 @@ package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.function.ToLongFunction;
 import org.junit.Test;
 
 public class TestPapStatisticsManager {
 
     @Test
-    public void test() {
+    public void testTotalPdpCount() {
+        verifyCount(PapStatisticsManager::getTotalPdpCount,
+                        PapStatisticsManager::updateTotalPdpCount);
+    }
+
+    @Test
+    public void testTotalPdpGroupCount() {
+        verifyCount(PapStatisticsManager::getTotalPdpGroupCount,
+                        PapStatisticsManager::updateTotalPdpGroupCount);
+    }
+
+    @Test
+    public void testTotalPolicyDeployCount() {
+        verifyCount(PapStatisticsManager::getTotalPolicyDeployCount,
+                        PapStatisticsManager::updateTotalPolicyDeployCount);
+    }
+
+    @Test
+    public void testPolicyDeploySuccessCount() {
+        verifyCount(PapStatisticsManager::getPolicyDeploySuccessCount,
+                        PapStatisticsManager::updatePolicyDeploySuccessCount);
+    }
+
+    @Test
+    public void testPolicyDeployFailureCount() {
+        verifyCount(PapStatisticsManager::getPolicyDeployFailureCount,
+                        PapStatisticsManager::updatePolicyDeployFailureCount);
+    }
+
+    @Test
+    public void testTotalPolicyDownloadCount() {
+        verifyCount(PapStatisticsManager::getTotalPolicyDownloadCount,
+                        PapStatisticsManager::updateTotalPolicyDownloadCount);
+    }
+
+    @Test
+    public void testPolicyDownloadSuccessCount() {
+        verifyCount(PapStatisticsManager::getPolicyDownloadSuccessCount,
+                        PapStatisticsManager::updatePolicyDownloadSuccessCount);
+    }
+
+    @Test
+    public void testPolicyDownloadFailureCount() {
+        verifyCount(PapStatisticsManager::getPolicyDownloadFailureCount,
+                        PapStatisticsManager::updatePolicyDownloadFailureCount);
+    }
+
+    private void verifyCount(ToLongFunction<PapStatisticsManager> getCount,
+                    ToLongFunction<PapStatisticsManager> updateCount) {
+
         PapStatisticsManager mgr = new PapStatisticsManager();
 
-        // try each update
+        assertEquals(0, getCount.applyAsLong(mgr));
+        assertEquals(1, updateCount.applyAsLong(mgr));
+        assertEquals(1, getCount.applyAsLong(mgr));
 
-        assertEquals(0, mgr.getTotalPdpCount());
-        assertEquals(1, mgr.updateTotalPdpCount());
-        assertEquals(1, mgr.getTotalPdpCount());
-
-        assertEquals(0, mgr.getTotalPdpGroupCount());
-        assertEquals(1, mgr.updateTotalPdpGroupCount());
-        assertEquals(1, mgr.getTotalPdpGroupCount());
-
-        assertEquals(0, mgr.getTotalPolicyDeployCount());
-        assertEquals(1, mgr.updateTotalPolicyDeployCount());
-        assertEquals(1, mgr.getTotalPolicyDeployCount());
-
-        assertEquals(0, mgr.getPolicyDeploySuccessCount());
-        assertEquals(1, mgr.updatePolicyDeploySuccessCount());
-        assertEquals(1, mgr.getPolicyDeploySuccessCount());
-
-        assertEquals(0, mgr.getPolicyDeployFailureCount());
-        assertEquals(1, mgr.updatePolicyDeployFailureCount());
-        assertEquals(1, mgr.getPolicyDeployFailureCount());
-
-        assertEquals(0, mgr.getTotalPolicyDownloadCount());
-        assertEquals(1, mgr.updateTotalPolicyDownloadCount());
-        assertEquals(1, mgr.getTotalPolicyDownloadCount());
-
-        assertEquals(0, mgr.getPolicyDownloadSuccessCount());
-        assertEquals(1, mgr.updatePolicyDownloadSuccessCount());
-        assertEquals(1, mgr.getPolicyDownloadSuccessCount());
-
-        assertEquals(0, mgr.getPolicyDownloadFailureCount());
-        assertEquals(1, mgr.updatePolicyDownloadFailureCount());
-        assertEquals(1, mgr.getPolicyDownloadFailureCount());
+        assertEquals(2, updateCount.applyAsLong(mgr));
+        assertEquals(2, getCount.applyAsLong(mgr));
 
         // now check reset
         mgr.resetAllStatistics();
 
-        assertEquals(0, mgr.getPolicyDeployFailureCount());
-        assertEquals(0, mgr.getTotalPdpCount());
-        assertEquals(0, mgr.getTotalPdpGroupCount());
-        assertEquals(0, mgr.getTotalPolicyDeployCount());
-        assertEquals(0, mgr.getPolicyDeploySuccessCount());
-        assertEquals(0, mgr.getPolicyDeployFailureCount());
-        assertEquals(0, mgr.getTotalPolicyDownloadCount());
-        assertEquals(0, mgr.getPolicyDownloadSuccessCount());
-        assertEquals(0, mgr.getPolicyDownloadFailureCount());
+        assertEquals(0, getCount.applyAsLong(mgr));
     }
 }
