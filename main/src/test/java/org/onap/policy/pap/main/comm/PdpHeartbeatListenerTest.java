@@ -50,7 +50,7 @@ import org.onap.policy.pap.main.rest.e2e.End2EndBase;
 public class PdpHeartbeatListenerTest extends End2EndBase {
 
     private static final String POLICY_VERSION = "1.0.0";
-    private static final String POLICY_NAME = "onap.policies.controlloop.operational.Apex.SampleDomain";
+    private static final String POLICY_NAME = "onap.policies.controlloop.operational.common.apex.SampleDomain";
     private static final String APEX_TYPE = "apex";
     private static final String DEFAULT_GROUP = "defaultGroup";
     private static final String PDP_NAME = "pdp_1";

@@ -86,7 +86,7 @@
           "pdpType": "drools",
           "supportedPolicyTypes": [
             {
-              "name": "onap.policies.controlloop.Operational",
+              "name": "onap.policies.controlloop.operational.common.Drools",
               "version": "1.0.0"
             }
           ],
@@ -98,13 +98,13 @@
           "pdpType": "apex",
           "supportedPolicyTypes": [
             {
-              "name": "onap.policies.controlloop.operational.Apex",
+              "name": "onap.policies.controlloop.operational.common.Apex",
               "version": "1.0.0"
             }
           ],
           "policies": [
             {
-              "name": "onap.policies.controlloop.operational.Apex.SampleDomain",
+              "name": "onap.policies.controlloop.operational.common.apex.SampleDomain",
               "version": "1.0.0"
             }
           ],
