@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba059d70_02d4b9fc",
+        "filename": "main/src/test/resources/e2e/PdpGroups.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-10-05T21:01:20Z",
+      "side": 1,
+      "message": "This got missed in my reviews - the xacml are not quite right either. Can you update them while you are at it?",
+      "revId": "6b3c1f5612d21ea69207b579c914ed2b366f0033",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
