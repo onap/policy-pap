@@ -51,6 +51,23 @@
       "revId": "6b3c1f5612d21ea69207b579c914ed2b366f0033",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "058660a2_4126d199",
+        "filename": "main/src/test/resources/e2e/PdpGroups.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-10-06T18:21:49Z",
+      "side": 1,
+      "message": "is this a policy for a particular use case?  If not, it should be fine.  If it is for a use case, then it would be better if this were removed.  (ONAP TSC requested separate of use case specific code from other code.)",
+      "revId": "6b3c1f5612d21ea69207b579c914ed2b366f0033",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
