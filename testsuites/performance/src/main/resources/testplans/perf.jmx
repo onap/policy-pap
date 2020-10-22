@@ -5,6 +5,7 @@
   ================================================================================
   Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
   Modifications Copyright (C) 2020 Nordix Foundation.
+  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,10 +20,10 @@
   limitations under the License.
   ============LICENSE_END=========================================================
   -->
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Policy PAP Stability" enabled="true">
-      <stringProp name="TestPlan.comments">Policy PAP Stability Tests</stringProp>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Policy PAP Performance" enabled="true">
+      <stringProp name="TestPlan.comments">Policy PAP Performance Tests</stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
@@ -30,37 +31,27 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="PAP_HOST" elementType="Argument">
             <stringProp name="Argument.name">PAP_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(PAP_HOST,10.2.0.163)}</stringProp>
+            <stringProp name="Argument.value">${__P(PAP_HOST,10.2.0.29)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PAP_PORT" elementType="Argument">
             <stringProp name="Argument.name">PAP_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(PAP_PORT,6969)}</stringProp>
+            <stringProp name="Argument.value">${__P(PAP_PORT,30679)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_HOST" elementType="Argument">
             <stringProp name="Argument.name">API_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(API_HOST,10.2.0.135)}</stringProp>
+            <stringProp name="Argument.value">${__P(API_HOST,10.2.0.29)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_PORT" elementType="Argument">
             <stringProp name="Argument.name">API_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(API_PORT,6969)}</stringProp>
+            <stringProp name="Argument.value">${__P(API_PORT,30859)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="HOME_PATH" elementType="Argument">
             <stringProp name="Argument.name">HOME_PATH</stringProp>
             <stringProp name="Argument.value">${__P(HOME,/home/adityap)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="CONFIG_DIR" elementType="Argument">
-            <stringProp name="Argument.name">CONFIG_DIR</stringProp>
-            <stringProp name="Argument.value">${HOME_PATH}/pap/testsuites/stability/src/main/resources/simulatorsetup/</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="DIR" elementType="Argument">
-            <stringProp name="Argument.name">DIR</stringProp>
-            <stringProp name="Argument.value">${HOME_PATH}/pap/testsuites/performance/src/main/resources/testplans/</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="LOGS_PATH" elementType="Argument">
@@ -75,7 +66,7 @@
           </elementProp>
           <elementProp name="USERS" elementType="Argument">
             <stringProp name="Argument.name">USERS</stringProp>
-            <stringProp name="Argument.value">${__P(USERS,5)</stringProp>
+            <stringProp name="Argument.value">${__P(USERS,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -131,303 +122,6 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </SetupThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Policy Type" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-  &quot;tosca_definitions_version&quot;: &quot;tosca_simple_yaml_1_1_0&quot;,&#xd;
-  &quot;policy_types&quot;: {&#xd;
-    &quot;onap.policies.controlloop.operational.Apex&quot;: {&#xd;
-      &quot;version&quot;: &quot;1.0.0&quot;,&#xd;
-      &quot;description&quot;: &quot;Operational Policy for Control Loops using the APEX PDP&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;engine_service&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.EngineService&quot;,&#xd;
-          &quot;description&quot;: &quot;APEX Engine Service Parameters&quot;&#xd;
-        },&#xd;
-        &quot;inputs&quot;: {&#xd;
-          &quot;type&quot;: &quot;map&quot;,&#xd;
-          &quot;description&quot;: &quot;Inputs for handling events coming into the APEX engine&quot;,&#xd;
-          &quot;entry_schema&quot;: {&#xd;
-            &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.EventHandler&quot;&#xd;
-          }&#xd;
-        },&#xd;
-        &quot;outputs&quot;: {&#xd;
-          &quot;type&quot;: &quot;map&quot;,&#xd;
-          &quot;description&quot;: &quot;Outputs for handling events going out of the APEX engine&quot;,&#xd;
-          &quot;entry_schema&quot;: {&#xd;
-            &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.EventHandler&quot;&#xd;
-          }&#xd;
-        },&#xd;
-        &quot;environment&quot;: {&#xd;
-          &quot;type&quot;: &quot;list&quot;,&#xd;
-          &quot;description&quot;: &quot;Envioronmental parameters for the APEX engine&quot;,&#xd;
-          &quot;entry_schema&quot;: {&#xd;
-            &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.Environment&quot;&#xd;
-          }&#xd;
-        }&#xd;
-      }&#xd;
-    }&#xd;
-  },&#xd;
-  &quot;data_types&quot;: {&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.EngineService&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the engine name&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;default&quot;: &quot;ApexEngineService&quot;&#xd;
-        },&#xd;
-        &quot;version&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the engine version in double dotted format&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;default&quot;: &quot;1.0.0&quot;&#xd;
-        },&#xd;
-        &quot;id&quot;: {&#xd;
-          &quot;type&quot;: &quot;integer&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the engine id&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;instance_count&quot;: {&#xd;
-          &quot;type&quot;: &quot;integer&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the number of engine threads that should be run&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;deployment_port&quot;: {&#xd;
-          &quot;type&quot;: &quot;integer&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the port to connect to for engine administration&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;default&quot;: 1&#xd;
-        },&#xd;
-        &quot;policy_model_file_name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The name of the file from which to read the APEX policy model&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;policy_type_impl&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The policy type implementation from which to read the APEX policy model&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;periodic_event_period&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The time interval in milliseconds for the periodic scanning event, 0 means \&quot;don&apos;t scan\&quot;&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;default&quot;: 0&#xd;
-        },&#xd;
-        &quot;engine&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.engineservice.Engine&quot;,&#xd;
-          &quot;description&quot;: &quot;The parameters for all engines in the APEX engine service&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.EventHandler&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the event handler name, if not specified this is set to the key name&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;carrier_technology&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.CarrierTechnology&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the carrier technology of the event handler (such as REST/Web Socket/Kafka)&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;event_protocol&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.EventProtocol&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the event protocol of events for the event handler (such as Yaml/JSON/XML/POJO)&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;event_name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the event name for events on this event handler, if not specified, the event name is read from or written to the event being received or sent&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;event_name_filter&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies a filter as a regular expression, events that do not match the filter are dropped, the default is to let all events through&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;synchronous_mode&quot;: {&#xd;
-          &quot;type&quot;: &quot;boolean&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the event handler is syncronous (receive event and send response)&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;default&quot;: false&#xd;
-        },&#xd;
-        &quot;synchronous_peer&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The peer event handler (output for input or input for output) of this event handler in synchronous mode, this parameter is mandatory if the event handler is in synchronous mode&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;synchronous_timeout&quot;: {&#xd;
-          &quot;type&quot;: &quot;integer&quot;,&#xd;
-          &quot;description&quot;: &quot;The timeout in milliseconds for responses to be issued by APEX torequests, this parameter is mandatory if the event handler is in synchronous mode&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;requestor_mode&quot;: {&#xd;
-          &quot;type&quot;: &quot;boolean&quot;,&#xd;
-          &quot;description&quot;: &quot;Specifies the event handler is in requestor mode (send event and wait for response mode)&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;default&quot;: false&#xd;
-        },&#xd;
-        &quot;requestor_peer&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The peer event handler (output for input or input for output) of this event handler in requestor mode, this parameter is mandatory if the event handler is in requestor mode&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;requestor_timeout&quot;: {&#xd;
-          &quot;type&quot;: &quot;integer&quot;,&#xd;
-          &quot;description&quot;: &quot;The timeout in milliseconds for wait for responses to requests, this parameter is mandatory if the event handler is in requestor mode&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.CarrierTechnology&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;label&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The label (name) of the carrier technology (such as REST, Kafka, WebSocket)&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;plugin_parameter_class_name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The class name of the class that overrides default handling of event input or output for this carrier technology, defaults to the supplied input or output class&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.EventProtocol&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;label&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The label (name) of the event protocol (such as Yaml, JSON, XML, or POJO)&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;event_protocol_plugin_class&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The class name of the class that overrides default handling of the event protocol for this carrier technology, defaults to the supplied event protocol class&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.Environment&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The name of the environment variable&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;value&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The value of the environment variable&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.engineservice.Engine&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;context&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.engineservice.engine.Context&quot;,&#xd;
-          &quot;description&quot;: &quot;The properties for handling context in APEX engines, defaults to using Java maps for context&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;executors&quot;: {&#xd;
-          &quot;type&quot;: &quot;map&quot;,&#xd;
-          &quot;description&quot;: &quot;The plugins for policy executors used in engines such as javascript, MVEL, Jython&quot;,&#xd;
-          &quot;required&quot;: true,&#xd;
-          &quot;entry_schema&quot;: {&#xd;
-            &quot;description&quot;: &quot;The plugin class path for this policy executor&quot;,&#xd;
-            &quot;type&quot;: &quot;string&quot;&#xd;
-          }&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.engineservice.engine.Context&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;distributor&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.Plugin&quot;,&#xd;
-          &quot;description&quot;: &quot;The plugin to be used for distributing context between APEX PDPs at runtime&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;schemas&quot;: {&#xd;
-          &quot;type&quot;: &quot;map&quot;,&#xd;
-          &quot;description&quot;: &quot;The plugins for context schemas available in APEX PDPs such as Java and Avro&quot;,&#xd;
-          &quot;required&quot;: false,&#xd;
-          &quot;entry_schema&quot;: {&#xd;
-            &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.Plugin&quot;&#xd;
-          }&#xd;
-        },&#xd;
-        &quot;locking&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.Plugin&quot;,&#xd;
-          &quot;description&quot;: &quot;The plugin to be used for locking context in and between APEX PDPs at runtime&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        },&#xd;
-        &quot;persistence&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.datatypes.policies.controlloop.operational.apex.Plugin&quot;,&#xd;
-          &quot;description&quot;: &quot;The plugin to be used for persisting context for APEX PDPs at runtime&quot;,&#xd;
-          &quot;required&quot;: false&#xd;
-        }&#xd;
-      }&#xd;
-    },&#xd;
-    &quot;onap.datatypes.policies.controlloop.operational.apex.Plugin&quot;: {&#xd;
-      &quot;derived_from&quot;: &quot;tosca.datatypes.Root&quot;,&#xd;
-      &quot;properties&quot;: {&#xd;
-        &quot;name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The name of the executor such as Javascript, Jython or MVEL&quot;,&#xd;
-          &quot;required&quot;: true&#xd;
-        },&#xd;
-        &quot;plugin_class_name&quot;: {&#xd;
-          &quot;type&quot;: &quot;string&quot;,&#xd;
-          &quot;description&quot;: &quot;The class path of the plugin class for this executor&quot;&#xd;
-        }&#xd;
-      }&#xd;
-    }&#xd;
-  }&#xd;
-}&#xd;
-</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
-          <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">policy/api/v1/policytypes</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">1</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Policy" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -440,7 +134,7 @@
     &quot;policies&quot;: [&#xd;
       {&#xd;
         &quot;operational.apex.stabilityTestDefaultDomain&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.policies.controlloop.operational.Apex&quot;,&#xd;
+          &quot;type&quot;: &quot;onap.policies.controlloop.operational.common.Apex&quot;,&#xd;
           &quot;type_version&quot;: &quot;1.0.0&quot;,&#xd;
           &quot;version&quot;: &quot;1.0.0&quot;,&#xd;
           &quot;metadata&quot;: {&#xd;
@@ -7882,7 +7576,7 @@
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.Apex/versions/1.0.0/policies</stringProp>
+          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.common.Apex/versions/1.0.0/policies</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7916,7 +7610,7 @@
     &quot;policies&quot;: [&#xd;
       {&#xd;
         &quot;operational.apex.stabilityTestSampleDomain&quot;: {&#xd;
-          &quot;type&quot;: &quot;onap.policies.controlloop.operational.Apex&quot;,&#xd;
+          &quot;type&quot;: &quot;onap.policies.native.Apex&quot;,&#xd;
           &quot;type_version&quot;: &quot;1.0.0&quot;,&#xd;
           &quot;version&quot;: &quot;1.0.0&quot;,&#xd;
           &quot;metadata&quot;: {&#xd;
@@ -15358,7 +15052,7 @@
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.Apex/versions/1.0.0/policies</stringProp>
+          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.native.Apex/versions/1.0.0/policies</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -15561,25 +15255,6 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <intProp name="Assertion.test_type">1</intProp>
           </ResponseAssertion>
           <hashTree/>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="false">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">import groovy.json.JsonSlurper;
-
-def res = [];
-if (prev.getResponseCode() == &apos;200&apos;) {
-    def jsonSlurper = new JsonSlurper();
-    res = jsonSlurper.parseText(prev.getResponseDataAsString());
-
-    assert res instanceof Map;
-    assert res.groups.size == 1;
-    assert res.groups[0].pdpGroupState== &apos;ACTIVE&apos;;
-}
-</stringProp>
-          </JSR223Assertion>
-          <hashTree/>
           <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
             <stringProp name="CounterConfig.start">1</stringProp>
             <stringProp name="CounterConfig.end"></stringProp>
@@ -15590,7 +15265,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </CounterConfig>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="false">
           <stringProp name="TestPlan.comments">Deploy defaultDomain policy</stringProp>
           <stringProp name="IfController.condition">${threadCounter}%5==1</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
@@ -15656,11 +15331,11 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             &quot;pdpSubgroups&quot;: [&#xd;
                 {&#xd;
                     &quot;pdpType&quot;: &quot;apex&quot;,&#xd;
-                    &quot;desiredInstanceCount&quot;: 2,&#xd;
+                    &quot;desiredInstanceCount&quot;: 1,&#xd;
                     &quot;properties&quot;: {},&#xd;
                     &quot;supportedPolicyTypes&quot;: [&#xd;
                         {&#xd;
-                            &quot;name&quot;: &quot;onap.policies.controlloop.operational.Apex&quot;,&#xd;
+                            &quot;name&quot;: &quot;onap.policies.native.Apex&quot;,&#xd;
                             &quot;version&quot;: &quot;1.0.0&quot;&#xd;
                         }&#xd;
                     ],&#xd;
@@ -15701,35 +15376,6 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="OS Process Sampler" enabled="false">
-          <boolProp name="SystemSampler.checkReturnCode">false</boolProp>
-          <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
-          <stringProp name="SystemSampler.command">${DIR}pdp_sim_startup.sh</stringProp>
-          <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="Argument">
-                <stringProp name="Argument.name"></stringProp>
-                <stringProp name="Argument.value">${CONFIG_DIR}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Argument">
-                <stringProp name="Argument.name"></stringProp>
-                <stringProp name="Argument.value">1</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="SystemSampler.directory">${DIR}</stringProp>
-        </SystemSampler>
-        <hashTree>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-            <stringProp name="ConstantTimer.delay">5000</stringProp>
-          </ConstantTimer>
-          <hashTree/>
-        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check PdpGroup Query" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
@@ -15750,16 +15396,6 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           <stringProp name="TestPlan.comments">Check PdpGroup Query</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">1</intProp>
-          </ResponseAssertion>
-          <hashTree/>
           <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="false">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
@@ -15773,24 +15409,21 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     res = jsonSlurper.parseText(prev.getResponseDataAsString());
 
     assert res instanceof Map;
-    assert res.groups.size &gt;1;
-    
-    for(int groupSize=0;groupSize&lt;res.groups.size;groupSize++){
-
-
-    	 	 	def pdpSubGrp=res.groups[0].pdpSubgroups;
-    	 	
-    	 			if (res.groups[0].name == &apos;defaultGroup&apos;){
-    	 			assert pdpSubGrp[0].policies[0].name == &apos;operational.apex.stabilityTestDefaultDomain&apos;;
-    	 		}else if(res.groups[0].name == &apos;sampleGroup&apos; ){
-    	 			assert pdpSubGrp[0].policies.size == 0;
-    	 			
-    	 		}
-    	 		
-    	 	}
+    assert res.groups.size == 1;
+    assert res.groups[0].pdpGroupState== &apos;ACTIVE&apos;;
 }
 </stringProp>
           </JSR223Assertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Deployment Update sampleDomain" enabled="true">
@@ -15848,7 +15481,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
           <stringProp name="ConstantTimer.delay">500</stringProp>
         </ConstantTimer>
         <hashTree/>
@@ -15946,44 +15579,8 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <intProp name="Assertion.test_type">1</intProp>
           </ResponseAssertion>
           <hashTree/>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="false">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">import groovy.json.JsonSlurper;
-
-def res = [];
-if (prev.getResponseCode() == &apos;200&apos;) {
-    def jsonSlurper = new JsonSlurper();
-    res = jsonSlurper.parseText(prev.getResponseDataAsString());
-   assert res.size &gt;1 ;
-
-}
-</stringProp>
-          </JSR223Assertion>
-          <hashTree/>
         </hashTree>
-        <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="OS Process Sampler" enabled="false">
-          <boolProp name="SystemSampler.checkReturnCode">false</boolProp>
-          <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
-          <stringProp name="SystemSampler.command">${DIR}pdp_sim_stop.sh</stringProp>
-          <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="Argument">
-                <stringProp name="Argument.name"></stringProp>
-                <stringProp name="Argument.value">1</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="SystemSampler.directory">${DIR}</stringProp>
-        </SystemSampler>
-        <hashTree/>
-        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
           <stringProp name="ConstantTimer.delay">500</stringProp>
         </ConstantTimer>
         <hashTree/>
@@ -16042,7 +15639,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="false">
           <stringProp name="IfController.condition">${threadCounter}%5==1</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
@@ -16138,25 +15735,6 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <intProp name="Assertion.test_type">1</intProp>
             <stringProp name="Assertion.scope">children</stringProp>
           </ResponseAssertion>
-          <hashTree/>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="false">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">import groovy.json.JsonSlurper;
-
-def res = [];
-if (prev.getResponseCode() == &apos;200&apos;) {
-    def jsonSlurper = new JsonSlurper();
-    res = jsonSlurper.parseText(prev.getResponseDataAsString());
-
-    assert res instanceof Map;
-    assert res.groups.size &gt; 0;
-    assert res.groups[0].pdpGroupState== &apos;PASSIVE&apos;;
-}
-</stringProp>
-          </JSR223Assertion>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Change State to PASSIVE(defaultGroup)" enabled="true">
@@ -16272,37 +15850,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.Apex/versions/1.0.0/policies/operational.apex.stabilityTestSampleDomain/versions/1.0.0</stringProp>
-          <stringProp name="HTTPSampler.method">DELETE</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">1</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete Policy Type" enabled="false">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
-          <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.Apex/versions/1.0.0</stringProp>
+          <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.native.Apex/versions/1.0.0/policies/operational.apex.stabilityTestSampleDomain/versions/1.0.0</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
