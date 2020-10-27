@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05372a2b_9bfaec20",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-10-27T18:12:40Z",
+      "side": 1,
+      "message": "3.3.0-SNAPSHOT",
+      "range": {
+        "startLine": 30,
+        "startChar": 18,
+        "endLine": 30,
+        "endChar": 22
+      },
+      "revId": "27f4e96d14912bcbd569956087296e4720d5a212",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "462af6a7_7c358ee6",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2020-10-27T18:12:40Z",
+      "side": 1,
+      "message": "These should also be upped immediately - you can wait another review if you want",
+      "range": {
+        "startLine": 44,
+        "startChar": 31,
+        "endLine": 45,
+        "endChar": 36
+      },
+      "revId": "27f4e96d14912bcbd569956087296e4720d5a212",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
