@@ -81,9 +81,9 @@ public class PolicyComponentsHealthCheckProvider {
     /**
      * This method is used to initialize clients and executor.
      * @param papParameterGroup
-     * @{link PapParameterGroup} contains the Pap Parameters set during startup
+     *     @{link PapParameterGroup} contains the Pap Parameters set during startup
      * @param clientFactory
-     * @{link HttpClientFactory} contains the client details
+     *     @{link HttpClientFactory} contains the client details
      */
     public static void initializeClientHealthCheckExecutorService(PapParameterGroup papParameterGroup,
         HttpClientFactory clientFactory) throws HttpClientConfigException {
