@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "00d9e8a8_ba0d993b",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2020-11-30T19:14:53Z",
+      "side": 1,
+      "message": "did we verify that \"cp -f\" works using busybox cp instead of coreutils cp?",
+      "range": {
+        "startLine": 43,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 9
+      },
+      "revId": "14a8a2f30a202d816b32b658969d0210e976320d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
