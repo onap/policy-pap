@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +56,7 @@ public abstract class MultiPdpStatusListener implements TypedMessageListener<Pdp
      *
      * @param id ID for which to wait
      */
-    public MultiPdpStatusListener(String id) {
+    protected MultiPdpStatusListener(String id) {
         unseenIds.add(id);
     }
 
@@ -64,7 +65,7 @@ public abstract class MultiPdpStatusListener implements TypedMessageListener<Pdp
      *
      * @param ids IDs for which to wait
      */
-    public MultiPdpStatusListener(Collection<String> ids) {
+    protected MultiPdpStatusListener(Collection<String> ids) {
         if (ids.isEmpty()) {
             allSeen.countDown();
 
