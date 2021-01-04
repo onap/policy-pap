@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@ package org.onap.policy.pap.main.comm.msgdata;
 import java.util.Collection;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 /**
@@ -102,5 +103,5 @@ public interface Request {
      *
      * @return a list of policies to be undeployed
      */
-    public Collection<ToscaPolicyIdentifier> getUndeployPolicies();
+    public Collection<ToscaConceptIdentifier> getUndeployPolicies();
 }

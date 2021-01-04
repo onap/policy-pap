@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.pap.main.rest.ProviderBase.Updater;
 
 public class TestPdpGroupDeleteProvider extends ProviderSuper {
@@ -66,9 +66,9 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private ArgumentCaptor<Set<String>> pdpCaptor;
 
     private MyProvider prov;
-    private ToscaPolicyIdentifierOptVersion optIdent;
-    private ToscaPolicyIdentifierOptVersion fullIdent;
-    private ToscaPolicyIdentifier ident;
+    private ToscaConceptIdentifierOptVersion optIdent;
+    private ToscaConceptIdentifierOptVersion fullIdent;
+    private ToscaConceptIdentifier ident;
     private Updater updater;
 
 
@@ -89,8 +89,8 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         super.setUp();
 
         ident = policy1.getIdentifier();
-        optIdent = new ToscaPolicyIdentifierOptVersion(ident.getName(), null);
-        fullIdent = new ToscaPolicyIdentifierOptVersion(ident.getName(), ident.getVersion());
+        optIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), null);
+        fullIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), ident.getVersion());
 
         prov = new MyProvider();
 
@@ -292,7 +292,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         }
 
         @Override
-        protected void processPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy)
+        protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
                         throws PfModelException {
             // do nothing
         }

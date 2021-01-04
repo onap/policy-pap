@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,8 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
@@ -86,7 +86,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * Used to capture input to undeployer.undeploy().
      */
     @Captor
-    private ArgumentCaptor<Collection<ToscaPolicyIdentifier>> undeployCaptor;
+    private ArgumentCaptor<Collection<ToscaConceptIdentifier>> undeployCaptor;
 
     @Mock
     private PdpRequests requests;
@@ -547,7 +547,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testSingletonListenerFailureUndeploy() throws Exception {
 
-        ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier("undeployed", "2.3.4");
+        ToscaConceptIdentifier ident = new ToscaConceptIdentifier("undeployed", "2.3.4");
         ToscaPolicy policy = mock(ToscaPolicy.class);
         when(policy.getIdentifier()).thenReturn(ident);
 
@@ -592,7 +592,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testSingletonListenerFailureUndeployMessageUnchanged() throws Exception {
 
-        ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier("msg-unchanged", "8.7.6");
+        ToscaConceptIdentifier ident = new ToscaConceptIdentifier("msg-unchanged", "8.7.6");
         ToscaPolicy policy = mock(ToscaPolicy.class);
         when(policy.getIdentifier()).thenReturn(ident);
 

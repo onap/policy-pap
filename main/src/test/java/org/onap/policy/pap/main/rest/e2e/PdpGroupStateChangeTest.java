@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,7 @@ import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 public class PdpGroupStateChangeTest extends End2EndBase {
     private static final String PDP1 = "pdpAA_1";
@@ -61,6 +62,7 @@ public class PdpGroupStateChangeTest extends End2EndBase {
     /**
      * Sets up.
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -72,9 +74,9 @@ public class PdpGroupStateChangeTest extends End2EndBase {
     public void testMakePassive() throws Exception {
         addGroups("stateChangeGroupDeactivate.json");
 
-        ToscaPolicyIdentifier policy =
-                        new ToscaPolicyIdentifier("onap.restart.tca", "1.0.0");
-        List<ToscaPolicyIdentifier> policies = Collections.singletonList(policy);
+        ToscaConceptIdentifier policy =
+                        new ToscaConceptIdentifier("onap.restart.tca", "1.0.0");
+        List<ToscaConceptIdentifier> policies = Collections.singletonList(policy);
 
         PdpStatus status11 = new PdpStatus();
         status11.setName(PDP1);

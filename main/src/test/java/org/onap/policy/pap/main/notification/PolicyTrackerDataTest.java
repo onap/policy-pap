@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +32,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 public class PolicyTrackerDataTest {
 
-    private static final ToscaPolicyTypeIdentifier TYPE = new ToscaPolicyTypeIdentifier("my-type", "1.2.3");
+    private static final ToscaConceptIdentifier TYPE = new ToscaConceptIdentifier("my-type", "1.2.3");
     private static final String PDP1 = "pdp-1";
     private static final String PDP2 = "pdp-2";
     private static final String PDP3 = "pdp-3";

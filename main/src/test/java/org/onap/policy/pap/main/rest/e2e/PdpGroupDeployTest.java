@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +48,7 @@ import org.onap.policy.models.pdp.concepts.DeploymentGroup;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 
 public class PdpGroupDeployTest extends End2EndBase {
@@ -71,6 +72,7 @@ public class PdpGroupDeployTest extends End2EndBase {
     /**
      * Sets up.
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -90,7 +92,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         status11.setPdpType(DEPLOY_SUBGROUP);
         status11.setPdpSubgroup(DEPLOY_SUBGROUP);
 
-        List<ToscaPolicyIdentifier> idents = Arrays.asList(new ToscaPolicyIdentifier("onap.restart.tca", "1.0.0"));
+        List<ToscaConceptIdentifier> idents = Arrays.asList(new ToscaConceptIdentifier("onap.restart.tca", "1.0.0"));
         status11.setPolicies(idents);
 
         PdpStatus status12 = new PdpStatus();
@@ -147,9 +149,9 @@ public class PdpGroupDeployTest extends End2EndBase {
         status11.setPdpType(DEPLOY_SUBGROUP);
         status11.setPdpSubgroup(DEPLOY_SUBGROUP);
 
-        final ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier("onap.restart.tcaB", "1.0.0");
+        final ToscaConceptIdentifier ident = new ToscaConceptIdentifier("onap.restart.tcaB", "1.0.0");
 
-        List<ToscaPolicyIdentifier> idents = Arrays.asList(ident);
+        List<ToscaConceptIdentifier> idents = Arrays.asList(ident);
         status11.setPolicies(idents);
 
         PdpStatus status12 = new PdpStatus();

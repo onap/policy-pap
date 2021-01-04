@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +41,7 @@ import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 
 public class PdpGroupDeleteTest extends End2EndBase {
@@ -63,6 +64,7 @@ public class PdpGroupDeleteTest extends End2EndBase {
     /**
      * Sets up.
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -152,7 +154,7 @@ public class PdpGroupDeleteTest extends End2EndBase {
         assertEquals(2, deleted.getSuccessCount());
         assertEquals(0, deleted.getFailureCount());
         assertEquals(0, deleted.getIncompleteCount());
-        assertEquals(new ToscaPolicyIdentifier("onap.restart.tcaB", "1.0.0"), deleted.getPolicy());
+        assertEquals(new ToscaConceptIdentifier("onap.restart.tcaB", "1.0.0"), deleted.getPolicy());
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeleteResponse.class);

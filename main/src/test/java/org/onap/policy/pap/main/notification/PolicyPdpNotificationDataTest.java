@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +31,7 @@ import java.util.Collections;
 import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 /**
  * Note: this wraps the PDPs in a TreeSet so that the content can be verified without
@@ -43,8 +43,8 @@ public class PolicyPdpNotificationDataTest {
     private static final String PDP3 = "pdp-3";
     private static final String PDP4 = "pdp-4";
 
-    private ToscaPolicyIdentifier policyId;
-    private ToscaPolicyTypeIdentifier policyType;
+    private ToscaConceptIdentifier policyId;
+    private ToscaConceptIdentifier policyType;
     private PolicyPdpNotificationData data;
 
     /**
@@ -52,8 +52,8 @@ public class PolicyPdpNotificationDataTest {
      */
     @Before
     public void setUp() {
-        policyId = new ToscaPolicyIdentifier("my-id", "1.2.3");
-        policyType = new ToscaPolicyTypeIdentifier("my-type", "3.2.1");
+        policyId = new ToscaConceptIdentifier("my-id", "1.2.3");
+        policyType = new ToscaConceptIdentifier("my-type", "3.2.1");
 
         data = new PolicyPdpNotificationData(policyId, policyType);
     }

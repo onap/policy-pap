@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +39,7 @@ import javax.ws.rs.core.Response.Status;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +125,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
 
         return doOperation(requestId, "undeploy policy failed",
-            () -> provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, null)));
+            () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, null)));
     }
 
     /**
@@ -166,7 +167,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {
 
         return doOperation(requestId, "undeploy policy failed",
-            () -> provider.undeploy(new ToscaPolicyIdentifierOptVersion(policyName, version)));
+            () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, version)));
     }
 
     /**

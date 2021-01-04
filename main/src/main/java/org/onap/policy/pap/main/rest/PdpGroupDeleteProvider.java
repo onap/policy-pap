@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +93,7 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      * @param policyIdent identifier of the policy to be undeployed
      * @throws PfModelException if an error occurred
      */
-    public void undeploy(ToscaPolicyIdentifierOptVersion policyIdent) throws PfModelException {
+    public void undeploy(ToscaConceptIdentifierOptVersion policyIdent) throws PfModelException {
         process(policyIdent, this::undeployPolicy);
     }
 
@@ -104,7 +104,7 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      * @param ident identifier of the policy to be deleted
      * @throws PfModelException if an error occurred
      */
-    private void undeployPolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) throws PfModelException {
+    private void undeployPolicy(SessionData data, ToscaConceptIdentifierOptVersion ident) throws PfModelException {
         try {
             processPolicy(data, ident);
 
@@ -125,10 +125,10 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      */
     @Override
     protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
-                    ToscaPolicyIdentifierOptVersion desiredIdent) {
+                    ToscaConceptIdentifierOptVersion desiredIdent) {
 
         // construct a matcher based on whether or not the version was specified
-        Predicate<ToscaPolicyIdentifier> matcher;
+        Predicate<ToscaConceptIdentifier> matcher;
 
         if (desiredIdent.getVersion() != null) {
             // version was specified - match the whole identifier
@@ -148,9 +148,9 @@ public class PdpGroupDeleteProvider extends ProviderBase {
 
             boolean result = false;
 
-            Iterator<ToscaPolicyIdentifier> iter = subgroup.getPolicies().iterator();
+            Iterator<ToscaConceptIdentifier> iter = subgroup.getPolicies().iterator();
             while (iter.hasNext()) {
-                ToscaPolicyIdentifier ident = iter.next();
+                ToscaConceptIdentifier ident = iter.next();
 
                 if (matcher.test(ident)) {
                     result = true;
