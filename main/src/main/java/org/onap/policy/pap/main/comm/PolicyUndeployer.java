@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@ package org.onap.policy.pap.main.comm;
 
 import java.util.Collection;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 @FunctionalInterface
 public interface PolicyUndeployer {
@@ -34,6 +35,6 @@ public interface PolicyUndeployer {
      * @param policies policies to be undeployed
      * @throws PfModelException if an error occurs
      */
-    public void undeploy(String group, String subgroup, Collection<ToscaPolicyIdentifier> policies)
+    public void undeploy(String group, String subgroup, Collection<ToscaConceptIdentifier> policies)
                     throws PfModelException;
 }

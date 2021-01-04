@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,9 +51,8 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
@@ -95,6 +95,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
     /**
      * Creates various objects, including {@link #notifier}.
      */
+    @Override
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -122,7 +123,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
 
         when(dao.getPdpGroups(null)).thenReturn(Arrays.asList(group1, group2));
 
-        ToscaPolicyTypeIdentifier type2 = new ToscaPolicyTypeIdentifier("my other type", "8.8.8");
+        ToscaConceptIdentifier type2 = new ToscaConceptIdentifier("my other type", "8.8.8");
 
         // note: no mapping for policy4
         when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(makePolicy(policy1, type),
@@ -159,7 +160,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
         assertEquals("[sub #2 A 0]", data.getPdps().toString());
     }
 
-    private ToscaPolicy makePolicy(ToscaPolicyIdentifier policyId, ToscaPolicyTypeIdentifier type) {
+    private ToscaPolicy makePolicy(ToscaConceptIdentifier policyId, ToscaConceptIdentifier type) {
         ToscaPolicy policy = new ToscaPolicy();
 
         policy.setName(policyId.getName());
@@ -179,7 +180,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
         return group;
     }
 
-    private PdpSubGroup makeSubGroup(String name, int numPdps, ToscaPolicyIdentifier... policies) {
+    private PdpSubGroup makeSubGroup(String name, int numPdps, ToscaConceptIdentifier... policies) {
         final PdpSubGroup subgrp = new PdpSubGroup();
         subgrp.setPdpType(name);
         subgrp.setPdpInstances(new ArrayList<>(numPdps));
@@ -213,7 +214,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
     }
 
     @Test
-    public void testGetStatusToscaPolicyIdentifier() {
+    public void testGetStatusToscaConceptIdentifier() {
         Optional<PolicyStatus> status = Optional.of(status1);
         when(deploy.getStatus(policy1)).thenReturn(status);
 
@@ -243,7 +244,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
         doAnswer(addStatus(2, status1, status2)).when(deploy).processResponse(eq(PDP1), any(), any());
         doAnswer(addStatus(2, status3, status4)).when(undeploy).processResponse(eq(PDP1), any(), any());
 
-        List<ToscaPolicyIdentifier> activePolicies = Arrays.asList(policy1, policy2);
+        List<ToscaConceptIdentifier> activePolicies = Arrays.asList(policy1, policy2);
         notifier.processResponse(PDP1, activePolicies);
 
         PolicyNotification notification = getNotification();

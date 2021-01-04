@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +34,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 /**
  * Common super class for deploy and undeploy trackers.
@@ -48,7 +49,7 @@ public abstract class PolicyCommonTracker {
      * Use a LinkedHashMap, because we'll be doing lots of iteration over the map, and
      * iteration over a LinkedHashMap is faster than over a plain HashMap.
      */
-    private final Map<ToscaPolicyIdentifier, PolicyTrackerData> policy2data = new LinkedHashMap<>();
+    private final Map<ToscaConceptIdentifier, PolicyTrackerData> policy2data = new LinkedHashMap<>();
 
 
     /**
@@ -85,8 +86,8 @@ public abstract class PolicyCommonTracker {
      * @param ident identifier of the policy of interest
      * @return the status of the given policy, or empty if the policy is not found
      */
-    public Optional<PolicyStatus> getStatus(ToscaPolicyIdentifier ident) {
-        ToscaPolicyIdentifier ident2 = new ToscaPolicyIdentifier(ident.getName(), ident.getVersion());
+    public Optional<PolicyStatus> getStatus(ToscaConceptIdentifier ident) {
+        ToscaConceptIdentifier ident2 = new ToscaConceptIdentifier(ident.getName(), ident.getVersion());
         PolicyTrackerData data = policy2data.get(ident2);
         return Optional.ofNullable(data == null ? null : makeStatus(ident2, data));
     }
@@ -140,7 +141,7 @@ public abstract class PolicyCommonTracker {
      * @param statusList status messages are added here if policies become complete as a
      *        result of this operation
      */
-    public void processResponse(String pdp, Collection<ToscaPolicyIdentifier> activePolicies,
+    public void processResponse(String pdp, Collection<ToscaConceptIdentifier> activePolicies,
                     List<PolicyStatus> statusList) {
         processResponse(pdp, new HashSet<>(activePolicies), statusList);
     }
@@ -154,7 +155,7 @@ public abstract class PolicyCommonTracker {
      * @param statusList status messages are added here if policies become complete as a
      *        result of this operation
      */
-    public void processResponse(String pdp, Set<ToscaPolicyIdentifier> activePolicies, List<PolicyStatus> statusList) {
+    public void processResponse(String pdp, Set<ToscaConceptIdentifier> activePolicies, List<PolicyStatus> statusList) {
         updateMap(statusList, (policyId, data) -> updateData(pdp, data, activePolicies.contains(policyId)));
     }
 
@@ -173,13 +174,13 @@ public abstract class PolicyCommonTracker {
      *        policy is complete (i.e., no longer awaiting any responses)
      */
     private void updateMap(List<PolicyStatus> statusList,
-                    BiPredicate<ToscaPolicyIdentifier, PolicyTrackerData> updater) {
+                    BiPredicate<ToscaConceptIdentifier, PolicyTrackerData> updater) {
 
-        Iterator<Entry<ToscaPolicyIdentifier, PolicyTrackerData>> iter = policy2data.entrySet().iterator();
+        Iterator<Entry<ToscaConceptIdentifier, PolicyTrackerData>> iter = policy2data.entrySet().iterator();
         while (iter.hasNext()) {
-            Entry<ToscaPolicyIdentifier, PolicyTrackerData> ent = iter.next();
+            Entry<ToscaConceptIdentifier, PolicyTrackerData> ent = iter.next();
 
-            ToscaPolicyIdentifier policyId = ent.getKey();
+            ToscaConceptIdentifier policyId = ent.getKey();
             PolicyTrackerData data = ent.getValue();
 
             if (!updater.test(policyId, data)) {
@@ -224,7 +225,7 @@ public abstract class PolicyCommonTracker {
      * @param entry policy entry
      * @return a new status notification
      */
-    private PolicyStatus makeStatus(Map.Entry<ToscaPolicyIdentifier, PolicyTrackerData> entry) {
+    private PolicyStatus makeStatus(Map.Entry<ToscaConceptIdentifier, PolicyTrackerData> entry) {
         return makeStatus(entry.getKey(), entry.getValue());
     }
 
@@ -235,7 +236,7 @@ public abstract class PolicyCommonTracker {
      * @param data data to be used to set the status fields
      * @return a new status notification
      */
-    private PolicyStatus makeStatus(ToscaPolicyIdentifier policyId, PolicyTrackerData data) {
+    private PolicyStatus makeStatus(ToscaConceptIdentifier policyId, PolicyTrackerData data) {
 
         PolicyStatus status = new PolicyStatus(data.getPolicyType(), policyId);
         data.putValuesInto(status);

@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +39,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 
@@ -173,7 +174,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "Policy Version", required = true) @PathParam("version") String version,
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
-        ToscaPolicyIdentifier ident = new ToscaPolicyIdentifier(name, version);
+        ToscaConceptIdentifier ident = new ToscaConceptIdentifier(name, version);
         Optional<PolicyStatus> result = notifier.getStatus(ident);
         if (result.isPresent()) {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)

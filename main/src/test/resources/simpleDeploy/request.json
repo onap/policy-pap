@@ -1,8 +1,8 @@
 {
     "policies": [
         {
-            "policy-id": "policyA",
-            "policy-version": "1.2.3"
+            "name": "policyA",
+            "version": "1.2.3"
         }
     ]
 }

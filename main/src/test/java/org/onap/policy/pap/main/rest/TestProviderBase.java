@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,9 +48,9 @@ import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 import org.powermock.reflect.Whitebox;
 
@@ -82,6 +83,7 @@ public class TestProviderBase extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
 
@@ -156,7 +158,7 @@ public class TestProviderBase extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
 
         SessionData session = new SessionData(dao);
-        ToscaPolicyIdentifierOptVersion ident = new ToscaPolicyIdentifierOptVersion(POLICY1_NAME, POLICY1_VERSION);
+        ToscaConceptIdentifierOptVersion ident = new ToscaConceptIdentifierOptVersion(POLICY1_NAME, POLICY1_VERSION);
         assertThatThrownBy(() -> prov.processPolicy(session, ident)).isInstanceOf(PfModelException.class)
                         .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
 
@@ -167,7 +169,7 @@ public class TestProviderBase extends ProviderSuper {
         PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
         when(dao.getFilteredPolicyList(any())).thenThrow(exc);
 
-        ToscaPolicyIdentifierOptVersion req = loadRequest();
+        ToscaConceptIdentifierOptVersion req = loadRequest();
         assertThatThrownBy(() -> prov.process(req, this::handle)).isInstanceOf(PfModelRuntimeException.class)
                         .hasCause(exc);
     }
@@ -176,7 +178,7 @@ public class TestProviderBase extends ProviderSuper {
     public void testGetPolicy_NotFound() throws Exception {
         when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
 
-        ToscaPolicyIdentifierOptVersion req = loadRequest();
+        ToscaConceptIdentifierOptVersion req = loadRequest();
         assertThatThrownBy(() -> prov.process(req, this::handle)).isInstanceOf(PfModelRuntimeException.class)
                         .hasMessage("cannot find policy: policyA 1.2.3")
                         .extracting(ex -> ((PfModelRuntimeException) ex).getErrorResponse().getResponseCode())
@@ -263,7 +265,7 @@ public class TestProviderBase extends ProviderSuper {
         PdpDeployPolicies request = loadFile("updateGroupReqMultiple.json", PdpDeployPolicies.class);
 
         prov.process(request, (data, deploy) -> {
-            for (ToscaPolicyIdentifierOptVersion policy : deploy.getPolicies()) {
+            for (ToscaConceptIdentifierOptVersion policy : deploy.getPolicies()) {
                 handle(data, policy);
             }
         });
@@ -307,7 +309,7 @@ public class TestProviderBase extends ProviderSuper {
      *
      * @return a standard request
      */
-    protected ToscaPolicyIdentifierOptVersion loadRequest() {
+    protected ToscaConceptIdentifierOptVersion loadRequest() {
         return loadRequest("requestBase.json");
     }
 
@@ -317,8 +319,8 @@ public class TestProviderBase extends ProviderSuper {
      * @param fileName name of the file from which to load
      * @return the request that was loaded
      */
-    protected ToscaPolicyIdentifierOptVersion loadRequest(String fileName) {
-        return loadFile(fileName, ToscaPolicyIdentifierOptVersion.class);
+    protected ToscaConceptIdentifierOptVersion loadRequest(String fileName) {
+        return loadFile(fileName, ToscaConceptIdentifierOptVersion.class);
     }
 
     /**
@@ -326,7 +328,7 @@ public class TestProviderBase extends ProviderSuper {
      *
      * @return an empty request
      */
-    protected ToscaPolicyIdentifierOptVersion loadEmptyRequest() {
+    protected ToscaConceptIdentifierOptVersion loadEmptyRequest() {
         return loadRequest("emptyRequestBase.json");
     }
 
@@ -337,7 +339,7 @@ public class TestProviderBase extends ProviderSuper {
      * @param request request to be handled
      * @throws PfModelException if an error occurred
      */
-    private void handle(SessionData data, ToscaPolicyIdentifierOptVersion request) throws PfModelException {
+    private void handle(SessionData data, ToscaConceptIdentifierOptVersion request) throws PfModelException {
         prov.processPolicy(data, request);
     }
 
@@ -369,7 +371,7 @@ public class TestProviderBase extends ProviderSuper {
 
         @Override
         protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
-                        ToscaPolicyIdentifierOptVersion desiredPolicy) {
+                        ToscaConceptIdentifierOptVersion desiredPolicy) {
 
             return (group, subgroup) -> {
                 if (shouldUpdate.remove()) {
@@ -379,7 +381,7 @@ public class TestProviderBase extends ProviderSuper {
                     data.trackDeploy(policy.getIdentifier(), Collections.singleton(PDP1));
                     data.trackUndeploy(policy.getIdentifier(), Collections.singleton(PDP2));
 
-                    ToscaPolicyIdentifier ident2 = new ToscaPolicyIdentifier(POLICY1_NAME, "9.9.9");
+                    ToscaConceptIdentifier ident2 = new ToscaConceptIdentifier(POLICY1_NAME, "9.9.9");
                     data.trackDeploy(ident2, Collections.singleton(PDP3));
                     data.trackUndeploy(ident2, Collections.singleton(PDP4));
                     return true;

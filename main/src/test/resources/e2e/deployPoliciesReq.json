@@ -1,7 +1,7 @@
 {
     "policies": [
         {
-            "policy-id": "onap.restart.tca"
+            "name": "onap.restart.tca"
         }
     ]
 }

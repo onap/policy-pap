@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +39,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
@@ -350,7 +351,7 @@ public class PdpModifyRequestMap {
 
         @Override
         public void failure(String responsePdpName, String reason) {
-            Collection<ToscaPolicyIdentifier> undeployPolicies = requestCompleted(responsePdpName);
+            Collection<ToscaConceptIdentifier> undeployPolicies = requestCompleted(responsePdpName);
             if (undeployPolicies.isEmpty()) {
                 // nothing to undeploy
                 return;
@@ -391,7 +392,7 @@ public class PdpModifyRequestMap {
          * @param responsePdpName name of the PDP provided in the response
          * @return a list of policies to be undeployed
          */
-        private Collection<ToscaPolicyIdentifier> requestCompleted(String responsePdpName) {
+        private Collection<ToscaConceptIdentifier> requestCompleted(String responsePdpName) {
             if (!pdpName.equals(responsePdpName)) {
                 return Collections.emptyList();
             }
@@ -407,7 +408,7 @@ public class PdpModifyRequestMap {
                 return Collections.emptyList();
             }
 
-            Collection<ToscaPolicyIdentifier> undeployPolicies = request.getUndeployPolicies();
+            Collection<ToscaConceptIdentifier> undeployPolicies = request.getUndeployPolicies();
             if (undeployPolicies.isEmpty()) {
                 // nothing to undeploy - just start the next request
                 startNextRequest(request);

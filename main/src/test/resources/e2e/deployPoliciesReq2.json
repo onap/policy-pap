@@ -1,7 +1,7 @@
 {
     "policies": [
         {
-            "policy-id": "onap.restart.tcaB"
+            "name": "onap.restart.tcaB"
         }
     ]
 }

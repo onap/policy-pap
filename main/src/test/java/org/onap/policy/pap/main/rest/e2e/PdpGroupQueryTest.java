@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +40,7 @@ import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 public class PdpGroupQueryTest extends End2EndBase {
     private static final String GROUP_ENDPOINT = "pdps";
@@ -94,17 +94,17 @@ public class PdpGroupQueryTest extends End2EndBase {
         assertEquals(2, filterList(subgrp.getPdpInstances(), pdp -> pdp.getHealthy() == PdpHealthStatus.HEALTHY)
                         .size());
         assertEquals("pdpTypeA", subgrp.getPdpType());
-        assertEquals("[onap.restart.tca]", mapList(subgrp.getPolicies(), ToscaPolicyIdentifier::getName).toString());
-        assertEquals("[1.0.0]", mapList(subgrp.getPolicies(), ToscaPolicyIdentifier::getVersion).toString());
+        assertEquals("[onap.restart.tca]", mapList(subgrp.getPolicies(), ToscaConceptIdentifier::getName).toString());
+        assertEquals("[1.0.0]", mapList(subgrp.getPolicies(), ToscaConceptIdentifier::getVersion).toString());
 
         Map<String, Object> props = new LinkedHashMap<>();
         props.put("ten", 10);
         assertEquals(props.toString(), subgrp.getProperties().toString());
 
         assertEquals("[onap.policies.monitoring.cdap.tca.hi.lo.app]",
-                        mapList(subgrp.getSupportedPolicyTypes(), ToscaPolicyTypeIdentifier::getName).toString());
+                        mapList(subgrp.getSupportedPolicyTypes(), ToscaConceptIdentifier::getName).toString());
         assertEquals("[1.0.0]",
-                        mapList(subgrp.getSupportedPolicyTypes(), ToscaPolicyTypeIdentifier::getVersion).toString());
+                        mapList(subgrp.getSupportedPolicyTypes(), ToscaConceptIdentifier::getVersion).toString());
     }
 
     private void checkGroup2(PdpGroup group) {

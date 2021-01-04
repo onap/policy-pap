@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +38,12 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public class SessionData {
      * Maps a policy type to the list of matching groups. Every group appearing within
      * this map has a corresponding entry in {@link #groupCache}.
      */
-    private final Map<ToscaPolicyTypeIdentifier, List<GroupData>> type2groups = new HashMap<>();
+    private final Map<ToscaConceptIdentifier, List<GroupData>> type2groups = new HashMap<>();
 
     /**
      * Maps a PDP name to its most recently generated update and state-change requests.
@@ -85,24 +85,24 @@ public class SessionData {
     /**
      * Maps a policy's identifier to the policy.
      */
-    private final Map<ToscaPolicyIdentifierOptVersion, ToscaPolicy> policyCache = new HashMap<>();
+    private final Map<ToscaConceptIdentifierOptVersion, ToscaPolicy> policyCache = new HashMap<>();
 
     /**
      * Maps a policy type's identifier to the policy.
      */
-    private final Map<ToscaPolicyTypeIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
+    private final Map<ToscaConceptIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
 
     /**
      * Policies to be deployed. This is just used to build up the data, which is then
      * passed to the notifier once the update is "committed".
      */
-    private final Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> deploy = new HashMap<>();
+    private final Map<ToscaConceptIdentifier, PolicyPdpNotificationData> deploy = new HashMap<>();
 
     /**
      * Policies to be undeployed. This is just used to build up the data, which is then
      * passed to the notifier once the update is "committed".
      */
-    private final Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> undeploy = new HashMap<>();
+    private final Map<ToscaConceptIdentifier, PolicyPdpNotificationData> undeploy = new HashMap<>();
 
 
     /**
@@ -122,7 +122,7 @@ public class SessionData {
      * @return the specified policy type
      * @throws PfModelException if an error occurred
      */
-    public ToscaPolicyType getPolicyType(ToscaPolicyTypeIdentifier desiredType) throws PfModelException {
+    public ToscaPolicyType getPolicyType(ToscaConceptIdentifier desiredType) throws PfModelException {
 
         ToscaPolicyType type = typeCache.get(desiredType);
         if (type == null) {
@@ -147,7 +147,7 @@ public class SessionData {
      * @return the specified policy
      * @throws PfModelException if an error occurred
      */
-    public ToscaPolicy getPolicy(ToscaPolicyIdentifierOptVersion desiredPolicy) throws PfModelException {
+    public ToscaPolicy getPolicy(ToscaConceptIdentifierOptVersion desiredPolicy) throws PfModelException {
 
         ToscaPolicy policy = policyCache.get(desiredPolicy);
         if (policy == null) {
@@ -164,7 +164,7 @@ public class SessionData {
         }
 
         // desired version may have only been a prefix - cache with full identifier, too
-        policyCache.putIfAbsent(new ToscaPolicyIdentifierOptVersion(policy.getIdentifier()), policy);
+        policyCache.putIfAbsent(new ToscaConceptIdentifierOptVersion(policy.getIdentifier()), policy);
 
         return policy;
     }
@@ -346,7 +346,7 @@ public class SessionData {
      * @return the active groups supporting the given policy
      * @throws PfModelException if an error occurred
      */
-    public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaPolicyTypeIdentifier type) throws PfModelException {
+    public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaConceptIdentifier type) throws PfModelException {
         /*
          * Cannot use computeIfAbsent() because the enclosed code throws an unchecked
          * exception and handling that would obfuscate the code too much, thus disabling
@@ -431,7 +431,7 @@ public class SessionData {
      * @param pdps PDPs to which the policy is being deployed
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaPolicyIdentifier policyId, Collection<String> pdps) throws PfModelException {
+    protected void trackDeploy(ToscaConceptIdentifier policyId, Collection<String> pdps) throws PfModelException {
         trackDeploy(policyId, new HashSet<>(pdps));
     }
 
@@ -442,7 +442,7 @@ public class SessionData {
      * @param pdps PDPs to which the policy is being deployed
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaPolicyIdentifier policyId, Set<String> pdps) throws PfModelException {
+    protected void trackDeploy(ToscaConceptIdentifier policyId, Set<String> pdps) throws PfModelException {
         addData(policyId, pdps, deploy, undeploy);
     }
 
@@ -453,7 +453,7 @@ public class SessionData {
      * @param pdps PDPs to which the policy is being undeployed
      * @throws PfModelException if an error occurred
      */
-    protected void trackUndeploy(ToscaPolicyIdentifier policyId, Collection<String> pdps) throws PfModelException {
+    protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps) throws PfModelException {
         trackUndeploy(policyId, new HashSet<>(pdps));
     }
 
@@ -464,7 +464,7 @@ public class SessionData {
      * @param pdps PDPs to which the policy is being undeployed
      * @throws PfModelException if an error occurred
      */
-    protected void trackUndeploy(ToscaPolicyIdentifier policyId, Set<String> pdps) throws PfModelException {
+    protected void trackUndeploy(ToscaConceptIdentifier policyId, Set<String> pdps) throws PfModelException {
         addData(policyId, pdps, undeploy, deploy);
     }
 
@@ -477,17 +477,17 @@ public class SessionData {
      * @param removeMap map from which it should be removed
      * @throws PfModelException if an error occurred
      */
-    private void addData(ToscaPolicyIdentifier policyId, Set<String> pdps,
-                    Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> addMap,
-                    Map<ToscaPolicyIdentifier, PolicyPdpNotificationData> removeMap) throws PfModelException {
+    private void addData(ToscaConceptIdentifier policyId, Set<String> pdps,
+                    Map<ToscaConceptIdentifier, PolicyPdpNotificationData> addMap,
+                    Map<ToscaConceptIdentifier, PolicyPdpNotificationData> removeMap) throws PfModelException {
 
         PolicyPdpNotificationData removeData = removeMap.get(policyId);
         if (removeData != null) {
             removeData.removeAll(pdps);
         }
 
-        ToscaPolicyIdentifierOptVersion optid = new ToscaPolicyIdentifierOptVersion(policyId);
-        ToscaPolicyTypeIdentifier policyType = getPolicy(optid).getTypeIdentifier();
+        ToscaConceptIdentifierOptVersion optid = new ToscaConceptIdentifierOptVersion(policyId);
+        ToscaConceptIdentifier policyType = getPolicy(optid).getTypeIdentifier();
 
         addMap.computeIfAbsent(policyId, key -> new PolicyPdpNotificationData(policyId, policyType)).addAll(pdps);
     }

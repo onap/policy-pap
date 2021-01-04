@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 Nordix Foundation.
+ * Copyright (C) 2019-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -478,7 +478,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes()
-            .add(new ToscaPolicyTypeIdentifier("typeX.*", "9.8.7"));
+            .add(new ToscaConceptIdentifier("typeX.*", "9.8.7"));
 
         // the group is updated with a new supported policy type in subgroup
         assertEquals(2, newgrp.getPdpSubgroups().get(0).getSupportedPolicyTypes().size());
