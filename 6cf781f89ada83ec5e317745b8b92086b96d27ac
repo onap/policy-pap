@@ -1,0 +1,112 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ea6ede0_fce4ecf9",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestProviderBase.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-01-05T13:54:39Z",
+      "side": 1,
+      "message": "This forces the mapping from PapPolicyIdentifier to ToscaConceptIdentifierOptVersion",
+      "range": {
+        "startLine": 324,
+        "startChar": 0,
+        "endLine": 324,
+        "endChar": 7
+      },
+      "revId": "6cf781f89ada83ec5e317745b8b92086b96d27ac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4105e9c2_d121a468",
+        "filename": "main/src/test/resources/e2e/deployPoliciesReq.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-01-05T13:54:39Z",
+      "side": 1,
+      "message": "Restored to master version.",
+      "revId": "6cf781f89ada83ec5e317745b8b92086b96d27ac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e22cb388_435ee11a",
+        "filename": "main/src/test/resources/e2e/deployPoliciesReq2.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-01-05T13:54:39Z",
+      "side": 1,
+      "message": "Restored to master version.",
+      "revId": "6cf781f89ada83ec5e317745b8b92086b96d27ac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a823272_d4014542",
+        "filename": "main/src/test/resources/simpleDeploy/request.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-01-05T13:54:39Z",
+      "side": 1,
+      "message": "Restored to master version.",
+      "revId": "6cf781f89ada83ec5e317745b8b92086b96d27ac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3457ce3b_23df4aca",
+        "filename": "main/src/test/resources/simpleDeploy/requestBase.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-01-05T13:54:39Z",
+      "side": 1,
+      "message": "Restored to master version.",
+      "revId": "6cf781f89ada83ec5e317745b8b92086b96d27ac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8852e223_17bbde9f",
+        "filename": "main/src/test/resources/simpleDeploy/updateGroupReqMultiple.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-01-05T13:54:39Z",
+      "side": 1,
+      "message": "Restored to master version.",
+      "revId": "6cf781f89ada83ec5e317745b8b92086b96d27ac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
