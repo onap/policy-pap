@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,7 +43,7 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 public class TestPolicyUndeployerImpl extends ProviderSuper {
     private static final String MY_GROUP = "my-group";
@@ -56,10 +57,10 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
     @Captor
     private ArgumentCaptor<Set<String>> pdpCaptor;
 
-    private ToscaPolicyIdentifier ident1;
-    private ToscaPolicyIdentifier ident2;
-    private ToscaPolicyIdentifier ident3;
-    private ToscaPolicyIdentifier ident4;
+    private ToscaConceptIdentifier ident1;
+    private ToscaConceptIdentifier ident2;
+    private ToscaConceptIdentifier ident3;
+    private ToscaConceptIdentifier ident4;
     private PdpGroup group;
     private PdpSubGroup subgroup;
     private MyProvider prov;
@@ -75,15 +76,16 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
 
         super.setUp();
 
-        ident1 = new ToscaPolicyIdentifier("ident-a", "2.3.1");
-        ident2 = new ToscaPolicyIdentifier("ident-b", "2.3.2");
-        ident3 = new ToscaPolicyIdentifier("ident-c", "2.3.3");
-        ident4 = new ToscaPolicyIdentifier("ident-d", "2.3.4");
+        ident1 = new ToscaConceptIdentifier("ident-a", "2.3.1");
+        ident2 = new ToscaConceptIdentifier("ident-b", "2.3.2");
+        ident3 = new ToscaConceptIdentifier("ident-c", "2.3.3");
+        ident4 = new ToscaConceptIdentifier("ident-d", "2.3.4");
 
         group = new PdpGroup();
         group.setName(MY_GROUP);
@@ -131,7 +133,7 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
      */
     @Test
     public void testUndeployPoliciesUnchanged() throws PfModelException {
-        List<ToscaPolicyIdentifier> origlist = Arrays.asList(ident3, ident4);
+        List<ToscaConceptIdentifier> origlist = Arrays.asList(ident3, ident4);
         subgroup.setPolicies(new LinkedList<>(origlist));
 
         prov.undeploy(MY_GROUP, MY_SUBGROUP, Arrays.asList(ident1, ident2));

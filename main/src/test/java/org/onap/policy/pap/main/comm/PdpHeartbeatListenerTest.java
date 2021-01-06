@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.e2e.End2EndBase;
 
@@ -72,8 +72,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status1.setPdpGroup(DEFAULT_GROUP);
         status1.setPdpType(APEX_TYPE);
         status1.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaPolicyIdentifier> idents1 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents1 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status1.setPolicies(idents1);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status1);
         verifyPdpGroup(DEFAULT_GROUP, 1);
@@ -86,8 +86,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status2.setPdpType(APEX_TYPE);
         status2.setHealthy(PdpHealthStatus.HEALTHY);
         status2.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents2 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents2 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status2.setPolicies(idents2);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status2);
         verifyPdpGroup(DEFAULT_GROUP, 1);
@@ -100,8 +100,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status3.setPdpType(APEX_TYPE);
         status3.setHealthy(PdpHealthStatus.HEALTHY);
         status3.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents3 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents3 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status3.setPolicies(idents3);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status3);
         verifyPdpGroup(DEFAULT_GROUP, 2);
@@ -113,8 +113,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status4.setPdpGroup("wrongGroup");
         status4.setPdpType(APEX_TYPE);
         status4.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaPolicyIdentifier> idents4 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents4 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status4.setPolicies(idents4);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status4);
         verifyPdpGroup(DEFAULT_GROUP, 2);
@@ -127,8 +127,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status5.setPdpType(APEX_TYPE);
         status5.setHealthy(PdpHealthStatus.HEALTHY);
         status5.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents5 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents5 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status5.setPolicies(idents5);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);
         verifyPdpGroup(DEFAULT_GROUP, 2);
@@ -141,9 +141,9 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status6.setPdpType(APEX_TYPE);
         status6.setHealthy(PdpHealthStatus.HEALTHY);
         status6.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents6 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION),
-                        new ToscaPolicyIdentifier("onap.restart.tca", POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents6 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION),
+                        new ToscaConceptIdentifier("onap.restart.tca", POLICY_VERSION));
         status6.setPolicies(idents6);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status6);
         verifyPdpGroup(DEFAULT_GROUP, 2);
@@ -168,8 +168,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status7b.setPdpType(APEX_TYPE);
         status7b.setPdpSubgroup(APEX_TYPE);
         status7b.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaPolicyIdentifier> idents7b =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents7b =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status7b.setPolicies(idents7b);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7b);
         verifyPdpGroup(DEFAULT_GROUP, 2);
@@ -182,8 +182,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status8.setPdpType(APEX_TYPE);
         status8.setPdpSubgroup(APEX_TYPE);
         status8.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaPolicyIdentifier> idents8 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents8 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status8.setPolicies(idents8);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status8);
         verifyPdpGroup(DEFAULT_GROUP, 1);
@@ -196,8 +196,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status9.setPdpType(APEX_TYPE);
         status9.setPdpSubgroup(APEX_TYPE);
         status9.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaPolicyIdentifier> idents9 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents9 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status9.setPolicies(idents9);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status9);
         verifyPdpGroup(DEFAULT_GROUP, 0);
@@ -216,8 +216,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status1.setPdpGroup(DEFAULT_GROUP);
         status1.setPdpType(APEX_TYPE);
         status1.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaPolicyIdentifier> idents1 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents1 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status1.setPolicies(idents1);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status1);
         verifyPdpGroup(DEFAULT_GROUP, 1);
@@ -230,8 +230,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status2.setPdpType(APEX_TYPE);
         status2.setHealthy(PdpHealthStatus.HEALTHY);
         status2.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents2 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents2 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status2.setPolicies(idents2);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status2);
 
@@ -243,8 +243,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status3.setPdpType(APEX_TYPE);
         status3.setHealthy(PdpHealthStatus.HEALTHY);
         status3.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents3 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents3 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status3.setPolicies(idents3);
 
         PdpStatistics pdpStatistics03 = new PdpStatistics();
@@ -264,8 +264,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status4.setPdpType(APEX_TYPE);
         status4.setHealthy(PdpHealthStatus.HEALTHY);
         status4.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents4 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents4 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status4.setPolicies(idents4);
         status4.setStatistics(null);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status4);
@@ -279,8 +279,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status5.setPdpType(APEX_TYPE);
         status5.setHealthy(PdpHealthStatus.HEALTHY);
         status5.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents5 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents5 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status5.setPolicies(idents5);
 
         PdpStatistics pdpStatistics05 = new PdpStatistics();
@@ -301,8 +301,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status6.setPdpType(APEX_TYPE);
         status6.setHealthy(PdpHealthStatus.HEALTHY);
         status6.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaPolicyIdentifier> idents6 =
-                Arrays.asList(new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents6 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status5.setPolicies(idents6);
 
         PdpStatistics pdpStatistics06 = new PdpStatistics();

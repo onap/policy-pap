@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,17 +38,18 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.powermock.reflect.Whitebox;
 
 public class PolicyCommonTrackerTest extends PolicyCommonSupport {
 
     private MyTracker tracker;
-    private Map<ToscaPolicyIdentifier, PolicyTrackerData> map;
+    private Map<ToscaConceptIdentifier, PolicyTrackerData> map;
 
     /**
      * Creates various objects, including {@link #tracker}.
      */
+    @Override
     @Before
     public void setUp() {
         super.setUp();
@@ -73,24 +75,24 @@ public class PolicyCommonTrackerTest extends PolicyCommonSupport {
         tracker.addData(makeData(policy1, PDP1, PDP2));
         tracker.addData(makeData(policy2, PDP2));
 
-        policy3 = new ToscaPolicyIdentifier(policy1.getName(), policy1.getVersion() + "0");
+        policy3 = new ToscaConceptIdentifier(policy1.getName(), policy1.getVersion() + "0");
         tracker.addData(makeData(policy3, PDP3));
 
         List<PolicyStatus> statusList = tracker.getStatus(policy1.getName());
         assertEquals(2, statusList.size());
 
-        Set<ToscaPolicyIdentifier> idents =
+        Set<ToscaConceptIdentifier> idents =
                         statusList.stream().map(PolicyStatus::getPolicy).collect(Collectors.toSet());
         assertTrue(idents.contains(policy1));
         assertTrue(idents.contains(policy3));
     }
 
     @Test
-    public void testGetStatusToscaPolicyIdentifier() {
+    public void testGetStatusToscaConceptIdentifier() {
         tracker.addData(makeData(policy1, PDP1, PDP2));
         tracker.addData(makeData(policy2, PDP2));
 
-        policy3 = new ToscaPolicyIdentifier(policy1.getName(), policy1.getVersion() + "0");
+        policy3 = new ToscaConceptIdentifier(policy1.getName(), policy1.getVersion() + "0");
         tracker.addData(makeData(policy3, PDP3));
 
         Optional<PolicyStatus> status = tracker.getStatus(policy1);

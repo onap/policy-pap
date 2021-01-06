@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 Nordix Foundation.
+ * Copyright (C) 2019-2021 Nordix Foundation.
  * Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,10 +44,9 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -344,7 +343,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     private void trackPdpsDelSubGroup(SessionData data, PdpSubGroup subgrp) throws PfModelException {
         Set<String> pdps = subgrp.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
-        for (ToscaPolicyIdentifier policyId : subgrp.getPolicies()) {
+        for (ToscaConceptIdentifier policyId : subgrp.getPolicies()) {
             data.trackUndeploy(policyId, pdps);
         }
     }
@@ -432,7 +431,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      */
     private ValidationResult validateSupportedTypes(SessionData data, PdpSubGroup subgrp) throws PfModelException {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
-        for (ToscaPolicyTypeIdentifier type : subgrp.getSupportedPolicyTypes()) {
+        for (ToscaConceptIdentifier type : subgrp.getSupportedPolicyTypes()) {
             if (!type.getName().endsWith(".*") && data.getPolicyType(type) == null) {
                 result.addResult(
                     new ObjectValidationResult("policy type", type, ValidationStatus.INVALID, "unknown policy type"));
@@ -443,7 +442,8 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     }
 
     @Override
-    protected Updater makeUpdater(SessionData data, ToscaPolicy policy, ToscaPolicyIdentifierOptVersion desiredPolicy) {
+    protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
+            ToscaConceptIdentifierOptVersion desiredPolicy) {
         throw new UnsupportedOperationException("makeUpdater should not be invoked");
     }
 }

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,9 @@ import org.onap.policy.models.pdp.concepts.DeploymentSubGroup;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -226,7 +225,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private boolean addPolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
                     throws PfModelException {
 
-        Set<ToscaPolicyIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
+        Set<ToscaConceptIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
         policies.addAll(subgrp.getPolicies());
 
         DeploymentSubGroup subgrp2 = new DeploymentSubGroup(subgrp);
@@ -239,7 +238,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private boolean deletePolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
                     throws PfModelException {
 
-        Set<ToscaPolicyIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
+        Set<ToscaConceptIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
         policies.removeAll(subgrp.getPolicies());
 
         DeploymentSubGroup subgrp2 = new DeploymentSubGroup(subgrp);
@@ -252,10 +251,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private boolean updatePolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
                     throws PfModelException {
 
-        Set<ToscaPolicyIdentifier> undeployed = new HashSet<>(dbsub.getPolicies());
+        Set<ToscaConceptIdentifier> undeployed = new HashSet<>(dbsub.getPolicies());
         undeployed.removeAll(subgrp.getPolicies());
 
-        Set<ToscaPolicyIdentifier> deployed = new HashSet<>(subgrp.getPolicies());
+        Set<ToscaConceptIdentifier> deployed = new HashSet<>(subgrp.getPolicies());
         deployed.removeAll(dbsub.getPolicies());
 
         if (deployed.isEmpty() && undeployed.isEmpty()) {
@@ -266,11 +265,11 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         Set<String> pdps = dbsub.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
-        for (ToscaPolicyIdentifier policyId : deployed) {
+        for (ToscaConceptIdentifier policyId : deployed) {
             data.trackDeploy(policyId, pdps);
         }
 
-        for (ToscaPolicyIdentifier policyId : undeployed) {
+        for (ToscaConceptIdentifier policyId : undeployed) {
             data.trackUndeploy(policyId, pdps);
         }
 
@@ -320,7 +319,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
-        for (ToscaPolicyIdentifier ident : subgrp.getPolicies()) {
+        for (ToscaConceptIdentifier ident : subgrp.getPolicies()) {
             // note: "ident" may not have a fully qualified version
 
             String expectedVersion = dbname2vers.get(ident.getName());
@@ -333,7 +332,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
             // policy doesn't appear in the DB's policy list - look it up
 
-            ToscaPolicy policy = data.getPolicy(new ToscaPolicyIdentifierOptVersion(ident));
+            ToscaPolicy policy = data.getPolicy(new ToscaConceptIdentifierOptVersion(ident));
             if (policy == null) {
                 result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
                                 "unknown policy"));
@@ -359,7 +358,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      *        fully qualified
      * @param result the validation result
      */
-    private void validateVersion(String dbvers, ToscaPolicyIdentifier ident, BeanValidationResult result) {
+    private void validateVersion(String dbvers, ToscaConceptIdentifier ident, BeanValidationResult result) {
         String idvers = ident.getVersion();
         if (dbvers.equals(idvers)) {
             return;
@@ -397,7 +396,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      */
     private void deploySimplePolicies(SessionData data, PdpDeployPolicies policies) throws PfModelException {
 
-        for (ToscaPolicyIdentifierOptVersion desiredPolicy : policies.getPolicies()) {
+        for (ToscaConceptIdentifierOptVersion desiredPolicy : policies.getPolicies()) {
 
             try {
                 processPolicy(data, desiredPolicy);
@@ -415,10 +414,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
      */
     @Override
     protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
-                    ToscaPolicyIdentifierOptVersion requestedIdent) {
+                    ToscaConceptIdentifierOptVersion requestedIdent) {
 
-        ToscaPolicyIdentifier desiredIdent = policy.getIdentifier();
-        ToscaPolicyTypeIdentifier desiredType = policy.getTypeIdentifier();
+        ToscaConceptIdentifier desiredIdent = policy.getIdentifier();
+        ToscaConceptIdentifier desiredType = policy.getTypeIdentifier();
 
         return (group, subgroup) -> {
 
@@ -457,15 +456,15 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @param desiredType policy type of interest
      * @return {@code true} if the policy type is supported, {@code false} otherwise
      */
-    private boolean isPolicySupported(List<ToscaPolicyTypeIdentifier> supportedTypes,
-                    ToscaPolicyTypeIdentifier desiredType) {
+    private boolean isPolicySupported(List<ToscaConceptIdentifier> supportedTypes,
+                    ToscaConceptIdentifier desiredType) {
 
         if (supportedTypes.contains(desiredType)) {
             return true;
         }
 
         String desiredTypeName = desiredType.getName();
-        for (ToscaPolicyTypeIdentifier type : supportedTypes) {
+        for (ToscaConceptIdentifier type : supportedTypes) {
             String supType = type.getName();
             if (supType.endsWith(".*") && desiredTypeName.startsWith(supType.substring(0, supType.length() - 1))) {
                 // matches everything up to, AND INCLUDING, the "."
@@ -487,11 +486,11 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @throws PfModelRuntimeException if the subgroup contains a different version of the
      *         desired policy
      */
-    private boolean containsPolicy(PdpGroup group, PdpSubGroup subgroup, ToscaPolicyIdentifier desiredIdent) {
+    private boolean containsPolicy(PdpGroup group, PdpSubGroup subgroup, ToscaConceptIdentifier desiredIdent) {
         String desnm = desiredIdent.getName();
         String desvers = desiredIdent.getVersion();
 
-        for (ToscaPolicyIdentifier actualIdent : subgroup.getPolicies()) {
+        for (ToscaConceptIdentifier actualIdent : subgroup.getPolicies()) {
             if (!actualIdent.getName().equals(desnm)) {
                 continue;
             }

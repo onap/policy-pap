@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,9 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
@@ -81,7 +80,7 @@ public class PolicyNotifier {
         this.publisher = publisher;
 
         try (PolicyModelsProvider dao = daoFactory.create()) {
-            Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type = loadPolicyTypes(dao);
+            Map<ToscaConceptIdentifier, ToscaConceptIdentifier> id2type = loadPolicyTypes(dao);
             loadPolicies(dao, id2type);
         }
     }
@@ -93,10 +92,10 @@ public class PolicyNotifier {
      * @return a mapping from policy id to policy type
      * @throws PfModelException if a DB error occurs
      */
-    private Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> loadPolicyTypes(PolicyModelsProvider dao)
+    private Map<ToscaConceptIdentifier, ToscaConceptIdentifier> loadPolicyTypes(PolicyModelsProvider dao)
                     throws PfModelException {
 
-        Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type = new HashMap<>();
+        Map<ToscaConceptIdentifier, ToscaConceptIdentifier> id2type = new HashMap<>();
 
         for (ToscaPolicy policy : dao.getFilteredPolicyList(ToscaPolicyFilter.builder().build())) {
             id2type.put(policy.getIdentifier(), policy.getTypeIdentifier());
@@ -112,7 +111,7 @@ public class PolicyNotifier {
      * @param dao provider used to retrieve policies from the DB
      * @throws PfModelException if a DB error occurs
      */
-    private void loadPolicies(PolicyModelsProvider dao, Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type)
+    private void loadPolicies(PolicyModelsProvider dao, Map<ToscaConceptIdentifier, ToscaConceptIdentifier> id2type)
                     throws PfModelException {
         for (PdpGroup group : dao.getPdpGroups(null)) {
             for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
@@ -128,12 +127,12 @@ public class PolicyNotifier {
      * @param group group containing the subgroup
      * @param subgrp subgroup whose policies are to be loaded
      */
-    private void loadPolicies(Map<ToscaPolicyIdentifier, ToscaPolicyTypeIdentifier> id2type, PdpGroup group,
+    private void loadPolicies(Map<ToscaConceptIdentifier, ToscaConceptIdentifier> id2type, PdpGroup group,
                     PdpSubGroup subgrp) {
 
-        for (ToscaPolicyIdentifier policyId : subgrp.getPolicies()) {
+        for (ToscaConceptIdentifier policyId : subgrp.getPolicies()) {
 
-            ToscaPolicyTypeIdentifier type = id2type.get(policyId);
+            ToscaConceptIdentifier type = id2type.get(policyId);
             if (type == null) {
                 logger.error("group {}:{} refers to non-existent policy {}", group.getName(), subgrp.getPdpType(),
                                 policyId);
@@ -171,7 +170,7 @@ public class PolicyNotifier {
      * @param ident identifier of the policy of interest
      * @return the status of the given policy, or empty if the policy is not found
      */
-    public synchronized Optional<PolicyStatus> getStatus(ToscaPolicyIdentifier ident) {
+    public synchronized Optional<PolicyStatus> getStatus(ToscaConceptIdentifier ident) {
         return deployTracker.getStatus(ident);
     }
 
@@ -204,7 +203,7 @@ public class PolicyNotifier {
      * @param activePolicies policies that are still active on the PDP, as specified in
      *        the response
      */
-    public synchronized void processResponse(String pdp, Collection<ToscaPolicyIdentifier> activePolicies) {
+    public synchronized void processResponse(String pdp, Collection<ToscaConceptIdentifier> activePolicies) {
         processResponse(pdp, new HashSet<>(activePolicies));
     }
 
@@ -215,7 +214,7 @@ public class PolicyNotifier {
      * @param activePolicies policies that are still active on the PDP, as specified in
      *        the response
      */
-    public synchronized void processResponse(String pdp, Set<ToscaPolicyIdentifier> activePolicies) {
+    public synchronized void processResponse(String pdp, Set<ToscaConceptIdentifier> activePolicies) {
         PolicyNotification notification = new PolicyNotification();
 
         undeployTracker.processResponse(pdp, activePolicies, notification.getDeleted());

@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,12 +53,11 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 
 public class TestSessionData extends ProviderSuper {
@@ -73,9 +73,9 @@ public class TestSessionData extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
 
     private SessionData session;
-    private ToscaPolicyIdentifierOptVersion ident;
-    private ToscaPolicyTypeIdentifier type;
-    private ToscaPolicyTypeIdentifier type2;
+    private ToscaConceptIdentifierOptVersion ident;
+    private ToscaConceptIdentifier type;
+    private ToscaConceptIdentifier type2;
     private PdpGroup group1;
     private PdpGroup group2;
 
@@ -84,13 +84,14 @@ public class TestSessionData extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        ident = new ToscaPolicyIdentifierOptVersion(POLICY_NAME, POLICY_VERSION);
-        type = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION);
-        type2 = new ToscaPolicyTypeIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION + "0");
+        ident = new ToscaConceptIdentifierOptVersion(POLICY_NAME, POLICY_VERSION);
+        type = new ToscaConceptIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION);
+        type2 = new ToscaConceptIdentifier(POLICY_TYPE, POLICY_TYPE_VERSION + "0");
         group1 = loadGroup("group1.json");
         group2 = loadGroup("group2.json");
 
@@ -137,7 +138,7 @@ public class TestSessionData extends ProviderSuper {
         assertEquals(null, filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
-        assertSame(policy1, session.getPolicy(new ToscaPolicyIdentifierOptVersion(policy1.getIdentifier())));
+        assertSame(policy1, session.getPolicy(new ToscaConceptIdentifierOptVersion(policy1.getIdentifier())));
         verify(dao).getFilteredPolicyList(any());
     }
 
@@ -155,7 +156,7 @@ public class TestSessionData extends ProviderSuper {
         assertEquals("1.", filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
-        assertSame(policy1, session.getPolicy(new ToscaPolicyIdentifierOptVersion(policy1.getIdentifier())));
+        assertSame(policy1, session.getPolicy(new ToscaConceptIdentifierOptVersion(policy1.getIdentifier())));
         verify(dao).getFilteredPolicyList(any());
     }
 
@@ -173,7 +174,7 @@ public class TestSessionData extends ProviderSuper {
         assertEquals(null, filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
-        assertSame(policy1, session.getPolicy(new ToscaPolicyIdentifierOptVersion(policy1.getIdentifier())));
+        assertSame(policy1, session.getPolicy(new ToscaConceptIdentifierOptVersion(policy1.getIdentifier())));
         verify(dao).getFilteredPolicyList(any());
     }
 
@@ -577,7 +578,7 @@ public class TestSessionData extends ProviderSuper {
 
         when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy));
 
-        ToscaPolicyIdentifier policyId = new ToscaPolicyIdentifier(POLICY_NAME, POLICY_VERSION);
+        ToscaConceptIdentifier policyId = new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION);
         List<String> pdps = Arrays.asList(PDP1, PDP2);
 
         for (TrackEx trackFunc : trackFuncs) {
@@ -657,6 +658,6 @@ public class TestSessionData extends ProviderSuper {
 
     @FunctionalInterface
     private static interface TrackEx {
-        public void accept(ToscaPolicyIdentifier policyId, Collection<String> pdps) throws PfModelException;
+        public void accept(ToscaConceptIdentifier policyId, Collection<String> pdps) throws PfModelException;
     }
 }

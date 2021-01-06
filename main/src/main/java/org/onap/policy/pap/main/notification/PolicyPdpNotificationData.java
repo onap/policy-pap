@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +25,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 /**
  * Data used to track deploy/undeploy of a policy to PDPs.
  */
 @Getter
 public class PolicyPdpNotificationData {
-    private final ToscaPolicyIdentifier policyId;
-    private final ToscaPolicyTypeIdentifier policyType;
+    private final ToscaConceptIdentifier policyId;
+    private final ToscaConceptIdentifier policyType;
     private final Set<String> pdps = new HashSet<>();
 
 
@@ -43,7 +43,7 @@ public class PolicyPdpNotificationData {
      * @param policyId ID of the policy being deployed/undeployed
      * @param policyType type of the associated policy
      */
-    public PolicyPdpNotificationData(ToscaPolicyIdentifier policyId, ToscaPolicyTypeIdentifier policyType) {
+    public PolicyPdpNotificationData(ToscaConceptIdentifier policyId, ToscaConceptIdentifier policyType) {
         this.policyId = policyId;
         this.policyType = policyType;
     }

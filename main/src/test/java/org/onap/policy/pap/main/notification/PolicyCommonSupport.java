@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 /**
  * Super class for policy notification test classes.
@@ -37,22 +37,22 @@ public class PolicyCommonSupport {
     protected static final String PDP3 = "pdp-3";
     protected static final String PDP4 = "pdp-4";
 
-    protected ToscaPolicyTypeIdentifier type;
-    protected ToscaPolicyIdentifier policy1;
-    protected ToscaPolicyIdentifier policy2;
-    protected ToscaPolicyIdentifier policy3;
-    protected ToscaPolicyIdentifier policy4;
+    protected ToscaConceptIdentifier type;
+    protected ToscaConceptIdentifier policy1;
+    protected ToscaConceptIdentifier policy2;
+    protected ToscaConceptIdentifier policy3;
+    protected ToscaConceptIdentifier policy4;
 
     /**
      * Creates various objects.
      */
     @Before
     public void setUp() {
-        type = new ToscaPolicyTypeIdentifier("my-type", "3.2.1");
-        policy1 = new ToscaPolicyIdentifier("my-id-a", "1.2.0");
-        policy2 = new ToscaPolicyIdentifier("my-id-b", "1.2.1");
-        policy3 = new ToscaPolicyIdentifier("my-id-c", "1.2.2");
-        policy4 = new ToscaPolicyIdentifier("my-id-d", "1.2.3");
+        type = new ToscaConceptIdentifier("my-type", "3.2.1");
+        policy1 = new ToscaConceptIdentifier("my-id-a", "1.2.0");
+        policy2 = new ToscaConceptIdentifier("my-id-b", "1.2.1");
+        policy3 = new ToscaConceptIdentifier("my-id-c", "1.2.2");
+        policy4 = new ToscaConceptIdentifier("my-id-d", "1.2.3");
     }
 
     /**
@@ -62,7 +62,7 @@ public class PolicyCommonSupport {
      * @param pdps PDPs to be included within the data
      * @return a new notification data structure
      */
-    protected PolicyPdpNotificationData makeData(ToscaPolicyIdentifier policyId, String... pdps) {
+    protected PolicyPdpNotificationData makeData(ToscaConceptIdentifier policyId, String... pdps) {
         PolicyPdpNotificationData data = new PolicyPdpNotificationData(policyId, type);
         data.addAll(Arrays.asList(pdps));
         return data;

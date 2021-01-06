@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
 /**
  * Data associated with a policy, used by PolicyTracker. PDPs start in
@@ -38,7 +39,7 @@ public class PolicyTrackerData {
      * The policy type associated with the policy.
      */
     @Getter
-    private final ToscaPolicyTypeIdentifier policyType;
+    private final ToscaConceptIdentifier policyType;
 
     /**
      * PDPs that have successfully completed an update of the policy.
@@ -61,7 +62,7 @@ public class PolicyTrackerData {
      *
      * @param policyType policy type
      */
-    public PolicyTrackerData(ToscaPolicyTypeIdentifier policyType) {
+    public PolicyTrackerData(ToscaConceptIdentifier policyType) {
         this.policyType = policyType;
     }
 

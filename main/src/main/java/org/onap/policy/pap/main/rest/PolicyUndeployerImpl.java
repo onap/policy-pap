@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
 import org.onap.policy.pap.main.comm.PolicyUndeployer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
     }
 
     @Override
-    public void undeploy(String group, String subgroup, Collection<ToscaPolicyIdentifier> policies)
+    public void undeploy(String group, String subgroup, Collection<ToscaConceptIdentifier> policies)
                     throws PfModelException {
 
         process(new Info(group, subgroup, policies), this::undeployPolicies);
@@ -84,7 +84,7 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
         boolean updated = false;
         Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
-        for (ToscaPolicyIdentifier ident : policyInfo.policies) {
+        for (ToscaConceptIdentifier ident : policyInfo.policies) {
             if (!subgroup.getPolicies().remove(ident)) {
                 continue;
             }
@@ -104,16 +104,17 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
     }
 
     @Override
-    protected Updater makeUpdater(SessionData data, ToscaPolicy policy, ToscaPolicyIdentifierOptVersion desiredPolicy) {
+    protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
+            ToscaConceptIdentifierOptVersion desiredPolicy) {
         throw new UnsupportedOperationException("makeUpdater should not be invoked");
     }
 
     private static class Info {
         private String group;
         private String subgroup;
-        private Collection<ToscaPolicyIdentifier> policies;
+        private Collection<ToscaConceptIdentifier> policies;
 
-        public Info(String group, String subgroup, Collection<ToscaPolicyIdentifier> policies) {
+        public Info(String group, String subgroup, Collection<ToscaConceptIdentifier> policies) {
             this.group = group;
             this.subgroup = subgroup;
             this.policies = policies;

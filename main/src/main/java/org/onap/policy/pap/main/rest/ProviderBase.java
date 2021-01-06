@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,9 +33,9 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyTypeIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
@@ -127,7 +127,7 @@ public abstract class ProviderBase {
      * @param desiredPolicy request policy
      * @throws PfModelException if an error occurred
      */
-    protected void processPolicy(SessionData data, ToscaPolicyIdentifierOptVersion desiredPolicy)
+    protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
                     throws PfModelException {
 
         ToscaPolicy policy = getPolicy(data, desiredPolicy);
@@ -156,7 +156,7 @@ public abstract class ProviderBase {
      * @return a function to update a subgroup
      */
     protected abstract Updater makeUpdater(SessionData data, ToscaPolicy policy,
-                    ToscaPolicyIdentifierOptVersion desiredPolicy);
+                    ToscaConceptIdentifierOptVersion desiredPolicy);
 
     /**
      * Finds the active PDP group(s) that supports the given policy type.
@@ -167,7 +167,7 @@ public abstract class ProviderBase {
      *         given PDP types
      * @throws PfModelException if an error occurred
      */
-    private Collection<PdpGroup> getGroups(SessionData data, ToscaPolicyTypeIdentifier policyType)
+    private Collection<PdpGroup> getGroups(SessionData data, ToscaConceptIdentifier policyType)
                     throws PfModelException {
 
         return data.getActivePdpGroupsByPolicyType(policyType);
@@ -233,7 +233,7 @@ public abstract class ProviderBase {
         update.setDescription(group.getDescription());
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
-        update.setPolicies(subgroup.getPolicies().stream().map(ToscaPolicyIdentifierOptVersion::new)
+        update.setPolicies(subgroup.getPolicies().stream().map(ToscaConceptIdentifierOptVersion::new)
                         .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
 
         return update;
@@ -247,7 +247,7 @@ public abstract class ProviderBase {
      * @return the policy of interest
      * @throws PfModelRuntimeException if an error occurred or the policy was not found
      */
-    private ToscaPolicy getPolicy(SessionData data, ToscaPolicyIdentifierOptVersion ident) {
+    private ToscaPolicy getPolicy(SessionData data, ToscaConceptIdentifierOptVersion ident) {
         try {
             ToscaPolicy policy = data.getPolicy(ident);
             if (policy == null) {

@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,8 +54,8 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
@@ -85,6 +86,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
 
@@ -107,9 +109,9 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
 
         // add new policies
-        List<ToscaPolicyIdentifier> policies = newgrp.getPdpSubgroups().get(0).getPolicies();
-        policies.add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION));
-        policies.add(new ToscaPolicyIdentifier(POLICY3_NAME, POLICY3_VERSION));
+        List<ToscaConceptIdentifier> policies = newgrp.getPdpSubgroups().get(0).getPolicies();
+        policies.add(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION));
+        policies.add(new ToscaConceptIdentifier(POLICY3_NAME, POLICY3_VERSION));
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy2.json"))
@@ -134,15 +136,15 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpGroup newgrp = groups.getGroups().get(0);
 
         // additional policies in the DB that will be removed
-        List<ToscaPolicyIdentifier> policies = newgrp.getPdpSubgroups().get(0).getPolicies();
-        policies.add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION));
-        policies.add(new ToscaPolicyIdentifier(POLICY3_NAME, POLICY3_VERSION));
+        List<ToscaConceptIdentifier> policies = newgrp.getPdpSubgroups().get(0).getPolicies();
+        policies.add(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION));
+        policies.add(new ToscaConceptIdentifier(POLICY3_NAME, POLICY3_VERSION));
 
         PdpGroup dbgroup = new PdpGroup(newgrp);
         when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
 
         // policy that should be left
-        final ToscaPolicyIdentifier policyId1 = policies.remove(0);
+        final ToscaConceptIdentifier policyId1 = policies.remove(0);
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
                         .thenReturn(loadPolicies("createGroupNewPolicy2.json"))
@@ -171,24 +173,24 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
 
         // put policy3 into db subgroup
-        subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY3_NAME, POLICY3_VERSION));
+        subgrp.getPolicies().add(new ToscaConceptIdentifier(POLICY3_NAME, POLICY3_VERSION));
         PdpGroup dbgroup = new PdpGroup(newgrp);
         when(dao.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
 
         // now make the subgrp reflect our final expectation
         subgrp.getPolicies().remove(1);
-        subgrp.getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION));
+        subgrp.getPolicies().add(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION));
 
         // indicate policy2 being added and policy3 being deleted
         DeploymentSubGroup depsub1 = new DeploymentSubGroup();
         depsub1.setAction(Action.POST);
         depsub1.setPdpType(subgrp.getPdpType());
-        depsub1.setPolicies(Arrays.asList(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION)));
+        depsub1.setPolicies(Arrays.asList(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION)));
 
         DeploymentSubGroup depsub2 = new DeploymentSubGroup();
         depsub2.setAction(Action.DELETE);
         depsub2.setPdpType(subgrp.getPdpType());
-        depsub2.setPolicies(Arrays.asList(new ToscaPolicyIdentifier(POLICY3_NAME, POLICY3_VERSION)));
+        depsub2.setPolicies(Arrays.asList(new ToscaConceptIdentifier(POLICY3_NAME, POLICY3_VERSION)));
 
         DeploymentGroup depgroup = new DeploymentGroup();
         depgroup.setName(newgrp.getName());
@@ -215,7 +217,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         // something different in this subgroup
-        group.getPdpSubgroups().get(0).getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION));
+        group.getPdpSubgroups().get(0).getPolicies().add(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION));
 
         prov.updateGroupPolicies(toDeploymentGroups(groups));
 
@@ -290,7 +292,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         // something different in this subgroup
-        group.getPdpSubgroups().get(0).getPolicies().add(new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION));
+        group.getPdpSubgroups().get(0).getPolicies().add(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION));
 
         prov.updateGroupPolicies(toDeploymentGroups(groups));
 
@@ -334,10 +336,10 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
 
         // add two new policies
-        ToscaPolicyIdentifier policyId2 = new ToscaPolicyIdentifier(POLICY2_NAME, POLICY2_VERSION);
+        ToscaConceptIdentifier policyId2 = new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION);
         subgrp.getPolicies().add(policyId2);
 
-        ToscaPolicyIdentifier policyId3 = new ToscaPolicyIdentifier(POLICY3_NAME, POLICY3_VERSION);
+        ToscaConceptIdentifier policyId3 = new ToscaConceptIdentifier(POLICY3_NAME, POLICY3_VERSION);
         subgrp.getPolicies().add(policyId3);
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("createGroupNewPolicy.json"))
@@ -374,7 +376,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         // use version prefix
         PdpSubGroup subgrp = newgrp.getPdpSubgroups().get(0);
-        ToscaPolicyIdentifier ident = subgrp.getPolicies().get(0);
+        ToscaConceptIdentifier ident = subgrp.getPolicies().get(0);
         String version = ident.getVersion();
         ident.setVersion("1");
 
@@ -649,7 +651,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertEquals(subgrp.getPdpType(), pdpUpdate.getPdpSubgroup());
 
-        List<ToscaPolicyIdentifier> pdpPolicies =
+        List<ToscaConceptIdentifier> pdpPolicies =
                         pdpUpdate.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList());
         Collections.sort(pdpPolicies);
 
@@ -659,7 +661,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertEquals(Arrays.asList(group), updates);
     }
 
-    private void assertDeploymentData(PolicyPdpNotificationData data, ToscaPolicyIdentifier policyId,
+    private void assertDeploymentData(PolicyPdpNotificationData data, ToscaConceptIdentifier policyId,
                     String expectedPdps) {
         assertEquals(policyId, data.getPolicyId());
         assertEquals(policy1.getTypeIdentifier(), data.getPolicyType());

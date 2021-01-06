@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifier;
 import org.onap.policy.pap.main.parameters.RequestParams;
 
 
@@ -45,7 +46,7 @@ public class UpdateReq extends RequestImpl {
      * Policies to be undeployed if the request fails.
      */
     @Getter
-    private Collection<ToscaPolicyIdentifier> undeployPolicies = Collections.emptyList();
+    private Collection<ToscaConceptIdentifier> undeployPolicies = Collections.emptyList();
 
     /**
      * Constructs the object, and validates the parameters.
@@ -76,7 +77,7 @@ public class UpdateReq extends RequestImpl {
             return reason;
         }
 
-        Set<ToscaPolicyIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
+        Set<ToscaConceptIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
         getNotifier().processResponse(response.getName(), actualSet);
 
         PdpUpdate message = getMessage();
@@ -95,7 +96,7 @@ public class UpdateReq extends RequestImpl {
 
         // see if the policies match
 
-        Set<ToscaPolicyIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
+        Set<ToscaConceptIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
                         .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
 
         if (!actualSet.equals(expectedSet)) {

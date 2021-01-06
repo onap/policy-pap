@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.DeploymentGroup;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.onap.policy.models.pdp.concepts.DeploymentSubGroup;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyIdentifierOptVersion;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
@@ -104,8 +104,8 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
     }
 
     private Entity<PdpDeployPolicies> makePdpPoliciesEntity() {
-        ToscaPolicyIdentifierOptVersion pol1 = new ToscaPolicyIdentifierOptVersion("policy-a", "1");
-        ToscaPolicyIdentifierOptVersion pol2 = new ToscaPolicyIdentifierOptVersion("policy-b", null);
+        ToscaConceptIdentifierOptVersion pol1 = new ToscaConceptIdentifierOptVersion("policy-a", "1");
+        ToscaConceptIdentifierOptVersion pol2 = new ToscaConceptIdentifierOptVersion("policy-b", null);
 
         PdpDeployPolicies policies = new PdpDeployPolicies();
         policies.setPolicies(Arrays.asList(pol1, pol2));
