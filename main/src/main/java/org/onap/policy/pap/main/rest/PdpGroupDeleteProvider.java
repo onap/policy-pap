@@ -158,7 +158,7 @@ public class PdpGroupDeleteProvider extends ProviderBase {
                     logger.info("remove policy {} from subgroup {} {} count={}", ident,
                                     group.getName(), subgroup.getPdpType(), subgroup.getPolicies().size());
 
-                    data.trackUndeploy(ident, pdps);
+                    data.trackUndeploy(ident, pdps, group.getName(), subgroup.getPdpType());
                 }
             }
 

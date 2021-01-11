@@ -40,14 +40,8 @@ public class PolicyStatusTest extends End2EndBase {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        // don't start Main until AFTER we add the policies to the DB
-        End2EndBase.setUpBeforeClass(false);
-
-        addToscaPolicyTypes("monitoring.policy-type.yaml");
-        addToscaPolicies("monitoring.policy.yaml");
-        addGroups("policyStatus.json");
-
-        startMain();
+        End2EndBase.setUpBeforeClass();
+        addPdpPolicyStatus("policyStatus.json");
     }
 
     @Test

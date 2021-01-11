@@ -303,7 +303,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
                 // this subgroup no longer appears - notify its PDPs
                 updated = true;
                 notifyPdpsDelSubGroup(data, subgrp);
-                trackPdpsDelSubGroup(data, subgrp);
+                trackPdpsDelSubGroup(data, dbgroup.getName(), subgrp);
             }
         }
 
@@ -337,14 +337,15 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * Tracks PDP responses when their subgroup is removed.
      *
      * @param data session data
+     * @param pdpGroup PdpGroup name
      * @param subgrp subgroup that is being removed
      * @throws PfModelException if an error occurred
      */
-    private void trackPdpsDelSubGroup(SessionData data, PdpSubGroup subgrp) throws PfModelException {
+    private void trackPdpsDelSubGroup(SessionData data, String pdpGroup, PdpSubGroup subgrp) throws PfModelException {
         Set<String> pdps = subgrp.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaConceptIdentifier policyId : subgrp.getPolicies()) {
-            data.trackUndeploy(policyId, pdps);
+            data.trackUndeploy(policyId, pdps, pdpGroup, subgrp.getPdpType());
         }
     }
 

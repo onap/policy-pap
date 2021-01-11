@@ -242,7 +242,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertEquals(origSize - 1, subgroup.getPolicies().size());
         assertFalse(subgroup.getPolicies().contains(ident));
 
-        verify(session).trackUndeploy(eq(ident), pdpCaptor.capture());
+        verify(session).trackUndeploy(eq(ident), pdpCaptor.capture(), eq(group.getName()), eq(subgroup.getPdpType()));
         assertEquals("[pdpA]", pdpCaptor.getValue().toString());
     }
 

@@ -29,30 +29,30 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
-import java.util.List;
-import java.util.Optional;
+import java.util.Collection;
 import java.util.UUID;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide REST end points for PAP component to retrieve the status of deployed
  * policies.
  */
 public class PolicyStatusControllerV1 extends PapRestControllerV1 {
-    private final PolicyNotifier notifier;
+    private static final String GET_DEPLOYMENTS_FAILED = "get deployments failed";
 
-    public PolicyStatusControllerV1() {
-        this.notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(PolicyStatusControllerV1.class);
+
+    private final PolicyStatusProvider provider = new PolicyStatusProvider();
 
     /**
      * Queries status of all deployed policies.
@@ -88,8 +88,15 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     public Response queryAllDeployedPolicies(
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                        .entity(notifier.getStatus()).build();
+        try {
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                            .entity(provider.getStatus()).build();
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+        }
     }
 
 
@@ -128,13 +135,20 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "Policy Id", required = true) @PathParam("name") String name,
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
-        List<PolicyStatus> result = notifier.getStatus(name);
-        if (result.isEmpty()) {
-            return makeNotFoundResponse(requestId);
+        try {
+            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
+            if (result.isEmpty()) {
+                return makeNotFoundResponse(requestId);
 
-        } else {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(result).build();
+            } else {
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                                .entity(result).build();
+            }
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
         }
     }
 
@@ -174,14 +188,20 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "Policy Version", required = true) @PathParam("version") String version,
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
-        ToscaConceptIdentifier ident = new ToscaConceptIdentifier(name, version);
-        Optional<PolicyStatus> result = notifier.getStatus(ident);
-        if (result.isPresent()) {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(result.get()).build();
+        try {
+            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
+            if (result.isEmpty()) {
+                return makeNotFoundResponse(requestId);
 
-        } else {
-            return makeNotFoundResponse(requestId);
+            } else {
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                                .entity(result.iterator().next()).build();
+            }
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
         }
     }
 

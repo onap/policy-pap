@@ -284,7 +284,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         assertEquals(newgrp.toString(), dbgroup.toString());
 
         // no deployment notifications
-        verify(notifier, never()).addDeploymentData(any());
+        checkEmptyNotification();
 
         // this requires a PDP UPDATE message
         List<PdpUpdate> pdpUpdates = getUpdateRequests(2);
@@ -519,8 +519,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         assertEquals(newgrp.toString(), group.toString());
 
         // no notifications
-        verify(notifier, never()).addDeploymentData(any());
-        verify(notifier, never()).addUndeploymentData(any());
+        checkEmptyNotification();
 
         // no group updates
         assertNoGroupAction();

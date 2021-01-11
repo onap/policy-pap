@@ -77,9 +77,6 @@ public class UpdateReq extends RequestImpl {
             return reason;
         }
 
-        Set<ToscaConceptIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
-        getNotifier().processResponse(response.getName(), actualSet);
-
         PdpUpdate message = getMessage();
 
         if (!StringUtils.equals(message.getPdpGroup(), response.getPdpGroup())) {
@@ -94,10 +91,13 @@ public class UpdateReq extends RequestImpl {
             return null;
         }
 
-        // see if the policies match
-
+        Set<ToscaConceptIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
         Set<ToscaConceptIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
                         .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
+
+        getNotifier().processResponse(response.getName(), message.getPdpGroup(), expectedSet, actualSet);
+
+        // see if the policies match
 
         if (!actualSet.equals(expectedSet)) {
             // need to undeploy the policies that are expected, but missing from the

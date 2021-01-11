@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Setter;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
@@ -45,6 +46,7 @@ import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
+import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.RequestParams;
@@ -264,9 +266,13 @@ public class PdpModifyRequestMap {
             List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
             List<PdpGroup> updates = new ArrayList<>(1);
 
+            DeploymentStatus status = new DeploymentStatus(dao);
+
             for (PdpGroup group : groups) {
                 if (removeFromGroup(pdpName, group)) {
                     updates.add(group);
+                    status.loadByGroup(group.getName());
+                    status.deleteDeployment(pdpName);
                 }
             }
 
@@ -275,6 +281,12 @@ public class PdpModifyRequestMap {
 
             } else {
                 dao.updatePdpGroups(updates);
+
+                PolicyNotification notification = new PolicyNotification();
+                status.flush(notification);
+
+                policyNotifier.publish(notification);
+
                 return true;
             }
         }
@@ -447,8 +459,6 @@ public class PdpModifyRequestMap {
             }
 
             logger.warn("removing {}", pdpName);
-
-            policyNotifier.removePdp(pdpName);
 
             // remove the PDP from all groups
             try {

@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,6 +31,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,26 +45,27 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.function.Supplier;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
-import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
+import org.onap.policy.pap.main.notification.DeploymentStatus;
 
 public class TestSessionData extends ProviderSuper {
     private static final String GROUP_NAME = "groupA";
+    private static final String PDP_TYPE = "MySubGroup";
     private static final String PDP1 = "pdp_1";
     private static final String PDP2 = "pdp_2";
     private static final String PDP3 = "pdp_3";
@@ -505,7 +509,9 @@ public class TestSessionData extends ProviderSuper {
         session.update(newgrp5);
 
         // push the changes to the DB
-        session.updateDb();
+        PolicyNotification notif = new PolicyNotification();
+        session.updateDb(notif);
+        assertThat(notif.getAdded()).isEmpty();
 
         // expect one create for groups 4 & 5 (group5 replaced by newgrp5)
         List<PdpGroup> creates = getGroupCreates();
@@ -526,7 +532,10 @@ public class TestSessionData extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2));
         session.getActivePdpGroupsByPolicyType(type);
 
-        session.updateDb();
+        PolicyNotification notif = new PolicyNotification();
+        session.updateDb(notif);
+        assertThat(notif.getAdded()).isEmpty();
+
         verify(dao, never()).createPdpGroups(any());
         verify(dao, never()).updatePdpGroups(any());
     }
@@ -540,37 +549,25 @@ public class TestSessionData extends ProviderSuper {
 
     @Test
     public void testTrackDeploy() throws PfModelException {
-        testTrack(session::getDeployData, session::getUndeployData, session::trackDeploy);
-    }
-
-    /**
-     * Tests trackDeploy() when there is something in the undeployed list.
-     *
-     * @throws PfModelException if an error occurs
-     */
-    @Test
-    public void testTrackDeployRemoveUndeploy() throws PfModelException {
-        testTrack(session::getDeployData, session::getUndeployData, session::trackUndeploy, session::trackDeploy);
+        testTrack(true);
     }
 
     @Test
     public void testTrackUndeploy() throws PfModelException {
-        testTrack(session::getUndeployData, session::getDeployData, session::trackUndeploy);
+        testTrack(false);
     }
 
-    /**
-     * Tests trackUndeploy() when there is something in the deployed list.
-     *
-     * @throws PfModelException if an error occurs
-     */
-    @Test
-    public void testTrackUndeployRemoveUndeploy() throws PfModelException {
-        testTrack(session::getUndeployData, session::getDeployData, session::trackDeploy, session::trackUndeploy);
-    }
-
-    protected void testTrack(Supplier<Collection<PolicyPdpNotificationData>> expected,
-                    Supplier<Collection<PolicyPdpNotificationData>> unexpected, TrackEx... trackFuncs)
+    protected void testTrack(boolean deploy)
                     throws PfModelException {
+
+        DeploymentStatus status = mock(DeploymentStatus.class);
+
+        session = new SessionData(dao) {
+            @Override
+            protected DeploymentStatus makeDeploymentStatus(PolicyModelsProvider dao) {
+                return status;
+            }
+        };
 
         ToscaPolicy policy = makePolicy(POLICY_NAME, POLICY_VERSION);
         policy.setType(POLICY_TYPE);
@@ -581,25 +578,20 @@ public class TestSessionData extends ProviderSuper {
         ToscaConceptIdentifier policyId = new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION);
         List<String> pdps = Arrays.asList(PDP1, PDP2);
 
-        for (TrackEx trackFunc : trackFuncs) {
-            trackFunc.accept(policyId, pdps);
+        if (deploy) {
+            session.trackDeploy(policyId, pdps, GROUP_NAME, PDP_TYPE);
+        } else {
+            session.trackUndeploy(policyId, pdps, GROUP_NAME, PDP_TYPE);
         }
 
-        // "unexpected" list should be empty of any PDPs
-        Collection<PolicyPdpNotificationData> dataList = unexpected.get();
-        assertTrue(dataList.size() <= 1);
-        if (!dataList.isEmpty()) {
-            PolicyPdpNotificationData data = dataList.iterator().next();
-            assertTrue(data.getPdps().isEmpty());
-        }
+        // should be called just once
+        verify(status).deleteDeployment(any(), anyBoolean());
+        verify(status).deleteDeployment(policyId, !deploy);
 
-        dataList = expected.get();
-        assertEquals(1, dataList.size());
-
-        PolicyPdpNotificationData data = dataList.iterator().next();
-        assertEquals(policyId, data.getPolicyId());
-        assertEquals(type, data.getPolicyType());
-        assertEquals("[pdp_1, pdp_2]", new TreeSet<>(data.getPdps()).toString());
+        // should be called for each PDP
+        verify(status, times(2)).deploy(any(), any(), any(), any(), any(), anyBoolean());
+        verify(status).deploy(PDP1, policyId, policy.getTypeIdentifier(), GROUP_NAME, PDP_TYPE, deploy);
+        verify(status).deploy(PDP2, policyId, policy.getTypeIdentifier(), GROUP_NAME, PDP_TYPE, deploy);
     }
 
     private PdpUpdate makeUpdate(String pdpName) {
@@ -654,10 +646,5 @@ public class TestSessionData extends ProviderSuper {
 
     private String getName(Pair<PdpUpdate, PdpStateChange> pair) {
         return (pair.getKey() != null ? pair.getKey().getName() : pair.getValue().getName());
-    }
-
-    @FunctionalInterface
-    private static interface TrackEx {
-        public void accept(ToscaConceptIdentifier policyId, Collection<String> pdps) throws PfModelException;
     }
 }

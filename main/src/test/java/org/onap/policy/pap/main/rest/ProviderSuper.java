@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -42,6 +43,7 @@ import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
@@ -264,6 +266,15 @@ public class ProviderSuper {
         } catch (CoderException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Verifies that an empty notification was published.
+     */
+    protected void checkEmptyNotification() {
+        ArgumentCaptor<PolicyNotification> captor = ArgumentCaptor.forClass(PolicyNotification.class);
+        verify(notifier).publish(captor.capture());
+        assertThat(captor.getValue().isEmpty()).isTrue();
     }
 
     /**
