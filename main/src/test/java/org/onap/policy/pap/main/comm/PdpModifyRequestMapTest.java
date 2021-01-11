@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.comm;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,9 +52,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
+import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -81,6 +86,9 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      */
     @Captor
     private ArgumentCaptor<List<PdpGroup>> updateCaptor;
+
+    @Captor
+    private ArgumentCaptor<PolicyNotification> notificationCaptor;
 
     /**
      * Used to capture input to undeployer.undeploy().
@@ -360,7 +368,22 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
 
+        final ToscaConceptIdentifier policy1 = new ToscaConceptIdentifier("MyPolicy", "10.20.30");
+        final ToscaConceptIdentifier policyType = new ToscaConceptIdentifier("MyPolicyType", "10.20.30");
+
+        // @formatter:off
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+        when(dao.getGroupPolicyStatus(any())).thenReturn(Arrays.asList(
+                        PdpPolicyStatus.builder()
+                            .pdpGroup(MY_GROUP)
+                            .pdpType(MY_SUBGROUP)
+                            .pdpId(PDP1)
+                            .policy(policy1)
+                            .policyType(policyType)
+                            .deploy(true)
+                            .state(State.SUCCESS)
+                            .build()));
+        // @formatter:on
 
         // indicate retries exhausted
         invokeLastRetryHandler(1);
@@ -368,8 +391,17 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // should have stopped publishing
         verify(requests).stopPublishing();
 
-        // should have generated a notification
-        verify(notifier).removePdp(PDP1);
+        // should have generated a notification; yes, it should go into the "added" set
+        verify(notifier).publish(notificationCaptor.capture());
+        assertThat(notificationCaptor.getValue().getDeleted()).isEmpty();
+        assertThat(notificationCaptor.getValue().getAdded()).hasSize(1);
+
+        PolicyStatus status = notificationCaptor.getValue().getAdded().get(0);
+        assertThat(status.getPolicy()).isEqualTo(policy1);
+        assertThat(status.getPolicyType()).isEqualTo(policyType);
+        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getIncompleteCount()).isZero();
+        assertThat(status.getSuccessCount()).isZero();
 
         // should have removed from the group
         List<PdpGroup> groups = getGroupUpdates();
@@ -390,6 +422,9 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         // should not have done any updates
         verify(dao, never()).updatePdpGroups(any());
+
+        // and no publishes
+        verify(notifier, never()).publish(any());
     }
 
     @Test

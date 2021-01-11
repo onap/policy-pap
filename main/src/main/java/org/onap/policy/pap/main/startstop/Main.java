@@ -78,7 +78,13 @@ public class Main {
 
             // Start the activator
             activator.start();
-        } catch (Exception exp) {
+        } catch (Exception exp) { // NOSONAR
+            /*
+             * Disabled sonar on the above line, because we want to capture the stack
+             * trace via the logger while still reporting the exception message on stdout
+             * when the JVM exits.
+             */
+            LOGGER.error("failed to start Main", exp);
             if (null != activator) {
                 Registry.unregister(PapConstants.REG_PAP_ACTIVATOR);
             }

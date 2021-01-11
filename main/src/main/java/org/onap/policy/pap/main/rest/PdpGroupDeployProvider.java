@@ -202,14 +202,14 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         switch (subgrp.getAction()) {
             case POST:
-                updated = addPolicies(data, dbsub, subgrp);
+                updated = addPolicies(data, dbgroup.getName(), dbsub, subgrp);
                 break;
             case DELETE:
-                updated = deletePolicies(data, dbsub, subgrp);
+                updated = deletePolicies(data, dbgroup.getName(), dbsub, subgrp);
                 break;
             case PATCH:
             default:
-                updated = updatePolicies(data, dbsub, subgrp);
+                updated = updatePolicies(data, dbgroup.getName(), dbsub, subgrp);
                 break;
         }
 
@@ -222,7 +222,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         return false;
     }
 
-    private boolean addPolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
+    private boolean addPolicies(SessionData data, String pdpGroup, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
                     throws PfModelException {
 
         Set<ToscaConceptIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
@@ -232,10 +232,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
         subgrp2.getPolicies().clear();
         subgrp2.getPolicies().addAll(policies);
 
-        return updatePolicies(data, dbsub, subgrp2);
+        return updatePolicies(data, pdpGroup, dbsub, subgrp2);
     }
 
-    private boolean deletePolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
+    private boolean deletePolicies(SessionData data, String pdpGroup, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
                     throws PfModelException {
 
         Set<ToscaConceptIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
@@ -245,10 +245,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
         subgrp2.getPolicies().clear();
         subgrp2.getPolicies().addAll(policies);
 
-        return updatePolicies(data, dbsub, subgrp2);
+        return updatePolicies(data, pdpGroup, dbsub, subgrp2);
     }
 
-    private boolean updatePolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
+    private boolean updatePolicies(SessionData data, String pdpGroup, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
                     throws PfModelException {
 
         Set<ToscaConceptIdentifier> undeployed = new HashSet<>(dbsub.getPolicies());
@@ -266,11 +266,11 @@ public class PdpGroupDeployProvider extends ProviderBase {
         Set<String> pdps = dbsub.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaConceptIdentifier policyId : deployed) {
-            data.trackDeploy(policyId, pdps);
+            data.trackDeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
         }
 
         for (ToscaConceptIdentifier policyId : undeployed) {
-            data.trackUndeploy(policyId, pdps);
+            data.trackUndeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
         }
 
         dbsub.setPolicies(new ArrayList<>(subgrp.getPolicies()));
@@ -443,7 +443,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
                             subgroup.getPdpType(), subgroup.getPolicies().size());
 
             Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
-            data.trackDeploy(desiredIdent, pdps);
+            data.trackDeploy(desiredIdent, pdps, group.getName(), subgroup.getPdpType());
 
             return true;
         };

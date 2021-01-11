@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.notification;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
@@ -32,6 +33,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
+@ToString
 public class StatusKey {
     private String pdpId;
     private ToscaConceptIdentifier policy;

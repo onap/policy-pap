@@ -93,7 +93,7 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
                     subgroup.getPdpType(), subgroup.getPolicies().size());
 
             updated = true;
-            data.trackUndeploy(ident, pdps);
+            data.trackUndeploy(ident, pdps, policyInfo.group, policyInfo.subgroup);
         }
 
         // push the updates

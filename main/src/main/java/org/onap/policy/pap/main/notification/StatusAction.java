@@ -21,12 +21,16 @@
 package org.onap.policy.pap.main.notification;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class StatusAction {
     public enum Action {
         // existing record; matches what is in the DB
