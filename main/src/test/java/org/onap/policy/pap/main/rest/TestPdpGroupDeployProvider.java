@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,13 +34,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -56,7 +53,6 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -164,7 +160,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     /**
-     * Tests updateGroupPolicies when policies are being added and deleted in the same subgroup.
+     * Tests updateGroupPolicies when policies are being added and deleted in the same
+     * subgroup.
      */
     @Test
     public void testUpdateGroupPoliciesAddAndDelete() throws Exception {
@@ -353,14 +350,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertEquals(newgrp.toString(), group.toString());
 
-        // should have notified of added policy/PDPs
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier, times(2)).addDeploymentData(captor.capture());
-        assertDeploymentData(captor.getAllValues().get(0), policyId2, "[pdpA]");
-        assertDeploymentData(captor.getAllValues().get(1), policyId3, "[pdpA]");
-
-        // should NOT have notified of any deleted policy/PDPs
-        verify(notifier, never()).addUndeploymentData(any());
+        // nothing is complete - notification should be empty
+        checkEmptyNotification();
 
         // this requires a PDP UPDATE message
         assertGroupUpdate(newgrp, subgrp);
@@ -426,8 +417,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertEquals(newgrp.toString(), group.toString());
 
         // no notifications
-        verify(notifier, never()).addDeploymentData(any());
-        verify(notifier, never()).addUndeploymentData(any());
+        checkEmptyNotification();
 
         // no group updates
         assertNoGroupAction();
@@ -472,8 +462,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
 
-        assertThatThrownBy(() -> prov.updateGroupPolicies(groups))
-                        .isInstanceOf(PfModelException.class)
+        assertThatThrownBy(() -> prov.updateGroupPolicies(groups)).isInstanceOf(PfModelException.class)
                         .hasMessageContaining(newgrp.getPdpSubgroups().get(0).getPolicies().get(0).getName())
                         .hasMessageContaining("not a supported policy for the subgroup");
 
@@ -511,13 +500,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         List<PdpUpdate> requests = getUpdateRequests(1);
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
 
-        // should have notified of added policy/PDPs
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier).addDeploymentData(captor.capture());
-        assertDeploymentData(captor.getValue(), policy1.getIdentifier(), "[pdpB]");
-
-        // no undeployment notifications
-        verify(notifier, never()).addUndeploymentData(any());
+        // nothing is complete - notification should be empty
+        checkEmptyNotification();
     }
 
     @Test
@@ -581,13 +565,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
         assertUpdate(requests, GROUP1_NAME, PDP4_TYPE, PDP4);
 
-        // should have notified of added policy/PDPs
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier).addDeploymentData(captor.capture());
-        assertDeploymentData(captor.getValue(), policy1.getIdentifier(), "[pdpB, pdpD]");
-
-        // no undeployment notifications
-        verify(notifier, never()).addUndeploymentData(any());
+        // nothing is complete - notification should be empty
+        checkEmptyNotification();
     }
 
     @Test
@@ -659,13 +638,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         List<PdpGroup> updates = getGroupUpdates();
         assertEquals(Arrays.asList(group), updates);
-    }
-
-    private void assertDeploymentData(PolicyPdpNotificationData data, ToscaConceptIdentifier policyId,
-                    String expectedPdps) {
-        assertEquals(policyId, data.getPolicyId());
-        assertEquals(policy1.getTypeIdentifier(), data.getPolicyType());
-        assertEquals(expectedPdps, new TreeSet<>(data.getPdps()).toString());
     }
 
     /**

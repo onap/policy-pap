@@ -41,7 +41,14 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
 
 /**
- * Collection of Policy Deployment Status records.
+ * Collection of Policy Deployment Status records. The sequence of method invocations
+ * should be as follows:
+ * <ol>
+ * <li>{@link #loadByGroup(String)}</li>
+ * <li>various other methods</li>
+ * <li>repeat the previous steps as appropriate</li>
+ * <li>{@link #flush(PolicyNotification)}</li>
+ * </ol>
  */
 public class DeploymentStatus {
     /**
@@ -115,6 +122,7 @@ public class DeploymentStatus {
      * @param notif notification to which to add policy status
      */
     public void flush(PolicyNotification notif) {
+        // must add notifications BEFORE deleting undeployments
         addNotifications(notif);
         deleteUndeployments();
         flush();

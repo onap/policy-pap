@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,12 @@ import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
@@ -44,7 +43,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
-import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
+import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,16 +92,9 @@ public class SessionData {
     private final Map<ToscaConceptIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
 
     /**
-     * Policies to be deployed. This is just used to build up the data, which is then
-     * passed to the notifier once the update is "committed".
+     * Tracks policy deployment status so notifications can be generated.
      */
-    private final Map<ToscaConceptIdentifier, PolicyPdpNotificationData> deploy = new HashMap<>();
-
-    /**
-     * Policies to be undeployed. This is just used to build up the data, which is then
-     * passed to the notifier once the update is "committed".
-     */
-    private final Map<ToscaConceptIdentifier, PolicyPdpNotificationData> undeploy = new HashMap<>();
+    private final DeploymentStatus deployStatus;
 
 
     /**
@@ -112,6 +104,7 @@ public class SessionData {
      */
     public SessionData(PolicyModelsProvider dao) {
         this.dao = dao;
+        this.deployStatus = makeDeploymentStatus(dao);
     }
 
     /**
@@ -332,6 +325,8 @@ public class SessionData {
             data = new GroupData(lst.get(0));
             groupCache.put(name, data);
 
+            deployStatus.loadByGroup(name);
+
         } else {
             logger.info("use cached group {}", name);
         }
@@ -352,7 +347,7 @@ public class SessionData {
          * exception and handling that would obfuscate the code too much, thus disabling
          * the sonar.
          */
-        List<GroupData> data = type2groups.get(type);   // NOSONAR
+        List<GroupData> data = type2groups.get(type); // NOSONAR
         if (data == null) {
             PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
                             .groupState(PdpState.ACTIVE).build();
@@ -388,10 +383,11 @@ public class SessionData {
 
     /**
      * Update the DB with the changes.
+     * @param notification notification to which to add policy status
      *
      * @throws PfModelException if an error occurred
      */
-    public void updateDb() throws PfModelException {
+    public void updateDb(PolicyNotification notification) throws PfModelException {
         // create new groups
         List<GroupData> created = groupCache.values().stream().filter(GroupData::isNew).collect(Collectors.toList());
         if (!created.isEmpty()) {
@@ -410,6 +406,9 @@ public class SessionData {
             }
             dao.updatePdpGroups(updated.stream().map(GroupData::getGroup).collect(Collectors.toList()));
         }
+
+        // flush deployment status records to the DB
+        deployStatus.flush(notification);
     }
 
     /**
@@ -429,21 +428,13 @@ public class SessionData {
      *
      * @param policyId ID of the policy being deployed
      * @param pdps PDPs to which the policy is being deployed
+     * @param pdpGroup PdpGroup containing the PDP of interest
+     * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaConceptIdentifier policyId, Collection<String> pdps) throws PfModelException {
-        trackDeploy(policyId, new HashSet<>(pdps));
-    }
-
-    /**
-     * Adds policy deployment data.
-     *
-     * @param policyId ID of the policy being deployed
-     * @param pdps PDPs to which the policy is being deployed
-     * @throws PfModelException if an error occurred
-     */
-    protected void trackDeploy(ToscaConceptIdentifier policyId, Set<String> pdps) throws PfModelException {
-        addData(policyId, pdps, deploy, undeploy);
+    protected void trackDeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
+                    String pdpType) throws PfModelException {
+        addData(policyId, pdps, pdpGroup, pdpType, true);
     }
 
     /**
@@ -451,21 +442,13 @@ public class SessionData {
      *
      * @param policyId ID of the policy being undeployed
      * @param pdps PDPs to which the policy is being undeployed
+     * @param pdpGroup PdpGroup containing the PDP of interest
+     * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps) throws PfModelException {
-        trackUndeploy(policyId, new HashSet<>(pdps));
-    }
-
-    /**
-     * Adds policy undeployment data.
-     *
-     * @param policyId ID of the policy being undeployed
-     * @param pdps PDPs to which the policy is being undeployed
-     * @throws PfModelException if an error occurred
-     */
-    protected void trackUndeploy(ToscaConceptIdentifier policyId, Set<String> pdps) throws PfModelException {
-        addData(policyId, pdps, undeploy, deploy);
+    protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
+                    String pdpType) throws PfModelException {
+        addData(policyId, pdps, pdpGroup, pdpType, false);
     }
 
     /**
@@ -473,40 +456,29 @@ public class SessionData {
      *
      * @param policyId ID of the policy being deployed/undeployed
      * @param pdps PDPs to which the policy is being deployed/undeployed
-     * @param addMap map to which it should be added
-     * @param removeMap map from which it should be removed
+     * @param deploy {@code true} if the policy is being deployed, {@code false} if
+     *        undeployed
+     * @param pdpGroup PdpGroup containing the PDP of interest
+     * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    private void addData(ToscaConceptIdentifier policyId, Set<String> pdps,
-                    Map<ToscaConceptIdentifier, PolicyPdpNotificationData> addMap,
-                    Map<ToscaConceptIdentifier, PolicyPdpNotificationData> removeMap) throws PfModelException {
+    private void addData(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup, String pdpType,
+                    boolean deploy) throws PfModelException {
 
-        PolicyPdpNotificationData removeData = removeMap.get(policyId);
-        if (removeData != null) {
-            removeData.removeAll(pdps);
-        }
+        // delete all records whose "deploy" flag is the opposite of what we want
+        deployStatus.deleteDeployment(policyId, !deploy);
 
         ToscaConceptIdentifierOptVersion optid = new ToscaConceptIdentifierOptVersion(policyId);
         ToscaConceptIdentifier policyType = getPolicy(optid).getTypeIdentifier();
 
-        addMap.computeIfAbsent(policyId, key -> new PolicyPdpNotificationData(policyId, policyType)).addAll(pdps);
+        for (String pdp : pdps) {
+            deployStatus.deploy(pdp, policyId, policyType, pdpGroup, pdpType, deploy);
+        }
     }
 
-    /**
-     * Gets the policies to be deployed.
-     *
-     * @return the policies to be deployed
-     */
-    public Collection<PolicyPdpNotificationData> getDeployData() {
-        return deploy.values();
-    }
+    // these may be overridden by junit tests
 
-    /**
-     * Gets the policies to be undeployed.
-     *
-     * @return the policies to be undeployed
-     */
-    public Collection<PolicyPdpNotificationData> getUndeployData() {
-        return undeploy.values();
+    protected DeploymentStatus makeDeploymentStatus(PolicyModelsProvider dao) {
+        return new DeploymentStatus(dao);
     }
 }

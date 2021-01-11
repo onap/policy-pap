@@ -1,0 +1,152 @@
+/*-
+ * ============LICENSE_START=======================================================
+ * ONAP
+ * ================================================================================
+ * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ */
+
+package org.onap.policy.pap.main.rest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import lombok.NonNull;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
+import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyStatus;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.PdpPolicyStatusBuilder;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
+
+public class TestPolicyStatusProvider extends ProviderSuper {
+    private static final String MY_GROUP = "MyGroup";
+    private static final String MY_PDP_TYPE = "MySubGroup";
+    private static final @NonNull String VERSION = "1.2.3";
+    private static final String PDP_A = "pdpA";
+    private static final String PDP_B = "pdpB";
+    private static final String PDP_C = "pdpC";
+    private static final ToscaConceptIdentifier POLICY_TYPE = new ToscaConceptIdentifier("MyPolicyType", VERSION);
+    private static final ToscaConceptIdentifier POLICY_A = new ToscaConceptIdentifier("MyPolicyA", VERSION);
+    private static final ToscaConceptIdentifier POLICY_B = new ToscaConceptIdentifier("MyPolicyB", VERSION);
+    private static final ToscaConceptIdentifier POLICY_C = new ToscaConceptIdentifier("MyPolicyC", VERSION);
+
+    private PolicyStatusProvider prov;
+
+
+    @AfterClass
+    public static void tearDownAfterClass() {
+        Registry.newRegistry();
+    }
+
+    /**
+     * Configures mocks and objects.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Override
+    @Before
+    public void setUp() throws Exception {
+
+        super.setUp();
+
+        prov = new PolicyStatusProvider();
+    }
+
+    @Test
+    public void testGetStatus_testAccumulate() throws PfModelException {
+
+        PdpPolicyStatusBuilder builder = PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
+                        .policyType(POLICY_TYPE).state(State.WAITING);
+
+        PdpPolicyStatus notDeployed = builder.deploy(false).policy(POLICY_B).pdpId(PDP_A).build();
+
+        // remaining policies are deployed
+        builder.deploy(true);
+
+        // @formatter:off
+        when(dao.getAllPolicyStatus()).thenReturn(List.of(
+                        builder.policy(POLICY_A).pdpId(PDP_A).build(),
+                        builder.policy(POLICY_A).pdpId(PDP_B).build(),
+                        notDeployed,
+                        builder.policy(POLICY_C).pdpId(PDP_A).build()
+                        ));
+        // @formatter:on
+
+        List<PolicyStatus> result = new ArrayList<>(prov.getStatus());
+        Collections.sort(result, (rec1, rec2) -> rec1.getPolicy().compareTo(rec2.getPolicy()));
+
+        assertThat(result).hasSize(2);
+
+        Iterator<PolicyStatus> iter = result.iterator();
+
+        PolicyStatus status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getIncompleteCount()).isEqualTo(2);
+        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getSuccessCount()).isZero();
+
+        status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_C);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getIncompleteCount()).isEqualTo(1);
+        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getSuccessCount()).isZero();
+    }
+
+    @Test
+    public void testGetStatusToscaConceptIdentifierOptVersion() throws PfModelException {
+
+        PdpPolicyStatusBuilder builder = PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
+                        .policy(POLICY_A).policyType(POLICY_TYPE);
+
+        PdpPolicyStatus notDeployed = builder.deploy(false).pdpId(PDP_B).state(State.FAILURE).build();
+
+        // remaining policies are deployed
+        builder.deploy(true).state(State.WAITING);
+
+        ToscaConceptIdentifierOptVersion optIdent = new ToscaConceptIdentifierOptVersion(POLICY_A);
+
+        // @formatter:off
+        when(dao.getAllPolicyStatus(optIdent)).thenReturn(List.of(
+                        builder.policy(POLICY_A).pdpId(PDP_A).build(),
+                        notDeployed,
+                        builder.policy(POLICY_A).pdpId(PDP_C).build()
+                        ));
+        // @formatter:on
+
+        List<PolicyStatus> result = new ArrayList<>(prov.getStatus(optIdent));
+        assertThat(result).hasSize(1);
+
+        Iterator<PolicyStatus> iter = result.iterator();
+
+        PolicyStatus status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getIncompleteCount()).isEqualTo(2);
+        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getSuccessCount()).isZero();
+    }
+}

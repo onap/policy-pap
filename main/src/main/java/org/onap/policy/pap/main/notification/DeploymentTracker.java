@@ -146,6 +146,14 @@ public class DeploymentTracker {
             newStatus.setPolicyTypeId(status.getPolicyTypeId());
             newStatus.setPolicyTypeVersion(status.getPolicyTypeVersion());
 
+            /*
+             * Adding the status to the "added" set may be a bit unexpected, but when all
+             * status records are deleted from the group, we don't actually undeploy the
+             * policy from the subgroup. Instead, we leave it in the subgroup so that as
+             * soon as a PDP registers, we immediately deploy the policy to the PDP and
+             * continue on; the client can always undeploy the policy when it receives the
+             * notification, if so desired.
+             */
             notif.getAdded().add(newStatus);
         }
     }

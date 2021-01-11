@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,8 @@ public class PolicyStatusTest extends End2EndBase {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        // don't start Main until AFTER we add the policies to the DB
-        End2EndBase.setUpBeforeClass(false);
-
-        addToscaPolicyTypes("monitoring.policy-type.yaml");
-        addToscaPolicies("monitoring.policy.yaml");
-        addGroups("policyStatus.json");
-
-        startMain();
+        End2EndBase.setUpBeforeClass();
+        addPdpPolicyStatus("policyStatus.json");
     }
 
     @Test

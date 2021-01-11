@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,9 +77,6 @@ public class UpdateReq extends RequestImpl {
             return reason;
         }
 
-        Set<ToscaConceptIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
-        getNotifier().processResponse(response.getName(), actualSet);
-
         PdpUpdate message = getMessage();
 
         if (!StringUtils.equals(message.getPdpGroup(), response.getPdpGroup())) {
@@ -94,10 +91,13 @@ public class UpdateReq extends RequestImpl {
             return null;
         }
 
-        // see if the policies match
-
+        Set<ToscaConceptIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
         Set<ToscaConceptIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
                         .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
+
+        getNotifier().processResponse(response.getName(), message.getPdpGroup(), expectedSet, actualSet);
+
+        // see if the policies match
 
         if (!actualSet.equals(expectedSet)) {
             // need to undeploy the policies that are expected, but missing from the

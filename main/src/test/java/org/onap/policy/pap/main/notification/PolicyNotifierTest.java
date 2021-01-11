@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,44 +21,39 @@
 
 package org.onap.policy.pap.main.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.Answer;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.pdp.concepts.Pdp;
-import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
 
-public class PolicyNotifierTest extends PolicyCommonSupport {
+public class PolicyNotifierTest {
+    private static final String GROUP_A = "groupA";
+    private static final String PDP1 = "pdp-1";
+    private static final ToscaConceptIdentifier policy1 = new ToscaConceptIdentifier("policy1", "1.2.3");
+    private static final ToscaConceptIdentifier policy2 = new ToscaConceptIdentifier("policy2", "1.2.3");
 
     @Mock
     private Publisher<PolicyNotification> publisher;
@@ -70,10 +65,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
     private PolicyModelsProvider dao;
 
     @Mock
-    private PolicyDeployTracker deploy;
-
-    @Mock
-    private PolicyUndeployTracker undeploy;
+    private DeploymentStatus tracker;
 
     @Mock
     private PolicyStatus status1;
@@ -95,16 +87,13 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
     /**
      * Creates various objects, including {@link #notifier}.
      */
-    @Override
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        super.setUp();
-
         try {
             when(daoFactory.create()).thenReturn(dao);
-            when(dao.getPdpGroups(null)).thenReturn(Collections.emptyList());
+            when(dao.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
 
             notifier = new MyNotifier(publisher);
 
@@ -114,154 +103,31 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
     }
 
     @Test
-    public void testLoadPoliciesPolicyModelsProviderFactoryWrapper() throws PfModelException {
-        final PdpGroup group1 = makeGroup("my group #1", makeSubGroup("sub #1 A", 2, policy1, policy4),
-                        makeSubGroup("sub #1 B", 1, policy2));
+    public void testProcessResponseString() throws PfModelException {
+        Set<ToscaConceptIdentifier> expected = Set.of(policy1);
+        Set<ToscaConceptIdentifier> actual = Set.of(policy2);
 
-        // one policy is a duplicate
-        final PdpGroup group2 = makeGroup("my group #2", makeSubGroup("sub #2 A", 1, policy1, policy3));
+        // add a status to the notification when tracker.flush(notif) is called
+        doAnswer(invocation -> {
+            PolicyNotification notif = invocation.getArgument(0);
+            notif.getAdded().add(new PolicyStatus());
+            return null;
+        }).when(tracker).flush(any());
 
-        when(dao.getPdpGroups(null)).thenReturn(Arrays.asList(group1, group2));
+        notifier.processResponse(PDP1, GROUP_A, expected, actual);
 
-        ToscaConceptIdentifier type2 = new ToscaConceptIdentifier("my other type", "8.8.8");
+        verify(tracker).loadByGroup(GROUP_A);
+        verify(tracker).completeDeploy(PDP1, expected, actual);
+        verify(tracker).flush(any());
 
-        // note: no mapping for policy4
-        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(makePolicy(policy1, type),
-                        makePolicy(policy2, type2), makePolicy(policy3, type)));
-
-        // load it
-        notifier = new MyNotifier(publisher);
-
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-
-        // should have added policy1, policy2, policy1 (duplicate), policy3, but not
-        // policy4
-        verify(deploy, times(4)).addData(captor.capture());
-
-        Iterator<PolicyPdpNotificationData> iter = captor.getAllValues().iterator();
-        PolicyPdpNotificationData data = iter.next();
-        assertEquals(policy1, data.getPolicyId());
-        assertEquals(type, data.getPolicyType());
-        assertEquals("[sub #1 A 0, sub #1 A 1]", data.getPdps().toString());
-
-        data = iter.next();
-        assertEquals(policy2, data.getPolicyId());
-        assertEquals(type2, data.getPolicyType());
-        assertEquals("[sub #1 B 0]", data.getPdps().toString());
-
-        data = iter.next();
-        assertEquals(policy1, data.getPolicyId());
-        assertEquals(type, data.getPolicyType());
-        assertEquals("[sub #2 A 0]", data.getPdps().toString());
-
-        data = iter.next();
-        assertEquals(policy3, data.getPolicyId());
-        assertEquals(type, data.getPolicyType());
-        assertEquals("[sub #2 A 0]", data.getPdps().toString());
-    }
-
-    private ToscaPolicy makePolicy(ToscaConceptIdentifier policyId, ToscaConceptIdentifier type) {
-        ToscaPolicy policy = new ToscaPolicy();
-
-        policy.setName(policyId.getName());
-        policy.setVersion(policyId.getVersion());
-        policy.setType(type.getName());
-        policy.setTypeVersion(type.getVersion());
-
-        return policy;
-    }
-
-    private PdpGroup makeGroup(String name, PdpSubGroup... subgrps) {
-        final PdpGroup group = new PdpGroup();
-        group.setName(name);
-
-        group.setPdpSubgroups(Arrays.asList(subgrps));
-
-        return group;
-    }
-
-    private PdpSubGroup makeSubGroup(String name, int numPdps, ToscaConceptIdentifier... policies) {
-        final PdpSubGroup subgrp = new PdpSubGroup();
-        subgrp.setPdpType(name);
-        subgrp.setPdpInstances(new ArrayList<>(numPdps));
-
-        for (int x = 0; x < numPdps; ++x) {
-            Pdp pdp = new Pdp();
-            pdp.setInstanceId(name + " " + x);
-
-            subgrp.getPdpInstances().add(pdp);
-        }
-
-        subgrp.setPolicies(Arrays.asList(policies));
-
-        return subgrp;
+        verify(publisher).enqueue(any());
     }
 
     @Test
-    public void testGetStatus() {
-        List<PolicyStatus> statusList = Arrays.asList(status1);
-        when(deploy.getStatus()).thenReturn(statusList);
+    public void testProcessResponseString_Ex() throws PfModelException {
+        doThrow(new PfModelException(Status.BAD_REQUEST, "expected exception")).when(tracker).loadByGroup(anyString());
 
-        assertSame(statusList, notifier.getStatus());
-    }
-
-    @Test
-    public void testGetStatusString() {
-        List<PolicyStatus> statusList = Arrays.asList(status1);
-        when(deploy.getStatus("a policy")).thenReturn(statusList);
-
-        assertSame(statusList, notifier.getStatus("a policy"));
-    }
-
-    @Test
-    public void testGetStatusToscaConceptIdentifier() {
-        Optional<PolicyStatus> status = Optional.of(status1);
-        when(deploy.getStatus(policy1)).thenReturn(status);
-
-        assertSame(status, notifier.getStatus(policy1));
-    }
-
-    @Test
-    public void testAddDeploymentData() {
-        PolicyPdpNotificationData data = makeData(policy1, PDP1, PDP2);
-        notifier.addDeploymentData(data);
-
-        verify(deploy).addData(data);
-        verify(undeploy).removeData(eq(data));
-    }
-
-    @Test
-    public void testAddUndeploymentData() {
-        PolicyPdpNotificationData data = makeData(policy1, PDP1, PDP2);
-        notifier.addUndeploymentData(data);
-
-        verify(undeploy).addData(data);
-        verify(deploy).removeData(eq(data));
-    }
-
-    @Test
-    public void testProcessResponseString() {
-        doAnswer(addStatus(2, status1, status2)).when(deploy).processResponse(eq(PDP1), any(), any());
-        doAnswer(addStatus(2, status3, status4)).when(undeploy).processResponse(eq(PDP1), any(), any());
-
-        List<ToscaConceptIdentifier> activePolicies = Arrays.asList(policy1, policy2);
-        notifier.processResponse(PDP1, activePolicies);
-
-        PolicyNotification notification = getNotification();
-        assertEquals(Arrays.asList(status1, status2), notification.getAdded());
-        assertEquals(Arrays.asList(status3, status4), notification.getDeleted());
-    }
-
-    @Test
-    public void testRemovePdp() {
-        doAnswer(addStatus(1, status1, status2)).when(deploy).removePdp(eq(PDP1), any());
-        doAnswer(addStatus(1, status3, status4)).when(undeploy).removePdp(eq(PDP1), any());
-
-        notifier.removePdp(PDP1);
-
-        PolicyNotification notification = getNotification();
-        assertEquals(Arrays.asList(status1, status2), notification.getAdded());
-        assertEquals(Arrays.asList(status3, status4), notification.getDeleted());
+        assertThatCode(() -> notifier.processResponse(PDP1, GROUP_A, Set.of(), Set.of())).doesNotThrowAnyException();
     }
 
     /**
@@ -269,8 +135,7 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
      */
     @Test
     public void testPublishEmpty() {
-        notifier.removePdp(PDP1);
-
+        notifier.publish(new PolicyNotification());
         verify(publisher, never()).enqueue(any());
     }
 
@@ -279,45 +144,20 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
      */
     @Test
     public void testPublishNotEmpty() {
-        doAnswer(addStatus(1, status1, status2)).when(deploy).removePdp(eq(PDP1), any());
+        PolicyNotification notif = new PolicyNotification();
+        notif.getAdded().add(new PolicyStatus());
 
-        notifier.removePdp(PDP1);
+        notifier.publish(notif);
 
         verify(publisher).enqueue(any());
     }
 
     @Test
-    public void testMakeDeploymentTracker_testMakeUndeploymentTracker() throws PfModelException {
+    public void testMakeDeploymentTracker() throws PfModelException {
         // make real object, which will invoke the real makeXxx() methods
-        new PolicyNotifier(publisher, daoFactory).removePdp(PDP1);
+        new PolicyNotifier(publisher, daoFactory).processResponse(PDP1, GROUP_A, Set.of(), Set.of());
 
-        verify(publisher, never()).enqueue(any());
-    }
-
-    /**
-     * Creates an answer that adds status updates to a status list.
-     *
-     * @param listIndex index of the status list within the argument list
-     * @param status status updates to be added
-     * @return an answer that adds the given status updates
-     */
-    private Answer<Void> addStatus(int listIndex, PolicyStatus... status) {
-        return invocation -> {
-            @SuppressWarnings("unchecked")
-            List<PolicyStatus> statusList = invocation.getArgument(listIndex, List.class);
-            statusList.addAll(Arrays.asList(status));
-            return null;
-        };
-    }
-
-    /**
-     * Gets the notification that was published.
-     *
-     * @return the notification that was published
-     */
-    private PolicyNotification getNotification() {
-        verify(publisher).enqueue(notifyCaptor.capture());
-        return notifyCaptor.getValue().get();
+        verify(dao).getGroupPolicyStatus(GROUP_A);
     }
 
 
@@ -328,13 +168,8 @@ public class PolicyNotifierTest extends PolicyCommonSupport {
         }
 
         @Override
-        protected PolicyDeployTracker makeDeploymentTracker() {
-            return deploy;
-        }
-
-        @Override
-        protected PolicyUndeployTracker makeUndeploymentTracker() {
-            return undeploy;
+        protected DeploymentStatus makeDeploymentTracker(PolicyModelsProvider dao) {
+            return tracker;
         }
     }
 }

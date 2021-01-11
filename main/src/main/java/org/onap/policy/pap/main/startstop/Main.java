@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,13 @@ public class Main {
 
             // Start the activator
             activator.start();
-        } catch (Exception exp) {
+        } catch (Exception exp) { // NOSONAR
+            /*
+             * Disabled sonar on the above line, because we want to capture the stack
+             * trace via the logger while still reporting the exception message on stdout
+             * when the JVM exits.
+             */
+            LOGGER.error("failed to start Main", exp);
             if (null != activator) {
                 Registry.unregister(PapConstants.REG_PAP_ACTIVATOR);
             }

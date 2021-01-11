@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
         assertEquals("group does not match", data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
-        verifyResponse();
+        verifyNoResponse();
     }
 
     @Test
@@ -124,7 +124,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
         assertEquals("subgroup does not match", data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
-        verifyResponse();
+        verifyNoResponse();
     }
 
     @Test
@@ -137,7 +137,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
         assertEquals(null, data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
-        verifyResponse();
+        verifyNoResponse();
     }
 
     @Test
@@ -277,12 +277,12 @@ public class UpdateReqTest extends CommonRequestBase {
 
     @SuppressWarnings("unchecked")
     private void verifyResponse() {
-        verify(notifier).processResponse(any(), any(Set.class));
+        verify(notifier).processResponse(any(), any(), any(Set.class), any(Set.class));
     }
 
     @SuppressWarnings("unchecked")
     private void verifyNoResponse() {
-        verify(notifier, never()).processResponse(any(), any(Set.class));
+        verify(notifier, never()).processResponse(any(), any(), any(Set.class), any(Set.class));
     }
 
     /**

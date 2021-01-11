@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2019-2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,7 @@ import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
@@ -77,17 +78,7 @@ public class End2EndBase extends CommonPapRestServer {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        setUpBeforeClass(true);
-    }
-
-    /**
-     * Starts Main, if specified, and connects to the DB.
-     *
-     * @param shouldStart {@code true} if Main should be started, {@code false} otherwise
-     * @throws Exception if an error occurs
-     */
-    public static void setUpBeforeClass(final boolean shouldStart) throws Exception {
-        CommonPapRestServer.setUpBeforeClass(shouldStart);
+        CommonPapRestServer.setUpBeforeClass(true);
 
         final PapParameterGroup params = new StandardCoder().decode(new File(CONFIG_FILE), PapParameterGroup.class);
         daoFactory = new PolicyModelsProviderFactoryWrapper(params.getDatabaseProviderParameters());
@@ -195,6 +186,17 @@ public class End2EndBase extends CommonPapRestServer {
     }
 
     /**
+     * Adds PdpPolicyStatus records to the DB.
+     *
+     * @param jsonFile name of the JSON file specifying the data to be loaded
+     * @throws PfModelException if a DAO error occurs
+     */
+    public static void addPdpPolicyStatus(final String jsonFile) throws PfModelException {
+        final PolicyStatusRecords data = loadJsonFile(jsonFile, PolicyStatusRecords.class);
+        dbConn.cudPolicyStatus(data.records, null, null);
+    }
+
+    /**
      * Loads an object from a YAML file.
      *
      * @param fileName name of the file from which to load
@@ -245,5 +247,9 @@ public class End2EndBase extends CommonPapRestServer {
         } catch (final CoderException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public class PolicyStatusRecords {
+        private List<PdpPolicyStatus> records;
     }
 }

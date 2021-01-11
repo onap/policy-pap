@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -95,6 +96,7 @@ public abstract class ProviderBase {
 
         synchronized (updateLock) {
             SessionData data;
+            PolicyNotification notif = new PolicyNotification();
 
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
@@ -102,7 +104,7 @@ public abstract class ProviderBase {
                 processor.accept(data, request);
 
                 // make all of the DB updates
-                data.updateDb();
+                data.updateDb(notif);
 
             } catch (PfModelException | PfModelRuntimeException e) {
                 throw e;
@@ -111,12 +113,11 @@ public abstract class ProviderBase {
                 throw new PfModelException(Status.INTERNAL_SERVER_ERROR, "request failed", e);
             }
 
-            // track responses for notification purposes
-            data.getDeployData().forEach(notifier::addDeploymentData);
-            data.getUndeployData().forEach(notifier::addUndeploymentData);
-
             // publish the requests
             data.getPdpRequests().forEach(pair -> requestMap.addRequest(pair.getLeft(), pair.getRight()));
+
+            // publish the notifications
+            notifier.publish(notif);
         }
     }
 

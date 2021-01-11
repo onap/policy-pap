@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,12 +35,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.TreeSet;
 import javax.ws.rs.core.Response.Status;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -52,7 +49,6 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.pap.main.notification.PolicyPdpNotificationData;
 import org.powermock.reflect.Whitebox;
 
 public class TestProviderBase extends ProviderSuper {
@@ -110,23 +106,7 @@ public class TestProviderBase extends ProviderSuper {
 
         assertUpdate(getUpdateRequests(1), GROUP1_NAME, PDP1_TYPE, PDP1);
 
-        ArgumentCaptor<PolicyPdpNotificationData> captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier, times(2)).addDeploymentData(captor.capture());
-        assertNotifier(captor, PDP1, PDP3);
-
-        captor = ArgumentCaptor.forClass(PolicyPdpNotificationData.class);
-        verify(notifier, times(2)).addUndeploymentData(captor.capture());
-        assertNotifier(captor, PDP2, PDP4);
-    }
-
-    private void assertNotifier(ArgumentCaptor<PolicyPdpNotificationData> captor, String firstPdp, String secondPdp) {
-        assertEquals(1, captor.getAllValues().get(0).getPdps().size());
-        assertEquals(1, captor.getAllValues().get(1).getPdps().size());
-
-        // ensure the order by using a TreeSet
-        TreeSet<String> pdps = new TreeSet<>(captor.getAllValues().get(0).getPdps());
-        pdps.addAll(captor.getAllValues().get(1).getPdps());
-        assertEquals("[" + firstPdp + ", " + secondPdp + "]", pdps.toString());
+        checkEmptyNotification();
     }
 
     @Test
@@ -376,15 +356,17 @@ public class TestProviderBase extends ProviderSuper {
 
             return (group, subgroup) -> {
                 if (shouldUpdate.remove()) {
-                    // queue indicated that the update should succeed
-                    subgroup.getPolicies().add(policy.getIdentifier());
+                    ToscaConceptIdentifier ident1 = policy.getIdentifier();
 
-                    data.trackDeploy(policy.getIdentifier(), Collections.singleton(PDP1));
-                    data.trackUndeploy(policy.getIdentifier(), Collections.singleton(PDP2));
+                    // queue indicated that the update should succeed
+                    subgroup.getPolicies().add(ident1);
+
+                    data.trackDeploy(ident1, Collections.singleton(PDP1), GROUP1_NAME, PDP1_TYPE);
+                    data.trackUndeploy(ident1, Collections.singleton(PDP2), GROUP1_NAME, PDP2_TYPE);
 
                     ToscaConceptIdentifier ident2 = new ToscaConceptIdentifier(POLICY1_NAME, "9.9.9");
-                    data.trackDeploy(ident2, Collections.singleton(PDP3));
-                    data.trackUndeploy(ident2, Collections.singleton(PDP4));
+                    data.trackDeploy(ident2, Collections.singleton(PDP3), GROUP1_NAME, PDP3_TYPE);
+                    data.trackUndeploy(ident2, Collections.singleton(PDP4), GROUP1_NAME, PDP4_TYPE);
                     return true;
 
                 } else {

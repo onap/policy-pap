@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,7 +93,7 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
                     subgroup.getPdpType(), subgroup.getPolicies().size());
 
             updated = true;
-            data.trackUndeploy(ident, pdps);
+            data.trackUndeploy(ident, pdps, policyInfo.group, policyInfo.subgroup);
         }
 
         // push the updates

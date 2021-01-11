@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -284,7 +285,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         assertEquals(newgrp.toString(), dbgroup.toString());
 
         // no deployment notifications
-        verify(notifier, never()).addDeploymentData(any());
+        checkEmptyNotification();
 
         // this requires a PDP UPDATE message
         List<PdpUpdate> pdpUpdates = getUpdateRequests(2);
@@ -519,8 +520,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         assertEquals(newgrp.toString(), group.toString());
 
         // no notifications
-        verify(notifier, never()).addDeploymentData(any());
-        verify(notifier, never()).addUndeploymentData(any());
+        checkEmptyNotification();
 
         // no group updates
         assertNoGroupAction();
