@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -40,9 +40,9 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter.ToscaPolicyFilterBuilder;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaTypedEntityFilter;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaTypedEntityFilter.ToscaTypedEntityFilterBuilder;
 import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +54,7 @@ public class SessionData {
     private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
 
     /**
-     * If a version string matches this, then it is just a prefix (i.e., major or
-     * major.minor).
+     * If a version string matches this, then it is just a prefix (i.e., major or major.minor).
      */
     private static final Pattern VERSION_PREFIX_PAT = Pattern.compile("[^.]+(?:[.][^.]+)?");
 
@@ -65,14 +64,14 @@ public class SessionData {
     private final PolicyModelsProvider dao;
 
     /**
-     * Maps a group name to its group data. This accumulates the set of groups to be
-     * created and updated when the REST call completes.
+     * Maps a group name to its group data. This accumulates the set of groups to be created and updated when the REST
+     * call completes.
      */
     private final Map<String, GroupData> groupCache = new HashMap<>();
 
     /**
-     * Maps a policy type to the list of matching groups. Every group appearing within
-     * this map has a corresponding entry in {@link #groupCache}.
+     * Maps a policy type to the list of matching groups. Every group appearing within this map has a corresponding
+     * entry in {@link #groupCache}.
      */
     private final Map<ToscaConceptIdentifier, List<GroupData>> type2groups = new HashMap<>();
 
@@ -108,8 +107,8 @@ public class SessionData {
     }
 
     /**
-     * Gets the policy type, referenced by an identifier. Loads it from the cache, if
-     * possible. Otherwise, gets it from the DB.
+     * Gets the policy type, referenced by an identifier. Loads it from the cache, if possible. Otherwise, gets it from
+     * the DB.
      *
      * @param desiredType policy type identifier
      * @return the specified policy type
@@ -133,8 +132,8 @@ public class SessionData {
     }
 
     /**
-     * Gets the policy, referenced by an identifier. Loads it from the cache, if possible.
-     * Otherwise, gets it from the DB.
+     * Gets the policy, referenced by an identifier. Loads it from the cache, if possible. Otherwise, gets it from the
+     * DB.
      *
      * @param desiredPolicy policy identifier
      * @return the specified policy
@@ -144,7 +143,8 @@ public class SessionData {
 
         ToscaPolicy policy = policyCache.get(desiredPolicy);
         if (policy == null) {
-            ToscaPolicyFilterBuilder filterBuilder = ToscaPolicyFilter.builder().name(desiredPolicy.getName());
+            ToscaTypedEntityFilterBuilder<ToscaPolicy> filterBuilder =
+                    ToscaTypedEntityFilter.<ToscaPolicy>builder().name(desiredPolicy.getName());
             setPolicyFilterVersion(filterBuilder, desiredPolicy.getVersion());
 
             List<ToscaPolicy> lst = dao.getFilteredPolicyList(filterBuilder.build());
@@ -168,15 +168,16 @@ public class SessionData {
      * @param filterBuilder filter builder whose version should be set
      * @param desiredVersion desired version
      */
-    private void setPolicyFilterVersion(ToscaPolicyFilterBuilder filterBuilder, String desiredVersion) {
+    private void setPolicyFilterVersion(ToscaTypedEntityFilterBuilder<ToscaPolicy> filterBuilder,
+            String desiredVersion) {
 
         if (desiredVersion == null) {
             // no version specified - get the latest
-            filterBuilder.version(ToscaPolicyFilter.LATEST_VERSION);
+            filterBuilder.version(ToscaTypedEntityFilter.LATEST_VERSION);
 
         } else if (isVersionPrefix(desiredVersion)) {
             // version prefix provided - match the prefix and then pick the latest
-            filterBuilder.versionPrefix(desiredVersion + ".").version(ToscaPolicyFilter.LATEST_VERSION);
+            filterBuilder.versionPrefix(desiredVersion + ".").version(ToscaTypedEntityFilter.LATEST_VERSION);
 
         } else {
             // must be an exact match
@@ -188,16 +189,14 @@ public class SessionData {
      * Determines if a version contains only a prefix.
      *
      * @param version version to inspect
-     * @return {@code true} if the version contains only a prefix, {@code false} if it is
-     *         fully qualified
+     * @return {@code true} if the version contains only a prefix, {@code false} if it is fully qualified
      */
     public static boolean isVersionPrefix(String version) {
         return VERSION_PREFIX_PAT.matcher(version).matches();
     }
 
     /**
-     * Adds an update and state-change to the sets, replacing any previous entries for the
-     * given PDP.
+     * Adds an update and state-change to the sets, replacing any previous entries for the given PDP.
      *
      * @param update the update to be added
      * @param change the state-change to be added
@@ -208,25 +207,23 @@ public class SessionData {
         }
 
         logger.info("add update and state-change {} {} {} policies={}", update.getName(), update.getPdpGroup(),
-                        update.getPdpSubgroup(), update.getPolicies().size());
+                update.getPdpSubgroup(), update.getPolicies().size());
         pdpRequests.put(update.getName(), Pair.of(update, change));
     }
 
     /**
-     * Adds an update to the set of updates, replacing any previous entry for the given
-     * PDP.
+     * Adds an update to the set of updates, replacing any previous entry for the given PDP.
      *
      * @param update the update to be added
      */
     public void addUpdate(PdpUpdate update) {
         logger.info("add update {} {} {} policies={}", update.getName(), update.getPdpGroup(), update.getPdpSubgroup(),
-                        update.getPolicies().size());
+                update.getPolicies().size());
         pdpRequests.compute(update.getName(), (name, data) -> Pair.of(update, (data == null ? null : data.getRight())));
     }
 
     /**
-     * Adds a state-change to the set of state-change requests, replacing any previous
-     * entry for the given PDP.
+     * Adds a state-change to the set of state-change requests, replacing any previous entry for the given PDP.
      *
      * @param change the state-change to be added
      */
@@ -260,7 +257,7 @@ public class SessionData {
      */
     public List<PdpUpdate> getPdpUpdates() {
         return pdpRequests.values().stream().filter(req -> req.getLeft() != null).map(Pair::getLeft)
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -270,7 +267,7 @@ public class SessionData {
      */
     public List<PdpStateChange> getPdpStateChanges() {
         return pdpRequests.values().stream().filter(req -> req.getRight() != null).map(Pair::getRight)
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -343,14 +340,13 @@ public class SessionData {
      */
     public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaConceptIdentifier type) throws PfModelException {
         /*
-         * Cannot use computeIfAbsent() because the enclosed code throws an unchecked
-         * exception and handling that would obfuscate the code too much, thus disabling
-         * the sonar.
+         * Cannot use computeIfAbsent() because the enclosed code throws an unchecked exception and handling that would
+         * obfuscate the code too much, thus disabling the sonar.
          */
         List<GroupData> data = type2groups.get(type); // NOSONAR
         if (data == null) {
             PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
-                            .groupState(PdpState.ACTIVE).build();
+                    .groupState(PdpState.ACTIVE).build();
 
             List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
 
@@ -383,6 +379,7 @@ public class SessionData {
 
     /**
      * Update the DB with the changes.
+     *
      * @param notification notification to which to add policy status
      *
      * @throws PfModelException if an error occurred
@@ -399,7 +396,7 @@ public class SessionData {
 
         // update existing groups
         List<GroupData> updated =
-                        groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
+                groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
         if (!updated.isEmpty()) {
             if (logger.isInfoEnabled()) {
                 updated.forEach(group -> logger.info("updating DB group {}", group.getGroup().getName()));
@@ -412,8 +409,7 @@ public class SessionData {
     }
 
     /**
-     * Deletes a group from the DB, immediately (i.e., without caching the request to be
-     * executed later).
+     * Deletes a group from the DB, immediately (i.e., without caching the request to be executed later).
      *
      * @param group the group to be deleted
      * @throws PfModelException if an error occurred
@@ -433,7 +429,7 @@ public class SessionData {
      * @throws PfModelException if an error occurred
      */
     protected void trackDeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
-                    String pdpType) throws PfModelException {
+            String pdpType) throws PfModelException {
         addData(policyId, pdps, pdpGroup, pdpType, true);
     }
 
@@ -447,7 +443,7 @@ public class SessionData {
      * @throws PfModelException if an error occurred
      */
     protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
-                    String pdpType) throws PfModelException {
+            String pdpType) throws PfModelException {
         addData(policyId, pdps, pdpGroup, pdpType, false);
     }
 
@@ -456,14 +452,13 @@ public class SessionData {
      *
      * @param policyId ID of the policy being deployed/undeployed
      * @param pdps PDPs to which the policy is being deployed/undeployed
-     * @param deploy {@code true} if the policy is being deployed, {@code false} if
-     *        undeployed
+     * @param deploy {@code true} if the policy is being deployed, {@code false} if undeployed
      * @param pdpGroup PdpGroup containing the PDP of interest
      * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
     private void addData(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup, String pdpType,
-                    boolean deploy) throws PfModelException {
+            boolean deploy) throws PfModelException {
 
         // delete all records whose "deploy" flag is the opposite of what we want
         deployStatus.deleteDeployment(policyId, !deploy);
