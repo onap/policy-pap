@@ -1,4 +1,4 @@
-/*
+/*-
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
@@ -59,8 +59,8 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyFilter;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaTypedEntityFilter;
 import org.onap.policy.pap.main.notification.DeploymentStatus;
 
 public class TestSessionData extends ProviderSuper {
@@ -136,9 +136,9 @@ public class TestSessionData extends ProviderSuper {
         ident.setVersion(null);
         assertSame(policy1, session.getPolicy(ident));
 
-        ToscaPolicyFilter filter = getPolicyFilter();
+        ToscaTypedEntityFilter<ToscaPolicy> filter = getPolicyFilter();
         assertEquals(POLICY_NAME, filter.getName());
-        assertEquals(ToscaPolicyFilter.LATEST_VERSION, filter.getVersion());
+        assertEquals(ToscaTypedEntityFilter.LATEST_VERSION, filter.getVersion());
         assertEquals(null, filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
@@ -154,9 +154,9 @@ public class TestSessionData extends ProviderSuper {
         ident.setVersion("1");
         assertSame(policy1, session.getPolicy(ident));
 
-        ToscaPolicyFilter filter = getPolicyFilter();
+        ToscaTypedEntityFilter<ToscaPolicy> filter = getPolicyFilter();
         assertEquals(POLICY_NAME, filter.getName());
-        assertEquals(ToscaPolicyFilter.LATEST_VERSION, filter.getVersion());
+        assertEquals(ToscaTypedEntityFilter.LATEST_VERSION, filter.getVersion());
         assertEquals("1.", filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
@@ -172,7 +172,7 @@ public class TestSessionData extends ProviderSuper {
         ident.setVersion(POLICY_VERSION);
         assertSame(policy1, session.getPolicy(ident));
 
-        ToscaPolicyFilter filter = getPolicyFilter();
+        ToscaTypedEntityFilter<ToscaPolicy> filter = getPolicyFilter();
         assertEquals(POLICY_NAME, filter.getName());
         assertEquals(POLICY_VERSION, filter.getVersion());
         assertEquals(null, filter.getVersionPrefix());
@@ -273,7 +273,7 @@ public class TestSessionData extends ProviderSuper {
         PdpUpdate update = makeUpdate(PDP1);
         PdpStateChange change = makeStateChange(PDP2);
         assertThatIllegalArgumentException().isThrownBy(() -> session.addRequests(update, change))
-                        .withMessage("PDP name mismatch pdp_1, pdp_2");
+                .withMessage("PDP name mismatch pdp_1, pdp_2");
     }
 
     @Test
@@ -356,7 +356,7 @@ public class TestSessionData extends ProviderSuper {
 
         // cannot overwrite
         assertThatIllegalStateException().isThrownBy(() -> session.create(group1))
-                        .withMessage("group already cached: groupA");
+                .withMessage("group already cached: groupA");
     }
 
     @Test
@@ -399,7 +399,7 @@ public class TestSessionData extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
 
         assertThatIllegalStateException().isThrownBy(() -> session.update(new PdpGroup(group1)))
-                        .withMessage("group not cached: groupA");
+                .withMessage("group not cached: groupA");
     }
 
     @Test
@@ -557,8 +557,7 @@ public class TestSessionData extends ProviderSuper {
         testTrack(false);
     }
 
-    protected void testTrack(boolean deploy)
-                    throws PfModelException {
+    protected void testTrack(boolean deploy) throws PfModelException {
 
         DeploymentStatus status = mock(DeploymentStatus.class);
 
@@ -610,8 +609,10 @@ public class TestSessionData extends ProviderSuper {
         return change;
     }
 
-    private ToscaPolicyFilter getPolicyFilter() throws Exception {
-        ArgumentCaptor<ToscaPolicyFilter> captor = ArgumentCaptor.forClass(ToscaPolicyFilter.class);
+    private ToscaTypedEntityFilter<ToscaPolicy> getPolicyFilter() throws Exception {
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ToscaTypedEntityFilter<ToscaPolicy>> captor =
+                ArgumentCaptor.forClass(ToscaTypedEntityFilter.class);
         verify(dao).getFilteredPolicyList(captor.capture());
 
         return captor.getValue();
