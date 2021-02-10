@@ -41,6 +41,7 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PdpParameters;
+import org.onap.policy.pap.main.rest.SessionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +134,8 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             if (!findPdpInstance(message, subGroup.get()).isPresent()) {
                 updatePdpSubGroup(finalizedPdpGroup, subGroup.get(), message, databaseProvider);
             }
-            sendPdpMessage(finalizedPdpGroup.getName(), subGroup.get(), message.getName(), null, databaseProvider);
+            sendPdpMessage(finalizedPdpGroup.getName(), subGroup.get(), message.getName(), null, databaseProvider, 
+                    null);
             pdpGroupFound = true;
         }
         return pdpGroupFound;
@@ -162,13 +164,15 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         final PdpGroupFilter filter =
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
+
+        SessionData data = new SessionData(databaseProvider);
         if (!pdpGroups.isEmpty()) {
             PdpGroup pdpGroup = pdpGroups.get(0);
             Optional<PdpSubGroup> pdpSubgroup = findPdpSubGroup(message, pdpGroup);
             if (pdpSubgroup.isPresent()) {
                 Optional<Pdp> pdpInstance = findPdpInstance(message, pdpSubgroup.get());
                 if (pdpInstance.isPresent()) {
-                    processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider);
+                    processPdpDetails(message, pdpSubgroup.get(), pdpInstance.get(), pdpGroup, databaseProvider, data);
                 } else {
                     LOGGER.debug("PdpInstance not Found in DB. Sending Pdp for registration - {}", message);
                     registerPdp(message, databaseProvider, pdpGroup);
@@ -200,7 +204,8 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void processPdpDetails(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider, SessionData data) 
+                    throws PfModelException {
         if (PdpState.TERMINATED.equals(message.getState())) {
             processPdpTermination(pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
@@ -217,7 +222,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
-                    databaseProvider);
+                    databaseProvider, data);
         }
     }
 
@@ -279,9 +284,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
-            final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
+            final PdpState pdpState, final PolicyModelsProvider databaseProvider, SessionData data) 
+                    throws PfModelException {
         final PdpUpdate pdpUpdatemessage =
-                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
+                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider, data, true);
         final PdpStateChange pdpStateChangeMessage =
                 createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
