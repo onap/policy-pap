@@ -24,7 +24,9 @@ package org.onap.policy.pap.main.comm.msgdata;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -125,7 +127,36 @@ public class UpdateReq extends RequestImpl {
             return true;
         }
 
-        reconfigure2(newMessage);
+        Map<ToscaConceptIdentifier, ToscaPolicy> newDeployMap = update.getPoliciesToBeDeployed().stream()
+                .collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
+
+        // Merge full lists
+        final List<ToscaPolicy> fullPolicies = update.getPolicies();
+
+        // Merge undpeloy lists
+        Set<ToscaConceptIdentifier> policiesToBeUndeployedSet = new HashSet<>(getMessage().getPoliciesToBeUndeployed());
+        policiesToBeUndeployedSet.removeAll(newDeployMap.keySet());
+        policiesToBeUndeployedSet.addAll(update.getPoliciesToBeUndeployed());
+        final List<ToscaConceptIdentifier> policiestoBeUndeployed = new LinkedList<>(policiesToBeUndeployedSet);
+
+        // Merge deploy lists
+        final List<ToscaPolicy> policiesToBeDeployed;
+        if (update.getPoliciesToBeDeployed() == update.getPolicies()) {
+            policiesToBeDeployed = update.getPoliciesToBeDeployed();
+        } else {
+            Map<ToscaConceptIdentifier, ToscaPolicy> policiesToBeDeployedMap = getMessage().getPoliciesToBeDeployed()
+                    .stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
+            policiesToBeDeployedMap.keySet().removeAll(update.getPoliciesToBeUndeployed());
+            policiesToBeDeployedMap.putAll(newDeployMap);
+            policiesToBeDeployed = new LinkedList<>(policiesToBeDeployedMap.values());
+        }
+
+        // Set lists in update
+        update.setPolicies(fullPolicies);
+        update.setPoliciesToBeDeployed(policiesToBeDeployed);
+        update.setPoliciesToBeUndeployed(policiestoBeUndeployed);
+
+        reconfigure2(update);
         return true;
     }
 
@@ -144,7 +175,27 @@ public class UpdateReq extends RequestImpl {
         Set<ToscaPolicy> set1 = new HashSet<>(alwaysList(first.getPolicies()));
         Set<ToscaPolicy> set2 = new HashSet<>(alwaysList(second.getPolicies()));
 
-        return set1.equals(set2);
+        Map<ToscaConceptIdentifier, ToscaPolicy> dep1 = first.getPolicies().stream()
+                .collect(Collectors.toMap(ToscaPolicy::getIdentifier, p -> p));
+        Map<ToscaConceptIdentifier, ToscaPolicy> dep2 = second.getPoliciesToBeDeployed()
+                .stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, p -> p));
+
+        HashSet<ToscaConceptIdentifier> undep1 = new HashSet<>(alwaysList(first.getPoliciesToBeUndeployed()));
+        HashSet<ToscaConceptIdentifier> undep2 = new HashSet<>(alwaysList(second.getPoliciesToBeUndeployed()));
+
+        if (!(set1.equals(set2))) {
+            return false;
+        }
+
+        if (!(dep1.equals(dep2))) {
+            return false;
+        }
+
+        if (!(undep1.equals(undep2))) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

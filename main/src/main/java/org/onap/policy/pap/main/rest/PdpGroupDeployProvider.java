@@ -262,11 +262,11 @@ public class PdpGroupDeployProvider extends ProviderBase {
             return false;
         }
 
-
         Set<String> pdps = dbsub.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaConceptIdentifier policyId : deployed) {
-            data.trackDeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
+            ToscaPolicy policyToBeDeployed = data.getPolicy(new ToscaConceptIdentifierOptVersion(policyId));
+            data.trackDeploy(policyToBeDeployed, pdps, pdpGroup, dbsub.getPdpType());
         }
 
         for (ToscaConceptIdentifier policyId : undeployed) {
@@ -443,7 +443,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
                             subgroup.getPdpType(), subgroup.getPolicies().size());
 
             Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
-            data.trackDeploy(desiredIdent, pdps, group.getName(), subgroup.getPdpType());
+            ToscaPolicy policyToBeDeployed = data.getPolicy(new ToscaConceptIdentifierOptVersion(desiredIdent));
+            data.trackDeploy(policyToBeDeployed, pdps, group.getName(), subgroup.getPdpType());
 
             return true;
         };
