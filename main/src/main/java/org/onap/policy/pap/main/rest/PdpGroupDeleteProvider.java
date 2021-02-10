@@ -106,7 +106,7 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      */
     private void undeployPolicy(SessionData data, ToscaConceptIdentifierOptVersion ident) throws PfModelException {
         try {
-            processPolicy(data, ident);
+            processPolicy(data, ident, false);
 
             if (data.isUnchanged()) {
                 throw new PfModelException(Status.BAD_REQUEST, "policy does not appear in any PDP group: "

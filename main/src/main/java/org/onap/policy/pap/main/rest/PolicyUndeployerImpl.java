@@ -22,6 +22,8 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,9 +98,13 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
             data.trackUndeploy(ident, pdps, policyInfo.group, policyInfo.subgroup);
         }
 
+        // List of policies to be undeployed
+        List<ToscaConceptIdentifier> policiesToBeUndeployed = new LinkedList<>();
+        policiesToBeUndeployed.addAll(policyInfo.policies);
+
         // push the updates
         if (updated) {
-            makeUpdates(data, group, subgroup);
+            makeUpdates(data, group, subgroup, null, policiesToBeUndeployed);
             data.update(group);
         }
     }

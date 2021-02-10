@@ -23,6 +23,8 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.utils.services.Registry;
@@ -43,8 +45,8 @@ import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 
 /**
- * Super class of providers that deploy and undeploy PDP groups. The following items must
- * be in the {@link Registry}:
+ * Super class of providers that deploy and undeploy PDP groups. The following
+ * items must be in the {@link Registry}:
  * <ul>
  * <li>PDP Modification Lock</li>
  * <li>PDP Modify Request Map</li>
@@ -74,7 +76,6 @@ public abstract class ProviderBase {
      */
     private final PolicyModelsProviderFactoryWrapper daoFactory;
 
-
     /**
      * Constructs the object.
      */
@@ -88,7 +89,7 @@ public abstract class ProviderBase {
     /**
      * Processes a policy request.
      *
-     * @param request PDP policy request
+     * @param request   PDP policy request
      * @param processor function that processes the request
      * @throws PfModelException if an error occurred
      */
@@ -124,25 +125,26 @@ public abstract class ProviderBase {
     /**
      * Process a single policy from the request.
      *
-     * @param data session data
+     * @param data          session data
      * @param desiredPolicy request policy
+     * @param deploy  flag {@code true}  to deploy or {@code false} to undeploy policy
      * @throws PfModelException if an error occurred
      */
-    protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
-                    throws PfModelException {
+    protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy, boolean deploy)
+            throws PfModelException {
 
         ToscaPolicy policy = getPolicy(data, desiredPolicy);
 
         Collection<PdpGroup> groups = getGroups(data, policy.getTypeIdentifier());
         if (groups.isEmpty()) {
             throw new PfModelException(Status.BAD_REQUEST, "policy not supported by any PDP group: "
-                            + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
+                    + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 
         Updater updater = makeUpdater(data, policy, desiredPolicy);
 
         for (PdpGroup group : groups) {
-            upgradeGroup(data, group, updater);
+            upgradeGroup(data, group, updater, policy, deploy);
         }
     }
 
@@ -151,25 +153,25 @@ public abstract class ProviderBase {
      * {@code true} if the subgroup was updated, {@code false} if no update was
      * necessary/appropriate.
      *
-     * @param data session data
-     * @param policy policy to be added to or removed from each subgroup
+     * @param data          session data
+     * @param policy        policy to be added to or removed from each subgroup
      * @param desiredPolicy request policy
      * @return a function to update a subgroup
      */
     protected abstract Updater makeUpdater(SessionData data, ToscaPolicy policy,
-                    ToscaConceptIdentifierOptVersion desiredPolicy);
+            ToscaConceptIdentifierOptVersion desiredPolicy);
 
     /**
      * Finds the active PDP group(s) that supports the given policy type.
      *
-     * @param data session data
+     * @param data       session data
      * @param policyType the policy type of interest
-     * @return the matching PDP group, or {@code null} if no active group supports the
-     *         given PDP types
+     * @return the matching PDP group, or {@code null} if no active group supports
+     *         the given PDP types
      * @throws PfModelException if an error occurred
      */
     private Collection<PdpGroup> getGroups(SessionData data, ToscaConceptIdentifier policyType)
-                    throws PfModelException {
+            throws PfModelException {
 
         return data.getActivePdpGroupsByPolicyType(policyType);
     }
@@ -177,12 +179,15 @@ public abstract class ProviderBase {
     /**
      * Updates a group, assigning a new version number, if it actually changes.
      *
-     * @param data session data
-     * @param group the original group, to be updated
+     * @param data    session data
+     * @param group   the original group, to be updated
      * @param updater function to update a group
+     * @param policy  single policy to be updated
+     * @param deploy  flag {@code true}  to deploy or {@code false} to undeploy policy
      * @throws PfModelException if an error occurred
      */
-    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater) throws PfModelException {
+    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater, ToscaPolicy policy, boolean deploy)
+            throws PfModelException {
 
         boolean updated = false;
 
@@ -194,9 +199,19 @@ public abstract class ProviderBase {
 
             updated = true;
 
-            makeUpdates(data, group, subgroup);
-        }
+            // determine policies to be deployed/undeployed
+            if (deploy) {
+                List<ToscaPolicy> policiesToBeDeployed = new LinkedList<>();
+                policiesToBeDeployed.add(policy);
+                
+                makeUpdates(data, group, subgroup, policiesToBeDeployed, null);
+            } else {
+                List<ToscaConceptIdentifier> policiesToBeUndeployed = new LinkedList<>();
+                policiesToBeUndeployed.add(new ToscaConceptIdentifier(policy.getName(), policy.getVersion()));
 
+                makeUpdates(data, group, subgroup, null, policiesToBeUndeployed);
+            }
+        }
 
         if (updated) {
             // something changed
@@ -207,26 +222,32 @@ public abstract class ProviderBase {
     /**
      * Makes UPDATE messages for each PDP in a subgroup.
      *
-     * @param data session data
-     * @param group group containing the subgroup
+     * @param data     session data
+     * @param group    group containing the subgroup
      * @param subgroup subgroup whose PDPs should receive messages
+     * @param policiesToDeploy  list of policies to be deployed
+     * @param policiesToUndeploy  list of policies to be undeployed
      */
-    protected void makeUpdates(SessionData data, PdpGroup group, PdpSubGroup subgroup) {
+    protected void makeUpdates(SessionData data, PdpGroup group, PdpSubGroup subgroup, 
+            List<ToscaPolicy> policiesToDeploy, List<ToscaConceptIdentifier> policiesToUndeploy) {
         for (Pdp pdp : subgroup.getPdpInstances()) {
-            data.addUpdate(makeUpdate(data, group, subgroup, pdp));
+            data.addUpdate(makeUpdate(data, group, subgroup, pdp, policiesToDeploy, policiesToUndeploy));
         }
     }
 
     /**
      * Makes an UPDATE message for a particular PDP.
      *
-     * @param data session data
-     * @param group group to which the PDP should belong
+     * @param data     session data
+     * @param group    group to which the PDP should belong
      * @param subgroup subgroup to which the PDP should belong
-     * @param pdp the PDP of interest
+     * @param pdp      the PDP of interest
+     * @param policiesToDeploy  list of policies to be deployed
+     * @param policiesToUndeploy list of policies to be undeployed
      * @return a new UPDATE message
      */
-    private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdp) {
+    private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdp,
+            List<ToscaPolicy> policiesToDeploy, List<ToscaConceptIdentifier> policiesToUndeploy) {
 
         PdpUpdate update = new PdpUpdate();
 
@@ -235,7 +256,9 @@ public abstract class ProviderBase {
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
         update.setPolicies(subgroup.getPolicies().stream().map(ToscaConceptIdentifierOptVersion::new)
-                        .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
+                .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
+        update.setPoliciesToBeDeployed(policiesToDeploy);
+        update.setPoliciesToBeUndeployed(policiesToUndeploy);
 
         return update;
     }
@@ -243,24 +266,25 @@ public abstract class ProviderBase {
     /**
      * Gets the specified policy.
      *
-     * @param data session data
+     * @param data  session data
      * @param ident policy identifier, with an optional version
      * @return the policy of interest
-     * @throws PfModelRuntimeException if an error occurred or the policy was not found
+     * @throws PfModelRuntimeException if an error occurred or the policy was not
+     *                                 found
      */
     private ToscaPolicy getPolicy(SessionData data, ToscaConceptIdentifierOptVersion ident) {
         try {
             ToscaPolicy policy = data.getPolicy(ident);
             if (policy == null) {
                 throw new PfModelRuntimeException(Status.NOT_FOUND,
-                                "cannot find policy: " + ident.getName() + " " + ident.getVersion());
+                        "cannot find policy: " + ident.getName() + " " + ident.getVersion());
             }
 
             return policy;
 
         } catch (PfModelException e) {
             throw new PfModelRuntimeException(e.getErrorResponse().getResponseCode(),
-                            e.getErrorResponse().getErrorMessage(), e);
+                    e.getErrorResponse().getErrorMessage(), e);
         }
     }
 
@@ -269,7 +293,7 @@ public abstract class ProviderBase {
         /**
          * Performs this operation on the given arguments.
          *
-         * @param firstArg the first input argument
+         * @param firstArg  the first input argument
          * @param secondArg the second input argument
          * @throws PfModelException if an error occurred
          */

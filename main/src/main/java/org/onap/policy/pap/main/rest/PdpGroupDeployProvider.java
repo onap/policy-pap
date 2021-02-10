@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -178,6 +179,16 @@ public class PdpGroupDeployProvider extends ProviderBase {
     }
 
     /**
+     * List of policies of deployed policies.
+     */
+    List<ToscaPolicy> deployedPolicies = new LinkedList<>();
+
+    /**
+     * List of policies to be undeployed.
+     */
+    List<ToscaConceptIdentifier> undeployedPolicies = new LinkedList<>();
+
+    /**
      * Updates an existing subgroup.
      *
      * @param data session data
@@ -215,7 +226,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         if (updated) {
             // publish any changes to the PDPs
-            makeUpdates(data, dbgroup, dbsub);
+            makeUpdates(data, dbgroup, dbsub, deployedPolicies, undeployedPolicies);
             return true;
         }
 
@@ -262,14 +273,19 @@ public class PdpGroupDeployProvider extends ProviderBase {
             return false;
         }
 
+        // Clear the deploy/undeploy lists
+        deployedPolicies.clear();
+        undeployedPolicies.clear();
 
         Set<String> pdps = dbsub.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaConceptIdentifier policyId : deployed) {
+            deployedPolicies.add(data.getPolicy(new ToscaConceptIdentifierOptVersion(policyId)));
             data.trackDeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
         }
 
         for (ToscaConceptIdentifier policyId : undeployed) {
+            undeployedPolicies.add(policyId);
             data.trackUndeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
         }
 
@@ -399,7 +415,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         for (ToscaConceptIdentifierOptVersion desiredPolicy : policies.getPolicies()) {
 
             try {
-                processPolicy(data, desiredPolicy);
+                processPolicy(data, desiredPolicy, true);
 
             } catch (PfModelException | RuntimeException e) {
                 // no need to log the error here, as it will be logged by the invoker

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -194,7 +195,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertEquals("pdpA", req.getName());
         assertEquals(GROUP1_NAME, req.getPdpGroup());
         assertEquals("pdpTypeA", req.getPdpSubgroup());
-        assertEquals(Arrays.asList(policy1, policy1), req.getPolicies());
+        assertEquals(Arrays.asList(policy1).get(0), req.getPolicies().get(0));
     }
 
     @Test
@@ -210,7 +211,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         PfModelException exc = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
 
         prov = spy(prov);
-        doThrow(exc).when(prov).processPolicy(any(), any());
+        doThrow(exc).when(prov).processPolicy(any(), any(), anyBoolean());
 
         assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
     }
@@ -220,7 +221,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         RuntimeException exc = new RuntimeException(EXPECTED_EXCEPTION);
 
         prov = spy(prov);
-        doThrow(exc).when(prov).processPolicy(any(), any());
+        doThrow(exc).when(prov).processPolicy(any(), any(), anyBoolean());
 
         assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
     }
@@ -292,7 +293,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         }
 
         @Override
-        protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
+        protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy, boolean deploy)
                         throws PfModelException {
             // do nothing
         }
