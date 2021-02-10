@@ -361,11 +361,13 @@ public class TestProviderBase extends ProviderSuper {
                     // queue indicated that the update should succeed
                     subgroup.getPolicies().add(ident1);
 
-                    data.trackDeploy(ident1, Collections.singleton(PDP1), GROUP1_NAME, PDP1_TYPE);
+                    ToscaPolicy testPolicy1 = data.getPolicy(new ToscaConceptIdentifierOptVersion(ident1));
+                    data.trackDeploy(testPolicy1, Collections.singleton(PDP1), GROUP1_NAME, PDP1_TYPE);
                     data.trackUndeploy(ident1, Collections.singleton(PDP2), GROUP1_NAME, PDP2_TYPE);
 
                     ToscaConceptIdentifier ident2 = new ToscaConceptIdentifier(POLICY1_NAME, "9.9.9");
-                    data.trackDeploy(ident2, Collections.singleton(PDP3), GROUP1_NAME, PDP3_TYPE);
+                    ToscaPolicy testPolicy2 = data.getPolicy(new ToscaConceptIdentifierOptVersion(ident2));
+                    data.trackDeploy(testPolicy2, Collections.singleton(PDP3), GROUP1_NAME, PDP3_TYPE);
                     data.trackUndeploy(ident2, Collections.singleton(PDP4), GROUP1_NAME, PDP4_TYPE);
                     return true;
 
