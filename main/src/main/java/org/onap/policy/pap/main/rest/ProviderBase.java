@@ -74,7 +74,6 @@ public abstract class ProviderBase {
      */
     private final PolicyModelsProviderFactoryWrapper daoFactory;
 
-
     /**
      * Constructs the object.
      */
@@ -182,7 +181,8 @@ public abstract class ProviderBase {
      * @param updater function to update a group
      * @throws PfModelException if an error occurred
      */
-    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater) throws PfModelException {
+    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater)
+                    throws PfModelException {
 
         boolean updated = false;
 
@@ -196,7 +196,6 @@ public abstract class ProviderBase {
 
             makeUpdates(data, group, subgroup);
         }
-
 
         if (updated) {
             // something changed
@@ -236,6 +235,8 @@ public abstract class ProviderBase {
         update.setPdpSubgroup(subgroup.getPdpType());
         update.setPolicies(subgroup.getPolicies().stream().map(ToscaConceptIdentifierOptVersion::new)
                         .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
+        update.setPoliciesToBeDeployed(data.getPoliciesToBeDeployed());
+        update.setPoliciesToBeUndeployed(data.getPoliciesToBeUndeployed());
 
         return update;
     }
