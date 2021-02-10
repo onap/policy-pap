@@ -20,8 +20,10 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +34,8 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -40,6 +44,7 @@ import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.CommonRequestBase;
 
@@ -185,7 +190,7 @@ public class UpdateReqTest extends CommonRequestBase {
         // same content - should succeed, but leave message unchanged
         PdpUpdate msg2 = new PdpUpdate(update);
         assertTrue(data.reconfigure(msg2));
-        assertSame(update, data.getMessage());
+        assertNotSame(update, data.getMessage());
 
         // different content - should succeed and install NEW message
         msg2.setPdpGroup(DIFFERENT);
@@ -194,15 +199,106 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
+    public void testReconfigureIsFullSameAsDeployList() {
+        PdpUpdate msg2 = new PdpUpdate(update);
+        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
+
+        msg2.setPolicies(policies);
+        msg2.setPoliciesToBeDeployed(policies);
+        assertTrue(data.reconfigure(msg2));
+        assertThat(data.getMessage().getPolicies()).containsAll(msg2.getPolicies());
+    }
+
+    @Test
+    public void testListsNewVsResult() {
+        PdpUpdate msg2 = new PdpUpdate(update);
+        ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPolicies());
+
+        // some items in both deploy and newMessage.deploy
+        msg2.setPoliciesToBeDeployed(policies);
+        policies.remove(0);
+        data.getMessage().setPolicies(policies);
+        assertTrue(data.reconfigure(msg2));
+        assertThat(data.getMessage().getPoliciesToBeDeployed()).containsAll(msg2.getPoliciesToBeDeployed());
+
+        // some items in both deploy and newMessage.undeploy
+        policies = new ArrayList<>();
+        policies.add(makePolicy("policy-z-1", "1.0.0"));
+        policies.add(makePolicy("policy-y-1", "1.0.0"));
+        data.getMessage().setPoliciesToBeDeployed(policies);
+
+        policies.clear();
+        policies = new ArrayList<>(update.getPolicies());
+        List<ToscaConceptIdentifier> polsToUndep = policies.parallelStream()
+                .map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        msg2.setPoliciesToBeUndeployed(polsToUndep);
+
+        assertTrue(data.reconfigure(msg2));
+
+        List<ToscaConceptIdentifier> dataPols = data.getMessage().getPoliciesToBeDeployed().stream()
+                .map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        assertThat(dataPols).doesNotContainAnyElementsOf(data.getMessage().getPoliciesToBeUndeployed());
+
+        // some items only in deploy
+        policies = new ArrayList<>(update.getPolicies());
+        msg2.setPoliciesToBeDeployed(policies);
+        data.getMessage().setPoliciesToBeDeployed(new LinkedList<>());
+        assertTrue(data.reconfigure(msg2));
+        assertThat(data.getMessage().getPoliciesToBeDeployed()).containsAll(msg2.getPoliciesToBeDeployed());
+
+        // some items in both undeploy and newMessage.undeploy
+        List<ToscaConceptIdentifier> pols = policies.stream().map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        msg2.setPoliciesToBeUndeployed(pols);
+        pols.remove(0);
+        data.getMessage().setPoliciesToBeUndeployed(pols);
+        assertTrue(data.reconfigure(msg2));
+        assertThat(data.getMessage().getPoliciesToBeUndeployed()).containsAll(msg2.getPoliciesToBeUndeployed());
+
+        // some items in both undeploy and newMessage.deploy
+        policies = new ArrayList<>(update.getPolicies());
+        List<ToscaConceptIdentifier> polsToUndep2 = policies.parallelStream()
+                .map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        data.getMessage().setPoliciesToBeUndeployed(polsToUndep2);
+
+        List<ToscaPolicy> polsToDep2 = new LinkedList<>();
+        polsToDep2.add(makePolicy("policy-m-1", "1.0.0"));
+        polsToDep2.add(makePolicy("policy-n-1", "1.0.0"));
+        msg2.setPoliciesToBeDeployed(polsToDep2);
+
+        assertTrue(data.reconfigure(msg2));
+
+        List<ToscaConceptIdentifier> dataPols2 = data.getMessage().getPoliciesToBeDeployed().stream()
+                .map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        assertThat(data.getMessage().getPoliciesToBeUndeployed())
+                .doesNotContainAnyElementsOf(dataPols2);
+
+        // some items only in undeploy
+        pols = policies.stream().map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        msg2.setPoliciesToBeUndeployed(pols);
+        data.getMessage().setPoliciesToBeUndeployed(new LinkedList<>());
+        assertTrue(data.reconfigure(msg2));
+        assertThat(data.getMessage().getPoliciesToBeUndeployed()).containsAll(msg2.getPoliciesToBeUndeployed());
+    }
+
+    @Test
     public void testIsSameContent() {
+        data = new UpdateReq(reqParams, MY_REQ_NAME, update);
+        data.setNotifier(notifier);
+
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setName("world");
-        assertTrue(data.isSameContent(msg2));
+        assertFalse(data.isSameContent(msg2));
 
         // both policy lists null
         update.setPolicies(null);
         msg2.setPolicies(null);
-        assertTrue(data.isSameContent(msg2));
+        assertEquals(data.getMessage().getPolicies(), msg2.getPolicies());
     }
 
     @Test
@@ -210,7 +306,7 @@ public class UpdateReqTest extends CommonRequestBase {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
         update.setPdpGroup(null);
-        assertTrue(data.isSameContent(msg2));
+        assertEquals(data.getMessage().getPdpGroup(), msg2.getPdpGroup());
     }
 
     @Test
@@ -218,7 +314,7 @@ public class UpdateReqTest extends CommonRequestBase {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
         update.setPdpSubgroup(null);
-        assertTrue(data.isSameContent(msg2));
+        assertEquals(data.getMessage().getPdpSubgroup(), msg2.getPdpSubgroup());
     }
 
     @Test

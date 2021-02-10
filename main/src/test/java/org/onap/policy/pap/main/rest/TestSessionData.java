@@ -577,15 +577,19 @@ public class TestSessionData extends ProviderSuper {
         ToscaConceptIdentifier policyId = new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION);
         List<String> pdps = Arrays.asList(PDP1, PDP2);
 
+        ToscaPolicy testPolicy = session.getPolicy(new ToscaConceptIdentifierOptVersion(policyId));
+
         if (deploy) {
-            session.trackDeploy(policyId, pdps, GROUP_NAME, PDP_TYPE);
+            session.trackDeploy(testPolicy, pdps, GROUP_NAME, PDP_TYPE);
+            assertThat(session.getPoliciesToBeDeployed()).contains(testPolicy);
         } else {
             session.trackUndeploy(policyId, pdps, GROUP_NAME, PDP_TYPE);
+            assertThat(session.getPoliciesToBeUndeployed()).contains(policyId);
         }
 
         // should be called just once
         verify(status).deleteDeployment(any(), anyBoolean());
-        verify(status).deleteDeployment(policyId, !deploy);
+        verify(status, times(1)).deleteDeployment(policyId, !deploy);
 
         // should be called for each PDP
         verify(status, times(2)).deploy(any(), any(), any(), any(), any(), anyBoolean());

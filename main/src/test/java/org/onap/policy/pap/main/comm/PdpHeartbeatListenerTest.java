@@ -21,14 +21,18 @@
 
 package org.onap.policy.pap.main.comm;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.utils.coder.CoderException;
@@ -37,9 +41,12 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
+import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.e2e.End2EndBase;
 
@@ -202,6 +209,29 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status9.setPolicies(idents9);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status9);
         verifyPdpGroup(DEFAULT_GROUP, 0);
+
+        // Test policy lists updated in createUpdate
+        ToscaPolicy polA = new ToscaPolicy();
+        polA.setName("pol-a-1.1.1");
+        polA.setVersion("1.1.1");
+        ToscaPolicy polB = new ToscaPolicy();
+        polB.setName("pol-b-1.1.1");
+        polB.setVersion("1.1.1");
+        List<ToscaPolicy> policies = new ArrayList<>();
+        policies.add(polA);
+        policies.add(polB);
+        final CommonTestData testData = new CommonTestData();
+        PdpParameters params = testData.getPapParameterGroup(1).getPdpParameters();
+        List<ToscaConceptIdentifier> polsUndep = policies.stream().map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList());
+        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
+        PdpUpdate update10 = handler.createPdpUpdateMessage(
+                status3.getPdpGroup(), new PdpSubGroup(), "pdp_2",
+                null, policies, policies, polsUndep);
+        assertSame(update10.getPolicies(), policies);
+        assertSame(update10.getPoliciesToBeDeployed(), policies);
+        assertSame(update10.getPoliciesToBeUndeployed(), polsUndep);
+        assertThat(update10.getPoliciesToBeDeployed()).isInstanceOf(List.class);
     }
 
     @Test
