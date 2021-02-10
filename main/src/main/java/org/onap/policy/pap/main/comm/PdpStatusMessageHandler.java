@@ -281,7 +281,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
             final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
         final PdpUpdate pdpUpdatemessage =
-                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
+                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider, true);
         final PdpStateChange pdpStateChangeMessage =
                 createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);

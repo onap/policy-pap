@@ -36,6 +36,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.rest.SessionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,6 @@ public class PdpMessageGenerator {
      */
     private final Long heartBeatMs;
 
-
     /**
      * Constructs the object.
      *
@@ -90,13 +90,23 @@ public class PdpMessageGenerator {
     }
 
     protected PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId, final PolicyModelsProvider databaseProvider) throws PfModelException {
+                    final String pdpInstanceId, final PolicyModelsProvider databaseProvider,
+                    boolean register) throws PfModelException {
+
+        SessionData data = new SessionData(databaseProvider);
 
         final PdpUpdate update = new PdpUpdate();
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
         update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
+        if (!register) {
+            update.setPoliciesToBeDeployed(data.getPoliciesToBeDeployed());
+            update.setPoliciesToBeUndeployed(data.getPoliciesToBeUndeployed());
+        } else {
+            update.setPoliciesToBeDeployed(getToscaPolicies(subGroup, databaseProvider));
+            update.setPoliciesToBeUndeployed(null);
+        }
         update.setPdpHeartbeatIntervalMs(heartBeatMs);
 
         LOGGER.debug("Created PdpUpdate message - {}", update);

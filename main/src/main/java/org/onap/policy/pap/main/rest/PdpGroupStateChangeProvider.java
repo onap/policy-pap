@@ -118,7 +118,8 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
         for (final PdpSubGroup subGroup : pdpGroup.getPdpSubgroups()) {
             for (final Pdp pdp : subGroup.getPdpInstances()) {
                 final PdpUpdate pdpUpdatemessage =
-                        createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider);
+                        createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider,
+                                false);
                 final PdpStateChange pdpStateChangeMessage =
                         createPdpStateChangeMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), pdpState);
                 requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
