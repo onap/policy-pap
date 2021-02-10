@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -177,6 +178,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
         return updated;
     }
 
+    private List<ToscaPolicy> policiesToUpdate = new LinkedList<>();
+
     /**
      * Updates an existing subgroup.
      *
@@ -215,7 +218,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         if (updated) {
             // publish any changes to the PDPs
-            makeUpdates(data, dbgroup, dbsub);
+            makeUpdates(data, dbgroup, dbsub, policiesToUpdate);
             return true;
         }
 
@@ -262,14 +265,18 @@ public class PdpGroupDeployProvider extends ProviderBase {
             return false;
         }
 
+        // clear list of policies to update
+        policiesToUpdate.clear();
 
         Set<String> pdps = dbsub.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaConceptIdentifier policyId : deployed) {
+            policiesToUpdate.add(data.getPolicy(new ToscaConceptIdentifierOptVersion(policyId)));
             data.trackDeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
         }
 
         for (ToscaConceptIdentifier policyId : undeployed) {
+            policiesToUpdate.add(data.getPolicy(new ToscaConceptIdentifierOptVersion(policyId)));
             data.trackUndeploy(policyId, pdps, pdpGroup, dbsub.getPdpType());
         }
 

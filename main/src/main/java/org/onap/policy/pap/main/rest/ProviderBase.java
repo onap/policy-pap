@@ -23,6 +23,8 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.utils.services.Registry;
@@ -142,7 +144,7 @@ public abstract class ProviderBase {
         Updater updater = makeUpdater(data, policy, desiredPolicy);
 
         for (PdpGroup group : groups) {
-            upgradeGroup(data, group, updater);
+            upgradeGroup(data, group, updater, policy);
         }
     }
 
@@ -180,9 +182,11 @@ public abstract class ProviderBase {
      * @param data session data
      * @param group the original group, to be updated
      * @param updater function to update a group
+     * @param policy single policy to be updated
      * @throws PfModelException if an error occurred
      */
-    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater) throws PfModelException {
+    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater, ToscaPolicy policy) 
+                    throws PfModelException {
 
         boolean updated = false;
 
@@ -194,13 +198,30 @@ public abstract class ProviderBase {
 
             updated = true;
 
-            makeUpdates(data, group, subgroup);
+            // create list for policies to be updated
+            List<ToscaPolicy> updates = new LinkedList<>();
+            updates.add(policy);
+            
+            makeUpdates(data, group, subgroup, updates);
         }
-
 
         if (updated) {
             // something changed
             data.update(group);
+        }
+    }
+
+    /**
+     * Makes UPDATE messages for each PDP in a subgroup.
+     *
+     * @param data session data
+     * @param group group containing the subgroup
+     * @param subgroup subgroup whose PDPs should receive messages
+     * @param updates list of policies to be updated
+     */
+    protected void makeUpdates(SessionData data, PdpGroup group, PdpSubGroup subgroup, List<ToscaPolicy> updates) {
+        for (Pdp pdp : subgroup.getPdpInstances()) {
+            data.addUpdate(makeUpdate(data, group, subgroup, pdp, updates));
         }
     }
 
@@ -224,6 +245,30 @@ public abstract class ProviderBase {
      * @param group group to which the PDP should belong
      * @param subgroup subgroup to which the PDP should belong
      * @param pdp the PDP of interest
+     * @param updates list of policies to be updated to send to the PDP
+     * @return a new UPDATE message
+     */
+    private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdp, 
+            List<ToscaPolicy> updates) {
+
+        PdpUpdate update = new PdpUpdate();
+
+        update.setName(pdp.getInstanceId());
+        update.setDescription(group.getDescription());
+        update.setPdpGroup(group.getName());
+        update.setPdpSubgroup(subgroup.getPdpType());
+        update.setPolicies(updates);
+
+        return update;
+    }
+
+    /**
+     * Makes an UPDATE message for a particular PDP.
+     *
+     * @param data session data
+     * @param group group to which the PDP should belong
+     * @param subgroup subgroup to which the PDP should belong
+     * @param pdp the PDP of interest
      * @return a new UPDATE message
      */
     private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdp) {
@@ -235,10 +280,10 @@ public abstract class ProviderBase {
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
         update.setPolicies(subgroup.getPolicies().stream().map(ToscaConceptIdentifierOptVersion::new)
-                        .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
+                .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
 
         return update;
-    }
+    } 
 
     /**
      * Gets the specified policy.

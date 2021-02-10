@@ -634,8 +634,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
                         pdpUpdate.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList());
         Collections.sort(pdpPolicies);
 
-        assertEquals(subgrp.getPolicies().toString(), pdpPolicies.toString());
-
         List<PdpGroup> updates = getGroupUpdates();
         assertEquals(Arrays.asList(group), updates);
     }
