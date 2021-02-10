@@ -25,8 +25,11 @@ import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
@@ -89,6 +92,16 @@ public class SessionData {
      * Maps a policy type's identifier to the policy.
      */
     private final Map<ToscaConceptIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
+
+    /**
+     * Map's a policy's identifier to the policies for deployment.
+     */
+    private Map<ToscaConceptIdentifier, ToscaPolicy> policiesToBeDeployed = new HashMap<>();
+
+    /**
+     * Set of policies to be undeployed.
+     */
+    private Set<ToscaConceptIdentifier> policiesToBeUndeployed = new HashSet<>();
 
     /**
      * Tracks policy deployment status so notifications can be generated.
@@ -358,6 +371,24 @@ public class SessionData {
     }
 
     /**
+     * Gets the list of policies to be deployed to the PDPs.
+     *
+     * @returns a list of policies to be deployed
+     */
+    public List<ToscaPolicy> getPoliciesToBeDeployed() {
+        return new LinkedList<>(this.policiesToBeDeployed.values());
+    }
+
+    /**
+     * Gets the list of policies to be undeployed from the PDPs.
+     *
+     * @returns a list of policies to be undeployed
+     */
+    public List<ToscaConceptIdentifier> getPoliciesToBeUndeployed() {
+        return new LinkedList<>(this.policiesToBeUndeployed);
+    }
+
+    /**
      * Adds a group to the group cache, if it isn't already in the cache.
      *
      * @param group the group to be added
@@ -422,14 +453,17 @@ public class SessionData {
     /**
      * Adds policy deployment data.
      *
-     * @param policyId ID of the policy being deployed
+     * @param policy policy being deployed
      * @param pdps PDPs to which the policy is being deployed
      * @param pdpGroup PdpGroup containing the PDP of interest
      * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
+    protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup,
             String pdpType) throws PfModelException {
+        ToscaConceptIdentifier policyId = policy.getIdentifier();
+        policiesToBeDeployed.put(policyId, policy);
+        
         addData(policyId, pdps, pdpGroup, pdpType, true);
     }
 
@@ -444,6 +478,7 @@ public class SessionData {
      */
     protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
             String pdpType) throws PfModelException {
+        policiesToBeUndeployed.add(policyId);
         addData(policyId, pdps, pdpGroup, pdpType, false);
     }
 
