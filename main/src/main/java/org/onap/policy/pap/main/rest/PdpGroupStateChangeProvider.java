@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,6 +34,8 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.PdpMessageGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,11 +117,12 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
 
     private void sendPdpMessage(final PdpGroup pdpGroup, final PdpState pdpState,
             final PolicyModelsProvider databaseProvider) throws PfModelException {
-
         for (final PdpSubGroup subGroup : pdpGroup.getPdpSubgroups()) {
+            List<ToscaPolicy> policies = getPolicies(databaseProvider, subGroup);
             for (final Pdp pdp : subGroup.getPdpInstances()) {
                 final PdpUpdate pdpUpdatemessage =
-                        createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider);
+                        createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider,
+                                policies, policies, null);
                 final PdpStateChange pdpStateChangeMessage =
                         createPdpStateChangeMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), pdpState);
                 requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
@@ -126,5 +130,15 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
             }
         }
+    }
+
+    private List<ToscaPolicy> getPolicies(final PolicyModelsProvider databaseProvider, final PdpSubGroup subGroup)
+            throws PfModelException {
+        List<ToscaPolicy> policiesFromDb = new LinkedList<>();
+        for (final ToscaConceptIdentifier policyIdentifier : subGroup.getPolicies()) {
+            policiesFromDb.addAll(databaseProvider.getPolicyList(policyIdentifier.getName(),
+                    policyIdentifier.getVersion()));
+        }
+        return policiesFromDb;
     }
 }

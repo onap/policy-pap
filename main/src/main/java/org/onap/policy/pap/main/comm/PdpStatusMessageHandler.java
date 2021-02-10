@@ -22,6 +22,7 @@
 package org.onap.policy.pap.main.comm;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,8 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PdpParameters;
@@ -54,6 +57,21 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpStatusMessageHandler.class);
 
     private final PdpParameters params;
+
+    /**
+     * List to store policies present in db.
+     */
+    List<ToscaPolicy> policies = new LinkedList<>();
+
+    /**
+     * List to store policies to be deployed (heartbeat).
+     */
+    List<ToscaPolicy> policiesToBeDeployed = new LinkedList<>();
+
+    /**
+     * List to store policies to be undeployed (heartbeat).
+     */
+    List<ToscaConceptIdentifier> policiesToBeUndeployed = new LinkedList<>();
 
     /**
      * Constructs the object.
@@ -128,6 +146,11 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         Optional<PdpSubGroup> subGroup;
         boolean pdpGroupFound = false;
         subGroup = findPdpSubGroup(message, finalizedPdpGroup);
+
+        this.policies = getPolicies(databaseProvider, subGroup.get());
+        this.policiesToBeDeployed = policies;
+        this.policiesToBeUndeployed = null;
+
         if (subGroup.isPresent()) {
             LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", finalizedPdpGroup, message);
             if (!findPdpInstance(message, subGroup.get()).isPresent()) {
@@ -200,7 +223,27 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void processPdpDetails(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+            final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider)
+                    throws PfModelException {
+        // all policies
+        this.policies = getPolicies(databaseProvider, pdpSubGroup);
+
+        // all (-) policies that the PDP already has
+        this.policiesToBeDeployed = policies;
+
+        // policies that the PDP already has (-) all
+        this.policiesToBeUndeployed = message.getPolicies();
+
+        // Populate lists
+        for (ToscaPolicy pol : policies) {
+            ToscaConceptIdentifier polId = new ToscaConceptIdentifier(pol.getIdentifier());
+            policiesToBeUndeployed.remove(polId);
+
+            if (message.getPolicies().contains(pol.getIdentifier())) {
+                policiesToBeDeployed.remove(pol);
+            }
+        }
+
         if (PdpState.TERMINATED.equals(message.getState())) {
             processPdpTermination(pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
@@ -279,13 +322,25 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
-            final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
+            final PdpState pdpState, final PolicyModelsProvider databaseProvider)
+                    throws PfModelException {
         final PdpUpdate pdpUpdatemessage =
-                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
+                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider, policies,
+                        policiesToBeDeployed, policiesToBeUndeployed);
         final PdpStateChange pdpStateChangeMessage =
                 createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
         LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
         LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
+    }
+
+    private List<ToscaPolicy> getPolicies(final PolicyModelsProvider databaseProvider, final PdpSubGroup subGroup)
+            throws PfModelException {
+        List<ToscaPolicy> policiesFromDb = new LinkedList<>();
+        for (final ToscaConceptIdentifier policyIdentifier : subGroup.getPolicies()) {
+            policiesFromDb.addAll(databaseProvider.getPolicyList(policyIdentifier.getName(), 
+                    policyIdentifier.getVersion()));
+        }
+        return policiesFromDb;
     }
 }

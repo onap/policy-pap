@@ -68,7 +68,6 @@ public class PdpMessageGenerator {
      */
     private final Long heartBeatMs;
 
-
     /**
      * Constructs the object.
      *
@@ -90,13 +89,18 @@ public class PdpMessageGenerator {
     }
 
     protected PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId, final PolicyModelsProvider databaseProvider) throws PfModelException {
+                    final String pdpInstanceId, final PolicyModelsProvider databaseProvider,
+                    final List<ToscaPolicy> policies, final List<ToscaPolicy> policiesToBeDeployed,
+                    final List<ToscaConceptIdentifier> policiesToBeUndeployed) throws PfModelException {
 
         final PdpUpdate update = new PdpUpdate();
+
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
-        update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
+        update.setPolicies(policies);
+        update.setPoliciesToBeDeployed(policiesToBeDeployed);
+        update.setPoliciesToBeUndeployed(policiesToBeUndeployed);
         update.setPdpHeartbeatIntervalMs(heartBeatMs);
 
         LOGGER.debug("Created PdpUpdate message - {}", update);
