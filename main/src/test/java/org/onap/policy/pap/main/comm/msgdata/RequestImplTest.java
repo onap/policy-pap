@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -127,7 +127,7 @@ public class RequestImplTest extends CommonRequestBase {
         verify(timers).register(eq(msg.getRequestId()), any());
         verify(publisher).enqueue(token);
 
-        verify(dispatcher).unregister(eq(msg.getRequestId()));
+        verify(dispatcher).unregister(msg.getRequestId());
 
         verify(dispatcher).register(eq(msg2.getRequestId()), any());
         verify(timers).register(eq(msg2.getRequestId()), any());
@@ -192,7 +192,7 @@ public class RequestImplTest extends CommonRequestBase {
         assertNotNull(token);
         assertNull(token.get());
 
-        verify(dispatcher).unregister(eq(msg.getRequestId()));
+        verify(dispatcher).unregister(msg.getRequestId());
         verify(timer).cancel();
     }
 
@@ -213,7 +213,7 @@ public class RequestImplTest extends CommonRequestBase {
         assertNotNull(token);
         assertNull(token.get());
 
-        verify(dispatcher).unregister(eq(msg.getRequestId()));
+        verify(dispatcher).unregister(msg.getRequestId());
         verify(timer).cancel();
 
         // if start publishing again - should use a new token
