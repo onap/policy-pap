@@ -25,6 +25,7 @@ import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -89,6 +90,16 @@ public class SessionData {
      * Maps a policy type's identifier to the policy.
      */
     private final Map<ToscaConceptIdentifier, ToscaPolicyType> typeCache = new HashMap<>();
+
+    /**
+     * List of policies of deployed.
+     */
+    List<ToscaPolicy> policiesToBeDeployed = new LinkedList<>();
+
+    /**
+     * List of policies to be undeployed.
+     */
+    List<ToscaConceptIdentifier> policiesToBeUndeployed = new LinkedList<>();
 
     /**
      * Tracks policy deployment status so notifications can be generated.
@@ -358,6 +369,24 @@ public class SessionData {
     }
 
     /**
+     * Gets the list of policies to be deployed to the PDPs.
+     *
+     * @returns a list of policies to be deployed
+     */
+    public List<ToscaPolicy> getPoliciesToBeDeployed() {
+        return this.policiesToBeDeployed;
+    }
+
+    /**
+     * Gets the list of policies to be undeployed from the PDPs.
+     *
+     * @returns a list of policies to be undeployed
+     */
+    public List<ToscaConceptIdentifier> getPoliciesToBeUndeployed() {
+        return this.policiesToBeUndeployed;
+    }
+
+    /**
      * Adds a group to the group cache, if it isn't already in the cache.
      *
      * @param group the group to be added
@@ -428,8 +457,10 @@ public class SessionData {
      * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
+    protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup,
             String pdpType) throws PfModelException {
+        policiesToBeDeployed.add(policy);
+        ToscaConceptIdentifier policyId = new ToscaConceptIdentifier(policy.getName(), policy.getVersion());
         addData(policyId, pdps, pdpGroup, pdpType, true);
     }
 
@@ -444,6 +475,7 @@ public class SessionData {
      */
     protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
             String pdpType) throws PfModelException {
+        policiesToBeUndeployed.add(policyId);
         addData(policyId, pdps, pdpGroup, pdpType, false);
     }
 

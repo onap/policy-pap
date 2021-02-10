@@ -576,9 +576,11 @@ public class TestSessionData extends ProviderSuper {
 
         ToscaConceptIdentifier policyId = new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION);
         List<String> pdps = Arrays.asList(PDP1, PDP2);
+        
+        ToscaPolicy testPolicy = session.getPolicy(new ToscaConceptIdentifierOptVersion(policyId));
 
         if (deploy) {
-            session.trackDeploy(policyId, pdps, GROUP_NAME, PDP_TYPE);
+            session.trackDeploy(testPolicy, pdps, GROUP_NAME, PDP_TYPE);
         } else {
             session.trackUndeploy(policyId, pdps, GROUP_NAME, PDP_TYPE);
         }

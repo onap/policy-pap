@@ -97,6 +97,7 @@ public class PdpMessageGenerator {
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
         update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
+        update.setPoliciesToBeDeployed(getToscaPolicies(subGroup, databaseProvider));
         update.setPdpHeartbeatIntervalMs(heartBeatMs);
 
         LOGGER.debug("Created PdpUpdate message - {}", update);
