@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e1a4ad64_d1e41556",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-12T17:14:35Z",
+      "side": 1,
+      "message": "This will put the whole policies in the new list as well. But we need to only put the \"delta\" here.\nAlso, shouldn\u0027t we set the policiesToBeUndeployed list here as well?\nAnd also we need to differentiate between registration flow vs rest call flow. As mentioned in the design wiki.",
+      "range": {
+        "startLine": 100,
+        "startChar": 8,
+        "endLine": 100,
+        "endChar": 85
+      },
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "948a571d_b86d8753",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/ProviderBase.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-12T17:14:35Z",
+      "side": 1,
+      "message": "Do we really need to change the formatting of the file?",
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}

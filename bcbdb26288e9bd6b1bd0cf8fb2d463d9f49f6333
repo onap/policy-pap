@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5b891005_889fb455",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 637,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-12T17:14:35Z",
+      "side": 0,
+      "message": "shouldn\u0027t this still work as we are not removing the original list?",
+      "range": {
+        "startLine": 637,
+        "startChar": 8,
+        "endLine": 637,
+        "endChar": 78
+      },
+      "revId": "bcbdb26288e9bd6b1bd0cf8fb2d463d9f49f6333",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
