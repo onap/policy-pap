@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "66e20e99_07e9ab0a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T12:17:34Z",
+      "side": 1,
+      "message": "Maybe these lists should be moved into SessionData?  That would eliminate the need to pass them to makeUpdate(), because it could extract them from the SessionData instead.  It would also eliminate the need to update the lists AND invoke trackDeploy/trackUndeploy here.  Also wouldn\u0027t need the changes to upgradeGroup() in the Base Provider class.\n\nIt would require a change to trackDeploy() to pass the full policy and not just the identifier.\n\nsonar: these lists should appear before the first method definition in the class.\n\nBTW: as there is typically only ever one instance of this class, these lists mean that the class is not re-entrant.  For the most part, that doesn\u0027t matter, because a synchronization lock prevents the data from being updated by more than one invocation at a time.  Nevertheless, it would be better to not rely on that.",
+      "revId": "65081bd495d70cc0ceb0dc2d8f19f9db21e98801",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e96208f7_5b5d8619",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T12:17:34Z",
+      "side": 1,
+      "message": "can addPolicies() be called more than once for a given REST call?  If so, we probably don\u0027t want to clear them.  Could make deployedPolicies a Map and undeployedPolicies a Set, then it wouldn\u0027t matter if duplicates were added.",
+      "revId": "65081bd495d70cc0ceb0dc2d8f19f9db21e98801",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c40de621_d2222ad0",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeleteProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T12:17:34Z",
+      "side": 1,
+      "message": "just use \"policy1\"",
+      "range": {
+        "startLine": 198,
+        "startChar": 21,
+        "endLine": 198,
+        "endChar": 50
+      },
+      "revId": "65081bd495d70cc0ceb0dc2d8f19f9db21e98801",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
