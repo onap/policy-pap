@@ -39,6 +39,143 @@
       "revId": "53f1248e998b95544aead2010743189d99a11394",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6652118a_ca87f7e5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/SessionData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "maybe make this a Map\u003cIdent,Policy\u003e, to avoid duplicates",
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3df2cf15_7a629ca6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/SessionData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "maybe make this a Set\u003cIdent\u003e, to avoid duplicates",
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6a13b55_aba86ffc",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/SessionData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "I think there\u0027s a policy.getId() that can be used instead",
+      "range": {
+        "startLine": 463,
+        "startChar": 42,
+        "endLine": 463,
+        "endChar": 107
+      },
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80d9cde0_c1aaa197",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeleteProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "remove this - we want to compare the whole list",
+      "range": {
+        "startLine": 197,
+        "startChar": 43,
+        "endLine": 197,
+        "endChar": 50
+      },
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c534b9a4_ae5f4ae7",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeleteProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "remove this - we want to compare the whole list",
+      "range": {
+        "startLine": 197,
+        "startChar": 69,
+        "endLine": 197,
+        "endChar": 76
+      },
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e3025b2_d5949697",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestSessionData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 579,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3438c9c_c2c20775",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestSessionData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-12T17:41:49Z",
+      "side": 1,
+      "message": "add code to verify that the policy is now in the deploy or undeploy lists",
+      "revId": "53f1248e998b95544aead2010743189d99a11394",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
