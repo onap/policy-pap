@@ -35,10 +35,11 @@ import java.util.Set;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -49,6 +50,7 @@ import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PolicyNotifierTest {
     private static final String GROUP_A = "groupA";
     private static final String PDP1 = "pdp-1";
@@ -89,8 +91,6 @@ public class PolicyNotifierTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         try {
             when(daoFactory.create()).thenReturn(dao);
             when(dao.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());

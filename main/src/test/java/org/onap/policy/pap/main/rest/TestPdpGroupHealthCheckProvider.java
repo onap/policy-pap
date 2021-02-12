@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +34,9 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -54,6 +56,7 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TestPdpGroupHealthCheckProvider {
 
     @Mock
@@ -69,7 +72,6 @@ public class TestPdpGroupHealthCheckProvider {
     public void setUp() throws Exception {
 
         Registry.newRegistry();
-        MockitoAnnotations.initMocks(this);
         daofact = mock(PolicyModelsProviderFactoryWrapper.class);
         when(daofact.create()).thenReturn(dao);
 

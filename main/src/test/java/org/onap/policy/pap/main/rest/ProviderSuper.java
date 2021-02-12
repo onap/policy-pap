@@ -89,7 +89,7 @@ public class ProviderSuper {
 
         Registry.newRegistry();
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         reqmap = mock(PdpModifyRequestMap.class);
 

@@ -34,10 +34,11 @@ import lombok.NonNull;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -48,6 +49,7 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DeploymentStatusTest {
 
     private static final String VERSION = "1.2.3";
@@ -82,7 +84,6 @@ public class DeploymentStatusTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         tracker = new DeploymentStatus(provider);
 
         // @formatter:off

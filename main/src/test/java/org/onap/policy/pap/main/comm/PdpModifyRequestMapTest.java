@@ -47,10 +47,11 @@ import javax.ws.rs.core.Response.Status;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -71,6 +72,7 @@ import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.powermock.reflect.Whitebox;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PdpModifyRequestMapTest extends CommonRequestBase {
     private static final String MY_REASON = "my reason";
 
@@ -116,8 +118,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        MockitoAnnotations.initMocks(this);
 
         response = new PdpStatus();
 
@@ -436,8 +436,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-
         invokeLastRetryHandler(1);
 
         // should have stopped publishing a second time
@@ -691,8 +689,6 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // put the PDP in a group
         PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, DIFFERENT)));
-
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
 
         // invoke the method - with a different name (i.e., PDP1 instead of DIFFERENT)
         invokeSuccessHandler(1);

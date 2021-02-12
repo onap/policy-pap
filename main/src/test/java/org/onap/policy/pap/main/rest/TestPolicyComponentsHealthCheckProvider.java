@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2020 Nordix Foundation.
- *  Modifications Copyright (C) 2020 AT&T Corp.
+ *  Modifications Copyright (C) 2020-2021 AT&T Corp.
  *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +38,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
@@ -61,6 +62,7 @@ import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.startstop.PapActivator;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TestPolicyComponentsHealthCheckProvider {
 
     private static final String CLIENT_1 = "client1";
@@ -103,8 +105,6 @@ public class TestPolicyComponentsHealthCheckProvider {
      */
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         groups = loadPdpGroupsFromFile().getGroups();
         when(dao.getPdpGroups(any())).thenReturn(groups);
 
