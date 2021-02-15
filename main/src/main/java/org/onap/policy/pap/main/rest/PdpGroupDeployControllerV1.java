@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,15 +140,18 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     private Response doOperation(UUID requestId, String errmsg, RunnableWithPfEx runnable) {
         try {
             runnable.run();
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
-                            .entity(new PdpGroupDeployResponse()).build();
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.ACCEPTED)), requestId)
+                .entity(new PdpGroupDeployResponse("Use the policy status url to fetch the latest status. "
+                    + "Kindly note that when a policy is successfully undeployed,"
+                    + " it will no longer appear in policy status response.", "/policy/pap/v1/policies/status"))
+                .build();
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
-            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
+            PdpGroupDeployResponse resp = new PdpGroupDeployResponse(errmsg, "");
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                            requestId).entity(resp).build();
+                requestId).entity(resp).build();
         }
     }
 }
