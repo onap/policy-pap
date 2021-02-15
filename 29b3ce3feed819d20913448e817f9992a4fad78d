@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb45ccd7_54daa110",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-15T17:54:06Z",
+      "side": 1,
+      "message": "I see that you are creating a new instance of SessionData. Will this have the details of what was requested by an individual REST API call? Example - only \"abc\" policy was requested to deploy.\n\nAlso, I am not sure at line 104, 105 how are you differentiating between multiple REST calls to deploy and undeploy policies.",
+      "range": {
+        "startLine": 96,
+        "startChar": 8,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "29b3ce3feed819d20913448e817f9992a4fad78d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
