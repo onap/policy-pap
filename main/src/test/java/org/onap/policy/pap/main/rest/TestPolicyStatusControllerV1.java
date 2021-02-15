@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +34,18 @@ import org.junit.Test;
 public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
 
     private static final String POLICY_STATUS_ENDPOINT = "policies/deployed";
+    private static final String POLICY_DEPLOYMENT_STATUS_ENDPOINT = "policies/status";
 
     @Test
     public void testSwagger() throws Exception {
         super.testSwagger(POLICY_STATUS_ENDPOINT);
-
         super.testSwagger(POLICY_STATUS_ENDPOINT + "/{name}");
         super.testSwagger(POLICY_STATUS_ENDPOINT + "/{name}/{version}");
+
+        super.testSwagger(POLICY_DEPLOYMENT_STATUS_ENDPOINT);
+        super.testSwagger(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/{pdpGroupName}");
+        super.testSwagger(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/{pdpGroupName}/{policyName}");
+        super.testSwagger(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/{pdpGroupName}/{policyName}/{policyVersion}");
     }
 
     @Test
@@ -65,6 +71,50 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     @Test
     public void testQueryDeployedPolicy() throws Exception {
         String uri = POLICY_STATUS_ENDPOINT + "/my-name/1.2.3";
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    @Test
+    public void testGetStatusOfAllDeployedPolicies() throws Exception {
+        String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT;
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    @Test
+    public void testGetStatusOfDeployedPoliciesByGroup() throws Exception {
+        String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name";
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    @Test
+    public void testGetStatusOfDeployedPolicies() throws Exception {
+        String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name";
+
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    @Test
+    public void testGetStatusOfDeployedPolicy() throws Exception {
+        String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name/1.2.3";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.get();
