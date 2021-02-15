@@ -3,6 +3,7 @@
  * ONAP
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +22,7 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -91,5 +93,47 @@ public class PolicyStatusProvider {
         }
 
         return tracker.getDeploymentStatus();
+    }
+
+
+    /**
+     * Gets the deployment status of all policies.
+     *
+     * @return the deployment status of all policies
+     * @throws PfModelException if a DB error occurs
+     */
+    public Collection<PdpPolicyStatus> getDeploymentStatus() throws PfModelException {
+        try (PolicyModelsProvider dao = daoFactory.create()) {
+            return dao.getAllPolicyStatus();
+        }
+    }
+
+    /**
+     * Gets the deployment status of policies in a PdpGroup.
+     *
+     * @param pdpGroupName the pdp group
+     * @return the deployment status of policies
+     * @throws PfModelException if a DB error occurs
+     */
+    public Collection<PdpPolicyStatus> getDeploymentStatus(String pdpGroupName) throws PfModelException {
+        try (PolicyModelsProvider dao = daoFactory.create()) {
+            return dao.getGroupPolicyStatus(pdpGroupName);
+        }
+    }
+
+    /**
+     * Gets the deployment status of a policy in a PdpGroup.
+     *
+     * @param pdpGroupName the pdp group
+     * @param policy the policy
+     * @return the deployment status of the policy
+     * @throws PfModelException if a DB error occurs
+     */
+    public Collection<PdpPolicyStatus> getDeploymentStatus(String pdpGroupName, ToscaConceptIdentifierOptVersion policy)
+        throws PfModelException {
+        try (PolicyModelsProvider dao = daoFactory.create()) {
+            return dao.getAllPolicyStatus(policy).stream().filter(p -> p.getPdpGroup().equals(pdpGroupName))
+                .collect(Collectors.toList());
+        }
     }
 }

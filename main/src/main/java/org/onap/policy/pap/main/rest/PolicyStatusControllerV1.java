@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,6 +207,213 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
         }
     }
 
+
+    /**
+     * Queries status of all deployed policies.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @return a response
+     */
+    // @formatter:off
+    @GET
+    @Path("policies/status")
+    @ApiOperation(value = "Queries status of all deployed policies",
+        notes = "Queries status of all deployed policies, returning the deployment state",
+        responseContainer = "List", response = PdpPolicyStatus.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response getStatusOfAllDeployedPolicies(
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+
+        try {
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                            .entity(provider.getDeploymentStatus()).build();
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+        }
+    }
+
+    /**
+     * Queries status of specific deployed policies.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @return a response
+     */
+    // @formatter:off
+    @GET
+    @Path("policies/status/{pdpGroupName}")
+    @ApiOperation(value = "Queries status of specific deployed policies",
+        notes = "Queries status of specific deployed policies, returning the deployment state",
+        responseContainer = "List", response = PdpPolicyStatus.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response getStatusOfDeployedPoliciesByGroup(
+                    @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+
+        try {
+            Collection<PdpPolicyStatus> result = provider.getDeploymentStatus(pdpGroupName);
+            if (result.isEmpty()) {
+                return makeNotFoundResponse(requestId);
+
+            } else {
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                                .entity(result).build();
+            }
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+        }
+    }
+
+    /**
+     * Queries status of specific deployed policies.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @return a response
+     */
+    // @formatter:off
+    @GET
+    @Path("policies/status/{pdpGroupName}/{policyName}")
+    @ApiOperation(value = "Queries status of specific deployed policies",
+        notes = "Queries status of specific deployed policies, returning the deployment state",
+        responseContainer = "List", response = PdpPolicyStatus.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response getStatusOfDeployedPolicies(
+        @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
+        @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
+        @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+
+        try {
+            Collection<PdpPolicyStatus> result =
+                provider.getDeploymentStatus(pdpGroupName, new ToscaConceptIdentifierOptVersion(policyName, null));
+            if (result.isEmpty()) {
+                return makeNotFoundResponse(requestId);
+
+            } else {
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                                .entity(result).build();
+            }
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+        }
+    }
+
+
+    /**
+     * Queries status of a specific deployed policy.
+     *
+     * @param requestId request ID used in ONAP logging
+     * @return a response
+     */
+    // @formatter:off
+    @GET
+    @Path("policies/status/{pdpGroupName}/{policyName}/{policyVersion}")
+    @ApiOperation(value = "Queries status of a specific deployed policy",
+        notes = "Queries status of a specific deployed policy, returning success and failure counts of the PDPs",
+        response = PdpPolicyStatus.class,
+        tags = {"Policy Administration (PAP) API"},
+        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
+        responseHeaders = {
+            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                            response = String.class),
+            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                            response = UUID.class)},
+        extensions = {@Extension(name = EXTENSION_NAME,
+            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    // @formatter:on
+
+    public Response getStatusOfDeployedPolicy(
+        @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
+        @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
+        @ApiParam(value = "Policy Version", required = true) @PathParam("policyVersion") String policyVersion,
+        @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+
+        try {
+            Collection<PdpPolicyStatus> result = provider.getDeploymentStatus(pdpGroupName,
+                new ToscaConceptIdentifierOptVersion(policyName, policyVersion));
+            if (result.isEmpty()) {
+                return makeNotFoundResponse(requestId);
+
+            } else {
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                                .entity(result.iterator().next()).build();
+            }
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+        }
+    }
 
     /**
      * Makes a "not found" response.
