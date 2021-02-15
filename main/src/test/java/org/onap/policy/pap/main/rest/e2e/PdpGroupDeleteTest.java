@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +39,13 @@ import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicFactories;
 import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicSink;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
+import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
 
 public class PdpGroupDeleteTest extends End2EndBase {
     private static final String DELETE_GROUP_ENDPOINT = "pdps/groups";
@@ -136,8 +139,10 @@ public class PdpGroupDeleteTest extends End2EndBase {
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();
-        PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
+        assertEquals(PdpGroupDeployControllerV1.DEPLOYMENT_RESPONSE_MSG, resp.getMessage());
+        assertEquals(PdpGroupDeployControllerV1.POLICY_STATUS_URI, resp.getUri());
         assertNull(resp.getErrorDetails());
 
         context.await();
@@ -157,7 +162,7 @@ public class PdpGroupDeleteTest extends End2EndBase {
         assertEquals(new ToscaConceptIdentifier("onap.restart.tcaB", "1.0.0"), deleted.getPolicy());
 
         rawresp = invocationBuilder.delete();
-        resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertEquals("policy does not appear in any PDP group: onap.restart.tcaB null", resp.getErrorDetails());
     }
@@ -188,14 +193,15 @@ public class PdpGroupDeleteTest extends End2EndBase {
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.delete();
-        PdpGroupDeleteResponse resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
         assertNull(resp.getErrorDetails());
-
+        assertEquals(PdpGroupDeployControllerV1.DEPLOYMENT_RESPONSE_MSG, resp.getMessage());
+        assertEquals(PdpGroupDeployControllerV1.POLICY_STATUS_URI, resp.getUri());
         context.await();
 
         rawresp = invocationBuilder.delete();
-        resp = rawresp.readEntity(PdpGroupDeleteResponse.class);
+        resp = rawresp.readEntity(PdpGroupDeployResponse.class);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertEquals("policy does not appear in any PDP group: onap.restart.tcaC 1.0.0", resp.getErrorDetails());
     }

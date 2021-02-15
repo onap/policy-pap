@@ -3,6 +3,7 @@
  * ONAP
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +22,8 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -77,36 +80,28 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     @Test
     public void testGetStatus_testAccumulate() throws PfModelException {
 
-        PdpPolicyStatusBuilder builder = PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
-                        .policyType(POLICY_TYPE).state(State.WAITING);
-
-        PdpPolicyStatus notDeployed = builder.deploy(false).policy(POLICY_B).pdpId(PDP_A).build();
-
-        // remaining policies are deployed
-        builder.deploy(true);
-
-        // @formatter:off
-        when(dao.getAllPolicyStatus()).thenReturn(List.of(
-                        builder.policy(POLICY_A).pdpId(PDP_A).build(),
-                        builder.policy(POLICY_A).pdpId(PDP_B).build(),
-                        notDeployed,
-                        builder.policy(POLICY_C).pdpId(PDP_A).build()
-                        ));
-        // @formatter:on
+        buildPolicyStatusToReturn1();
 
         List<PolicyStatus> result = new ArrayList<>(prov.getStatus());
         Collections.sort(result, (rec1, rec2) -> rec1.getPolicy().compareTo(rec2.getPolicy()));
 
-        assertThat(result).hasSize(2);
+        assertThat(result).hasSize(3);
 
         Iterator<PolicyStatus> iter = result.iterator();
 
         PolicyStatus status = iter.next();
         assertThat(status.getPolicy()).isEqualTo(POLICY_A);
         assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
-        assertThat(status.getIncompleteCount()).isEqualTo(2);
-        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getIncompleteCount()).isEqualTo(1);
+        assertThat(status.getFailureCount()).isEqualTo(1);
         assertThat(status.getSuccessCount()).isZero();
+
+        status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_B);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getIncompleteCount()).isZero();
+        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getSuccessCount()).isEqualTo(1);
 
         status = iter.next();
         assertThat(status.getPolicy()).isEqualTo(POLICY_C);
@@ -119,6 +114,111 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     @Test
     public void testGetStatusToscaConceptIdentifierOptVersion() throws PfModelException {
 
+        ToscaConceptIdentifierOptVersion optIdent = buildPolicyStatusToReturn2();
+
+        List<PolicyStatus> result = new ArrayList<>(prov.getStatus(optIdent));
+        assertThat(result).hasSize(1);
+
+        Iterator<PolicyStatus> iter = result.iterator();
+
+        PolicyStatus status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getIncompleteCount()).isEqualTo(2);
+        assertThat(status.getFailureCount()).isZero();
+        assertThat(status.getSuccessCount()).isZero();
+    }
+
+    @Test
+    public void testGetPolicyStatus() throws PfModelException {
+
+        buildPolicyStatusToReturn1();
+
+        List<PdpPolicyStatus> result = new ArrayList<>(prov.getPolicyStatus());
+        Collections.sort(result, (rec1, rec2) -> rec1.getPolicy().compareTo(rec2.getPolicy()));
+
+        assertThat(result).hasSize(5);
+        Iterator<PdpPolicyStatus> iter = result.iterator();
+
+        PdpPolicyStatus status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getPdpId()).isEqualTo(PDP_A);
+        assertThat(status.getPdpType()).isEqualTo(MY_PDP_TYPE);
+        assertThat(status.getPdpGroup()).isEqualTo(MY_GROUP);
+        assertTrue(status.isDeploy());
+        assertThat(status.getState()).isEqualTo(State.WAITING);
+
+        status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPdpId()).isEqualTo(PDP_B);
+        assertTrue(status.isDeploy());
+        assertThat(status.getState()).isEqualTo(State.FAILURE);
+
+        status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_B);
+        assertThat(status.getPdpId()).isEqualTo(PDP_A);
+        assertFalse(status.isDeploy());
+        assertThat(status.getState()).isEqualTo(State.WAITING);
+
+        status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_B);
+        assertThat(status.getPdpId()).isEqualTo(PDP_B);
+        assertTrue(status.isDeploy());
+        assertThat(status.getState()).isEqualTo(State.SUCCESS);
+    }
+
+    @Test
+    public void testGetPolicyStatusByGroupAndPolicyIdVersion() throws PfModelException {
+
+        ToscaConceptIdentifierOptVersion optIdent = buildPolicyStatusToReturn2();
+
+        List<PdpPolicyStatus> result = new ArrayList<>(prov.getPolicyStatus(MY_GROUP, optIdent));
+        assertThat(result).hasSize(3);
+
+        Iterator<PdpPolicyStatus> iter = result.iterator();
+
+        PdpPolicyStatus status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getPdpId()).isEqualTo(PDP_A);
+        assertThat(status.getPdpType()).isEqualTo(MY_PDP_TYPE);
+        assertThat(status.getPdpGroup()).isEqualTo(MY_GROUP);
+        assertTrue(status.isDeploy());
+        assertThat(status.getState()).isEqualTo(State.WAITING);
+
+        status = iter.next();
+        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
+        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
+        assertThat(status.getPdpId()).isEqualTo(PDP_B);
+        assertThat(status.getPdpType()).isEqualTo(MY_PDP_TYPE);
+        assertThat(status.getPdpGroup()).isEqualTo(MY_GROUP);
+        assertFalse(status.isDeploy());
+        assertThat(status.getState()).isEqualTo(State.FAILURE);
+    }
+
+    private void buildPolicyStatusToReturn1() throws PfModelException {
+        PdpPolicyStatusBuilder builder = PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
+                        .policyType(POLICY_TYPE).state(State.WAITING);
+
+        PdpPolicyStatus notDeployed = builder.deploy(false).policy(POLICY_B).pdpId(PDP_A).build();
+
+        // remaining policies are deployed
+        builder.deploy(true);
+
+        // @formatter:off
+        when(dao.getAllPolicyStatus()).thenReturn(List.of(
+                        builder.policy(POLICY_A).pdpId(PDP_A).build(),
+                        builder.policy(POLICY_A).pdpId(PDP_B).state(State.FAILURE).build(),
+                        notDeployed,
+                        builder.policy(POLICY_C).pdpId(PDP_A).state(State.WAITING).build(),
+                        builder.policy(POLICY_B).pdpId(PDP_B).state(State.SUCCESS).build()
+                        ));
+        // @formatter:on
+    }
+
+
+    private ToscaConceptIdentifierOptVersion buildPolicyStatusToReturn2() throws PfModelException {
         PdpPolicyStatusBuilder builder = PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
                         .policy(POLICY_A).policyType(POLICY_TYPE);
 
@@ -136,17 +236,6 @@ public class TestPolicyStatusProvider extends ProviderSuper {
                         builder.policy(POLICY_A).pdpId(PDP_C).build()
                         ));
         // @formatter:on
-
-        List<PolicyStatus> result = new ArrayList<>(prov.getStatus(optIdent));
-        assertThat(result).hasSize(1);
-
-        Iterator<PolicyStatus> iter = result.iterator();
-
-        PolicyStatus status = iter.next();
-        assertThat(status.getPolicy()).isEqualTo(POLICY_A);
-        assertThat(status.getPolicyType()).isEqualTo(POLICY_TYPE);
-        assertThat(status.getIncompleteCount()).isEqualTo(2);
-        assertThat(status.getFailureCount()).isZero();
-        assertThat(status.getSuccessCount()).isZero();
+        return optIdent;
     }
 }
