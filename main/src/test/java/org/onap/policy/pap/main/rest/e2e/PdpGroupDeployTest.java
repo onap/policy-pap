@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +51,7 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
+import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
 
 public class PdpGroupDeployTest extends End2EndBase {
     private static final String DEPLOY_GROUP_ENDPOINT = "pdps/deployments/batch";
@@ -115,7 +117,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         Entity<DeploymentGroups> entity = Entity.entity(groups, MediaType.APPLICATION_JSON);
         Response rawresp = invocationBuilder.post(entity);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
         assertNull(resp.getErrorDetails());
 
         context.await();
@@ -126,7 +128,9 @@ public class PdpGroupDeployTest extends End2EndBase {
         // repeat - should be OK
         rawresp = invocationBuilder.post(entity);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
+        assertEquals(PdpGroupDeployControllerV1.DEPLOYMENT_RESPONSE_MSG, resp.getMessage());
+        assertEquals(PdpGroupDeployControllerV1.POLICY_STATUS_URI, resp.getUri());
         assertNull(resp.getErrorDetails());
 
         // repeat with unknown group - should fail
@@ -181,8 +185,9 @@ public class PdpGroupDeployTest extends End2EndBase {
         Entity<PdpDeployPolicies> entity = Entity.entity(policies, MediaType.APPLICATION_JSON);
         Response rawresp = invocationBuilder.post(entity);
         PdpGroupDeployResponse resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        System.out.println(resp.getErrorDetails());
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
+        assertEquals(PdpGroupDeployControllerV1.DEPLOYMENT_RESPONSE_MSG, resp.getMessage());
+        assertEquals(PdpGroupDeployControllerV1.POLICY_STATUS_URI, resp.getUri());
         assertNull(resp.getErrorDetails());
 
         context.await();
@@ -207,7 +212,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         // repeat - should be OK
         rawresp = invocationBuilder.post(entity);
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
         assertNull(resp.getErrorDetails());
     }
 }
