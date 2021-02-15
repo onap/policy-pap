@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02a27408_d61db8e2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-15T20:14:19Z",
+      "side": 1,
+      "message": "deployment -\u003e policy",
+      "range": {
+        "startLine": 211,
+        "startChar": 29,
+        "endLine": 211,
+        "endChar": 39
+      },
+      "revId": "7f95959a13276b87f056188ffd513825646e897b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cfc6ff4_151b63ce",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-15T20:14:19Z",
+      "side": 1,
+      "message": "Just thinking, will it be better to say reverse something like - \"Kindly note that when a policy is successfully undeployed, it will no longer appear in policy status response.\"",
+      "range": {
+        "startLine": 212,
+        "startChar": 27,
+        "endLine": 212,
+        "endChar": 107
+      },
+      "revId": "7f95959a13276b87f056188ffd513825646e897b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b028a585_78ab10e9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-15T20:14:19Z",
+      "side": 1,
+      "message": "\"deployment\" -\u003e \"policy\"\n\"latest deployment status\" -\u003e \"latest status\"\nAlso, will be good to have the note regarding undeploy here as well.",
+      "range": {
+        "startLine": 144,
+        "startChar": 52,
+        "endLine": 144,
+        "endChar": 62
+      },
+      "revId": "7f95959a13276b87f056188ffd513825646e897b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c73b4e26_c0968a8b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-15T20:14:19Z",
+      "side": 1,
+      "message": "I updated these details to make these api\u0027s reflect policy status instead of deployment status. As we are now targeting both deployment \u0026 undeployment. Please take the latest from design wiki and update.",
+      "range": {
+        "startLine": 220,
+        "startChar": 4,
+        "endLine": 220,
+        "endChar": 68
+      },
+      "revId": "7f95959a13276b87f056188ffd513825646e897b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
