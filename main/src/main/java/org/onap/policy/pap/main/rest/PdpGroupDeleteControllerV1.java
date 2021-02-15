@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Response.Status;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +103,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     @Path("pdps/policies/{name}")
     @ApiOperation(value = "Undeploy a PDP Policy from PDPs",
         notes = "Undeploys the latest version of a policy from the PDPs, returning optional error details",
-        response = PdpGroupDeleteResponse.class,
+        response = PdpGroupDeployResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
@@ -124,7 +126,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     public Response deletePolicy(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
 
-        return doOperation(requestId, "undeploy policy failed",
+        return doUndeployOperation(requestId, "undeploy policy failed",
             () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, null)));
     }
 
@@ -141,7 +143,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     @Path("pdps/policies/{name}/versions/{version}")
     @ApiOperation(value = "Undeploy version of a PDP Policy from PDPs",
         notes = "Undeploys a specific version of a policy from the PDPs, returning optional error details",
-        response = PdpGroupDeleteResponse.class,
+        response = PdpGroupDeployResponse.class,
         tags = {"Policy Administration (PAP) API"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
@@ -166,7 +168,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName,
                     @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {
 
-        return doOperation(requestId, "undeploy policy failed",
+        return doUndeployOperation(requestId, "undeploy policy failed",
             () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, version)));
     }
 
@@ -187,6 +189,31 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
             PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
+            resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                            requestId).entity(resp).build();
+        }
+    }
+
+    /**
+     * Invokes the undeployment operation.
+     *
+     * @param requestId request ID
+     * @param errmsg error message to log if the operation throws an exception
+     * @param runnable operation to invoke
+     * @return a {@link PdpGroupDeployResponse} response entity
+     */
+    private Response doUndeployOperation(UUID requestId, String errmsg, RunnableWithPfEx runnable) {
+        try {
+            runnable.run();
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.ACCEPTED)), requestId)
+                .entity(new PdpGroupDeployResponse(PdpGroupDeployControllerV1.DEPLOYMENT_RESPONSE_MSG,
+                    PdpGroupDeployControllerV1.POLICY_STATUS_URI))
+                .build();
+
+        } catch (PfModelException | PfModelRuntimeException e) {
+            logger.warn(errmsg, e);
+            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
                             requestId).entity(resp).build();

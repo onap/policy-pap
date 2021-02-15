@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +47,12 @@ import org.slf4j.LoggerFactory;
  * Class to provide REST end points for PAP component to deploy a PDP group.
  */
 public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
+    public static final String POLICY_STATUS_URI = "/policy/pap/v1/policies/status";
+
+    public static final String DEPLOYMENT_RESPONSE_MSG = "Use the policy status url to fetch the latest status. "
+        + "Kindly note that when a policy is successfully undeployed,"
+        + " it will no longer appear in policy status response.";
+
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployControllerV1.class);
 
     private final PdpGroupDeployProvider provider = new PdpGroupDeployProvider();
@@ -139,15 +146,16 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     private Response doOperation(UUID requestId, String errmsg, RunnableWithPfEx runnable) {
         try {
             runnable.run();
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.OK)), requestId)
-                            .entity(new PdpGroupDeployResponse()).build();
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.ACCEPTED)), requestId)
+                .entity(new PdpGroupDeployResponse(DEPLOYMENT_RESPONSE_MSG, POLICY_STATUS_URI))
+                .build();
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
             PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                            requestId).entity(resp).build();
+                requestId).entity(resp).build();
         }
     }
 }
