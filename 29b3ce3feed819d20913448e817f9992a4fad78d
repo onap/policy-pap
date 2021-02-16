@@ -22,6 +22,70 @@
       "revId": "29b3ce3feed819d20913448e817f9992a4fad78d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "899ba4a3_4f1eead5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T14:59:14Z",
+      "side": 1,
+      "message": "createPdpUpdateMessage() is only used by the heartbeat/registration class, so it should be OK to create a SessionData here.  However, one could argue that the code that invokes this should perhaps be modified to use SessionData rather than invoking databaseProvider.getPdpGroups(groupName) directly.",
+      "parentUuid": "eb45ccd7_54daa110",
+      "range": {
+        "startLine": 96,
+        "startChar": 8,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "29b3ce3feed819d20913448e817f9992a4fad78d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b7a69a5_f0561c47",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T14:59:14Z",
+      "side": 1,
+      "message": "this is not needed, though I\u0027m ok with it since it makes it clear how this branch differs from the other",
+      "revId": "29b3ce3feed819d20913448e817f9992a4fad78d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e2eef3a_5f732375",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestSessionData.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T14:59:14Z",
+      "side": 1,
+      "message": "sonar seems to prefer:\n\n  assertThat(xxx).contains(yyy)",
+      "range": {
+        "startLine": 584,
+        "startChar": 12,
+        "endLine": 584,
+        "endChar": 22
+      },
+      "revId": "29b3ce3feed819d20913448e817f9992a4fad78d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
