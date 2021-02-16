@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "13259204_dc756cd5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T21:35:44Z",
+      "side": 1,
+      "message": "yes, it looks like you can remove session data changes.  For register:\n  deploy \u003d full \u003d all\n  undeploy \u003d null\n\nFor heartbeat:\n  full \u003d all\n  deploy \u003d all - (policies that the PDP already has)\n  undeploy \u003d (policies that the PDP already has) - all\n\nLooks like these \"set\" operations should maybe be done by the invoker, in which case, the databaseProvider and register parameters could be removed and the full, deploy, and undeploy sets passed in, instead.",
+      "parentUuid": "2f77c6ed_bde83a5f",
+      "range": {
+        "startLine": 94,
+        "startChar": 38,
+        "endLine": 94,
+        "endChar": 54
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "364cf668_9a54adc5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
         "patchSetId": 7
