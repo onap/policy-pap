@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "364cf668_9a54adc5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T19:00:52Z",
+      "side": 1,
+      "message": "only invoke this once and re-use it",
+      "range": {
+        "startLine": 105,
+        "startChar": 43,
+        "endLine": 105,
+        "endChar": 87
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df9c454c_10108386",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T19:00:52Z",
+      "side": 1,
+      "message": "with the introduction of SessionData, this class can be revised, replacing:\n- calls to databaseProvider.getFilteredPdpGroups() with calls to data.getGroup(); and\n- calls to databaseProvider.updatePdpSubGroup() with calls to data.update() and data.updateDb()\n\nfor that matter, probably a lot of the places where databaseProvider is being passed, databaseProvider could be replaced by the SessionData object",
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6282430c_709ef2dd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T19:00:52Z",
+      "side": 1,
+      "message": "won\u0027t this cause an NPE?",
+      "range": {
+        "startLine": 138,
+        "startChar": 20,
+        "endLine": 138,
+        "endChar": 24
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c32fd6da_84da293b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T19:00:52Z",
+      "side": 1,
+      "message": "will throw an NPE",
+      "range": {
+        "startLine": 122,
+        "startChar": 32,
+        "endLine": 122,
+        "endChar": 36
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
