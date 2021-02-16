@@ -225,6 +225,24 @@
     },
     {
       "key": {
+        "uuid": "6a5fd82e_122b0be2",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T17:51:27Z",
+      "side": 1,
+      "message": "looks like all of the counts are still 1 below, so this still isn\u0027t verifying that the counts are cumulative",
+      "parentUuid": "3819f10b_6fead8b0",
+      "revId": "bf8883577bd897a4266291999f82c729d9ed7ea5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dac6c244_9612cdfa",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/PdpGroupDeleteTest.java",
         "patchSetId": 5

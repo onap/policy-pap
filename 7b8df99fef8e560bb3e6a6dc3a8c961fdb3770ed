@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e0db7ed_63e826fd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T17:51:27Z",
+      "side": 1,
+      "message": "can use no-arg constructor, if there is one",
+      "range": {
+        "startLine": 216,
+        "startChar": 69,
+        "endLine": 216,
+        "endChar": 79
+      },
+      "revId": "7b8df99fef8e560bb3e6a6dc3a8c961fdb3770ed",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a221455b_dc2843d4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-16T17:51:27Z",
+      "side": 1,
+      "message": "no-arg constructor",
+      "range": {
+        "startLine": 155,
+        "startChar": 69,
+        "endLine": 155,
+        "endChar": 79
+      },
+      "revId": "7b8df99fef8e560bb3e6a6dc3a8c961fdb3770ed",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
