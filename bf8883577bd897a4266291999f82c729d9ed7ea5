@@ -243,6 +243,24 @@
     },
     {
       "key": {
+        "uuid": "5d0ffc9b_bb042fe4",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-16T18:49:06Z",
+      "side": 1,
+      "message": "There is no change to this test case as per this review. But, isn\u0027t the count less because same policies are deployed. There are only Policy_A, B and C. They are tried to be deployed to different PDPs as per the test case, but the count(of result) is always going to be less if the same policies are deployed to the different PDPs right?",
+      "parentUuid": "6a5fd82e_122b0be2",
+      "revId": "bf8883577bd897a4266291999f82c729d9ed7ea5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dac6c244_9612cdfa",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/PdpGroupDeleteTest.java",
         "patchSetId": 5

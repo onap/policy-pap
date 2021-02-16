@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0c911eb3_bda4e2e9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-16T18:49:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e0db7ed_63e826fd",
+      "range": {
+        "startLine": 216,
+        "startChar": 69,
+        "endLine": 216,
+        "endChar": 79
+      },
+      "revId": "7b8df99fef8e560bb3e6a6dc3a8c961fdb3770ed",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a221455b_dc2843d4",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
         "patchSetId": 6
@@ -45,6 +69,30 @@
       "revId": "7b8df99fef8e560bb3e6a6dc3a8c961fdb3770ed",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8779f3d_5a42ea8e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployControllerV1.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-16T18:49:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a221455b_dc2843d4",
+      "range": {
+        "startLine": 155,
+        "startChar": 69,
+        "endLine": 155,
+        "endChar": 79
+      },
+      "revId": "7b8df99fef8e560bb3e6a6dc3a8c961fdb3770ed",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
