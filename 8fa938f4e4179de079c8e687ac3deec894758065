@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "2f77c6ed_bde83a5f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-16T21:26:36Z",
+      "side": 1,
+      "message": "I am okay with the removal as we don\u0027t need it anymore.",
+      "parentUuid": "820c0163_4c40ec93",
+      "range": {
+        "startLine": 94,
+        "startChar": 38,
+        "endLine": 94,
+        "endChar": 54
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "364cf668_9a54adc5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
         "patchSetId": 7
