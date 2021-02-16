@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "a9aca721_a0088d19",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-16T20:02:19Z",
+      "side": 1,
+      "message": "In that case, do we still need the \"boolean register\"?\nAnd where are the other PDP_UPDATE messages created for REST based policy deployments?",
+      "parentUuid": "319fb99d_b824edd7",
+      "range": {
+        "startLine": 96,
+        "startChar": 8,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "29b3ce3feed819d20913448e817f9992a4fad78d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b7a69a5_f0561c47",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
         "patchSetId": 6

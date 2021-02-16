@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "6f5d15c2_518cac73",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-16T20:02:19Z",
+      "side": 1,
+      "message": "Do we still need this? \nAs only registration \u0026 state change flow calls this method. And in both cases we need to send all the policies in the subgroup. So essentially remove the if/else and just keep the line 105 \u0026 106.\n\nInfact in that case SessionData is also not needed anymore.",
+      "range": {
+        "startLine": 94,
+        "startChar": 38,
+        "endLine": 94,
+        "endChar": 54
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "364cf668_9a54adc5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
         "patchSetId": 7
