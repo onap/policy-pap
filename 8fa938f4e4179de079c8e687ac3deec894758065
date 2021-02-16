@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "2ef28691_13fa6686",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-16T22:19:27Z",
+      "side": 1,
+      "message": "For heartbeat I think:\nundeploy \u003d null",
+      "parentUuid": "13259204_dc756cd5",
+      "range": {
+        "startLine": 94,
+        "startChar": 38,
+        "endLine": 94,
+        "endChar": 54
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "364cf668_9a54adc5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
         "patchSetId": 7
