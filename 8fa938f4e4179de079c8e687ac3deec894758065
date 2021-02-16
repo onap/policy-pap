@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "820c0163_4c40ec93",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 6722
+      },
+      "writtenOn": "2021-02-16T20:13:30Z",
+      "side": 1,
+      "message": "So do I remove these changes?",
+      "parentUuid": "6f5d15c2_518cac73",
+      "range": {
+        "startLine": 94,
+        "startChar": 38,
+        "endLine": 94,
+        "endChar": 54
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "364cf668_9a54adc5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9707ef5e_424d59cf",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 6722
+      },
+      "writtenOn": "2021-02-16T20:13:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "364cf668_9a54adc5",
+      "range": {
+        "startLine": 105,
+        "startChar": 43,
+        "endLine": 105,
+        "endChar": 87
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
