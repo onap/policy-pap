@@ -279,6 +279,24 @@
     },
     {
       "key": {
+        "uuid": "1377ef94_18dfe413",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-17T11:29:25Z",
+      "side": 1,
+      "message": "Oh! I thought you were talking about the size of the result. Got your point. Thanks.\nMade the change accordingly.",
+      "parentUuid": "942da11f_5bbd2865",
+      "revId": "bf8883577bd897a4266291999f82c729d9ed7ea5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dac6c244_9612cdfa",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/PdpGroupDeleteTest.java",
         "patchSetId": 5
