@@ -16,6 +16,24 @@
       "revId": "f7674432acc22a4c80967bd27d0c576cef6daa98",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5da81011_8719252c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-17T16:50:17Z",
+      "side": 1,
+      "message": "it returns a collection, so it should be ok, right?",
+      "parentUuid": "b366043b_a16c66dc",
+      "revId": "f7674432acc22a4c80967bd27d0c576cef6daa98",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
