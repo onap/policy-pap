@@ -232,6 +232,29 @@
     },
     {
       "key": {
+        "uuid": "73528bde_a5032dd5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-17T13:47:15Z",
+      "side": 1,
+      "message": "This would be always considered as registration flow as per the changes in PdpMessageGenerator. But this won\u0027t be a problem once Jim\u0027s comments are implemented. Better to find policies to deploy/undeploy in this class.",
+      "range": {
+        "startLine": 290,
+        "startChar": 102,
+        "endLine": 290,
+        "endChar": 106
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c32fd6da_84da293b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
         "patchSetId": 7
