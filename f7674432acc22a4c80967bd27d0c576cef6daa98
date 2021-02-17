@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b366043b_a16c66dc",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-02-17T16:35:50Z",
+      "side": 1,
+      "message": "can we have multiple versions of the same policy \"deployed\" in a PDP?   If so, may be problematic.",
+      "revId": "f7674432acc22a4c80967bd27d0c576cef6daa98",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
