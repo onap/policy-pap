@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ import java.util.List;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -35,6 +37,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,8 +99,19 @@ public class PdpMessageGenerator {
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
-        update.setPolicies(getToscaPolicies(subGroup, databaseProvider));
+        List<ToscaPolicy> policies = getToscaPolicies(subGroup, databaseProvider);
+        update.setPolicies(policies);
         update.setPdpHeartbeatIntervalMs(heartBeatMs);
+
+        // Update the deployment status in case the PDP is out of sync and getting updated.
+        if (!policies.isEmpty()) {
+            DeploymentStatus deploymentStatus = new DeploymentStatus(databaseProvider);
+            for (ToscaPolicy toscaPolicy : policies) {
+                deploymentStatus.deploy(pdpInstanceId, toscaPolicy.getIdentifier(), toscaPolicy.getTypeIdentifier(),
+                    pdpGroupName, subGroup.getPdpType(), true);
+            }
+            deploymentStatus.flush(new PolicyNotification());
+        }
 
         LOGGER.debug("Created PdpUpdate message - {}", update);
         return update;
