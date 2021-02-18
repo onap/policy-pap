@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49e4c1f4_e7f3c834",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-18T14:52:13Z",
+      "side": 1,
+      "message": "this notification should probably be published, if it is not empty",
+      "range": {
+        "startLine": 113,
+        "startChar": 35,
+        "endLine": 113,
+        "endChar": 59
+      },
+      "revId": "5dac4aebbc6ad5981f647038620b55f178b70bff",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
