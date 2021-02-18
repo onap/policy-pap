@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -281,9 +282,12 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
             final PdpState pdpState, final PolicyModelsProvider databaseProvider) throws PfModelException {
         final PdpUpdate pdpUpdatemessage =
-                createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
+            createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
         final PdpStateChange pdpStateChangeMessage =
-                createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
+            createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
+        updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId, pdpStateChangeMessage.getState(),
+            databaseProvider, pdpUpdatemessage.getPolicies());
+
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
         LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
         LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
