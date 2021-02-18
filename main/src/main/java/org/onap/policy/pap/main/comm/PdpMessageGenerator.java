@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ import java.util.List;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -35,6 +37,8 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.notification.DeploymentStatus;
+import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +94,8 @@ public class PdpMessageGenerator {
     }
 
     protected PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId, final PolicyModelsProvider databaseProvider) throws PfModelException {
+        final String pdpInstanceId, final PolicyModelsProvider databaseProvider)
+        throws PfModelException {
 
         final PdpUpdate update = new PdpUpdate();
         update.setName(pdpInstanceId);
@@ -126,5 +131,36 @@ public class PdpMessageGenerator {
 
         LOGGER.debug("Created PdpStateChange message - {}", stateChange);
         return stateChange;
+    }
+
+    /**
+     * If group state=ACTIVE AND updateMsg has policiesToDeploy, then make sure deployment status is updated
+     * If group state=PASSIVE, then delete any deployment information for a PDP.
+     *
+     * @param pdpGroupName the group name
+     * @param pdpType the pdp type
+     * @param pdpInstanceId the pdp instance
+     * @param pdpState the new state as per the PDP_STATE_CHANGE change message
+     * @param databaseProvider the database provider
+     * @param policies list of policies as per the PDP_UPDATE message
+     * @throws PfModelException the exception
+     */
+    protected void updateDeploymentStatus(final String pdpGroupName, final String pdpType, final String pdpInstanceId,
+        PdpState pdpState, final PolicyModelsProvider databaseProvider, List<ToscaPolicy> policies)
+        throws PfModelException {
+        DeploymentStatus deploymentStatus = new DeploymentStatus(databaseProvider);
+        deploymentStatus.loadByGroup(pdpGroupName);
+        if (pdpState.equals(PdpState.PASSIVE)) {
+            deploymentStatus.deleteDeployment(pdpInstanceId);
+        } else if (pdpState.equals(PdpState.ACTIVE) && !policies.isEmpty()) {
+            for (ToscaPolicy toscaPolicy : policies) {
+                deploymentStatus.deploy(pdpInstanceId, toscaPolicy.getIdentifier(), toscaPolicy.getTypeIdentifier(),
+                    pdpGroupName, pdpType, true);
+            }
+        }
+        PolicyNotification notification = new PolicyNotification();
+        deploymentStatus.flush(notification);
+        PolicyNotifier notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER);
+        notifier.publish(notification);
     }
 }

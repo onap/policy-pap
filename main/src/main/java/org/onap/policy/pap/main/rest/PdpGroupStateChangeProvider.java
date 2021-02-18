@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,14 +114,17 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
     }
 
     private void sendPdpMessage(final PdpGroup pdpGroup, final PdpState pdpState,
-            final PolicyModelsProvider databaseProvider) throws PfModelException {
-
+        final PolicyModelsProvider databaseProvider) throws PfModelException {
+        String pdpGroupName = pdpGroup.getName();
         for (final PdpSubGroup subGroup : pdpGroup.getPdpSubgroups()) {
             for (final Pdp pdp : subGroup.getPdpInstances()) {
+                String pdpInstanceId = pdp.getInstanceId();
                 final PdpUpdate pdpUpdatemessage =
-                        createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider);
+                    createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider);
                 final PdpStateChange pdpStateChangeMessage =
-                        createPdpStateChangeMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), pdpState);
+                    createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
+                updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId,
+                    pdpStateChangeMessage.getState(), databaseProvider, pdpUpdatemessage.getPolicies());
                 requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
                 LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
