@@ -22,6 +22,30 @@
       "revId": "5b251d3c82c0bbafc65384cd48c72397871627b7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f43a92e_7417da31",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-18T18:50:05Z",
+      "side": 1,
+      "message": "Yes, I will make the changes to cover State change scenarios too.",
+      "parentUuid": "5c65ff39_58c0c78b",
+      "range": {
+        "startLine": 95,
+        "startChar": 24,
+        "endLine": 95,
+        "endChar": 46
+      },
+      "revId": "5b251d3c82c0bbafc65384cd48c72397871627b7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
