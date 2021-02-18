@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "05831254-6fad-419f-b10e-ff21cbbd365a",
+        "_postman_id": "d78b72f0-00b1-44c2-88c4-98a7a51b3932",
         "name": "Policy Framework Administration API",
         "description": "This collection lists all the Administration API's supported by ONAP Policy Framework. These API's are used to perform administrative operations for managing policies, groups, statistics & health information for all registered PDP engines.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -350,7 +350,7 @@
             "response": []
         },
         {
-            "name": "Fetch Policy deployment Status",
+            "name": "Fetch All Policy Status",
             "protocolProfileBehavior": {
                 "disableBodyPruning": true
             },
@@ -373,7 +373,7 @@
                     "raw": ""
                 },
                 "url": {
-                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/deployed/operational.modifyconfig",
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/status",
                     "host": [
                         "{{POLICY-PAP-URL}}"
                     ],
@@ -382,11 +382,93 @@
                         "pap",
                         "v1",
                         "policies",
-                        "deployed",
+                        "status"
+                    ]
+                },
+                "description": "This is a generic API to fetch status of all policies in the registered PDP instances."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch All Policy Status in a Group",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/status/defaultGroup",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "status",
+                        "defaultGroup"
+                    ]
+                },
+                "description": "This is a generic API to fetch status of all policies in the registered PDP instances in a PDP Group."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch Policy Status in a Group",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/status/defaultGroup/operational.modifyconfig",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "status",
+                        "defaultGroup",
                         "operational.modifyconfig"
                     ]
                 },
-                "description": "This is an API to fetch status of a specific deployed policy in the registered PDP instances."
+                "description": "This is a generic API to fetch status of all versions of a policy in the registered PDP instances in a PDP Group."
             },
             "response": []
         },
@@ -427,6 +509,47 @@
                     ]
                 },
                 "description": "This is a generic API to fetch status of all deployed policies in the registered PDP instances."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch Policy deployment Status",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/deployed/operational.modifyconfig",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "deployed",
+                        "operational.modifyconfig"
+                    ]
+                },
+                "description": "This is an API to fetch status of a specific deployed policy in the registered PDP instances."
             },
             "response": []
         },
@@ -650,7 +773,6 @@
         {
             "listen": "prerequest",
             "script": {
-                "id": "d6987a6d-a224-4288-a7bd-4c1c209a2637",
                 "type": "text/javascript",
                 "exec": [
                     ""
@@ -660,7 +782,6 @@
         {
             "listen": "test",
             "script": {
-                "id": "731a9aab-e8f2-4dc6-941c-ac7e142c5177",
                 "type": "text/javascript",
                 "exec": [
                     ""
@@ -670,17 +791,14 @@
     ],
     "variable": [
         {
-            "id": "bc82ca5c-f667-4118-9da1-e78a9b532b91",
             "key": "USER",
             "value": "healthcheck",
             "type": "string"
         },
         {
-            "id": "1c2733ff-2507-49e8-ba07-b0f85ea97914",
             "key": "PASSWORD",
             "value": "zb!XztG34",
             "type": "string"
         }
-    ],
-    "protocolProfileBehavior": {}
+    ]
 }
