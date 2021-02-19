@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b56b987d_34172ade",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T14:30:56Z",
+      "side": 1,
+      "message": "the question is: should we delete a deployment when a PDP goes PASSIVE?  I guess it\u0027s OK, since this only impacts the status records, and they\u0027re re-inserted when it goes active.  In addition, deleting them when PASSIVE will prevent CLAMP from seeing records for a passive PDP - that makes sense.",
+      "range": {
+        "startLine": 154,
+        "startChar": 29,
+        "endLine": 154,
+        "endChar": 45
+      },
+      "revId": "89049b441c5b6e84d131090d6da698f0a4c0caa5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c8c4bf0f_c2bf1424",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T14:30:56Z",
+      "side": 1,
+      "message": "delete this check - it adds no value and requires additional junit tests to provide full coverage",
+      "range": {
+        "startLine": 155,
+        "startChar": 51,
+        "endLine": 155,
+        "endChar": 74
+      },
+      "revId": "89049b441c5b6e84d131090d6da698f0a4c0caa5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
