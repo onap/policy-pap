@@ -278,6 +278,30 @@
     },
     {
       "key": {
+        "uuid": "0f52a250_78afd4b0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T18:27:01Z",
+      "side": 1,
+      "message": "when all we\u0027re doing is changing state, I don\u0027t think we should change the policy list on the PDP.  In fact, it seems to me that we may want to be able to deploy policies to passive PDPs so that they\u0027re ready when we the PDPs are made active.\nHmm, that makes me rethink the idea of removing status records when a PDP is made passive.  The user may wish to check the deployment status before choosing to bring a group online.",
+      "parentUuid": "64c16d75_1d0b8950",
+      "range": {
+        "startLine": 121,
+        "startChar": 24,
+        "endLine": 121,
+        "endChar": 46
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c32fd6da_84da293b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
         "patchSetId": 7
