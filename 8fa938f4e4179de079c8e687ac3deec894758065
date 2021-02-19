@@ -255,6 +255,29 @@
     },
     {
       "key": {
+        "uuid": "64c16d75_1d0b8950",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-19T17:25:29Z",
+      "side": 1,
+      "message": "Currently during ACTIVE to PASSIVE state change we are sending the full list of policies to the PDP via PDP_UPDATE message. And with delta changes, we still continue to send the full list under policiesToBeDeployed list. Which makes an extra operation for the PDPs. Ideally, we must send full list under policiesToBeUndeployed in this case, so that PDPs undeploy the policy and then gracefully move to PASSIVE.\nThis also brings another discussion of how the PDPs are handling PASSIVE state. Do they lose all their policies, keep them deployed but don\u0027t consume events, etc. And also need to revisit our definitions of states in PDPs.\nWe can skip it for the scope of this delta work. As the behaviour remains same like before.\nBut good to have a JIRA opened for Istanbul release to streamline the states in PDP engine.\nThoughts?",
+      "range": {
+        "startLine": 121,
+        "startChar": 24,
+        "endLine": 121,
+        "endChar": 46
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c32fd6da_84da293b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
         "patchSetId": 7
