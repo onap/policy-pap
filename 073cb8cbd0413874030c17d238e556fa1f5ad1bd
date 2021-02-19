@@ -1,0 +1,199 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "48ec11c8_39c77d04",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "couple of issues:\n1) this is an O(N^2) operation; if we used Set and/or Map instead, then it could be made O(N) or O(NlogN).  Once that\u0027s done, Set operations could be used instead of the loop\n2) this updates \"policies\", which is stored in both policies \u0026 policiesToBeUndeployed; it should not update the original list.  A simple option would be to only make a copy of policies and update the copy IF:\n\n  message.getPolicies().isEmpty()",
+      "range": {
+        "startLine": 237,
+        "startChar": 7,
+        "endLine": 245,
+        "endChar": 9
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d737b56b_b6f23a5b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 341,
+        "startChar": 92,
+        "endLine": 341,
+        "endChar": 93
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c12c4928_5305f047",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "getMessage() (i.e., the old update message)",
+      "range": {
+        "startLine": 132,
+        "startChar": 78,
+        "endLine": 132,
+        "endChar": 84
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e549fb5b_1f7180e6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "getMessage() (i.e., the old update message)",
+      "range": {
+        "startLine": 142,
+        "startChar": 79,
+        "endLine": 142,
+        "endChar": 85
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dd3d37f_f5e2a2c6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "move this after line 123",
+      "range": {
+        "startLine": 154,
+        "startChar": 7,
+        "endLine": 157,
+        "endChar": 9
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9ccee0c_0fac8000",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "should sort the lists by policy id so it works even if things are reordered, or use a Map",
+      "range": {
+        "startLine": 178,
+        "startChar": 37,
+        "endLine": 178,
+        "endChar": 47
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4378b833_25a3e496",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "should sort the lists by policy id so it works even if things are reordered, or use a HashSet",
+      "range": {
+        "startLine": 181,
+        "startChar": 50,
+        "endLine": 181,
+        "endChar": 60
+      },
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9b8e88f_518a26c1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "should probably test and return between each step, to avoid the extra overhead when it isn\u0027t needed",
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a00d669_9d17f243",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "extract this common method",
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}

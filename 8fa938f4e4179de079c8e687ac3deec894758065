@@ -232,6 +232,30 @@
     },
     {
       "key": {
+        "uuid": "fd87d3ab_c587a21a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6282430c_709ef2dd",
+      "range": {
+        "startLine": 138,
+        "startChar": 20,
+        "endLine": 138,
+        "endChar": 24
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "73528bde_a5032dd5",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 7
@@ -322,6 +346,30 @@
       "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7bc216f9_85967903",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:10:06Z",
+      "side": 1,
+      "message": "no longer an issue",
+      "parentUuid": "c32fd6da_84da293b",
+      "range": {
+        "startLine": 122,
+        "startChar": 32,
+        "endLine": 122,
+        "endChar": 36
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
