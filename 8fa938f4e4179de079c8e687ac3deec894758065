@@ -326,6 +326,30 @@
     },
     {
       "key": {
+        "uuid": "13e81a0b_ae579960",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-02-19T23:01:26Z",
+      "side": 1,
+      "message": "I believe that\u0027s the current behavior at start up, PAP sends an update message with all policies while PDP is in passive, and afterwards sends the state change message to move it to active.    This means that the PDPs need to cache the \"deployed\" policies until PAP tell it to go active.",
+      "parentUuid": "0f52a250_78afd4b0",
+      "range": {
+        "startLine": 121,
+        "startChar": 24,
+        "endLine": 121,
+        "endChar": 46
+      },
+      "revId": "8fa938f4e4179de079c8e687ac3deec894758065",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c32fd6da_84da293b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
         "patchSetId": 7
