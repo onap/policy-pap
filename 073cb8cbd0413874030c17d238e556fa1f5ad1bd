@@ -25,6 +25,23 @@
     },
     {
       "key": {
+        "uuid": "6298c72f_471a3504",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:18:56Z",
+      "side": 1,
+      "message": "update junit test to verify that these lists are properly populated",
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d737b56b_b6f23a5b",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 8
@@ -174,6 +191,23 @@
       "writtenOn": "2021-02-19T20:10:06Z",
       "side": 1,
       "message": "should probably test and return between each step, to avoid the extra overhead when it isn\u0027t needed",
+      "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8597547e_32489d3a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T20:18:56Z",
+      "side": 1,
+      "message": "update junit test to verify that these lists are properly populated",
       "revId": "073cb8cbd0413874030c17d238e556fa1f5ad1bd",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
