@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7263d05b_b5db12aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-19T13:26:27Z",
+      "side": 1,
+      "message": "Is this true?  Seems like changing from active to passive should have no bearing on policy deployment.  In fact, it might make sense to make the PDPs passive, deploy policies to them, and then make them active again.",
+      "revId": "a1608159d814691fb014de0e37191bd60d855f06",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
