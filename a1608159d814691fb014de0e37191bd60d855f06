@@ -16,6 +16,24 @@
       "revId": "a1608159d814691fb014de0e37191bd60d855f06",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1875410d_929a5a49",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-02-19T14:08:31Z",
+      "side": 1,
+      "message": "Yes, when the state is changed to PASSIVE, pdppolicystatus table continue to have entries saying that the policies are deployed. With this change, everything seems to be working fine.",
+      "parentUuid": "7263d05b_b5db12aa",
+      "revId": "a1608159d814691fb014de0e37191bd60d855f06",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
