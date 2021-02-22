@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +58,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     private static final CommInfrastructure INFRA = CommInfrastructure.NOOP;
     private static final String TOPIC = "my-topic";
 
-    private Date timeStamp;
+    private Instant timeStamp;
     private PdpHeartbeatListener pdpHeartbeatListener;
 
     @Test
@@ -207,7 +208,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     public void testPdpStatistics() throws CoderException, PfModelException, ParseException {
         addGroups("PdpGroups.json");
         pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters());
-        timeStamp = new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01");
+        timeStamp = Instant.parse("2021-02-12T17:48:01.029211400Z");
 
         // init default pdp group
         final PdpStatus status1 = new PdpStatus();

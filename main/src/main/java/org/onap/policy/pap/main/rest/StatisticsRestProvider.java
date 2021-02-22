@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2020 Nordix Foundation.
+ *  Copyright (C) 2020-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@
 
 package org.onap.policy.pap.main.rest;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +86,8 @@ public class StatisticsRestProvider {
                 Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         Map<String, Map<String, List<PdpStatistics>>> pdpStatisticsMap;
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            Date startTime = null;
-            Date endTime = null;
+            Instant startTime = null;
+            Instant endTime = null;
 
             if (groupName == null) {
                 pdpStatisticsMap = generatePdpStatistics(databaseProvider.getPdpStatistics(pdpName, startTime));

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ package org.onap.policy.pap.main.rest.e2e;
 import static org.junit.Assert.assertEquals;
 
 import java.net.HttpURLConnection;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.client.Invocation;
@@ -117,7 +117,7 @@ public class StatisticsTest extends End2EndBase {
             pdpStatisticsRecord.setPdpGroupName("defaultGroup");
             pdpStatisticsRecord.setPdpSubGroupName("apex");
             pdpStatisticsRecord.setPdpInstanceId("pdp1");
-            pdpStatisticsRecord.setTimeStamp(new Date());
+            pdpStatisticsRecord.setTimeStamp(Instant.now());
             pdpStatisticsRecord.setPolicyDeployCount(1);
             pdpStatisticsRecord.setPolicyDeployFailCount(0);
             pdpStatisticsRecord.setPolicyDeploySuccessCount(1);
