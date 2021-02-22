@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a6433ac_87976965",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T19:08:21Z",
+      "side": 1,
+      "message": ".values() is a collection, not a list, thus this generates a ClassCastException in the CSIT.  Sounds like we need some more junits",
+      "range": {
+        "startLine": 326,
+        "startChar": 24,
+        "endLine": 326,
+        "endChar": 43
+      },
+      "revId": "440dbde8f739292a56097eb10ac161580009ae92",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
