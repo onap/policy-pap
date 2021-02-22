@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "47afafe2_7ed63711",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T18:22:33Z",
+      "side": 1,
+      "message": "I\u0027m still seeing a trailing space here",
+      "range": {
+        "startLine": 116,
+        "startChar": 6,
+        "endLine": 116,
+        "endChar": 7
+      },
+      "revId": "3349fafc0fc176900f350d14a844926d81dab68b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
