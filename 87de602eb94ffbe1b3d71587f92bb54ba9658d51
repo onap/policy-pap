@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f2d96faf_dc83724b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpMessageGenerator.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09c2b85c_d84c9e38",
+      "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "94e3a4e4_1dd36f01",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 9
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "5afcde16_89902116",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94e3a4e4_1dd36f01",
+      "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b9d504d_32582893",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
         "patchSetId": 9
@@ -47,6 +83,30 @@
       "writtenOn": "2021-02-22T13:55:43Z",
       "side": 1,
       "message": "can probably just use: policies.keyset",
+      "range": {
+        "startLine": 243,
+        "startChar": 41,
+        "endLine": 244,
+        "endChar": 45
+      },
+      "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69a3673a_102e91c3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "still missing this",
+      "parentUuid": "3b9d504d_32582893",
       "range": {
         "startLine": 243,
         "startChar": 41,
@@ -76,6 +136,24 @@
     },
     {
       "key": {
+        "uuid": "85fe86c5_18c441c2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9063011b_73560585",
+      "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e0eaa94_c151b993",
         "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
         "patchSetId": 9
@@ -90,6 +168,24 @@
       "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca491cd6_d649471d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e0eaa94_c151b993",
+      "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -113,6 +209,30 @@
       "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c80ec2ae_42c18990",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be4389f1_a2e24405",
+      "range": {
+        "startLine": 194,
+        "startChar": 8,
+        "endLine": 198,
+        "endChar": 20
+      },
+      "revId": "87de602eb94ffbe1b3d71587f92bb54ba9658d51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {

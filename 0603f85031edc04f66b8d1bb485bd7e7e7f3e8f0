@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e64fd77f_2c4b6c1b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupStateChangeProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T15:41:47Z",
+      "side": 1,
+      "message": "these lines are no longer needed, right?",
+      "range": {
+        "startLine": 124,
+        "startChar": 12,
+        "endLine": 127,
+        "endChar": 13
+      },
+      "revId": "0603f85031edc04f66b8d1bb485bd7e7e7f3e8f0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
