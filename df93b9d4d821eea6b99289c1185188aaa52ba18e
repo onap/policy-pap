@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5cbb0670_0f90805e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T17:45:19Z",
+      "side": 1,
+      "message": "not necessary - line 123 makes them the same",
+      "revId": "df93b9d4d821eea6b99289c1185188aaa52ba18e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c49586d0_07248ec4",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/msgdata/UpdateReqTest.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-02-22T17:45:19Z",
+      "side": 1,
+      "message": "trailing spaces\n\nthere should be a setting in the IDE to removing trailing spaces when saving",
+      "range": {
+        "startLine": 293,
+        "startChar": 0,
+        "endLine": 293,
+        "endChar": 8
+      },
+      "revId": "df93b9d4d821eea6b99289c1185188aaa52ba18e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
