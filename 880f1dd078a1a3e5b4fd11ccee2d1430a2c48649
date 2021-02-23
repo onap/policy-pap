@@ -22,6 +22,30 @@
       "revId": "880f1dd078a1a3e5b4fd11ccee2d1430a2c48649",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95c4954b_175cff46",
+        "filename": "releases/2.4.0.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-02-23T17:39:53Z",
+      "side": 1,
+      "message": "ohh yes, I took the docker stage one. Glad that build also failed 😊",
+      "parentUuid": "1f1e89b7_6313f53b",
+      "range": {
+        "startLine": 5,
+        "startChar": 40,
+        "endLine": 5,
+        "endChar": 43
+      },
+      "revId": "880f1dd078a1a3e5b4fd11ccee2d1430a2c48649",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
