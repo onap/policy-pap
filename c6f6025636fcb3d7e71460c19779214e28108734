@@ -22,6 +22,30 @@
       "revId": "c6f6025636fcb3d7e71460c19779214e28108734",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25f57a78_3384f582",
+        "filename": "releases/2.4.1-container.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6722
+      },
+      "writtenOn": "2021-03-10T16:46:34Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0ef62ccc_b07723fd",
+      "range": {
+        "startLine": 8,
+        "startChar": 22,
+        "endLine": 8,
+        "endChar": 35
+      },
+      "revId": "c6f6025636fcb3d7e71460c19779214e28108734",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
