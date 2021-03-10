@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26ff03f6_3bbe21e1",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-03-10T12:27:47Z",
+      "side": 1,
+      "message": "Update license.",
+      "range": {
+        "startLine": 6,
+        "startChar": 16,
+        "endLine": 6,
+        "endChar": 21
+      },
+      "revId": "fe1c40e491777cf208b48b0039e532b7507b1937",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
