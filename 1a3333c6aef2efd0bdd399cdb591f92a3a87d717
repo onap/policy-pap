@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3eaa3fd_a238e274",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-03-10T12:35:48Z",
+      "side": 1,
+      "message": "can delete this line and change line 8 to \"2019, 2021\"",
+      "revId": "1a3333c6aef2efd0bdd399cdb591f92a3a87d717",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
