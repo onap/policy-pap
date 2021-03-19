@@ -1,7 +1,7 @@
 /*
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.common.utils.network.NetworkUtil;
+import org.onap.policy.common.utils.security.SelfSignedKeyStore;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -68,14 +69,13 @@ public class CommonPapRestServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonPapRestServer.class);
 
-    private static String KEYSTORE = System.getProperty("user.dir") + "/src/test/resources/ssl/policy-keystore";
-
     public static final String NOT_ALIVE = "not alive";
     public static final String ALIVE = "alive";
     public static final String SELF = NetworkUtil.getHostname();
     public static final String NAME = "Policy PAP";
     public static final String ENDPOINT_PREFIX = "policy/pap/v1/";
 
+    private static SelfSignedKeyStore keystore;
     private static int port;
     protected static String httpsPrefix;
 
@@ -101,6 +101,7 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     public static void setUpBeforeClass(boolean shouldStart) throws Exception {
+        keystore = new SelfSignedKeyStore();
         port = NetworkUtil.allocPort();
 
         httpsPrefix = "https://localhost:" + port + "/";
@@ -196,8 +197,8 @@ public class CommonPapRestServer {
         }
 
         final Properties systemProps = System.getProperties();
-        systemProps.put("javax.net.ssl.keyStore", KEYSTORE);
-        systemProps.put("javax.net.ssl.keyStorePassword", "Pol1cy_0nap");
+        systemProps.put("javax.net.ssl.keyStore", keystore.getKeystoreName());
+        systemProps.put("javax.net.ssl.keyStorePassword", SelfSignedKeyStore.KEYSTORE_PASSWORD);
         System.setProperties(systemProps);
 
         final String[] papConfigParameters = { "-c", CONFIG_FILE };
