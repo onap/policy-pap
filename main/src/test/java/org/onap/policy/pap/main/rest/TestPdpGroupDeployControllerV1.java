@@ -104,7 +104,7 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
     }
 
     private Entity<PdpDeployPolicies> makePdpPoliciesEntity() {
-        ToscaConceptIdentifierOptVersion pol1 = new ToscaConceptIdentifierOptVersion("policy-a", "1");
+        ToscaConceptIdentifierOptVersion pol1 = new ToscaConceptIdentifierOptVersion("policy-a", "1.0.0");
         ToscaConceptIdentifierOptVersion pol2 = new ToscaConceptIdentifierOptVersion("policy-b", null);
 
         PdpDeployPolicies policies = new PdpDeployPolicies();
