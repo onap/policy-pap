@@ -55,6 +55,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
+
     private static final String EXPECTED_EXCEPTION = "expected exception";
 
     private static final String POLICY2_NAME = "policyB";
@@ -472,6 +473,44 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     @Test
     public void testDeployPolicies() throws PfModelException {
         assertThatCode(() -> prov.deployPolicies(loadEmptyRequest())).doesNotThrowAnyException();
+    }
+
+    /**
+     * Tests deployPolicies() when the policies are invalid.
+     */
+    @Test
+    public void testDeployPoliciesInvalidPolicies() throws Exception {
+        // valid list
+        PdpDeployPolicies policies0 = loadFile("PapPoliciesList.json", PdpDeployPolicies.class);
+        assertThatCode(() -> prov.deployPolicies(policies0)).doesNotThrowAnyException();
+
+        // null list
+        PdpDeployPolicies policies = new PdpDeployPolicies();
+        assertThatThrownBy(() -> prov.deployPolicies(policies)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("policies");
+
+        // list containing null item
+        PdpDeployPolicies policies2 = loadFile("PapPoliciesNullItem.json", PdpDeployPolicies.class);
+        assertThatThrownBy(() -> prov.deployPolicies(policies2)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("policies").hasMessageContaining("null");
+
+        // list containing a policy with a null name
+        PdpDeployPolicies policies3 = loadFile("PapPoliciesNullPolicyName.json", PdpDeployPolicies.class);
+        assertThatThrownBy(() -> prov.deployPolicies(policies3)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("policies").hasMessageContaining("name").hasMessageContaining("null")
+                        .hasMessageNotContaining("\"value\"");
+
+        // list containing a policy with an invalid name
+        PdpDeployPolicies policies4 = loadFile("PapPoliciesInvalidPolicyName.json", PdpDeployPolicies.class);
+        assertThatThrownBy(() -> prov.deployPolicies(policies4)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("policies").hasMessageContaining("name").hasMessageContaining("$ abc")
+                        .hasMessageNotContaining("version");
+
+        // list containing a policy with an invalid version
+        PdpDeployPolicies policies5 = loadFile("PapPoliciesInvalidPolicyVersion.json", PdpDeployPolicies.class);
+        assertThatThrownBy(() -> prov.deployPolicies(policies5)).isInstanceOf(PfModelException.class)
+                        .hasMessageContaining("policies").hasMessageContaining("version").hasMessageContaining("abc123")
+                        .hasMessageNotContaining("name");
     }
 
     /**

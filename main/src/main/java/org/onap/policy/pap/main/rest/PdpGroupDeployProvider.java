@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,11 +31,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
+import lombok.Getter;
 import org.onap.policy.common.parameters.BeanValidationResult;
+import org.onap.policy.common.parameters.BeanValidator;
 import org.onap.policy.common.parameters.ObjectValidationResult;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.parameters.ValidationStatus;
+import org.onap.policy.common.parameters.annotations.NotNull;
+import org.onap.policy.common.parameters.annotations.Pattern;
+import org.onap.policy.common.parameters.annotations.Valid;
+import org.onap.policy.common.utils.coder.CoderException;
+import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.models.base.PfKey;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
@@ -61,6 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PdpGroupDeployProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployProvider.class);
+    private static final StandardCoder coder = new StandardCoder();
 
     private static final String POLICY_RESULT_NAME = "policy";
 
@@ -80,10 +90,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
      */
     public void updateGroupPolicies(DeploymentGroups groups) throws PfModelException {
         ValidationResult result = groups.validatePapRest();
-
         if (!result.isValid()) {
             String msg = result.getResult().trim();
-            logger.warn(msg);
             throw new PfModelException(Status.BAD_REQUEST, msg);
         }
 
@@ -382,6 +390,17 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     public void deployPolicies(PdpDeployPolicies policies) throws PfModelException {
+        try {
+            MyPdpDeployPolicies checked = coder.convert(policies, MyPdpDeployPolicies.class);
+            ValidationResult result = new BeanValidator().validateTop(PdpDeployPolicies.class.getSimpleName(), checked);
+            if (!result.isValid()) {
+                String msg = result.getResult().trim();
+                throw new PfModelException(Status.BAD_REQUEST, msg);
+            }
+        } catch (CoderException e) {
+            throw new PfModelException(Status.INTERNAL_SERVER_ERROR, "cannot decode request", e);
+        }
+
         process(policies, this::deploySimplePolicies);
     }
 
@@ -511,5 +530,27 @@ public class PdpGroupDeployProvider extends ProviderBase {
         }
 
         return false;
+    }
+
+    /*
+     * These are only used to validate the incoming request.
+     */
+
+    @Getter
+    public static class MyPdpDeployPolicies {
+        @NotNull
+        private List<@NotNull @Valid PolicyIdent> policies;
+    }
+
+    @Getter
+    public static class PolicyIdent {
+        @SerializedName("policy-id")
+        @NotNull
+        @Pattern(regexp = PfKey.NAME_REGEXP)
+        private String name;
+
+        @SerializedName("policy-version")
+        @Pattern(regexp = "\\d+([.]\\d+[.]\\d+)?")
+        private String version;
     }
 }
