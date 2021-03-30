@@ -4,7 +4,7 @@
   ONAP Policy PAP
   ================================================================================
   Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
-  Modifications Copyright (C) 2020 Nordix Foundation.
+  Modifications Copyright (C) 2020-2021 Nordix Foundation.
   Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,27 +31,27 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="PAP_HOST" elementType="Argument">
             <stringProp name="Argument.name">PAP_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(PAP_HOST,10.2.0.29)}</stringProp>
+            <stringProp name="Argument.value">${__P(PAP_HOST,10.2.0.149)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PAP_PORT" elementType="Argument">
             <stringProp name="Argument.name">PAP_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(PAP_PORT,30679)}</stringProp>
+            <stringProp name="Argument.value">${__P(PAP_PORT,31427)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_HOST" elementType="Argument">
             <stringProp name="Argument.name">API_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(API_HOST,10.2.0.29)}</stringProp>
+            <stringProp name="Argument.value">${__P(API_HOST,10.2.0.149)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_PORT" elementType="Argument">
             <stringProp name="Argument.name">API_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(API_PORT,30859)}</stringProp>
+            <stringProp name="Argument.value">${__P(API_PORT,30443)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="HOME_PATH" elementType="Argument">
             <stringProp name="Argument.name">HOME_PATH</stringProp>
-            <stringProp name="Argument.value">${__P(HOME,/home/adityap)}</stringProp>
+            <stringProp name="Argument.value">${__P(HOME,/home/wayned)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="LOGS_PATH" elementType="Argument">
@@ -15472,7 +15472,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="49588">202</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
@@ -15630,7 +15630,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="49588">202</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>

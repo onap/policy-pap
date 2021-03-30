@@ -4,7 +4,7 @@
   ONAP Policy PAP
   ================================================================================
   Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
-  Modifications Copyright (C) 2019 - 2020 Nordix Foundation.
+  Modifications Copyright (C) 2020-2021 Nordix Foundation.
   Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,22 +31,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="PAP_HOST" elementType="Argument">
             <stringProp name="Argument.name">PAP_HOST</stringProp>
-            <stringProp name="Argument.value">10.2.0.29</stringProp>
+            <stringProp name="Argument.value">10.2.0.149</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PAP_PORT" elementType="Argument">
             <stringProp name="Argument.name">PAP_PORT</stringProp>
-            <stringProp name="Argument.value">30679</stringProp>
+            <stringProp name="Argument.value">31427</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_HOST" elementType="Argument">
             <stringProp name="Argument.name">API_HOST</stringProp>
-            <stringProp name="Argument.value">10.2.0.29</stringProp>
+            <stringProp name="Argument.value">10.2.0.149</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_PORT" elementType="Argument">
             <stringProp name="Argument.name">API_PORT</stringProp>
-            <stringProp name="Argument.value">30859</stringProp>
+            <stringProp name="Argument.value">30443</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -15175,7 +15175,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </JSR223Assertion>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Change State to ACTIVE" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Change State to ACTIVE (defaultGroup)" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -15203,6 +15203,10 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">1</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">6000</stringProp>
+          </ConstantTimer>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check PdpGroup Query" enabled="true">
@@ -15289,13 +15293,17 @@ if (prev.getResponseCode() == &apos;200&apos;) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="49588">202</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">1</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">6000</stringProp>
+          </ConstantTimer>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create/Update PDP Group" enabled="true">
@@ -15410,7 +15418,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     	 	def pdpSubGrp=res.groups[groupSize].pdpSubgroups[subGrpSize];
                 for(int supportedPolicyTypesSize=0;supportedPolicyTypesSize&lt;pdpSubGrp.supportedPolicyTypes.size;supportedPolicyTypesSize++){
     	 		if(pdpSubGrp.supportedPolicyTypes[supportedPolicyTypesSize].name ==&apos;onap.policies.controlloop.operational.common.Apex&apos;){
-					assert pdpSubGrp.pdpInstances.size &gt; 0;
+					assert pdpSubGrp.pdpInstances.size &gt;= 0;
     	 			if (res.groups[groupSize].name == &apos;defaultGroup&apos;) {
 						assert pdpSubGrp.policies[0].name == &apos;operational.apex.stabilityTestDefaultDomain&apos;;
 					}
@@ -15476,7 +15484,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="49588">202</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
@@ -15593,7 +15601,9 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     def jsonSlurper = new JsonSlurper();
     res = jsonSlurper.parseText(prev.getResponseDataAsString());
     assert res instanceof Map;
-    assert res.healthy==true;
+    assert res.pdps.xacml!=null;
+    assert res.pdps.drools!=null;
+    assert res.pdps.apex!=null;
 }
 </stringProp>
           </JSR223Assertion>
@@ -15693,7 +15703,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="49588">202</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
@@ -15723,7 +15733,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="49588">202</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
@@ -15821,6 +15831,10 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">1</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">6000</stringProp>
+          </ConstantTimer>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check PdpGroup Query" enabled="true">
@@ -16014,7 +16028,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">/home/ubuntu/pap_stability/summary.log</stringProp>
+        <stringProp name="filename">C:\Users\WayneDunican\Desktop\S3P_PAP\testresults.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -16051,7 +16065,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">/home/ubuntu/pap_stability/resultTree.log</stringProp>
+        <stringProp name="filename">C:\Users\WayneDunican\Desktop\S3P_PAP\testresults.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="true">
