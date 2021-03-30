@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a472fa5b_5c5b556f",
+        "filename": "testsuites/stability/src/main/resources/testplans/stability.jmx",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-03-30T09:10:54Z",
+      "side": 1,
+      "message": "The new APIs seems to be missing.",
+      "revId": "edc9fc3ac610463ad4a344274608366ba0e4ef80",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
