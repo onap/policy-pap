@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -60,6 +60,12 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     public void testQueryDeployedPolicies() throws Exception {
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name");
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name/1.2.3");
+        checkRequest(POLICY_STATUS_ENDPOINT + "/my-name?regex=false");
+        // Not valid regex parameter value, should be treated as false
+        checkRequest(POLICY_STATUS_ENDPOINT + "/my-name?regex=some_text");
+        checkRequest(POLICY_STATUS_ENDPOINT + "/my.(1)name?regex=some_text");
+
+        checkInvalidRegexRequest(POLICY_STATUS_ENDPOINT + "/my-(name?regex=true");
     }
 
     @Test
@@ -81,6 +87,24 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    private void checkServerErrorRequest(String uri) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    private void checkInvalidRegexRequest(String uri) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.get());

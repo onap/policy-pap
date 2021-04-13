@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,10 @@
 
 package org.onap.policy.pap.main.rest;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -75,6 +79,38 @@ public class PolicyStatusProvider {
             return accumulate(dao.getAllPolicyStatus(policy));
         }
     }
+
+    /**
+     * Gets the deployment status of a policy, returns only statuses, which matches the regex.
+     *
+     * @param patternString policy of interest
+     * @return the deployment status of all policies
+     * @throws PfModelException if a DB error occurs
+     */
+    public Collection<PolicyStatus> getByRegex(String patternString) throws PfModelException {
+        // try to make pattern out of regex
+        final Pattern pattern = Pattern.compile(patternString);
+        // get all the statuses
+        final List<PdpPolicyStatus> policyStatuses;
+        try (PolicyModelsProvider dao = daoFactory.create()) {
+            policyStatuses = dao.getAllPolicyStatus();
+        }
+        // filter out statuses with the wrong name
+        final Collection<PdpPolicyStatus> pdpPolicyStatuses = policyStatuses
+            .stream()
+            .filter(policyStatus -> {
+                // Check policy name
+                final String policyName = policyStatus
+                    .getPolicy()
+                    .getName();
+                final Matcher matcher = pattern.matcher(policyName);
+                return matcher.matches();
+            })
+            .collect(Collectors.toList());
+
+        return accumulate(pdpPolicyStatuses);
+    }
+
 
     /**
      * Accumulates the deployment status of individual PDP/policy pairs into a status for

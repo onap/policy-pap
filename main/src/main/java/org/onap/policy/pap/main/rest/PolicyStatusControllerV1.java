@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import com.google.re2j.PatternSyntaxException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -36,6 +37,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -135,10 +137,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
 
     public Response queryDeployedPolicies(
                     @ApiParam(value = "Policy Id", required = true) @PathParam("name") String name,
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
+                    @QueryParam("regex") boolean regex) {
 
         try {
-            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
+            final Collection<PolicyStatus> result;
+            if (regex) {
+                //  get all deployed policies and  test, which one is matched by regex
+                result = provider.getByRegex(name);
+            } else {
+                result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
+            }
+
             if (result.isEmpty()) {
                 return makeNotFoundResponse(requestId);
 
@@ -151,6 +161,10 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
                 requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+        } catch (PatternSyntaxException e) {
+            logger.warn(GET_DEPLOYMENTS_FAILED, e);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)),
+                requestId).entity("Invalid regex").build();
         }
     }
 
