@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -59,7 +59,9 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     @Test
     public void testQueryDeployedPolicies() throws Exception {
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name");
+        checkRequest(POLICY_STATUS_ENDPOINT + "/my.(1)name");
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name/1.2.3");
+        checkRequest(POLICY_STATUS_ENDPOINT + "/my.(1)name/1.2.3");
     }
 
     @Test
