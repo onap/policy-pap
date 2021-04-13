@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import com.google.re2j.PatternSyntaxException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -36,6 +37,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -50,16 +52,21 @@ import org.slf4j.LoggerFactory;
  * policies.
  */
 public class PolicyStatusControllerV1 extends PapRestControllerV1 {
+    private static final String EMPTY_REGEX_ERROR_MESSAGE = "An empty string passed as a regex is not allowed";
+    private static final String EMPTY_REGEX_WARNING = ". Empty string passed as Regex.";
     private static final String GET_DEPLOYMENTS_FAILED = "get deployments failed";
+    private static final String INVALID_REGEX = "invalid regex";
 
     private static final Logger logger = LoggerFactory.getLogger(PolicyStatusControllerV1.class);
 
     private final PolicyStatusProvider provider = new PolicyStatusProvider();
 
     /**
-     * Queries status of all deployed policies.
+     * Queries status of all deployed policies. If regex is not null or empty, the function will only return
+     * policies that match regex
      *
      * @param requestId request ID used in ONAP logging
+     * @param regex regex for a policy name
      * @return a response
      */
     // @formatter:off
@@ -88,16 +95,43 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response queryAllDeployedPolicies(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
+                    @ApiParam(value = "Regex for a policy name") @QueryParam("regex") String regex) {
+        if (regex == null) {
+            try {
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                    .entity(provider.getStatus()).build();
 
-        try {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(provider.getStatus()).build();
+            } catch (PfModelException | PfModelRuntimeException e) {
+                logger.warn(GET_DEPLOYMENTS_FAILED, e);
+                return addLoggingHeaders(
+                    addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                    requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            }
+        } else if (regex.isBlank()) {
+            logger.warn(GET_DEPLOYMENTS_FAILED + EMPTY_REGEX_WARNING);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)),
+                requestId).entity(EMPTY_REGEX_ERROR_MESSAGE).build();
+        } else {
+            try {
+                final Collection<PolicyStatus> result = provider.getByRegex(regex);
+                if (result.isEmpty()) {
+                    return makeNotFoundResponse(requestId);
 
-        } catch (PfModelException | PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+                } else {
+                    return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                        .entity(result).build();
+                }
+            } catch (PfModelException | PfModelRuntimeException e) {
+                logger.warn(GET_DEPLOYMENTS_FAILED, e);
+                return addLoggingHeaders(
+                    addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                    requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            } catch (PatternSyntaxException e) {
+                logger.warn(GET_DEPLOYMENTS_FAILED, e);
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)),
+                    requestId).entity(INVALID_REGEX).build();
+            }
         }
     }
 
@@ -255,10 +289,12 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     }
 
     /**
-     * Queries status of policies in a specific PdpGroup.
+     * Queries status of policies in a specific PdpGroup. if regex is not null or empty, the function will only return
+     * policies that match regex
      *
      * @param pdpGroupName name of the PdpGroup
      * @param requestId request ID used in ONAP logging
+     * @param regex regex for a policy name
      * @return a response
      */
     // @formatter:off
@@ -289,22 +325,50 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
 
     public Response getStatusOfPoliciesByGroup(
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
+                    @ApiParam(value = "Regex for a policy name") @QueryParam("regex") String regex) {
 
-        try {
-            Collection<PdpPolicyStatus> result = provider.getPolicyStatus(pdpGroupName);
-            if (result.isEmpty()) {
-                return makeNotFoundResponse(requestId);
+        if (regex == null) {
+            try {
+                Collection<PdpPolicyStatus> result = provider.getPolicyStatus(pdpGroupName);
+                if (result.isEmpty()) {
+                    return makeNotFoundResponse(requestId);
 
-            } else {
-                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                                .entity(result).build();
+                } else {
+                    return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                        .entity(result).build();
+                }
+
+            } catch (PfModelException | PfModelRuntimeException e) {
+                logger.warn(GET_DEPLOYMENTS_FAILED, e);
+                return addLoggingHeaders(
+                    addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                    requestId).entity(e.getErrorResponse().getErrorMessage()).build();
             }
+        } else if (regex.isBlank()) {
+            logger.warn(GET_DEPLOYMENTS_FAILED + EMPTY_REGEX_WARNING);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)),
+                requestId).entity(EMPTY_REGEX_ERROR_MESSAGE).build();
+        } else {
+            try {
+                final Collection<PdpPolicyStatus> result = provider.getPolicyStatusByRegex(pdpGroupName, regex);
+                if (result.isEmpty()) {
+                    return makeNotFoundResponse(requestId);
 
-        } catch (PfModelException | PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+                } else {
+                    return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
+                        .entity(result).build();
+                }
+            } catch (PfModelException | PfModelRuntimeException e) {
+                logger.warn(GET_DEPLOYMENTS_FAILED, e);
+                return addLoggingHeaders(
+                    addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
+                    requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            } catch (PatternSyntaxException e) {
+                logger.warn(GET_DEPLOYMENTS_FAILED, e);
+                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)),
+                    requestId).entity(INVALID_REGEX).build();
+            }
         }
     }
 
