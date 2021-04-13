@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,6 +23,7 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
@@ -54,6 +55,14 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.get());
+        checkRequest(POLICY_STATUS_ENDPOINT);
+    }
+
+    @Test
+    public void testQueryAllDeployedPoliciesWithRegex() throws Exception {
+        checkRequest(POLICY_STATUS_ENDPOINT + "?regex=my.(1)name");
+        checkEmptyRegexRequest(POLICY_STATUS_ENDPOINT + "?regex=");
+        checkInvalidRegexRequest(POLICY_STATUS_ENDPOINT + "?regex=my-(name");
     }
 
     @Test
@@ -77,10 +86,51 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name/1.2.3");
     }
 
+    @Test
+    public void testGetStatusOfPoliciesWithRegex() throws Exception {
+        checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=my-%3F%5Bmn%5Da.%7B1%7De");
+        checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=my.(1)name");
+        // my-?[mna.{1}e
+        checkInvalidRegexRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=my-%3F%5Bmna.%7B1%7De");
+        checkInvalidRegexRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=my.(1name");
+        checkEmptyRegexRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=");
+    }
+
     private void checkRequest(String uri) throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    private void checkServerOkRequest(String uri) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    private void checkInvalidRegexRequest(String uri) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        final String entity = rawresp.readEntity(String.class);
+        assertTrue(entity.contains("error parsing regexp"));
+
+        // verify it fails when no authorization info is included
+        checkUnauthRequest(uri, req -> req.get());
+    }
+
+    private void checkEmptyRegexRequest(String uri) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        final String entity = rawresp.readEntity(String.class);
+        assertTrue(entity.contains("empty string passed as a regex"));
 
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.get());
