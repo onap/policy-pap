@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,10 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -75,6 +80,66 @@ public class PolicyStatusProvider {
             return accumulate(dao.getAllPolicyStatus(policy));
         }
     }
+
+
+    /**
+     * Gets the deployment status of a policy, returns only statuses, which matches the regex.
+     * If patternString is not a valid regex pattern, getStatus(ToscaConceptIdentifierOptVersion policy) is called
+     *
+     * @param patternString policy of interest
+     * @return the deployment status of all policies
+     * @throws PfModelException if a DB error occurs
+     */
+    public Collection<PolicyStatus> getByRegex(String patternString) throws PfModelException {
+        return getByRegex(patternString, null);
+    }
+
+    /**
+     * Gets the deployment status of a policy, returns only statuses, which matches the regex and version.
+     * If patternString is not a valid regex pattern, getStatus(ToscaConceptIdentifierOptVersion policy) is called
+     * Null or blank version is the same as the matching version
+     *
+     * @param patternString policy of interest
+     * @param version version
+     * @return the deployment status of all policies
+     * @throws PfModelException if a DB error occurs
+     */
+    public Collection<PolicyStatus> getByRegex(String patternString, String version) throws PfModelException {
+        final Pattern pattern;
+        try {
+            // try to make pattern out of regex
+            pattern = Pattern.compile(patternString);
+        } catch (PatternSyntaxException e) {
+            // The pattern is not valid, try to use old approach
+            return this.getStatus(new ToscaConceptIdentifierOptVersion(patternString, version));
+        }
+        // get all the statuses
+        final List<PdpPolicyStatus> policyStatuses;
+        try (PolicyModelsProvider dao = daoFactory.create()) {
+            policyStatuses = dao.getAllPolicyStatus();
+        }
+        // filter out statuses with the wrong name
+        final Collection<PdpPolicyStatus> pdpPolicyStatuses = policyStatuses
+            .stream()
+            .filter(policyStatus -> {
+                boolean result = true;
+                // If there is no version passed as method parameter, assume, that version is correct
+                if (version != null && !version.isBlank()) {
+                    final String actualVersion = policyStatus.getPolicy().getVersion();
+                    result = version.equals(actualVersion);
+                }
+                // Check policy name
+                final String policyName = policyStatus
+                    .getPolicy()
+                    .getName();
+                final Matcher matcher = pattern.matcher(policyName);
+                return result && matcher.matches();
+            })
+            .collect(Collectors.toList());
+
+        return accumulate(pdpPolicyStatuses);
+    }
+
 
     /**
      * Accumulates the deployment status of individual PDP/policy pairs into a status for
