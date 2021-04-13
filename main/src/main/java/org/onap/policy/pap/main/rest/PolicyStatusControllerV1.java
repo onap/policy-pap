@@ -55,6 +55,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(PolicyStatusControllerV1.class);
 
     private final PolicyStatusProvider provider = new PolicyStatusProvider();
+    private final PolicyStatusUtils statusUtils = new PolicyStatusUtils();
 
     /**
      * Queries status of all deployed policies.
@@ -138,7 +139,16 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
         try {
-            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
+            // check if name is a regex pattern
+            final boolean isRegex = statusUtils.isRegex(name);
+            final Collection<PolicyStatus> result;
+            if (isRegex) {
+                //  if so, get all deployed policies and  test, which one is matched by regex
+                result = provider.getByRegex(name);
+            } else {
+                result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
+            }
+
             if (result.isEmpty()) {
                 return makeNotFoundResponse(requestId);
 
@@ -191,7 +201,16 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
 
         try {
-            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
+            final Collection<PolicyStatus> result;
+            // check if name is a regex pattern
+            final boolean isRegex = statusUtils.isRegex(name);
+            if (isRegex) {
+                //  if so, get all deployed policies and  test, which one is matched by regex
+                result = provider.getByRegex(name, version);
+            } else {
+                result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
+            }
+
             if (result.isEmpty()) {
                 return makeNotFoundResponse(requestId);
 

@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +23,25 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import lombok.NonNull;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -195,6 +203,71 @@ public class TestPolicyStatusProvider extends ProviderSuper {
         assertThat(status.getPdpGroup()).isEqualTo(MY_GROUP);
         assertFalse(status.isDeploy());
         assertThat(status.getState()).isEqualTo(State.FAILURE);
+    }
+
+    @Test
+    public void testGetPolicyStatusByRegexNoMatch() throws PfModelException {
+        buildPolicyStatusToReturn1();
+        final String pattern = "Hello";
+
+        final Collection<PolicyStatus> actual = prov.getByRegex(pattern);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void testGetPolicyStatusOneMatch() throws PfModelException {
+        buildPolicyStatusToReturn1();
+        final String pattern = "My(We|Po)[li]{0,3}c.A";
+
+        final Collection<PolicyStatus> actual = prov.getByRegex(pattern);
+        assertEquals(1, actual.size());
+
+        final String actualName = actual.iterator().next().getPolicy().getName();
+        assertEquals("MyPolicyA", actualName);
+    }
+
+    @Test
+    public void testGetPolicyStatusAllMatch() throws PfModelException {
+        buildPolicyStatusToReturn1();
+        final String pattern = "My(We|Po)[li]{0,3}c.{2}0*";
+
+        final Collection<PolicyStatus> actual = prov.getByRegex(pattern);
+
+        assertEquals(3, actual.size());
+    }
+
+    @Test
+    public void testGetPolicyStatusNoValidRegex() throws PfModelException {
+        final PolicyStatusProvider spy = Mockito.spy(prov);
+        final String pattern = "My{(We";
+
+        final Collection<PolicyStatus> statuses = Arrays.asList(new PolicyStatus(), new PolicyStatus());
+
+        Mockito.doReturn(statuses).when(spy).getStatus(ArgumentMatchers.any());
+
+        final Collection<PolicyStatus> actual = spy.getByRegex(pattern);
+
+        assertThat(actual).isSameAs(statuses);
+    }
+
+    @Test
+    public void testGetPolicyStatusAllMatchVersionOK() throws PfModelException {
+        buildPolicyStatusToReturn1();
+        final String pattern = "My(We|Po)[li]{0,3}c.{2}0*";
+        final String version = "1.2.3";
+        final Collection<PolicyStatus> actual = prov.getByRegex(pattern, version);
+
+        assertEquals(3, actual.size());
+    }
+
+    @Test
+    public void testGetPolicyStatusAllMatchVersionMismatch() throws PfModelException {
+        buildPolicyStatusToReturn1();
+        final String pattern = "My(We|Po)[li]{0,3}c.{2}0*";
+        final String version = RandomStringUtils.randomNumeric(7);
+        final Collection<PolicyStatus> actual = prov.getByRegex(pattern, version);
+
+        assertEquals(0, actual.size());
     }
 
     private void buildPolicyStatusToReturn1() throws PfModelException {
