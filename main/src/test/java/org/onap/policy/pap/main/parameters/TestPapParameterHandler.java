@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2020 Nordix Foundation
+ *  Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import org.junit.Test;
+import org.onap.policy.common.utils.cmd.CommandLineException;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
@@ -40,7 +41,7 @@ import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
 public class TestPapParameterHandler {
 
     @Test
-    public void testParameterHandlerNoParameterFile() throws PolicyPapException {
+    public void testParameterHandlerNoParameterFile() throws PolicyPapException, CommandLineException {
         final String[] noArgumentString = { "-c", "parameters/NoParameterFile.json" };
 
         final PapCommandLineArguments noArguments = new PapCommandLineArguments();
@@ -52,7 +53,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testParameterHandlerEmptyParameters() throws PolicyPapException {
+    public void testParameterHandlerEmptyParameters() throws PolicyPapException, CommandLineException {
         final String[] emptyArgumentString = { "-c", "parameters/EmptyParameters.json" };
 
         final PapCommandLineArguments emptyArguments = new PapCommandLineArguments();
@@ -63,7 +64,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testParameterHandlerInvalidParameters() throws PolicyPapException {
+    public void testParameterHandlerInvalidParameters() throws PolicyPapException, CommandLineException {
         final String[] invalidArgumentString = { "-c", "parameters/InvalidParameters.json" };
 
         final PapCommandLineArguments invalidArguments = new PapCommandLineArguments();
@@ -75,7 +76,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testParameterHandlerNoParameters() throws PolicyPapException {
+    public void testParameterHandlerNoParameters() throws PolicyPapException, CommandLineException {
         final String[] noArgumentString = { "-c", "parameters/NoParameters.json" };
 
         final PapCommandLineArguments noArguments = new PapCommandLineArguments();
@@ -85,7 +86,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testParameterHandlerMinumumParameters() throws PolicyPapException {
+    public void testParameterHandlerMinumumParameters() throws PolicyPapException, CommandLineException {
         final String[] minArgumentString = { "-c", "parameters/MinimumParameters.json" };
 
         final PapCommandLineArguments minArguments = new PapCommandLineArguments();
@@ -96,7 +97,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testPapParameterGroup() throws PolicyPapException {
+    public void testPapParameterGroup() throws PolicyPapException, CommandLineException {
         final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters.json" };
 
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
@@ -108,7 +109,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testPapParameterGroup_InvalidName() throws PolicyPapException {
+    public void testPapParameterGroup_InvalidName() throws PolicyPapException, CommandLineException {
         final String[] papConfigParameters = { "-c", "parameters/PapConfigParameters_InvalidName.json" };
 
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
@@ -120,7 +121,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testPapVersion() throws PolicyPapException {
+    public void testPapVersion() throws PolicyPapException, CommandLineException {
         final String[] papConfigParameters = { "-v" };
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
         final String version = arguments.parse(papConfigParameters);
@@ -128,7 +129,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testPapHelp() throws PolicyPapException {
+    public void testPapHelp() throws PolicyPapException, CommandLineException {
         final String[] papConfigParameters = { "-h" };
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
         final String help = arguments.parse(papConfigParameters);
@@ -136,7 +137,7 @@ public class TestPapParameterHandler {
     }
 
     @Test
-    public void testPapInvalidOption() throws PolicyPapException {
+    public void testPapInvalidOption() throws PolicyPapException, CommandLineException {
         final String[] papConfigParameters = { "-d" };
         final PapCommandLineArguments arguments = new PapCommandLineArguments();
         assertThatThrownBy(() -> arguments.parse(papConfigParameters))
