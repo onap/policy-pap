@@ -139,6 +139,24 @@
     },
     {
       "key": {
+        "uuid": "5f48a300_e09da54d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-27T13:40:38Z",
+      "side": 1,
+      "message": "Moving the exception check to the controller layer would complicate the logic in the controller.\nIn the controller we have a try catch block with control logic inside that block.\nIf we make the execution path selection dependent on the exception, we must use nested try catch, or change the order of operations in this function. The one that was present is more intuitive.",
+      "parentUuid": "30bb0ca7_467984b4",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "67e3e802_2062b86a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
@@ -270,6 +288,30 @@
     },
     {
       "key": {
+        "uuid": "0217383e_7b53e7b1",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-27T13:40:38Z",
+      "side": 1,
+      "message": "No, there are 2 methods with same name, so the type is to be passed to select correct method",
+      "parentUuid": "5ec7fba8_7d9ad334",
+      "range": {
+        "startLine": 244,
+        "startChar": 51,
+        "endLine": 244,
+        "endChar": 111
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fb6d6212_ffaad075",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
         "patchSetId": 1
@@ -298,6 +340,30 @@
       "writtenOn": "2021-04-27T12:04:14Z",
       "side": 1,
       "message": "not sure of the need to create a random string - should probably hard code this",
+      "range": {
+        "startLine": 265,
+        "startChar": 31,
+        "endLine": 265,
+        "endChar": 65
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7c827d1_e434d5e3",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-27T13:40:38Z",
+      "side": 1,
+      "message": "It\u0027s a bit better to not use hard coded strings, if that is not what we really need. Here the only thing we care about is not to have \"1.2.3\"\nBut if you prefer I can put here some hardcoded value",
+      "parentUuid": "40edc815_d28e6b6b",
       "range": {
         "startLine": 265,
         "startChar": 31,
