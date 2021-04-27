@@ -235,6 +235,24 @@
     },
     {
       "key": {
+        "uuid": "475a7b43_15b0f16e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-27T15:20:56Z",
+      "side": 1,
+      "message": "So if we would add flag, then we do not need extra then try catch (just add exception to controller one) and we do need initial checking if this could be a regex. \n\nHere I was more afraid, that I could break something (as this is working endpoint). That\u0027s why everything what was not valid Regex, was redirected to old the execution path.",
+      "parentUuid": "176e0e93_a25613c4",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "67e3e802_2062b86a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
