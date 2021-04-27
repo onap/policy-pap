@@ -217,6 +217,24 @@
     },
     {
       "key": {
+        "uuid": "176e0e93_a25613c4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:53:48Z",
+      "side": 1,
+      "message": "I see, so if it\u0027s not a valid regex, then the code assumes it\u0027s really just a plain name.  That seems like it could lead to unexpected results for the client.\n\nAdding a flag to the API would eliminate the ambiguity - if the client says it\u0027s a regex, then it must be a valid regex, and if the client does not specify that it\u0027s a regex, then we would do an exact match",
+      "parentUuid": "05f7dfce_b1fdd1dd",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "67e3e802_2062b86a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
@@ -504,6 +522,30 @@
       "side": 1,
       "message": "there are 2 getStatus, one is without parameter, second is with parameters. When there is no ambiguity, then you can use any",
       "parentUuid": "a0efc264_39fdac4d",
+      "range": {
+        "startLine": 244,
+        "startChar": 51,
+        "endLine": 244,
+        "endChar": 111
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa6ee638_84cd6760",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:53:48Z",
+      "side": 1,
+      "message": "this still doesn\u0027t make sense.  The compiler should know which getStatus() to invoke when these are used:\n\n  getStatus() - compiler should invoke the zero-argument method\n  getStatus(any()) - compiler should invoke the one-argument method\n\nthere should be no ambiguity.  Did you try it?",
+      "parentUuid": "eceab011_053e1677",
       "range": {
         "startLine": 244,
         "startChar": 51,
