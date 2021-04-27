@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "098a257e_ea62fcec",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-04-27T20:46:21Z",
+      "side": 1,
+      "message": "I agree with this.",
+      "parentUuid": "d222ee6e_fcb6ebf8",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2021-04-27T12:04:14Z",
       "side": 1,
       "message": "@Ram: do we really need to support wild-card match when a version is specified?",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ad8f1bb_276ec0b1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-04-27T20:46:21Z",
+      "side": 1,
+      "message": "No, I don\u0027t think so. If version is specified then it means client only wants the status of that specific version of the policy.",
+      "parentUuid": "c2c7bab0_b3686c10",
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
@@ -247,6 +283,24 @@
       "side": 1,
       "message": "So if we would add flag, then we do not need extra then try catch (just add exception to controller one) and we do need initial checking if this could be a regex. \n\nHere I was more afraid, that I could break something (as this is working endpoint). That\u0027s why everything what was not valid Regex, was redirected to old the execution path.",
       "parentUuid": "176e0e93_a25613c4",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2a08c3f_a5176855",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-04-27T20:46:21Z",
+      "side": 1,
+      "message": "I agree about adding a flag and let clients choose if they want to supply regex or plain text. And then system behaves accordingly.",
+      "parentUuid": "475a7b43_15b0f16e",
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
