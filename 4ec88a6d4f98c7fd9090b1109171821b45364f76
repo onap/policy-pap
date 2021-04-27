@@ -82,6 +82,30 @@
     },
     {
       "key": {
+        "uuid": "5f1dee46_0035ce00",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "could create a separate JIRA for that",
+      "parentUuid": "2fd7cd22_383c974f",
+      "range": {
+        "startLine": 340,
+        "startChar": 3,
+        "endLine": 340,
+        "endChar": 56
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3163e3f2_b9351f31",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
@@ -157,6 +181,24 @@
     },
     {
       "key": {
+        "uuid": "135cb1d7_02bb1441",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "if we throw a PfModelException, then it fits right into the existing try/catch with no need for any changes to the controller",
+      "parentUuid": "5f48a300_e09da54d",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "67e3e802_2062b86a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
@@ -171,6 +213,24 @@
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6176f493_5da1a233",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67e3e802_2062b86a",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -208,6 +268,24 @@
     },
     {
       "key": {
+        "uuid": "076efb92_a623cf48",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1463023b_d1e13246",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df663b7e_4e949732",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
         "patchSetId": 1
@@ -231,6 +309,30 @@
     },
     {
       "key": {
+        "uuid": "66b456d5_200a4fe9",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df663b7e_4e949732",
+      "range": {
+        "startLine": 213,
+        "startChar": 8,
+        "endLine": 213,
+        "endChar": 18
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "769478b8_f2a8ea7d",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
         "patchSetId": 1
@@ -248,6 +350,24 @@
     },
     {
       "key": {
+        "uuid": "a360444e_5ac12d9e",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "769478b8_f2a8ea7d",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8a58836_764ae7cc",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
         "patchSetId": 1
@@ -262,6 +382,24 @@
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8531cb82_4c6a498f",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8a58836_764ae7cc",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -312,6 +450,30 @@
     },
     {
       "key": {
+        "uuid": "a0efc264_39fdac4d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "where is the second definition of any() coming from (I\u0027ve never had a problem doing this before)?  (If all else fails, could use anyClass())",
+      "parentUuid": "0217383e_7b53e7b1",
+      "range": {
+        "startLine": 244,
+        "startChar": 51,
+        "endLine": 244,
+        "endChar": 111
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fb6d6212_ffaad075",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
         "patchSetId": 1
@@ -326,6 +488,24 @@
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbffb9ae_e95eabf4",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb6d6212_ffaad075",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -373,6 +553,30 @@
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4de028dc_48365f03",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T14:03:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d7c827d1_e434d5e3",
+      "range": {
+        "startLine": 265,
+        "startChar": 31,
+        "endLine": 265,
+        "endChar": 65
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
