@@ -199,6 +199,24 @@
     },
     {
       "key": {
+        "uuid": "05f7dfce_b1fdd1dd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-27T14:39:39Z",
+      "side": 1,
+      "message": "at the moment it is designed so that if there is one character in the name - a Regex token, but the whole expression is not Regex - then the previous function will be run.\nSo the new execution path is only run for the correct Regex. For the rest of the strings, nothing changes. Plain text also runs old execution path",
+      "parentUuid": "135cb1d7_02bb1441",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "67e3e802_2062b86a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
@@ -462,6 +480,30 @@
       "side": 1,
       "message": "where is the second definition of any() coming from (I\u0027ve never had a problem doing this before)?  (If all else fails, could use anyClass())",
       "parentUuid": "0217383e_7b53e7b1",
+      "range": {
+        "startLine": 244,
+        "startChar": 51,
+        "endLine": 244,
+        "endChar": 111
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eceab011_053e1677",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-27T14:39:39Z",
+      "side": 1,
+      "message": "there are 2 getStatus, one is without parameter, second is with parameters. When there is no ambiguity, then you can use any",
+      "parentUuid": "a0efc264_39fdac4d",
       "range": {
         "startLine": 244,
         "startChar": 51,
