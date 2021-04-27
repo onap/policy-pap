@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "d222ee6e_fcb6ebf8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "how about if we add an option on the API to indicate that it\u0027s regex\n\nsame comment below",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2c7bab0_b3686c10",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "@Ram: do we really need to support wild-card match when a version is specified?",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f5fad9c4_271d1ba7",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
@@ -41,6 +75,234 @@
         "startChar": 3,
         "endLine": 340,
         "endChar": 56
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3163e3f2_b9351f31",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "sonar: use google re2j instead (FYI: it\u0027s already in the dependency tree)",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 46
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9219d53b_a799a09b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "how about if we throw an exception instead",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30bb0ca7_467984b4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "how about if we throw an exception instead",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67e3e802_2062b86a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "better performance if we return false right here when version doesn\u0027t match.  That would also eliminate the need for \"result\" variable",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8726edf7_bdb4bc9b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "if we add a flag to the API, then this class isn\u0027t needed",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1463023b_d1e13246",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "delete this line and add \", 2021\" to line #3",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df663b7e_4e949732",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "I THINK sonar pefers assertThat(actual).isEmpty()\n\n(for that matter, don\u0027t even need the \"actual\" variable)",
+      "range": {
+        "startLine": 213,
+        "startChar": 8,
+        "endLine": 213,
+        "endChar": 18
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "769478b8_f2a8ea7d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "can get the first item by using:\n\n  actual.iterator().next()",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8a58836_764ae7cc",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "should do this check before line 223",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ec7fba8_7d9ad334",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "this is ok, but could shorten it to simply: any()\n\nsame comment on line 248",
+      "range": {
+        "startLine": 244,
+        "startChar": 51,
+        "endLine": 244,
+        "endChar": 111
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb6d6212_ffaad075",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "should verify that this returns null (or throws an exception)",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40edc815_d28e6b6b",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-27T12:04:14Z",
+      "side": 1,
+      "message": "not sure of the need to create a random string - should probably hard code this",
+      "range": {
+        "startLine": 265,
+        "startChar": 31,
+        "endLine": 265,
+        "endChar": 65
       },
       "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
