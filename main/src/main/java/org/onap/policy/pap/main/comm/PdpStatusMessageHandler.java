@@ -233,11 +233,13 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         // all policies
         policies = getToscaPolicies(pdpSubGroup, databaseProvider);
 
+        policiesToBeDeployed =
+            policies.stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
         // all (-) policies that the PDP already has
         policiesToBeDeployed.keySet().removeAll(message.getPolicies());
 
         // policies that the PDP already has (-) all
-        policiesToBeUndeployed = message.getPolicies();
+        policiesToBeUndeployed = new LinkedList<>(message.getPolicies());
         policiesToBeUndeployed.removeAll(policies.stream().map(ToscaPolicy::getIdentifier)
                 .collect(Collectors.toList()));
 
@@ -256,8 +258,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             }
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
+            LOGGER.debug("Policy list in DB - {}. Policy list in heartbeat - {}", pdpSubGroup.getPolicies(),
+                message.getPolicies());
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
-                    databaseProvider);
+                databaseProvider);
         }
     }
 
