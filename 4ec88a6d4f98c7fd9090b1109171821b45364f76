@@ -178,6 +178,30 @@
     },
     {
       "key": {
+        "uuid": "8a2ea174_0e8a9112",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-04-28T14:25:56Z",
+      "side": 1,
+      "message": "I agree with this, we should add regex search here as well.",
+      "parentUuid": "f5fad9c4_271d1ba7",
+      "range": {
+        "startLine": 340,
+        "startChar": 42,
+        "endLine": 340,
+        "endChar": 54
+      },
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3163e3f2_b9351f31",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
         "patchSetId": 1
