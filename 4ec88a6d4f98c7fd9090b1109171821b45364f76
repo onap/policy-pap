@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "6294ff7f_4b3dccc7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-28T12:47:23Z",
+      "side": 1,
+      "message": "policies/deployed/\u003cpolicy-name\u003e?regex\u003dtrue\n\nAn example can be found here, just look for QueryParam:\n\n  https://gerrit.onap.org/r/gitweb?p\u003dpolicy/drools-pdp.git;a\u003dblob;f\u003dpolicy-management/src/main/java/org/onap/policy/drools/server/restful/RestManager.java;h\u003ddb280a1fcf526b2111d966c95c3496030f356137;hb\u003drefs/heads/master",
+      "parentUuid": "9ebaa7e3_dda88ef2",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
