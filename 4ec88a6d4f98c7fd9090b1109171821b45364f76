@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "9ebaa7e3_dda88ef2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-28T11:47:44Z",
+      "side": 1,
+      "message": "Can you tell me how the API should look like?",
+      "parentUuid": "098a257e_ea62fcec",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
