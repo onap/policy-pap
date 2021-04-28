@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "81d8a58a_a3e92a9f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-04-28T14:48:57Z",
+      "side": 1,
+      "message": "I think some regex characters could conflict with url characters and would need to be escaped, may not be very convenient for manual testing as they will have to be escaped.   One other option would be to have a POST method specific to regex, so the regex could be embedded in the body of the POST, something sort of ..\n\n@Path(\"policies/deployed/regex\")\nand in body somthing sort of:\n{ regex: \"^[a-z0-9]+\"}\n\n@Path(\"policies/deployed\") will stay as is and a new method would be added with the proposal",
+      "parentUuid": "6294ff7f_4b3dccc7",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1

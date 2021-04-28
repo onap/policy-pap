@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "18b3f2c9_761e3b96",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-04-28T14:48:57Z",
+      "side": 1,
+      "message": "common code with 142-150 if you could extract into method.",
+      "revId": "504bcea43f7076256d94a2a477eb11426f64a0e0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
