@@ -181,6 +181,24 @@
     },
     {
       "key": {
+        "uuid": "0044dc10_7a8a0608",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-04-29T15:44:22Z",
+      "side": 1,
+      "message": "I think it would be better to be strict with the users, and return an error if regex is passed as empty.   The way that you have it makes sense too, but I think is better to deny the request so not to create bad habits on clients.",
+      "parentUuid": "aab7aaf7_42abc456",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
