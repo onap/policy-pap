@@ -109,6 +109,24 @@
     },
     {
       "key": {
+        "uuid": "97b190f3_0930dd46",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-29T10:05:11Z",
+      "side": 1,
+      "message": "Ups, forget about what I said about, it is not to the path variable, just for the parameter.\nfor the path one regex \"n?ame\" can not be passed. It is ok only for parameters",
+      "parentUuid": "f99f986f_b59ae4d3",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
