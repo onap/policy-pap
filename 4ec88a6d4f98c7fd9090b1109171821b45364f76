@@ -127,6 +127,24 @@
     },
     {
       "key": {
+        "uuid": "4e4ff924_fcbbf42c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-29T13:27:44Z",
+      "side": 1,
+      "message": "I\u0027m OK saying that a client has to url-encode the URL if the policy \"name\" contains regex characters - that\u0027s generally how things work with other web sites.  On the other hand, we could instead add the regex pattern as an optional QueryParam for the \"policies/deployed\" api.  That might make more sense as it would behave like a filtering parameter, which is also a common strategy.\n\nPersonally, I tend to like the latter, as it\u0027s common practice AND it may absolve the client of having to URL-encode the value.",
+      "parentUuid": "97b190f3_0930dd46",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
