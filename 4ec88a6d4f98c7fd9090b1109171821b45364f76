@@ -145,6 +145,24 @@
     },
     {
       "key": {
+        "uuid": "7881e2f6_b491b47c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-04-29T13:54:34Z",
+      "side": 1,
+      "message": "I think that\u0027s better, so the code should move to the \"policies/deployed\" URL endpoint, the previous method, instead of here \"policies/deployed/{name}\", something sort of \"policies/deployed?regex\u003d^H[A-Z]+\" would be OK vs. something like \"policies/deployed/^H[A-Z]?regex\u003dtrue\" which I was having trouble with.   Point being, a policy-name regex should not be part of the path url.",
+      "parentUuid": "4e4ff924_fcbbf42c",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
