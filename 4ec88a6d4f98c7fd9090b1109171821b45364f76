@@ -91,6 +91,24 @@
     },
     {
       "key": {
+        "uuid": "f99f986f_b59ae4d3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-29T09:17:48Z",
+      "side": 1,
+      "message": "When you have some characters, that are not allowed in url params, you should use some URL encoding. (https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding)",
+      "parentUuid": "81d8a58a_a3e92a9f",
+      "revId": "4ec88a6d4f98c7fd9090b1109171821b45364f76",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2c7bab0_b3686c10",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 1
