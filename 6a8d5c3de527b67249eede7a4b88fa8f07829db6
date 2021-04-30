@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "2a49b964_bf25c67e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T18:04:36Z",
+      "side": 1,
+      "message": "looks like it should go on APIs that don\u0027t already have a \"policyName\" in the URI.  However, I\u0027m OK with starting with one for now, and then doing others in subsequent reviews.  Maybe the next step would be to put together a list of the candidates for the committers to review before doing any work on those others.",
+      "parentUuid": "7e16bf02_f1727984",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 30
+      },
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a2ab0ea9_bab4ffb2",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 5
@@ -71,6 +95,24 @@
       "side": 1,
       "message": "If you want to simplify it, you\u0027d better break this method into 3 methods (on the main if-else).\nThen we have one method for one type of request. This would be easier to track and to modify if other changes are required for single type of requests",
       "parentUuid": "a2ab0ea9_bab4ffb2",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86fe2779_07640140",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T18:04:36Z",
+      "side": 1,
+      "message": "I\u0027m imagining a flow like this:\n\n  try\n    if regex is null then list \u003d getStatus()\n    else if regex is blank then return error\n    else list \u003d getByRegex()\n\n    return listOrNotFound(list)\n  catch\n    ...\n\nThe listOrNotFound method could be parameterized so that it can be used with any of the APIs that return a list, wherein an empty list should result in a not-found result.",
+      "parentUuid": "6112599f_c790905c",
       "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
