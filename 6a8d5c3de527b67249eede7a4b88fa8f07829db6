@@ -19,6 +19,29 @@
     },
     {
       "key": {
+        "uuid": "7e16bf02_f1727984",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-04-30T13:55:03Z",
+      "side": 1,
+      "message": "General question about this change: So, every API will support a query parameter that can filter based on policyName regex? Or should we support only those APIs that actually allows policyName to be specified in the API to be updated to support regex too?",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 30
+      },
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a2ab0ea9_bab4ffb2",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 5
