@@ -59,6 +59,24 @@
     },
     {
       "key": {
+        "uuid": "6112599f_c790905c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-30T14:08:26Z",
+      "side": 1,
+      "message": "If you want to simplify it, you\u0027d better break this method into 3 methods (on the main if-else).\nThen we have one method for one type of request. This would be easier to track and to modify if other changes are required for single type of requests",
+      "parentUuid": "a2ab0ea9_bab4ffb2",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2357cefd_be2a5f16",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
         "patchSetId": 5
@@ -70,6 +88,24 @@
       "writtenOn": "2021-04-30T12:46:04Z",
       "side": 1,
       "message": "looks like need to check the result from getStatus() to handle not-found case",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f658ad5_9c7550dd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 7662
+      },
+      "writtenOn": "2021-04-30T14:08:26Z",
+      "side": 1,
+      "message": "I left it like it was in \"old flow\", but I can add it",
+      "parentUuid": "2357cefd_be2a5f16",
       "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
