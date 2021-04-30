@@ -16,6 +16,154 @@
       "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2ab0ea9_bab4ffb2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "maybe we should move these \"if\" tests inside of the \"try\" block\n\nsame comment in other methods",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2357cefd_be2a5f16",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "looks like need to check the result from getStatus() to handle not-found case",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bcbb249c_cf298904",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "should probably include the message from the exception, which might give a hint as to the problem\n\nsame comment below",
+      "range": {
+        "startLine": 133,
+        "startChar": 38,
+        "endLine": 133,
+        "endChar": 51
+      },
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4d95721_c17bffc4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "looks like the code could be rearranged so the check for not-found only has to be done once, covering both the regex and non-regex case",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3a88611_7a581813",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "looks like this could be combined with getByRegex.  In fact, could use one method that takes the initial list of policies and then does the filtering \u0026 accumulating.",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8818d42_beb3c438",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "these additional methods check both OK and unauth cases - maybe just do the unauth cases here and then do separate calls for the OK cases, and separate cases for the invalid regex",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d50c1a3f_75362418",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "should verify that it says \"invalid regex\"",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1493b2c4_c57b6033",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-04-30T12:46:04Z",
+      "side": 1,
+      "message": "use assertThat().hasSize(1)\n\nsame comment below",
+      "range": {
+        "startLine": 219,
+        "startChar": 8,
+        "endLine": 219,
+        "endChar": 20
+      },
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
