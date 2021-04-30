@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7076aedf_9d55f488",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyStatusControllerV1.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2021-04-30T11:57:48Z",
+      "side": 1,
+      "message": "Sonar might complain that these 2 methods are above complexity (15 I think) with the nested try-catch. But we can see afterward and then break it up.",
+      "revId": "6a8d5c3de527b67249eede7a4b88fa8f07829db6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
