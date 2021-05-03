@@ -32,7 +32,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.parameters.BeanValidationResult;
-import org.onap.policy.common.parameters.ObjectValidationResult;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.parameters.ValidationStatus;
 import org.onap.policy.common.utils.services.Registry;
@@ -184,8 +183,8 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
                 break;
 
             default:
-                result.addResult(new ObjectValidationResult("pdpGroupState", group.getPdpGroupState(),
-                    ValidationStatus.INVALID, "must be null, ACTIVE, or PASSIVE"));
+                result.addResult("pdpGroupState", group.getPdpGroupState(),
+                                ValidationStatus.INVALID, "must be null, ACTIVE, or PASSIVE");
                 break;
         }
     }
@@ -203,8 +202,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(group.getName(), group);
 
         if (!Objects.equals(dbgroup.getProperties(), group.getProperties())) {
-            result.addResult(
-                new ObjectValidationResult("properties", "", ValidationStatus.INVALID, "cannot change properties"));
+            result.addResult("properties", "", ValidationStatus.INVALID, "cannot change properties");
         }
 
         boolean updated = updateField(dbgroup.getDescription(), group.getDescription(), dbgroup::setDescription);
@@ -413,8 +411,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         if (!Objects.equals(dbsub.getProperties(), subgrp.getProperties())) {
-            result.addResult(
-                new ObjectValidationResult("properties", "", ValidationStatus.INVALID, "cannot change properties"));
+            result.addResult("properties", "", ValidationStatus.INVALID, "cannot change properties");
         }
 
         container.addResult(result);
@@ -434,8 +431,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
         BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
         for (ToscaConceptIdentifier type : subgrp.getSupportedPolicyTypes()) {
             if (!type.getName().endsWith(".*") && data.getPolicyType(type) == null) {
-                result.addResult(
-                    new ObjectValidationResult("policy type", type, ValidationStatus.INVALID, "unknown policy type"));
+                result.addResult("policy type", type, ValidationStatus.INVALID, "unknown policy type");
             }
         }
 

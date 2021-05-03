@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.onap.policy.common.parameters.GroupValidationResult;
+import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
 
@@ -61,7 +62,7 @@ public class TestPdpParameters {
 
         // valid
         String json2 = json;
-        GroupValidationResult result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
+        ValidationResult result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertNull(result.getResult());
         assertTrue(result.isValid());
 
@@ -69,30 +70,28 @@ public class TestPdpParameters {
         json2 = json.replaceFirst(": 6", ": 0");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult().contains(
-                        "field 'heartBeatMs' type 'long' value '0' INVALID, must be >= 1".replace('\'', '"')));
+        assertThat(result.getResult()).contains(
+                        "'heartBeatMs' value '0' INVALID, is below the minimum value: 1".replace('\'', '"'));
 
         // invalid max message age
         json2 = json.replaceFirst(": 20000", ": 0");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult().contains(
-                        "field 'maxMessageAgeMs' type 'long' value '0' INVALID, must be >= 1".replace('\'', '"')));
+        assertThat(result.getResult()).contains(
+                        "'maxMessageAgeMs' value '0' INVALID, is below the minimum value: 1".replace('\'', '"'));
 
         // no update params
         json2 = testData.nullifyField(json, "updateParameters");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult().contains("field 'updateParameters'".replace('\'', '"')));
-        assertTrue(result.getResult().contains("is null"));
+        assertThat(result.getResult()).contains("\"updateParameters\"", "is null");
 
         // invalid update params
         json2 = json.replaceFirst(": 2", ": -2");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult().contains("parameter group 'PdpUpdateParameters'".replace('\'', '"')));
-        assertTrue(result.getResult().contains(
-                        "field 'maxWaitMs' type 'long' value '-2' INVALID, must be >= 0".replace('\'', '"')));
+        assertThat(result.getResult()).contains("\"PdpUpdateParameters\"",
+                        "'maxWaitMs' value '-2' INVALID, is below the minimum value: 0".replace('\'', '"'));
 
         // no state-change params
         json2 = testData.nullifyField(json, "stateChangeParameters");
@@ -103,9 +102,8 @@ public class TestPdpParameters {
         json2 = json.replaceFirst(": 5", ": -5");
         result = coder.decode(json2, PapParameterGroup.class).getPdpParameters().validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult().contains("parameter group 'PdpStateChangeParameters'".replace('\'', '"')));
-        assertTrue(result.getResult().contains(
-                        "field 'maxWaitMs' type 'long' value '-5' INVALID, must be >= 0".replace('\'', '"')));
+        assertThat(result.getResult()).contains("\"PdpStateChangeParameters\"",
+                        "'maxWaitMs' value '-5' INVALID, is below the minimum value: 0".replace('\'', '"'));
     }
 
 }

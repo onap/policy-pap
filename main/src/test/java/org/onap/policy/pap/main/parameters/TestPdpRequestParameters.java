@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.onap.policy.common.parameters.GroupValidationResult;
+import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
 
@@ -44,7 +45,7 @@ public class TestPdpRequestParameters {
     public void testValidate() throws Exception {
         // valid, zeroes
         PdpRequestParameters params = makeParams(0, 0);
-        GroupValidationResult result = params.validate();
+        ValidationResult result = params.validate();
         assertNull(result.getResult());
         assertTrue(result.isValid());
 
@@ -58,15 +59,15 @@ public class TestPdpRequestParameters {
         params = makeParams(-1, 120);
         result = params.validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult().contains(
-                        "field 'maxRetryCount' type 'int' value '-1' INVALID, must be >= 0".replace('\'', '"')));
+        assertThat(result.getResult()).contains(
+                        "'maxRetryCount' value '-1' INVALID, is below the minimum value: 0".replace('\'', '"'));
 
         // invalid wait time
         params = makeParams(130, -1);
         result = params.validate();
         assertFalse(result.isValid());
-        assertTrue(result.getResult()
-                        .contains("field 'maxWaitMs' type 'long' value '-1' INVALID, must be >= 0".replace('\'', '"')));
+        assertThat(result.getResult()).contains(
+                        "'maxWaitMs' value '-1' INVALID, is below the minimum value: 0".replace('\'', '"'));
     }
 
     private PdpRequestParameters makeParams(int maxRetry, long maxWait) throws Exception {

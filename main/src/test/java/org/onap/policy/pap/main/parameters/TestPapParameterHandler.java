@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,8 +116,7 @@ public class TestPapParameterHandler {
         arguments.parse(papConfigParameters);
 
         assertThatThrownBy(() -> new PapParameterHandler().getParameters(arguments))
-            .hasMessageContaining("field \"name\" type \"java.lang.String\" value \" \" "
-                + "INVALID, must be a non-blank string");
+            .hasMessageContaining("\"name\" value \" \" INVALID, is blank");
     }
 
     @Test

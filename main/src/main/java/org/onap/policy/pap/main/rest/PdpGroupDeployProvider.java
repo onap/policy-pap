@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response.Status;
 import lombok.Getter;
 import org.onap.policy.common.parameters.BeanValidationResult;
 import org.onap.policy.common.parameters.BeanValidator;
-import org.onap.policy.common.parameters.ObjectValidationResult;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.parameters.ValidationStatus;
 import org.onap.policy.common.parameters.annotations.NotNull;
@@ -112,8 +111,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
             PdpGroup dbgroup = data.getGroup(group.getName());
 
             if (dbgroup == null) {
-                result.addResult(new ObjectValidationResult(group.getName(), group,
-                                ValidationStatus.INVALID, "unknown group"));
+                result.addResult(group.getName(), group, ValidationStatus.INVALID, "unknown group");
 
             } else {
                 result.addResult(updateGroup(data, dbgroup, group));
@@ -172,8 +170,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
             BeanValidationResult subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
             if (dbsub == null) {
-                subResult.addResult(new ObjectValidationResult(subgrp.getPdpType(), subgrp,
-                                ValidationStatus.INVALID, "unknown subgroup"));
+                subResult.addResult(subgrp.getPdpType(), subgrp, ValidationStatus.INVALID, "unknown subgroup");
 
             } else {
                 updated = updateSubGroup(data, dbgroup, dbsub, subgrp, subResult) || updated;
@@ -342,12 +339,11 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
             ToscaPolicy policy = data.getPolicy(new ToscaConceptIdentifierOptVersion(ident));
             if (policy == null) {
-                result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
-                                "unknown policy"));
+                result.addResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID, "unknown policy");
 
             } else if (!isPolicySupported(dbsub.getSupportedPolicyTypes(), policy.getTypeIdentifier())) {
-                result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
-                                "not a supported policy for the subgroup"));
+                result.addResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
+                                "not a supported policy for the subgroup");
 
             } else {
                 // replace version with the fully qualified version from the policy
@@ -379,8 +375,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
             return;
         }
 
-        result.addResult(new ObjectValidationResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
-                        "different version already deployed: " + dbvers));
+        result.addResult(POLICY_RESULT_NAME, ident, ValidationStatus.INVALID,
+                        "different version already deployed: " + dbvers);
     }
 
     /**
