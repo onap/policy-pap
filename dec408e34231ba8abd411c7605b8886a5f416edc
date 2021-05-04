@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7bd9fb15_435173f9",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusControllerV1.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-04T11:51:31Z",
+      "side": 1,
+      "message": "assertThat().contains()\n\nsame comment below",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 122,
+        "endChar": 18
+      },
+      "revId": "dec408e34231ba8abd411c7605b8886a5f416edc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f994fc5a_9b7879b6",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyStatusProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-04T11:51:31Z",
+      "side": 1,
+      "message": "assertThat().hasSize(1)\n\nsame comment below",
+      "revId": "dec408e34231ba8abd411c7605b8886a5f416edc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
