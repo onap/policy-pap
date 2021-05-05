@@ -12,7 +12,7 @@ LoadPolicy
      ${session}=    Create Session      policy  https://${POLICY_API_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
      ${postjson}=  Get file  ${DATA}/vCPE.policy.monitoring.input.tosca.json
-     ${resp}=   Post Request     policy  /policy/api/v1/policytypes/onap.policies.monitoring.tcagen2/versions/1.0.0/policies    data=${postjson}     headers=${headers}
+     ${resp}=   POST On Session     policy  /policy/api/v1/policytypes/onap.policies.monitoring.tcagen2/versions/1.0.0/policies    data=${postjson}     headers=${headers}
      Log    Received response from API ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
 
@@ -22,7 +22,7 @@ Healthcheck
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Get Request     policy  /policy/pap/v1/healthcheck     headers=${headers}
+     ${resp}=   GET On Session     policy  /policy/pap/v1/healthcheck     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
      Should Be Equal As Strings    ${resp.json()['code']}  200
@@ -33,7 +33,7 @@ Statistics
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Get Request     policy  /policy/pap/v1/statistics     headers=${headers}
+     ${resp}=   GET On Session     policy  /policy/pap/v1/statistics     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
      Should Be Equal As Strings    ${resp.json()['code']}  200
@@ -45,7 +45,7 @@ CreatePdpGroups
      ${postjson}=  Get file  ${CURDIR}/data/create.group.request.json
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Post Request     policy  /policy/pap/v1/pdps/groups/batch    data=${postjson}     headers=${headers}
+     ${resp}=   POST On Session     policy  /policy/pap/v1/pdps/groups/batch    data=${postjson}     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
 
@@ -55,7 +55,7 @@ ActivatePdpGroup
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Put Request     policy  /policy/pap/v1/pdps/groups/create.group.request?state=ACTIVE     headers=${headers}
+     ${resp}=    PUT On Session    policy    /policy/pap/v1/pdps/groups/create.group.request    params=state=ACTIVE    headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
 
@@ -65,7 +65,7 @@ QueryPdpGroups
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Get Request     policy  /policy/pap/v1/pdps     headers=${headers}
+     ${resp}=   GET On Session     policy  /policy/pap/v1/pdps     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
      Should Be Equal As Strings    ${resp.json()['groups'][0]['name']}  create.group.request
@@ -79,7 +79,7 @@ DeployPdpGroups
      ${postjson}=  Get file  ${CURDIR}/data/deploy.group.request.json
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Post Request     policy  /policy/pap/v1/pdps/deployments/batch    data=${postjson}     headers=${headers}
+     ${resp}=   POST On Session     policy  /policy/pap/v1/pdps/deployments/batch    data=${postjson}     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     202
 
@@ -89,7 +89,7 @@ UndeployPolicy
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Delete Request     policy  /policy/pap/v1/pdps/policies/onap.restart.tca     headers=${headers}
+     ${resp}=   DELETE On Session     policy  /policy/pap/v1/pdps/policies/onap.restart.tca     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     202
 
@@ -99,7 +99,7 @@ QueryPdpGroupsAfterUndeploy
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Get Request     policy  /policy/pap/v1/pdps     headers=${headers}
+     ${resp}=   GET On Session     policy  /policy/pap/v1/pdps     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
      Should Be Equal As Strings    ${resp.json()['groups'][0]['name']}  create.group.request
@@ -111,7 +111,7 @@ DeactivatePdpGroup
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Put Request     policy  /policy/pap/v1/pdps/groups/create.group.request?state=PASSIVE     headers=${headers}
+     ${resp}=    PUT On Session    policy    /policy/pap/v1/pdps/groups/create.group.request    params=state=PASSIVE    headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
 
@@ -121,7 +121,7 @@ DeletePdpGroups
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Delete Request     policy  /policy/pap/v1/pdps/groups/create.group.request     headers=${headers}
+     ${resp}=   DELETE On Session     policy  /policy/pap/v1/pdps/groups/create.group.request     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
 
@@ -131,7 +131,7 @@ QueryPdpGroupsAfterDelete
      Log    Creating session https://${POLICY_PAP_IP}:6969
      ${session}=    Create Session      policy  https://${POLICY_PAP_IP}:6969   auth=${auth}
      ${headers}=  Create Dictionary     Accept=application/json    Content-Type=application/json
-     ${resp}=   Get Request     policy  /policy/pap/v1/pdps     headers=${headers}
+     ${resp}=   GET On Session     policy  /policy/pap/v1/pdps     headers=${headers}
      Log    Received response from policy ${resp.text}
      Should Be Equal As Strings    ${resp.status_code}     200
      Should Be Equal As Strings    ${resp.json()['groups'][0]['name']}  defaultGroup
