@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -93,11 +93,11 @@ public class PdpMessageGenerator {
     }
 
     protected PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId, final PolicyModelsProvider databaseProvider,
-                    final List<ToscaPolicy> policies, final List<ToscaPolicy> policiesToBeDeployed,
-                    final List<ToscaConceptIdentifier> policiesToBeUndeployed) throws PfModelException {
+                    final String pdpInstanceId, final List<ToscaPolicy> policies,
+                    final List<ToscaPolicy> policiesToBeDeployed,
+                    final List<ToscaConceptIdentifier> policiesToBeUndeployed) {
 
-        final PdpUpdate update = new PdpUpdate();
+        final var update = new PdpUpdate();
 
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
@@ -134,7 +134,7 @@ public class PdpMessageGenerator {
     protected PdpStateChange createPdpStateChangeMessage(final String pdpGroupName, final PdpSubGroup subGroup,
                     final String pdpInstanceId, final PdpState pdpState) {
 
-        final PdpStateChange stateChange = new PdpStateChange();
+        final var stateChange = new PdpStateChange();
         stateChange.setName(pdpInstanceId);
         stateChange.setPdpGroup(pdpGroupName);
         stateChange.setPdpSubgroup(subGroup.getPdpType());
@@ -159,7 +159,7 @@ public class PdpMessageGenerator {
     protected void updateDeploymentStatus(final String pdpGroupName, final String pdpType, final String pdpInstanceId,
         PdpState pdpState, final PolicyModelsProvider databaseProvider, List<ToscaPolicy> policies)
         throws PfModelException {
-        DeploymentStatus deploymentStatus = new DeploymentStatus(databaseProvider);
+        var deploymentStatus = new DeploymentStatus(databaseProvider);
         deploymentStatus.loadByGroup(pdpGroupName);
         if (pdpState.equals(PdpState.PASSIVE)) {
             deploymentStatus.deleteDeployment(pdpInstanceId);
@@ -169,7 +169,7 @@ public class PdpMessageGenerator {
                     pdpGroupName, pdpType, true);
             }
         }
-        PolicyNotification notification = new PolicyNotification();
+        var notification = new PolicyNotification();
         deploymentStatus.flush(notification);
         PolicyNotifier notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER);
         notifier.publish(notification);

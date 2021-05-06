@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public class PdpRequests {
      * Stops all publishing and removes this PDP from any broadcast messages.
      */
     public void stopPublishing() {
-        Request request = requests.peek();
+        var request = requests.peek();
         if (request != null) {
             request.stopPublishing();
         }
@@ -135,7 +135,7 @@ public class PdpRequests {
         requests.remove();
 
         // start publishing next request, but don't remove it from the queue
-        Request nextRequest = requests.peek();
+        var nextRequest = requests.peek();
         if (nextRequest == null) {
             logger.info("{} has no more requests", pdpName);
             return false;

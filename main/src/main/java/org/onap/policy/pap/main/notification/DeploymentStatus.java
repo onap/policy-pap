@@ -88,7 +88,7 @@ public class DeploymentStatus {
      * @param notif notification to which to add policy status
      */
     protected void addNotifications(PolicyNotification notif) {
-        DeploymentTracker newTracker = new DeploymentTracker();
+        var newTracker = new DeploymentTracker();
         recordMap.values().forEach(newTracker::add);
 
         tracker.addNotifications(notif, newTracker);
@@ -110,7 +110,7 @@ public class DeploymentStatus {
         pdpGroupLoaded.add(pdpGroup);
 
         for (PdpPolicyStatus status : provider.getGroupPolicyStatus(pdpGroup)) {
-            StatusAction status2 = new StatusAction(Action.UNCHANGED, status);
+            var status2 = new StatusAction(Action.UNCHANGED, status);
             recordMap.put(new StatusKey(status), status2);
             tracker.add(status2);
         }

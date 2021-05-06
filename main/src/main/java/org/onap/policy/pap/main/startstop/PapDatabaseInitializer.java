@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -65,10 +64,10 @@ public class PapDatabaseInitializer {
     public void initializePapDatabase(final PolicyModelsProviderParameters policyModelsProviderParameters)
             throws PolicyPapException {
 
-        try (PolicyModelsProvider databaseProvider =
+        try (var databaseProvider =
                 factory.createPolicyModelsProvider(policyModelsProviderParameters)) {
-            final String originalJson = ResourceUtils.getResourceAsString("PapDb.json");
-            final PdpGroups pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
+            final var originalJson = ResourceUtils.getResourceAsString("PapDb.json");
+            final var pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
             final List<PdpGroup> pdpGroupsFromDb = databaseProvider.getPdpGroups(
                     pdpGroupsToCreate.getGroups().get(0).getName());
             if (pdpGroupsFromDb.isEmpty()) {

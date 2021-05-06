@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -152,7 +152,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
-            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
+            var resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
                 requestId).entity(resp).build();

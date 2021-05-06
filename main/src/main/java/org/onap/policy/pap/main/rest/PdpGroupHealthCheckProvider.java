@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+ *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +54,7 @@ public class PdpGroupHealthCheckProvider {
      */
     public Pair<Response.Status, Pdps> fetchPdpGroupHealthStatus() throws PfModelException {
 
-        final Pdps pdps = new Pdps();
+        final var pdps = new Pdps();
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
                 Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {

@@ -140,7 +140,7 @@ public class DeploymentTracker {
             PolicyStatus status = entry.getValue();
 
             // create a status with counts that are all zero
-            PolicyStatus newStatus = new PolicyStatus();
+            var newStatus = new PolicyStatus();
             newStatus.setPolicyId(status.getPolicyId());
             newStatus.setPolicyVersion(status.getPolicyVersion());
             newStatus.setPolicyTypeId(status.getPolicyTypeId());
@@ -186,7 +186,7 @@ public class DeploymentTracker {
         Map<ToscaConceptIdentifier, PolicyStatus> map = (status.isDeploy() ? deployMap : undeployMap);
 
         PolicyStatus newStat = map.computeIfAbsent(policy, key -> {
-            PolicyStatus value = new PolicyStatus();
+            var value = new PolicyStatus();
             value.setPolicyId(policy.getName());
             value.setPolicyVersion(policy.getVersion());
             value.setPolicyTypeId(status.getPolicyType().getName());

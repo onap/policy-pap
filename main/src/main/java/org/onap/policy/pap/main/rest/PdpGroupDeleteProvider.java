@@ -146,7 +146,7 @@ public class PdpGroupDeleteProvider extends ProviderBase {
 
             Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
-            boolean result = false;
+            var result = false;
 
             Iterator<ToscaConceptIdentifier> iter = subgroup.getPolicies().iterator();
             while (iter.hasNext()) {

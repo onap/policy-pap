@@ -95,7 +95,7 @@ public abstract class ProviderBase {
 
         synchronized (updateLock) {
             SessionData data;
-            PolicyNotification notif = new PolicyNotification();
+            var notif = new PolicyNotification();
 
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
@@ -138,7 +138,7 @@ public abstract class ProviderBase {
                             + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 
-        Updater updater = makeUpdater(data, policy, desiredPolicy);
+        var updater = makeUpdater(data, policy, desiredPolicy);
 
         for (PdpGroup group : groups) {
             upgradeGroup(data, group, updater);
@@ -184,7 +184,7 @@ public abstract class ProviderBase {
     private void upgradeGroup(SessionData data, PdpGroup group, Updater updater)
                     throws PfModelException {
 
-        boolean updated = false;
+        var updated = false;
 
         for (PdpSubGroup subgroup : group.getPdpSubgroups()) {
 
@@ -227,7 +227,7 @@ public abstract class ProviderBase {
      */
     private PdpUpdate makeUpdate(SessionData data, PdpGroup group, PdpSubGroup subgroup, Pdp pdp) {
 
-        PdpUpdate update = new PdpUpdate();
+        var update = new PdpUpdate();
 
         update.setName(pdp.getInstanceId());
         update.setDescription(group.getDescription());

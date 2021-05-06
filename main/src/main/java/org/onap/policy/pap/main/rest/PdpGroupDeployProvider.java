@@ -105,7 +105,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private void updateGroups(SessionData data, DeploymentGroups groups) throws PfModelException {
-        BeanValidationResult result = new BeanValidationResult("groups", groups);
+        var result = new BeanValidationResult("groups", groups);
 
         for (DeploymentGroup group : groups.getGroups()) {
             PdpGroup dbgroup = data.getGroup(group.getName());
@@ -135,7 +135,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private ValidationResult updateGroup(SessionData data, PdpGroup dbgroup, DeploymentGroup group)
                     throws PfModelException {
 
-        BeanValidationResult result = new BeanValidationResult(group.getName(), group);
+        var result = new BeanValidationResult(group.getName(), group);
 
         boolean updated = updateSubGroups(data, dbgroup, group, result);
 
@@ -163,11 +163,11 @@ public class PdpGroupDeployProvider extends ProviderBase {
         Map<String, PdpSubGroup> type2sub = new HashMap<>();
         dbgroup.getPdpSubgroups().forEach(subgrp -> type2sub.put(subgrp.getPdpType(), subgrp));
 
-        boolean updated = false;
+        var updated = false;
 
         for (DeploymentSubGroup subgrp : group.getDeploymentSubgroups()) {
             PdpSubGroup dbsub = type2sub.get(subgrp.getPdpType());
-            BeanValidationResult subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+            var subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
             if (dbsub == null) {
                 subResult.addResult(subgrp.getPdpType(), subgrp, ValidationStatus.INVALID, "unknown subgroup");
@@ -203,7 +203,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
             return false;
         }
 
-        boolean updated = false;
+        var updated = false;
 
         switch (subgrp.getAction()) {
             case POST:
@@ -233,7 +233,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         Set<ToscaConceptIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
         policies.addAll(subgrp.getPolicies());
 
-        DeploymentSubGroup subgrp2 = new DeploymentSubGroup(subgrp);
+        var subgrp2 = new DeploymentSubGroup(subgrp);
         subgrp2.getPolicies().clear();
         subgrp2.getPolicies().addAll(policies);
 
@@ -246,7 +246,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         Set<ToscaConceptIdentifier> policies = new LinkedHashSet<>(dbsub.getPolicies());
         policies.removeAll(subgrp.getPolicies());
 
-        DeploymentSubGroup subgrp2 = new DeploymentSubGroup(subgrp);
+        var subgrp2 = new DeploymentSubGroup(subgrp);
         subgrp2.getPolicies().clear();
         subgrp2.getPolicies().addAll(policies);
 
@@ -296,7 +296,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private boolean validateSubGroup(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp,
                     BeanValidationResult container) throws PfModelException {
 
-        BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+        var result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         result.addResult(validatePolicies(data, dbsub, subgrp));
         container.addResult(result);
@@ -322,7 +322,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
         Map<String, String> dbname2vers = new HashMap<>();
         dbsub.getPolicies().forEach(ident -> dbname2vers.put(ident.getName(), ident.getVersion()));
 
-        BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+        var result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         for (ToscaConceptIdentifier ident : subgrp.getPolicies()) {
             // note: "ident" may not have a fully qualified version

@@ -236,10 +236,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
         assertTrue(data.reconfigure(msg2));
 
-        List<ToscaConceptIdentifier> dataPols = data.getMessage().getPoliciesToBeDeployed().stream()
-                .map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
-        assertThat(dataPols).doesNotContainAnyElementsOf(data.getMessage().getPoliciesToBeUndeployed());
+        assertThat(data.getMessage().getPoliciesToBeDeployed()).isEmpty();
 
         // some items only in deploy
         policies = new ArrayList<>(update.getPolicies());

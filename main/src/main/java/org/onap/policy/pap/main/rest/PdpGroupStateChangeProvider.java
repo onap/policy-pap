@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,9 +29,7 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
-import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
-import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
@@ -121,10 +119,10 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
             List<ToscaPolicy> policies = getToscaPolicies(subGroup, databaseProvider);
             for (final Pdp pdp : subGroup.getPdpInstances()) {
                 String pdpInstanceId = pdp.getInstanceId();
-                final PdpUpdate pdpUpdatemessage =
-                    createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(), databaseProvider,
+                final var pdpUpdatemessage =
+                    createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(),
                                 policies, policies, null);
-                final PdpStateChange pdpStateChangeMessage =
+                final var pdpStateChangeMessage =
                     createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
                 updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId,
                     pdpStateChangeMessage.getState(), databaseProvider, pdpUpdatemessage.getPolicies());

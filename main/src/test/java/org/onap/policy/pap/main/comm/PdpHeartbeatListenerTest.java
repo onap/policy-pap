@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
- *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,7 +225,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
         PdpUpdate update10 = handler.createPdpUpdateMessage(
                 status3.getPdpGroup(), new PdpSubGroup(), "pdp_2",
-                null, policies, policies, polsUndep);
+                policies, policies, polsUndep);
         assertSame(update10.getPolicies(), policies);
         assertSame(update10.getPoliciesToBeDeployed(), policies);
         assertSame(update10.getPoliciesToBeUndeployed(), polsUndep);

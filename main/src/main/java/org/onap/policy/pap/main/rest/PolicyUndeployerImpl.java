@@ -81,7 +81,7 @@ public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeploy
         PdpSubGroup subgroup = optsub.get();
 
         // remove the policies
-        boolean updated = false;
+        var updated = false;
         Set<String> pdps = subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toSet());
 
         for (ToscaConceptIdentifier ident : policyInfo.policies) {
