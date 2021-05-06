@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 Nordix Foundation.
+ * Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +105,7 @@ public class PdpGroupCreateOrUpdateControllerV1 extends PapRestControllerV1 {
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
-            PdpGroupUpdateResponse resp = new PdpGroupUpdateResponse();
+            var resp = new PdpGroupUpdateResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
                 requestId).entity(resp).build();

@@ -51,11 +51,11 @@ public class Main {
      * @param args the command line arguments
      */
     public Main(final String[] args) {
-        final String argumentString = Arrays.toString(args);
+        final var argumentString = Arrays.toString(args);
         LOGGER.info("Starting policy pap service with arguments - {}", argumentString);
 
         // Check the arguments
-        final PapCommandLineArguments arguments = new PapCommandLineArguments();
+        final var arguments = new PapCommandLineArguments();
         try {
             // The arguments return a string if there is a message to print and we should exit
             final String argumentMessage = arguments.parse(args);
@@ -94,7 +94,7 @@ public class Main {
 
         // Add a shutdown hook to shut everything down in an orderly manner
         Runtime.getRuntime().addShutdownHook(new PolicyPapShutdownHookClass());
-        String successMsg = String.format(MessageConstants.START_SUCCESS_MSG, MessageConstants.POLICY_PAP);
+        var successMsg = String.format(MessageConstants.START_SUCCESS_MSG, MessageConstants.POLICY_PAP);
         LOGGER.info(successMsg);
     }
 

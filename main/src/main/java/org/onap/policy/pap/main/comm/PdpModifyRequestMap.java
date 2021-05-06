@@ -190,7 +190,7 @@ public class PdpModifyRequestMap {
         // @formatter:on
 
         String name = update.getName() + " " + PdpUpdate.class.getSimpleName();
-        UpdateReq request = new UpdateReq(reqparams, name, update);
+        var request = new UpdateReq(reqparams, name, update);
 
         addSingleton(request);
     }
@@ -219,7 +219,7 @@ public class PdpModifyRequestMap {
         // @formatter:on
 
         String name = stateChange.getName() + " " + PdpStateChange.class.getSimpleName();
-        StateChangeReq request = new StateChangeReq(reqparams, name, stateChange);
+        var request = new StateChangeReq(reqparams, name, stateChange);
 
         addSingleton(request);
     }
@@ -266,7 +266,7 @@ public class PdpModifyRequestMap {
             List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
             List<PdpGroup> updates = new ArrayList<>(1);
 
-            DeploymentStatus status = new DeploymentStatus(dao);
+            var status = new DeploymentStatus(dao);
 
             for (PdpGroup group : groups) {
                 if (removeFromGroup(pdpName, group)) {
@@ -282,7 +282,7 @@ public class PdpModifyRequestMap {
             } else {
                 dao.updatePdpGroups(updates);
 
-                PolicyNotification notification = new PolicyNotification();
+                var notification = new PolicyNotification();
                 status.flush(notification);
 
                 policyNotifier.publish(notification);

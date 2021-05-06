@@ -75,7 +75,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     public void createOrUpdateGroups(PdpGroups groups) throws PfModelException {
-        BeanValidationResult result = new BeanValidationResult("groups", groups);
+        var result = new BeanValidationResult("groups", groups);
         groups.checkForDuplicateGroups(result);
         if (!result.isValid()) {
             String msg = result.getResult().trim();
@@ -104,7 +104,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private void createOrUpdate(SessionData data, PdpGroups groups) throws PfModelException {
-        BeanValidationResult result = new BeanValidationResult("groups", groups);
+        var result = new BeanValidationResult("groups", groups);
 
         for (PdpGroup group : groups.getGroups()) {
             PdpGroup dbgroup = data.getGroup(group.getName());
@@ -143,7 +143,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private ValidationResult addGroup(SessionData data, PdpGroup group) throws PfModelException {
-        BeanValidationResult result = new BeanValidationResult(group.getName(), group);
+        var result = new BeanValidationResult(group.getName(), group);
 
         validateGroupOnly(group, result);
         if (!result.isValid()) {
@@ -199,7 +199,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private ValidationResult updateGroup(SessionData data, PdpGroup dbgroup, PdpGroup group) throws PfModelException {
-        BeanValidationResult result = new BeanValidationResult(group.getName(), group);
+        var result = new BeanValidationResult(group.getName(), group);
 
         if (!Objects.equals(dbgroup.getProperties(), group.getProperties())) {
             result.addResult("properties", "", ValidationStatus.INVALID, "cannot change properties");
@@ -257,11 +257,11 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
         Map<String, PdpSubGroup> type2sub = new HashMap<>();
         dbgroup.getPdpSubgroups().forEach(subgrp -> type2sub.put(subgrp.getPdpType(), subgrp));
 
-        boolean updated = false;
+        var updated = false;
 
         for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
             PdpSubGroup dbsub = type2sub.get(subgrp.getPdpType());
-            BeanValidationResult subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+            var subResult = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
             if (dbsub == null) {
                 updated = true;
@@ -288,7 +288,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private boolean notifyPdpsDelSubGroups(SessionData data, PdpGroup dbgroup, PdpGroup group) throws PfModelException {
-        boolean updated = false;
+        var updated = false;
 
         // subgroups, as they appear within the updated group
         Set<String> subgroups = new HashSet<>();
@@ -319,12 +319,12 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
             String name = pdp.getInstanceId();
 
             // make it passive
-            PdpStateChange change = new PdpStateChange();
+            var change = new PdpStateChange();
             change.setName(name);
             change.setState(PdpState.PASSIVE);
 
             // remove it from subgroup and undeploy all policies
-            PdpUpdate update = new PdpUpdate();
+            var update = new PdpUpdate();
             update.setName(name);
 
             data.addRequests(update, change);
@@ -360,7 +360,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
         subgrp.setCurrentInstanceCount(0);
         subgrp.setPdpInstances(Collections.emptyList());
 
-        BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+        var result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         result.addResult(validateSupportedTypes(data, subgrp));
         return result;
@@ -408,7 +408,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      */
     private boolean validateSubGroup(PdpSubGroup dbsub, PdpSubGroup subgrp, BeanValidationResult container) {
 
-        BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+        var result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
 
         if (!Objects.equals(dbsub.getProperties(), subgrp.getProperties())) {
             result.addResult("properties", "", ValidationStatus.INVALID, "cannot change properties");
@@ -428,7 +428,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private ValidationResult validateSupportedTypes(SessionData data, PdpSubGroup subgrp) throws PfModelException {
-        BeanValidationResult result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
+        var result = new BeanValidationResult(subgrp.getPdpType(), subgrp);
         for (ToscaConceptIdentifier type : subgrp.getSupportedPolicyTypes()) {
             if (!type.getName().endsWith(".*") && data.getPolicyType(type) == null) {
                 result.addResult("policy type", type, ValidationStatus.INVALID, "unknown policy type");

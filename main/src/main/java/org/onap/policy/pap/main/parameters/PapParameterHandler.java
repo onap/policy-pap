@@ -55,7 +55,7 @@ public class PapParameterHandler {
         // Read the parameters
         try {
             // Read the parameters from JSON
-            File file = new File(arguments.getFullConfigurationFilePath());
+            var file = new File(arguments.getFullConfigurationFilePath());
             papParameterGroup = CODER.decode(file, PapParameterGroup.class);
         } catch (final CoderException e) {
             final String errorMessage = "error reading parameters from \"" + arguments.getConfigurationFilePath()

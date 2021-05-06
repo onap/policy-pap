@@ -463,7 +463,7 @@ public class SessionData {
             String pdpType) throws PfModelException {
         ToscaConceptIdentifier policyId = policy.getIdentifier();
         policiesToBeDeployed.put(policyId, policy);
-        
+
         addData(policyId, pdps, pdpGroup, pdpType, true);
     }
 
@@ -498,7 +498,7 @@ public class SessionData {
         // delete all records whose "deploy" flag is the opposite of what we want
         deployStatus.deleteDeployment(policyId, !deploy);
 
-        ToscaConceptIdentifierOptVersion optid = new ToscaConceptIdentifierOptVersion(policyId);
+        var optid = new ToscaConceptIdentifierOptVersion(policyId);
         ToscaConceptIdentifier policyType = getPolicy(optid).getTypeIdentifier();
 
         for (String pdp : pdps) {

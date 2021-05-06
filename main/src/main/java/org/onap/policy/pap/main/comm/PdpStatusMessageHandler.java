@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,11 +36,9 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
-import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
-import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
@@ -112,7 +110,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                  * throw an exception.
                  */
                 if (message.getName() != null) {
-                    final PdpTracker pdpTracker = Registry.get(PapConstants.REG_PDP_TRACKER);
+                    final var pdpTracker = (PdpTracker) Registry.get(PapConstants.REG_PDP_TRACKER);
                     pdpTracker.add(message.getName());
                 }
             } catch (final PolicyPapException exp) {
@@ -126,7 +124,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private void handlePdpRegistration(final PdpStatus message, final PolicyModelsProvider databaseProvider)
             throws PfModelException, PolicyPapException {
         if (!findAndUpdatePdpGroup(message, databaseProvider)) {
-            final String errorMessage = "Failed to register PDP. No matching PdpGroup/SubGroup Found - ";
+            final var errorMessage = "Failed to register PDP. No matching PdpGroup/SubGroup Found - ";
             LOGGER.debug("{}{}", errorMessage, message);
             throw new PolicyPapException(errorMessage + message);
         }
@@ -134,7 +132,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private boolean findAndUpdatePdpGroup(final PdpStatus message, final PolicyModelsProvider databaseProvider)
             throws PfModelException {
-        boolean pdpGroupFound = false;
+        var pdpGroupFound = false;
         final PdpGroupFilter filter =
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
 
@@ -148,15 +146,15 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private boolean registerPdp(final PdpStatus message, final PolicyModelsProvider databaseProvider,
             final PdpGroup finalizedPdpGroup) throws PfModelException {
         Optional<PdpSubGroup> subGroup;
-        boolean pdpGroupFound = false;
+        var pdpGroupFound = false;
         subGroup = findPdpSubGroup(message, finalizedPdpGroup);
 
-        policies = getToscaPolicies(subGroup.get(), databaseProvider);
-        policiesToBeDeployed = policies.stream().collect(Collectors
-                .toMap(ToscaPolicy::getIdentifier, policy -> policy));
-        policiesToBeUndeployed = null;
-
         if (subGroup.isPresent()) {
+            policies = getToscaPolicies(subGroup.get(), databaseProvider);
+            policiesToBeDeployed = policies.stream().collect(Collectors
+                    .toMap(ToscaPolicy::getIdentifier, policy -> policy));
+            policiesToBeUndeployed = null;
+
             LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", finalizedPdpGroup, message);
             if (!findPdpInstance(message, subGroup.get()).isPresent()) {
                 updatePdpSubGroup(finalizedPdpGroup, subGroup.get(), message, databaseProvider);
@@ -170,7 +168,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private void updatePdpSubGroup(final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup, final PdpStatus message,
             final PolicyModelsProvider databaseProvider) throws PfModelException {
 
-        final Pdp pdpInstance = new Pdp();
+        final var pdpInstance = new Pdp();
         pdpInstance.setInstanceId(message.getName());
         pdpInstance.setPdpState(PdpState.ACTIVE);
         pdpInstance.setHealthy(message.getHealthy());
@@ -191,7 +189,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = databaseProvider.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
-            PdpGroup pdpGroup = pdpGroups.get(0);
+            var pdpGroup = pdpGroups.get(0);
             Optional<PdpSubGroup> pdpSubgroup = findPdpSubGroup(message, pdpGroup);
             if (pdpSubgroup.isPresent()) {
                 Optional<Pdp> pdpInstance = findPdpInstance(message, pdpSubgroup.get());
@@ -326,10 +324,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             final PdpState pdpState, final PolicyModelsProvider databaseProvider)
                     throws PfModelException {
         final List<ToscaPolicy> polsToBeDeployed = new LinkedList<>(policiesToBeDeployed.values());
-        final PdpUpdate pdpUpdatemessage =
-            createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, databaseProvider, policies,
+        final var pdpUpdatemessage =
+            createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, policies,
                         polsToBeDeployed, policiesToBeUndeployed);
-        final PdpStateChange pdpStateChangeMessage =
+        final var pdpStateChangeMessage =
             createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId, pdpStateChangeMessage.getState(),
             databaseProvider, pdpUpdatemessage.getPolicies());

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -188,7 +188,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
-            PdpGroupDeleteResponse resp = new PdpGroupDeleteResponse();
+            var resp = new PdpGroupDeleteResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
                             requestId).entity(resp).build();
@@ -213,7 +213,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
-            PdpGroupDeployResponse resp = new PdpGroupDeployResponse();
+            var resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
                             requestId).entity(resp).build();

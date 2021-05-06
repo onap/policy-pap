@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
-import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.HealthCheckRestControllerV1;
 import org.onap.policy.pap.main.rest.PapAafFilter;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
@@ -119,8 +118,8 @@ public class PapActivator extends ServiceManagerContainer {
 
         papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
 
-        final Object pdpUpdateLock = new Object();
-        final PdpParameters pdpParams = papParameterGroup.getPdpParameters();
+        final var pdpUpdateLock = new Object();
+        final var pdpParams = papParameterGroup.getPdpParameters();
         final AtomicReference<Publisher<PdpMessage>> pdpPub = new AtomicReference<>();
         final AtomicReference<Publisher<PolicyNotification>> notifyPub = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
@@ -246,7 +245,7 @@ public class PapActivator extends ServiceManagerContainer {
 
         addAction("REST server",
             () -> {
-                RestServer server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
+                var server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
                                 HealthCheckRestControllerV1.class,
                                 StatisticsRestControllerV1.class,
                                 PdpGroupCreateOrUpdateControllerV1.class,
@@ -270,7 +269,7 @@ public class PapActivator extends ServiceManagerContainer {
      * @param runner function to run in the background
      */
     private void startThread(final Runnable runner) {
-        final Thread thread = new Thread(runner);
+        final var thread = new Thread(runner);
         thread.setDaemon(true);
 
         thread.start();

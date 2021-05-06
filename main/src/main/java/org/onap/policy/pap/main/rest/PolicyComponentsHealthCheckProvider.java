@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
@@ -44,7 +43,6 @@ import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
-import org.onap.policy.common.endpoints.parameters.RestServerParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
@@ -131,7 +129,7 @@ public class PolicyComponentsHealthCheckProvider {
 
         // Check PAP itself
         HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck();
-        RestServerParameters restServerParameters = papParameterGroup.getRestServerParameters();
+        var restServerParameters = papParameterGroup.getRestServerParameters();
         papReport.setUrl(
             (restServerParameters.isHttps() ? "https://" : "http://") + papReport.getUrl() + ":" + restServerParameters
                 .getPort() + POLICY_PAP_HEALTHCHECK_URI);
@@ -171,7 +169,7 @@ public class PolicyComponentsHealthCheckProvider {
     }
 
     private boolean verifyNumberOfPdps(List<PdpGroup> groups) {
-        boolean flag = true;
+        var flag = true;
         for (final PdpGroup group : groups) {
             for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
                 if (subGroup.getCurrentInstanceCount() < subGroup.getDesiredInstanceCount()) {
@@ -213,7 +211,7 @@ public class PolicyComponentsHealthCheckProvider {
     }
 
     private HealthCheckReport createUnHealthCheckReport(String name, String url, int code, String message) {
-        HealthCheckReport report = new HealthCheckReport();
+        var report = new HealthCheckReport();
         report.setName(name);
         report.setUrl(url);
         report.setHealthy(false);
@@ -223,10 +221,9 @@ public class PolicyComponentsHealthCheckProvider {
     }
 
     private HealthCheckReport replaceIpWithHostname(HealthCheckReport report, String baseUrl) {
-        Matcher matcher = IP_REPLACEMENT_PATTERN.matcher(baseUrl);
-        String ip = "";
+        var matcher = IP_REPLACEMENT_PATTERN.matcher(baseUrl);
         if (matcher.find()) {
-            ip = matcher.group(1);
+            var ip = matcher.group(1);
             report.setUrl(baseUrl.replace(ip, report.getUrl()));
         }
         return report;

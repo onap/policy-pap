@@ -22,7 +22,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.List;
@@ -89,7 +88,7 @@ public class PolicyStatusProvider {
      */
     public Collection<PolicyStatus> getByRegex(String patternString) throws PfModelException {
         // try to make pattern out of regex
-        final Pattern pattern = Pattern.compile(patternString);
+        final var pattern = Pattern.compile(patternString);
         // get all the statuses
         final List<PdpPolicyStatus> policyStatuses;
         try (PolicyModelsProvider dao = daoFactory.create()) {
@@ -110,7 +109,7 @@ public class PolicyStatusProvider {
      * @return the deployment status of the policies
      */
     private Collection<PolicyStatus> accumulate(Collection<PdpPolicyStatus> source) {
-        DeploymentTracker tracker = new DeploymentTracker();
+        var tracker = new DeploymentTracker();
 
         for (PdpPolicyStatus status : source) {
             if (status.isDeploy()) {
@@ -173,7 +172,7 @@ public class PolicyStatusProvider {
      */
     public Collection<PdpPolicyStatus> getPolicyStatusByRegex(String pdpGroupName, String patternString)
         throws PfModelException {
-        final Pattern pattern = Pattern.compile(patternString);
+        final var pattern = Pattern.compile(patternString);
         // get all the statuses
         final Collection<PdpPolicyStatus> policyStatuses = getPolicyStatus(pdpGroupName);
         // filter out statuses with the wrong name
@@ -188,8 +187,7 @@ public class PolicyStatusProvider {
                 final String policyName = policyStatus
                     .getPolicy()
                     .getName();
-                final Matcher matcher = pattern.matcher(policyName);
-                return matcher.matches();
+                return pattern.matcher(policyName).matches();
             })
             .collect(Collectors.toList());
     }

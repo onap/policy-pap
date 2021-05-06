@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ public class TimerManager implements Runnable {
 
         synchronized (lockit) {
             // always remove existing entry so that new entry goes at the end of the map
-            Timer timer = name2timer.remove(timerName);
+            var timer = name2timer.remove(timerName);
             if (timer != null) {
                 logger.info("{} timer replaced {}", name, timer);
             }

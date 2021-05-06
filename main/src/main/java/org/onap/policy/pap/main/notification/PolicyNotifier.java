@@ -75,7 +75,7 @@ public class PolicyNotifier {
             status.loadByGroup(pdpGroup);
             status.completeDeploy(pdp, expectedPolicies, actualPolicies);
 
-            PolicyNotification notification = new PolicyNotification();
+            var notification = new PolicyNotification();
             status.flush(notification);
 
             publish(notification);
