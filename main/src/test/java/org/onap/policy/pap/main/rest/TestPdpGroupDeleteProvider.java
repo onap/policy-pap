@@ -194,7 +194,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertEquals("pdpA", req.getName());
         assertEquals(GROUP1_NAME, req.getPdpGroup());
         assertEquals("pdpTypeA", req.getPdpSubgroup());
-        assertEquals(Arrays.asList(policy1, policy1), req.getPolicies());
+        assertEquals(Arrays.asList(policy1.getIdentifier()), req.getPoliciesToBeUndeployed());
     }
 
     @Test

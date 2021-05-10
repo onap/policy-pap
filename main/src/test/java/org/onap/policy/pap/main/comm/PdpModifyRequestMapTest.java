@@ -585,7 +585,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         when(policy.getIdentifier()).thenReturn(ident);
 
         // add some policies to the update
-        update.setPolicies(Arrays.asList(policy));
+        update.setPoliciesToBeDeployed(Arrays.asList(policy));
 
         map.addRequest(update);
 
@@ -597,7 +597,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         doAnswer(ans -> {
             PdpUpdate update2 = new PdpUpdate(update);
-            update2.setPolicies(Collections.emptyList());
+            update2.setPoliciesToBeDeployed(Collections.emptyList());
+            update2.setPoliciesToBeUndeployed(Arrays.asList(policy.getIdentifier()));
             assertTrue(req.reconfigure(update2));
             throw makeException();
         }).when(undeployer).undeploy(any(), any(), any());
@@ -630,7 +631,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         when(policy.getIdentifier()).thenReturn(ident);
 
         // add some policies to the update
-        update.setPolicies(Arrays.asList(policy));
+        update.setPoliciesToBeDeployed(Arrays.asList(policy));
 
         map.addRequest(update);
 

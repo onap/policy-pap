@@ -93,7 +93,7 @@ public class PdpMessageGenerator {
     }
 
     protected PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId, final List<ToscaPolicy> policies,
+                    final String pdpInstanceId,
                     final List<ToscaPolicy> policiesToBeDeployed,
                     final List<ToscaConceptIdentifier> policiesToBeUndeployed) {
 
@@ -102,7 +102,6 @@ public class PdpMessageGenerator {
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
-        update.setPolicies(policies);
         update.setPoliciesToBeDeployed(policiesToBeDeployed);
         update.setPoliciesToBeUndeployed(policiesToBeUndeployed);
         update.setPdpHeartbeatIntervalMs(heartBeatMs);

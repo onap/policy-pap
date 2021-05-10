@@ -220,7 +220,7 @@ public class SessionData {
         }
 
         logger.info("add update and state-change {} {} {} policies={}", update.getName(), update.getPdpGroup(),
-                update.getPdpSubgroup(), update.getPolicies().size());
+                update.getPdpSubgroup(), update.getPoliciesToBeDeployed().size());
         pdpRequests.put(update.getName(), Pair.of(update, change));
     }
 
@@ -231,7 +231,7 @@ public class SessionData {
      */
     public void addUpdate(PdpUpdate update) {
         logger.info("add update {} {} {} policies={}", update.getName(), update.getPdpGroup(), update.getPdpSubgroup(),
-                update.getPolicies().size());
+                update.getPoliciesToBeDeployed().size());
         pdpRequests.compute(update.getName(), (name, data) -> Pair.of(update, (data == null ? null : data.getRight())));
     }
 
