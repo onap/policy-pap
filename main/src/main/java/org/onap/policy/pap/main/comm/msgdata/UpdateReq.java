@@ -94,7 +94,7 @@ public class UpdateReq extends RequestImpl {
         }
 
         Set<ToscaConceptIdentifier> actualSet = new HashSet<>(alwaysList(response.getPolicies()));
-        Set<ToscaConceptIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPolicies()).stream()
+        Set<ToscaConceptIdentifier> expectedSet = new HashSet<>(alwaysList(message.getPoliciesToBeDeployed()).stream()
                         .map(ToscaPolicy::getIdentifier).collect(Collectors.toSet()));
 
         getNotifier().processResponse(response.getName(), message.getPdpGroup(), expectedSet, actualSet);

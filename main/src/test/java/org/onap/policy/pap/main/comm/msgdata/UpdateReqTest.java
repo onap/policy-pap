@@ -71,7 +71,8 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
         response.setPolicies(
-                        update.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList()));
+                        update.getPoliciesToBeDeployed().stream().map(ToscaPolicy::getIdentifier)
+                                .collect(Collectors.toList()));
 
         data = new UpdateReq(reqParams, MY_REQ_NAME, update);
         data.setNotifier(notifier);
@@ -90,7 +91,7 @@ public class UpdateReqTest extends CommonRequestBase {
         verifyResponse();
 
         // both policy lists null
-        update.setPolicies(null);
+        update.setPoliciesToBeDeployed(null);
         response.setPolicies(null);
         assertNull(data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
@@ -162,7 +163,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
     @Test
     public void testUpdateReqCheckResponse_MismatchedPolicies_Null_NotNull() {
-        update.setPolicies(null);
+        update.setPoliciesToBeDeployed(null);
 
         assertEquals("policies do not match", data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
@@ -395,6 +396,7 @@ public class UpdateReqTest extends CommonRequestBase {
         ToscaPolicy policy2 = makePolicy("policy-2-a", "1.1.0");
 
         upd.setPolicies(Arrays.asList(policy1, policy2));
+        upd.setPoliciesToBeDeployed(Arrays.asList(policy1, policy2));
 
         return upd;
     }
