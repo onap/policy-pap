@@ -233,8 +233,6 @@ public abstract class ProviderBase {
         update.setDescription(group.getDescription());
         update.setPdpGroup(group.getName());
         update.setPdpSubgroup(subgroup.getPdpType());
-        update.setPolicies(subgroup.getPolicies().stream().map(ToscaConceptIdentifierOptVersion::new)
-                        .map(ident -> getPolicy(data, ident)).collect(Collectors.toList()));
         update.setPoliciesToBeDeployed(data.getPoliciesToBeDeployed());
         update.setPoliciesToBeUndeployed(data.getPoliciesToBeUndeployed());
 

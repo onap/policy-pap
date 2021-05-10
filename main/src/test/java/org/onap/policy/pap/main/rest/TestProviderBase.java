@@ -282,7 +282,7 @@ public class TestProviderBase extends ProviderSuper {
         assertEquals(groupName, update.getPdpGroup());
         assertEquals(pdpType, update.getPdpSubgroup());
         assertEquals(pdpName, update.getName());
-        assertTrue(update.getPolicies().contains(policy1));
+        assertTrue(update.getPoliciesToBeDeployed().contains(policy1));
     }
 
     /**
