@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -646,7 +647,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertEquals(groupName, update.getPdpGroup());
         assertEquals(pdpType, update.getPdpSubgroup());
         assertEquals(pdpName, update.getName());
-        assertTrue(update.getPolicies().contains(policy1));
+        assertThat(update.getPoliciesToBeDeployed()).contains(policy1);
     }
 
     private void assertNoGroupAction() throws Exception {
@@ -670,10 +671,11 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertEquals(subgrp.getPdpType(), pdpUpdate.getPdpSubgroup());
 
         List<ToscaConceptIdentifier> pdpPolicies =
-                        pdpUpdate.getPolicies().stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList());
+                        pdpUpdate.getPoliciesToBeDeployed().stream().map(ToscaPolicy::getIdentifier)
+                                .collect(Collectors.toList());
         Collections.sort(pdpPolicies);
 
-        assertEquals(subgrp.getPolicies().toString(), pdpPolicies.toString());
+        assertThat(subgrp.getPolicies()).containsAll(pdpPolicies);
 
         List<PdpGroup> updates = getGroupUpdates();
         assertEquals(Arrays.asList(group), updates);

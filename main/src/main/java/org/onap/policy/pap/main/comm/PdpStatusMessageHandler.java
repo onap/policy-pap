@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -325,12 +325,12 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                     throws PfModelException {
         final List<ToscaPolicy> polsToBeDeployed = new LinkedList<>(policiesToBeDeployed.values());
         final var pdpUpdatemessage =
-            createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId, policies,
+            createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId,
                         polsToBeDeployed, policiesToBeUndeployed);
         final var pdpStateChangeMessage =
             createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId, pdpStateChangeMessage.getState(),
-            databaseProvider, pdpUpdatemessage.getPolicies());
+            databaseProvider, pdpUpdatemessage.getPoliciesToBeDeployed());
 
         requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
         LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
