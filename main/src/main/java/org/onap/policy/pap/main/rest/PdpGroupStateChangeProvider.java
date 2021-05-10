@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -121,11 +121,11 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
                 String pdpInstanceId = pdp.getInstanceId();
                 final var pdpUpdatemessage =
                     createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(),
-                                policies, policies, null);
+                                policies, null);
                 final var pdpStateChangeMessage =
                     createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
                 updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId,
-                    pdpStateChangeMessage.getState(), databaseProvider, pdpUpdatemessage.getPolicies());
+                    pdpStateChangeMessage.getState(), databaseProvider, pdpUpdatemessage.getPoliciesToBeDeployed());
                 requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
                 LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);

@@ -225,8 +225,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
         PdpUpdate update10 = handler.createPdpUpdateMessage(
                 status3.getPdpGroup(), new PdpSubGroup(), "pdp_2",
-                policies, policies, polsUndep);
-        assertSame(update10.getPolicies(), policies);
+                policies, polsUndep);
         assertSame(update10.getPoliciesToBeDeployed(), policies);
         assertSame(update10.getPoliciesToBeUndeployed(), polsUndep);
         assertThat(update10.getPoliciesToBeDeployed()).isInstanceOf(List.class);
