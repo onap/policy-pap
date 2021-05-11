@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2eb6ec25_f91f01c5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-05-11T21:54:01Z",
+      "side": 1,
+      "message": "I don\u0027t think this is going to work.   \nOn the drools review, the agreement was that it was to have no changes on this, being OK to keep sending the policy-ids deployed as before.   \nIt will probably also break xacml as it does not support the deploy and undeploy lists yet.   I think this is also comparing different types, getPolicies() returns policy-ids while getPoliciesToBeDeployed() returns full tosca policies.   \nThis implementation also loses functionality as it does not verify that the policies in the undeploy list have being truly undeployed.   That was supported too in the previous implementation.\nI suggest to keep the getPolicies as before and what needs to be checked is that the policiesToBeDeployed are a subset of getPolicies, and policiesToBeUndeployed yields the empty set in the intersection with the getPolicies set.",
+      "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
