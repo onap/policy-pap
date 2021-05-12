@@ -57,6 +57,24 @@
       "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b584c27a_296f9211",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-05-12T10:35:38Z",
+      "side": 1,
+      "message": "Agree with the comments.\nAbout the \"undeploy failure\" case, if a policy fails to undeploy, should that be added to deployedPolicies list? similar to how the policies that failed to deploy are added to undeployedPolicies list.",
+      "parentUuid": "b0e1681e_ff67b9fa",
+      "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
