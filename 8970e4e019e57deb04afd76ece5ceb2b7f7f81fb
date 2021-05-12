@@ -93,6 +93,24 @@
       "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec112542_7360ecc5",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-05-12T13:06:57Z",
+      "side": 1,
+      "message": "yeah agreed. Undeployment falure is highly unlikely. So, both the options are fine with me.",
+      "parentUuid": "4889a469_269edde1",
+      "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
