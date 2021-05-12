@@ -75,6 +75,24 @@
       "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4889a469_269edde1",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-12T12:13:56Z",
+      "side": 1,
+      "message": "at this point, I\u0027m thinking they should be left off the list, so that PAP will try to undeploy them again when the next heartbeat comes in, thus it will retry at each heartbeat.  However, we could add them to the list so that no auto-retry occurs and leave it up to the PAP client to manually request an undeploy again.\n\nnot sure we want to spend a lot of time on this, as it seems very unlikely",
+      "parentUuid": "b584c27a_296f9211",
+      "revId": "8970e4e019e57deb04afd76ece5ceb2b7f7f81fb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
