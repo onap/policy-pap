@@ -1,3 +1,0 @@
-# Test suites are relative paths under [policy/pap.git]/csit/tests/.
-# Place the suites in run order.
-pap-test.robot
