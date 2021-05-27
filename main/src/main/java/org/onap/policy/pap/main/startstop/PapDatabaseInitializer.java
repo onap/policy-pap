@@ -44,8 +44,8 @@ public class PapDatabaseInitializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PapDatabaseInitializer.class);
 
-    private StandardCoder standardCoder;
-    private PolicyModelsProviderFactory factory;
+    private final StandardCoder standardCoder;
+    private final PolicyModelsProviderFactory factory;
 
     /**
      * Constructs the object.
@@ -56,17 +56,18 @@ public class PapDatabaseInitializer {
     }
 
     /**
-     * Initializes database.
+     * Initializes database with group information.
      *
      * @param policyModelsProviderParameters the database parameters
      * @throws PolicyPapException in case of errors.
      */
-    public void initializePapDatabase(final PolicyModelsProviderParameters policyModelsProviderParameters)
-            throws PolicyPapException {
+    public void initializePapDatabase(
+            final PolicyModelsProviderParameters policyModelsProviderParameters,
+            String groupsJson) throws PolicyPapException {
 
         try (var databaseProvider =
-                factory.createPolicyModelsProvider(policyModelsProviderParameters)) {
-            final var originalJson = ResourceUtils.getResourceAsString("PapDb.json");
+                     factory.createPolicyModelsProvider(policyModelsProviderParameters)) {
+            final var originalJson = ResourceUtils.getResourceAsString(groupsJson);
             final var pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
             final List<PdpGroup> pdpGroupsFromDb = databaseProvider.getPdpGroups(
                     pdpGroupsToCreate.getGroups().get(0).getName());
@@ -76,9 +77,10 @@ public class PapDatabaseInitializer {
                     throw new PolicyPapException(result.getResult());
                 }
                 databaseProvider.createPdpGroups(pdpGroupsToCreate.getGroups());
-                LOGGER.debug("Created initial pdpGroup in DB - {}", pdpGroupsToCreate);
+                LOGGER.info("Created initial pdpGroup in DB - {} from {}", pdpGroupsToCreate, groupsJson);
             } else {
-                LOGGER.debug("Initial pdpGroup already exists in DB, skipping create - {}", pdpGroupsFromDb);
+                LOGGER.info("Initial pdpGroup already exists in DB, skipping create - {} from {}",
+                        pdpGroupsFromDb, groupsJson);
             }
         } catch (final PfModelException | CoderException exp) {
             throw new PolicyPapException(exp);
