@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "461c1ac1_94c78861",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-27T17:16:33Z",
+      "side": 1,
+      "message": "just log a message here - still need to do the steps below (i.e., undeploy failed policies)",
+      "revId": "39b84d94348222d8b971a0ff102116bd254e926f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
