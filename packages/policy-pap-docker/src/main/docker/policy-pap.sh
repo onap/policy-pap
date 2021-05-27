@@ -2,7 +2,7 @@
 #
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019-2020 Nordix Foundation.
-#  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+#  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,4 +53,20 @@ if [ -f "${POLICY_HOME}/etc/mounted/logback.xml" ]; then
     cp -f "${POLICY_HOME}"/etc/mounted/logback.xml "${POLICY_HOME}"/etc/
 fi
 
-$JAVA_HOME/bin/java -cp "${POLICY_HOME}/etc:${POLICY_HOME}/lib/*" -Dlogback.configurationFile="${POLICY_HOME}/etc/logback.xml" -Djavax.net.ssl.keyStore="${KEYSTORE}" -Djavax.net.ssl.keyStorePassword="${KEYSTORE_PASSWD}" -Djavax.net.ssl.trustStore="${TRUSTSTORE}" -Djavax.net.ssl.trustStorePassword="${TRUSTSTORE_PASSWD}" org.onap.policy.pap.main.startstop.Main -c "${CONFIG_FILE}"
+# provide and external PDP group configuration if a groups.json
+# file is present in the data directory. If none is present,
+# the PAP will use the PapDb.json resource in the classpath
+# to load a default group.
+
+if [ -f "${POLICY_HOME}/etc/mounted/groups.json" ]; then
+    CUSTOM_GROUPS="-g ${POLICY_HOME}/etc/mounted/groups.json"
+fi
+
+$JAVA_HOME/bin/java -cp "${POLICY_HOME}/etc:${POLICY_HOME}/lib/*" \
+    -Dlogback.configurationFile="${POLICY_HOME}/etc/logback.xml" \
+    -Djavax.net.ssl.keyStore="${KEYSTORE}" \
+    -Djavax.net.ssl.keyStorePassword="${KEYSTORE_PASSWD}" \
+    -Djavax.net.ssl.trustStore="${TRUSTSTORE}" \
+    -Djavax.net.ssl.trustStorePassword="${TRUSTSTORE_PASSWD}" \
+    org.onap.policy.pap.main.startstop.Main \
+    -c "${CONFIG_FILE}" "${CUSTOM_GROUPS}"

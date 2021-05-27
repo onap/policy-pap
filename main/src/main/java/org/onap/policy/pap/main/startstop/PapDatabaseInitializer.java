@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.List;
+import java.util.Optional;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -29,7 +30,6 @@ import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.onap.policy.pap.main.PolicyPapException;
@@ -44,9 +44,10 @@ import org.slf4j.LoggerFactory;
 public class PapDatabaseInitializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PapDatabaseInitializer.class);
+    private static final String DEFAULT_GROUP_RESOURCE = "PapDb.json";
 
-    private StandardCoder standardCoder;
-    private PolicyModelsProviderFactory factory;
+    private final StandardCoder standardCoder;
+    private final PolicyModelsProviderFactory factory;
 
     /**
      * Constructs the object.
@@ -57,18 +58,21 @@ public class PapDatabaseInitializer {
     }
 
     /**
-     * Initializes database.
+     * Initializes database with group information.
      *
      * @param policyModelsProviderParameters the database parameters
      * @throws PolicyPapException in case of errors.
      */
-    public void initializePapDatabase(final PolicyModelsProviderParameters policyModelsProviderParameters)
-            throws PolicyPapException {
+    public void initializePapDatabase(
+            final PolicyModelsProviderParameters policyModelsProviderParameters,
+            final String groupsFile) throws PolicyPapException {
 
-        try (PolicyModelsProvider databaseProvider =
+        String groupsResource = Optional.ofNullable(groupsFile).orElse(DEFAULT_GROUP_RESOURCE);
+
+        try (var databaseProvider =
                 factory.createPolicyModelsProvider(policyModelsProviderParameters)) {
-            final String originalJson = ResourceUtils.getResourceAsString("PapDb.json");
-            final PdpGroups pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
+            final var originalJson = ResourceUtils.getResourceAsString(groupsResource);
+            final var pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
             final List<PdpGroup> pdpGroupsFromDb = databaseProvider.getPdpGroups(
                     pdpGroupsToCreate.getGroups().get(0).getName());
             if (pdpGroupsFromDb.isEmpty()) {
@@ -77,9 +81,10 @@ public class PapDatabaseInitializer {
                     throw new PolicyPapException(result.getResult());
                 }
                 databaseProvider.createPdpGroups(pdpGroupsToCreate.getGroups());
-                LOGGER.debug("Created initial pdpGroup in DB - {}", pdpGroupsToCreate);
+                LOGGER.info("Created initial pdpGroup in DB - {} from {}", pdpGroupsToCreate, groupsResource);
             } else {
-                LOGGER.debug("Initial pdpGroup already exists in DB, skipping create - {}", pdpGroupsFromDb);
+                LOGGER.info("Initial pdpGroup already exists in DB, skipping create - {} from {}",
+                        pdpGroupsFromDb, groupsResource);
             }
         } catch (final PfModelException | CoderException exp) {
             throw new PolicyPapException(exp);
