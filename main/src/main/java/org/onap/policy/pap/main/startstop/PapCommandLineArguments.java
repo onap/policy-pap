@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ package org.onap.policy.pap.main.startstop;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.Arrays;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -49,6 +48,8 @@ public class PapCommandLineArguments {
     private final Options options;
     private String configurationFilePath = null;
     private String propertyFilePath = null;
+
+    protected static final String DEFAULT_GROUP_RESOURCE = "PapDb.json";
 
     /**
      * Construct the options for the CLI editor.
@@ -86,7 +87,20 @@ public class PapCommandLineArguments {
                 .required(false)
                 .type(String.class)
                 .build());
+        options.addOption(Option.builder("g")
+                .longOpt("groups-file")
+                .desc("the full path to the groups file to use, "
+                        + "the groups file contains the group configuration")
+                .hasArg()
+                .argName("GROUP_FILE")
+                .required(false)
+                .type(String.class)
+                .build());
         //@formatter:on
+    }
+
+    protected String getPdpGroupsConfiguration() {
+        return this.options.getOption("g").getValue(DEFAULT_GROUP_RESOURCE);
     }
 
     /**
@@ -118,7 +132,7 @@ public class PapCommandLineArguments {
         setConfigurationFilePath(null);
         setPropertyFilePath(null);
 
-        CommandLine commandLine = null;
+        CommandLine commandLine;
         try {
             commandLine = new DefaultParser().parse(options, args);
         } catch (final ParseException e) {
@@ -130,10 +144,6 @@ public class PapCommandLineArguments {
 
         if (remainingArgs.length > 0 && commandLine.hasOption('c') || remainingArgs.length > 0) {
             throw new PolicyPapException("too many command line arguments specified : " + Arrays.toString(args));
-        }
-
-        if (remainingArgs.length == 1) {
-            configurationFilePath = remainingArgs[0];
         }
 
         if (commandLine.hasOption('h')) {
@@ -180,9 +190,9 @@ public class PapCommandLineArguments {
      * @return the help string
      */
     public String help(final String mainClassName) {
-        final HelpFormatter helpFormatter = new HelpFormatter();
-        final StringWriter stringWriter = new StringWriter();
-        final PrintWriter printWriter = new PrintWriter(stringWriter);
+        final var helpFormatter = new HelpFormatter();
+        final var stringWriter = new StringWriter();
+        final var printWriter = new PrintWriter(stringWriter);
 
         helpFormatter.printHelp(printWriter, HELP_LINE_LENGTH, mainClassName + " [options...]", "options", options, 0,
                 0, "");
@@ -277,12 +287,12 @@ public class PapCommandLineArguments {
         }
 
         // The file name refers to a resource on the local file system
-        final URL fileUrl = ResourceUtils.getUrl4Resource(fileName);
+        final var fileUrl = ResourceUtils.getUrl4Resource(fileName);
         if (fileUrl == null) {
             throw new PolicyPapException(fileTag + FILE_MESSAGE_PREAMBLE + fileName + "\" does not exist");
         }
 
-        final File theFile = new File(fileUrl.getPath());
+        final var theFile = new File(fileUrl.getPath());
         if (!theFile.exists()) {
             throw new PolicyPapException(fileTag + FILE_MESSAGE_PREAMBLE + fileName + "\" does not exist");
         }

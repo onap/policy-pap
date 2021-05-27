@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.onap.policy.common.utils.resources.MessageConstants;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -70,7 +69,9 @@ public class Main {
             parameterGroup = new PapParameterHandler().getParameters(arguments);
 
             // Initialize database
-            new PapDatabaseInitializer().initializePapDatabase(parameterGroup.getDatabaseProviderParameters());
+            new PapDatabaseInitializer().initializePapDatabase(
+                    parameterGroup.getDatabaseProviderParameters(),
+                    arguments.getPdpGroupsConfiguration());
 
             // Now, create the activator for the policy pap service
             activator = new PapActivator(parameterGroup);
@@ -110,9 +111,8 @@ public class Main {
     /**
      * Shut down Execution.
      *
-     * @throws PolicyPapException on shutdown errors
      */
-    public void shutdown() throws PolicyPapException {
+    public void shutdown() {
         // clear the parameterGroup variable
         parameterGroup = null;
 
@@ -141,7 +141,7 @@ public class Main {
                 // Shutdown the policy pap service and wait for everything to stop
                 activator.stop();
             } catch (final RuntimeException e) {
-                LOGGER.warn("error occured during shut down of the policy pap service", e);
+                LOGGER.warn("error occurred during shut down of the policy pap service", e);
             }
         }
     }
