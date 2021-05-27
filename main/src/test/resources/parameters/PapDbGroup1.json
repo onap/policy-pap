@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "name": "group1",
+      "version": "1.0.0",
+      "description": "group 1",
+      "pdpGroupState": "ACTIVE",
+      "pdpSubgroups": [
+        {
+          "pdpType": "T1",
+          "supportedPolicyTypes": [
+            {
+              "name": "t1",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1,
+          "policies": []
+        },
+        {
+          "pdpType": "T2",
+          "supportedPolicyTypes": [
+            {
+              "name": "t2",
+              "version": "1.0.0"
+            }
+          ],
+          "currentInstanceCount": 0,
+          "desiredInstanceCount": 1,
+          "policies": []
+        }
+      ]
+    }
+  ]
+}

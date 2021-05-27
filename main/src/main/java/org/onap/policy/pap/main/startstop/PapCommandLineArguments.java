@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,22 @@ import org.onap.policy.pap.main.PolicyPapRuntimeException;
  */
 public class PapCommandLineArguments extends CommandLineArgumentsHandler {
 
+    protected static final String PROPERTY_FILE_OPTION = "p";
+    protected static final String GROUP_FILE_OPTION = "g";
+
+    protected static final String PROPERTY_FILE_LONG_OPTION = "property-file";
+    protected static final String GROUP_FILE_LONG_OPTION = "groups-file";
+
+    public static final String PROPERTY_FILE_ARG_NAME = "PROP_FILE";
+    public static final String GROUP_FILE_ARG_NAME = "GROUP_FILE";
+
+    protected static final String DEFAULT_GROUP_RESOURCE = "PapDb.json";
+
     /**
      * Construct the options for the CLI editor.
      */
     public PapCommandLineArguments() {
-        super(Main.class.getName(), MessageConstants.POLICY_PAP, customOption());
+        super(Main.class.getName(), MessageConstants.POLICY_PAP, customOptionP(), customOptionG());
     }
 
     /**
@@ -46,11 +57,32 @@ public class PapCommandLineArguments extends CommandLineArgumentsHandler {
      *
      * @return property-file option
      */
-    private static Option customOption() {
-        return Option.builder("p").longOpt("property-file")
+    private static Option customOptionP() {
+        return Option.builder(PROPERTY_FILE_OPTION).longOpt(PROPERTY_FILE_LONG_OPTION)
                 .desc("the full path to the topic property file to use, "
                         + "the property file contains the policy pap topic properties")
-                .hasArg().argName("PROP_FILE").required(false).type(String.class).build();
+                .hasArg().argName(PROPERTY_FILE_ARG_NAME).required(false).type(String.class).build();
+    }
+
+    private static Option customOptionG() {
+        return Option.builder(GROUP_FILE_OPTION).longOpt(GROUP_FILE_LONG_OPTION)
+                       .desc("the full path to the groups file to use, "
+                                     + "the groups file contains the group configuration added to the DB")
+                       .hasArg().argName(GROUP_FILE_ARG_NAME).required(false).type(String.class).build();
+    }
+
+    protected String getPdpGroupsConfiguration() {
+        return this.getCommandLine()
+                       .getOptionValue(GROUP_FILE_OPTION, DEFAULT_GROUP_RESOURCE);
+    }
+
+    @Override
+    public void validate() throws CommandLineException {
+        super.validate();
+        String groupConfig = getPdpGroupsConfiguration();
+        if (!groupConfig.equals(DEFAULT_GROUP_RESOURCE)) {
+            validateReadableFile(MessageConstants.POLICY_PAP, groupConfig);
+        }
     }
 
     /**
