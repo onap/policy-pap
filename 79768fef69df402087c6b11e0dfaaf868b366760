@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b23a849e_ca6eb5a7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-27T13:46:23Z",
+      "side": 1,
+      "message": "\"getPoliciesToBeDeployed\" \u003d\u003e \"getPoliciesToBeUndeployed\"",
+      "range": {
+        "startLine": 103,
+        "startChar": 91,
+        "endLine": 103,
+        "endChar": 114
+      },
+      "revId": "79768fef69df402087c6b11e0dfaaf868b366760",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f94bc19_e55e576d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-27T13:46:23Z",
+      "side": 1,
+      "message": "I think this can be deleted",
+      "revId": "79768fef69df402087c6b11e0dfaaf868b366760",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8973901_94461f4c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-27T13:46:23Z",
+      "side": 1,
+      "message": "maybe add a check here to see if the actualSet still contains anything in expectedUndeploySet.  If so, log a message listing those that failed to undeploy",
+      "revId": "79768fef69df402087c6b11e0dfaaf868b366760",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d019f29d_266f3a0c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-27T13:46:23Z",
+      "side": 1,
+      "message": "I don\u0027t think this is true, only the first condition is necessary",
+      "revId": "79768fef69df402087c6b11e0dfaaf868b366760",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d199002e_b3d1b4fd",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/msgdata/UpdateReq.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-27T13:46:23Z",
+      "side": 1,
+      "message": "don\u0027t think this is needed - if it\u0027s true, then the first condition will be true, too",
+      "range": {
+        "startLine": 114,
+        "startChar": 12,
+        "endLine": 114,
+        "endChar": 83
+      },
+      "revId": "79768fef69df402087c6b11e0dfaaf868b366760",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
