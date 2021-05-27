@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ceb196f3_3945bbf8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapCommandLineArguments.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-05-27T20:22:12Z",
+      "side": 1,
+      "message": "I don\u0027t think we use this anymore. As the topic properties file was merged into the configuration json. In that case we can just remove this?",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 5
+      },
+      "revId": "eee4987ca8d05b51faf55ed60134d50ce1fc4d9f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
