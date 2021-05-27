@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "042e365f_267ad72a",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-05-27T22:17:03Z",
+      "side": 1,
+      "message": "Is this name groups.json a good name for an override for the PapDb.json? \nMy rationale for the name pick was to keep it different to avoid any confusion if needed to debug runtime.   I also thought that the name was more meaningful, since it is really provisioning groups.   I think the syntax is the same as the REST API to create/update a group.   In any case, let me know if you have different preferences.",
+      "revId": "16e80bcbab3f27fa1106a6a8366db1cd6c5fe6fe",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
