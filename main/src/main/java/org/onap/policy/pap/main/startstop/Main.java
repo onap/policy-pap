@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.onap.policy.common.utils.resources.MessageConstants;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PapParameterHandler;
@@ -51,11 +50,11 @@ public class Main {
      * @param args the command line arguments
      */
     public Main(final String[] args) {
-        final String argumentString = Arrays.toString(args);
+        final var argumentString = Arrays.toString(args);
         LOGGER.info("Starting policy pap service with arguments - {}", argumentString);
 
         // Check the arguments
-        final PapCommandLineArguments arguments = new PapCommandLineArguments();
+        final var arguments = new PapCommandLineArguments();
         try {
             // The arguments return a string if there is a message to print and we should exit
             final String argumentMessage = arguments.parse(args);
@@ -70,7 +69,8 @@ public class Main {
             parameterGroup = new PapParameterHandler().getParameters(arguments);
 
             // Initialize database
-            new PapDatabaseInitializer().initializePapDatabase(parameterGroup.getDatabaseProviderParameters());
+            new PapDatabaseInitializer().initializePapDatabase(
+                    parameterGroup.getDatabaseProviderParameters(), arguments.getGroupFilePath());
 
             // Now, create the activator for the policy pap service
             activator = new PapActivator(parameterGroup);
@@ -94,7 +94,7 @@ public class Main {
 
         // Add a shutdown hook to shut everything down in an orderly manner
         Runtime.getRuntime().addShutdownHook(new PolicyPapShutdownHookClass());
-        String successMsg = String.format(MessageConstants.START_SUCCESS_MSG, MessageConstants.POLICY_PAP);
+        var successMsg = String.format(MessageConstants.START_SUCCESS_MSG, MessageConstants.POLICY_PAP);
         LOGGER.info(successMsg);
     }
 
@@ -110,9 +110,8 @@ public class Main {
     /**
      * Shut down Execution.
      *
-     * @throws PolicyPapException on shutdown errors
      */
-    public void shutdown() throws PolicyPapException {
+    public void shutdown() {
         // clear the parameterGroup variable
         parameterGroup = null;
 
@@ -141,7 +140,7 @@ public class Main {
                 // Shutdown the policy pap service and wait for everything to stop
                 activator.stop();
             } catch (final RuntimeException e) {
-                LOGGER.warn("error occured during shut down of the policy pap service", e);
+                LOGGER.warn("error occurred during shut down of the policy pap service", e);
             }
         }
     }

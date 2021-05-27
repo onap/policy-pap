@@ -1,7 +1,7 @@
 /*
  * ============LICENSE_START=======================================================
  * Copyright (C) 2019-2020 Nordix Foundation.
- * Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ * Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,6 @@ import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInst
 import org.onap.policy.common.utils.resources.MessageConstants;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 
@@ -59,10 +58,9 @@ public class TestMain {
     /**
      * Shuts "main" down.
      *
-     * @throws Exception if an error occurs
      */
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // shut down activator
         PapActivator activator = Registry.getOrDefault(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class, null);
         if (activator != null && activator.isAlive()) {
@@ -70,17 +68,42 @@ public class TestMain {
         }
     }
 
-    @Test
-    public void testMain() throws PolicyPapException {
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+    private void testMainBody(String[] papConfigParameters) {
         main = new Main(papConfigParameters);
         assertTrue(main.getParameters().isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, main.getParameters().getName());
 
         // ensure items were added to the registry
         assertNotNull(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class));
-
         main.shutdown();
+    }
+
+    @Test
+    public void testMain() {
+        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        testMainBody(papConfigParameters);
+    }
+
+    @Test
+    public void testMainCustomGroup() {
+        final String[] papConfigParameters = {
+            "-c",
+            "parameters/PapConfigParameters.json",
+            "-g",
+            "parameters/PapDbGroup1.json"
+        };
+        testMainBody(papConfigParameters);
+    }
+
+    @Test
+    public void testMainPapDb() {
+        final String[] papConfigParameters = {
+            "-c",
+            "parameters/PapConfigParameters.json",
+            "-g",
+            "PapDb.json"
+        };
+        testMainBody(papConfigParameters);
     }
 
     @Test
