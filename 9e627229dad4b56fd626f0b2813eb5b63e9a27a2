@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "e0262ffe_d1933e6a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 57
+      },
+      "writtenOn": "2021-05-28T12:05:32Z",
+      "side": 1,
+      "message": "Ditto",
+      "parentUuid": "fc68503c_fdbac427",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 83
+      },
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1c1c4a44_5da675a6",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 6
