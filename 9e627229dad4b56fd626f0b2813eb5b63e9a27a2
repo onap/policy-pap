@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "1022832b_0628f76b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-05-28T14:24:44Z",
+      "side": 1,
+      "message": "I would like to solve Ajith\u0027s question with a ticket.   As this will require a bit more work (and testing) and passing another mandatory flag (\"-g\") similar to the \"-c\" for the config file which I was trying to avoid (source code should not make assumptions of location in an etc dir).   This will require OOM and CSIT changes, my main concern, especially when ported to *honolulu*.  \n\nIn terms of design approaches, I think the best approach would be something along the lines of preloadedPolicies (ie. preloadedGroups) in the config.json that can point to specific file locations to load groups as the current api capabilities, this way there would be no need for papdb.json or groups.json and all would be self-contained in the config.json.   If there\u0027s no values present in the preloadedGroups, PAP will start with no groups and will rely on user provision groups with REST API which may be a desired configuration.  \n\nIn any case, I suggest to do whatever we decide to design in this area under another ticket in istambul only.",
+      "parentUuid": "e0262ffe_d1933e6a",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 83
+      },
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1c1c4a44_5da675a6",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 6
