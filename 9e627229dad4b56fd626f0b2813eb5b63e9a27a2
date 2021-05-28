@@ -193,6 +193,30 @@
     },
     {
       "key": {
+        "uuid": "1d3e2c1c_6f4d90a3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-05-28T21:36:25Z",
+      "side": 1,
+      "message": "This is different from policy-api, because there we use the information is part of the same config file that supplies all other configurations (rest, db, etc). And here we are adding one more file with a separate command line option. \nBut again I am okay with this change as anyway with liquibase introduction these things will change.",
+      "parentUuid": "413bd4b8_7eb85d65",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 83
+      },
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c1c4a44_5da675a6",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 6
@@ -243,6 +267,24 @@
       "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f546b059_f704539d",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-05-28T21:36:25Z",
+      "side": 1,
+      "message": "sounds good to me as well.",
+      "parentUuid": "d1b8ea19_682c6c5c",
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
