@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "3b93a270_b4279e2c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-05-28T09:47:31Z",
+      "side": 1,
+      "message": "Question: Could we keep the PapDb.json(or groups.json) in a standard location (/opt/app/policy/pap/etc/PapDb.json)\nand just use that location here. In that case, if at all anyone wants to override it, its just a matter of mounting it just like how we do defaultConfig.json today. \nJust a thought if we could keep it simple, I am fine with this change too.",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 83
+      },
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1c1c4a44_5da675a6",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 6
@@ -31,6 +54,24 @@
       "side": 1,
       "message": "ok with me",
       "parentUuid": "1c1c4a44_5da675a6",
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1b8ea19_682c6c5c",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-05-28T09:47:31Z",
+      "side": 1,
+      "message": "sounds ok to me too.",
+      "parentUuid": "1951496d_2a1c8df3",
       "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
