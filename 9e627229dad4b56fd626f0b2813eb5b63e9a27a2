@@ -145,6 +145,30 @@
     },
     {
       "key": {
+        "uuid": "adc949dc_e1cf58fb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-05-28T17:48:07Z",
+      "side": 1,
+      "message": "Yes, policy-api supports both loading from a file or from jar with configuration in on single config file (first tries the file and then as a resource in jar if I recall correctly).\n\n@Jim, my hesitation is with Honolulu release only as it adds including OOM in maintenance. I have no issue with a larger solution in Istanbul.\n\nIn the scrum, there was also comments that liquibase may take over this group provisioning.  It wasn\u0027t clear to me, but if that is the case, it would undo this work.",
+      "parentUuid": "608d9700_3e72744a",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 83
+      },
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1c1c4a44_5da675a6",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 6
