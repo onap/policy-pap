@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "050b1453_f327404a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapDatabaseInitializer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-05-28T14:30:05Z",
+      "side": 1,
+      "message": "can\u0027t we simply remove PapDb.json from the jar?  Of course, we\u0027d have to add it to docker/csit and oom.  Is it a problem to add it to oom?  (Isn\u0027t that how we do the policy preloads for policy-api?)",
+      "parentUuid": "1022832b_0628f76b",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 83
+      },
+      "revId": "9e627229dad4b56fd626f0b2813eb5b63e9a27a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1c1c4a44_5da675a6",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 6
