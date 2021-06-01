@@ -498,20 +498,20 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         // list containing a policy with a null name
         PdpDeployPolicies policies3 = loadFile("PapPoliciesNullPolicyName.json", PdpDeployPolicies.class);
         assertThatThrownBy(() -> prov.deployPolicies(policies3)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("policies").hasMessageContaining("name").hasMessageContaining("null")
+                        .hasMessageContaining("policies").hasMessageContaining("policy-id").hasMessageContaining("null")
                         .hasMessageNotContaining("\"value\"");
 
         // list containing a policy with an invalid name
         PdpDeployPolicies policies4 = loadFile("PapPoliciesInvalidPolicyName.json", PdpDeployPolicies.class);
         assertThatThrownBy(() -> prov.deployPolicies(policies4)).isInstanceOf(PfModelException.class)
-                        .hasMessageContaining("policies").hasMessageContaining("name").hasMessageContaining("$ abc")
-                        .hasMessageNotContaining("version");
+                        .hasMessageContaining("policies").hasMessageContaining("policy-id")
+                        .hasMessageContaining("$ abc").hasMessageNotContaining("version");
 
         // list containing a policy with an invalid version
         PdpDeployPolicies policies5 = loadFile("PapPoliciesInvalidPolicyVersion.json", PdpDeployPolicies.class);
         assertThatThrownBy(() -> prov.deployPolicies(policies5)).isInstanceOf(PfModelException.class)
                         .hasMessageContaining("policies").hasMessageContaining("version").hasMessageContaining("abc123")
-                        .hasMessageNotContaining("name");
+                        .hasMessageNotContaining("policy-id");
     }
 
     /**
