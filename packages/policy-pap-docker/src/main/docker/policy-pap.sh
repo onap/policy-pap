@@ -1,4 +1,4 @@
-#!/usr/bin/env ash
+#!/usr/bin/env sh
 #
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019-2020 Nordix Foundation.
