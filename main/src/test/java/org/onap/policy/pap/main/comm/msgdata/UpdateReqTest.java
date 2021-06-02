@@ -24,7 +24,6 @@ package org.onap.policy.pap.main.comm.msgdata;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -193,7 +192,7 @@ public class UpdateReqTest extends CommonRequestBase {
         // same content - should succeed, but leave message unchanged
         PdpUpdate msg2 = new PdpUpdate(update);
         assertTrue(data.reconfigure(msg2));
-        assertNotSame(update, data.getMessage());
+        assertSame(update, data.getMessage());
 
         // different content - should succeed and install NEW message
         msg2.setPdpGroup(DIFFERENT);

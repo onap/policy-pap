@@ -23,7 +23,6 @@
 package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
