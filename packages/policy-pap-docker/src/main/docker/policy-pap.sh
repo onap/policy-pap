@@ -69,4 +69,4 @@ $JAVA_HOME/bin/java -cp "${POLICY_HOME}/etc:${POLICY_HOME}/lib/*" \
     -Djavax.net.ssl.trustStore="${TRUSTSTORE}" \
     -Djavax.net.ssl.trustStorePassword="${TRUSTSTORE_PASSWD}" \
     org.onap.policy.pap.main.startstop.Main \
-    -c "${CONFIG_FILE}" "${CUSTOM_GROUPS}"
+    -c "${CONFIG_FILE}" ${CUSTOM_GROUPS}
