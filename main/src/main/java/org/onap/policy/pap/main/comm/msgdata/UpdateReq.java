@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UpdateReq extends RequestImpl {
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpdateReq.class);
 
     /**
      * Policies to be undeployed if the request fails.
