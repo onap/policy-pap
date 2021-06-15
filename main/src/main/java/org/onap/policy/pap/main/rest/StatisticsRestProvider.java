@@ -31,6 +31,7 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
+import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
@@ -46,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public class StatisticsRestProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsRestProvider.class);
     private static final String GET_STATISTICS_ERR_MSG = "fetch database failed";
-    private static final String DESC_ORDER = "DESC";
 
     /**
      * Returns the current statistics of pap component.
@@ -92,8 +92,10 @@ public class StatisticsRestProvider {
             if (groupName == null) {
                 pdpStatisticsMap = generatePdpStatistics(databaseProvider.getPdpStatistics(pdpName, startTime));
             } else {
-                pdpStatisticsMap = generatePdpStatistics(databaseProvider.getFilteredPdpStatistics(pdpName, groupName,
-                        subType, startTime, endTime, DESC_ORDER, recordCount));
+                pdpStatisticsMap = generatePdpStatistics(databaseProvider.getFilteredPdpStatistics(
+                                PdpFilterParameters.builder().name(pdpName).group(groupName)
+                                    .subGroup(subType).startTime(startTime).endTime(endTime)
+                                    .recordNum(recordCount).build()));
             }
         } catch (final PfModelException exp) {
             String errorMessage = GET_STATISTICS_ERR_MSG + "groupName:" + groupName + "subType:" + subType + "pdpName:"

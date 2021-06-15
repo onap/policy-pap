@@ -39,6 +39,7 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
+import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
@@ -182,7 +183,8 @@ public class End2EndBase extends CommonPapRestServer {
      */
     public static List<PdpStatistics> fetchPdpStatistics(final String instanceId, final String groupName,
            final String subGroupName) throws PfModelException {
-        return dbConn.getFilteredPdpStatistics(instanceId, groupName, subGroupName, null, null, null, 0);
+        return dbConn.getFilteredPdpStatistics(
+                        PdpFilterParameters.builder().name(instanceId).group(groupName).subGroup(subGroupName).build());
     }
 
     /**
