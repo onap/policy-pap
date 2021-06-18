@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -156,8 +157,11 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             policiesToBeUndeployed = null;
 
             LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", finalizedPdpGroup, message);
-            if (!findPdpInstance(message, subGroup.get()).isPresent()) {
-                updatePdpSubGroup(finalizedPdpGroup, subGroup.get(), message, databaseProvider);
+            Optional<Pdp> pdp = findPdpInstance(message, subGroup.get());
+            if (pdp.isPresent()) {
+                updatePdp(finalizedPdpGroup, subGroup.get(), pdp.get(), message, databaseProvider);
+            } else {
+                addToPdpSubGroup(finalizedPdpGroup, subGroup.get(), message, databaseProvider);
             }
             sendPdpMessage(finalizedPdpGroup.getName(), subGroup.get(), message.getName(), null, databaseProvider);
             pdpGroupFound = true;
@@ -165,7 +169,20 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         return pdpGroupFound;
     }
 
-    private void updatePdpSubGroup(final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup, final PdpStatus message,
+    private void updatePdp(PdpGroup pdpGroup, PdpSubGroup pdpSubGroup, Pdp pdpInstance, PdpStatus message,
+                    PolicyModelsProvider databaseProvider) throws PfModelException {
+
+        pdpInstance.setHealthy(message.getHealthy());
+        pdpInstance.setMessage(message.getDescription());
+        pdpInstance.setLastUpdate(Instant.now());
+
+        databaseProvider.updatePdp(pdpGroup.getName(), pdpSubGroup.getPdpType(), pdpInstance);
+
+        LOGGER.debug("Updated Pdp in DB - {} belonging to PdpGroup - {}, PdpSubGroup - {}", pdpInstance,
+                        pdpGroup.getName(), pdpSubGroup.getPdpType());
+    }
+
+    private void addToPdpSubGroup(final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup, final PdpStatus message,
             final PolicyModelsProvider databaseProvider) throws PfModelException {
 
         final var pdpInstance = new Pdp();
@@ -173,13 +190,14 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         pdpInstance.setPdpState(PdpState.ACTIVE);
         pdpInstance.setHealthy(message.getHealthy());
         pdpInstance.setMessage(message.getDescription());
+        pdpInstance.setLastUpdate(Instant.now());
         pdpSubGroup.getPdpInstances().add(pdpInstance);
 
         pdpSubGroup.setCurrentInstanceCount(pdpSubGroup.getCurrentInstanceCount() + 1);
 
         databaseProvider.updatePdpSubGroup(pdpGroup.getName(), pdpSubGroup);
 
-        LOGGER.debug("Updated PdpSubGroup in DB - {} belonging to PdpGroup - {}", pdpSubGroup, pdpGroup);
+        LOGGER.debug("Updated PdpSubGroup in DB - {} belonging to PdpGroup - {}", pdpSubGroup, pdpGroup.getName());
     }
 
     private void handlePdpHeartbeat(final PdpStatus message, final PolicyModelsProvider databaseProvider)
@@ -231,15 +249,16 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         // all policies
         policies = getToscaPolicies(pdpSubGroup, databaseProvider);
 
-        policiesToBeDeployed =
-            policies.stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
-        // all (-) policies that the PDP already has
-        policiesToBeDeployed.keySet().removeAll(message.getPolicies());
+        Map<ToscaConceptIdentifier, ToscaPolicy> policyMap =
+                        policies.stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
 
         // policies that the PDP already has (-) all
-        policiesToBeUndeployed = new LinkedList<>(message.getPolicies());
-        policiesToBeUndeployed.removeAll(policies.stream().map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList()));
+        policiesToBeUndeployed = message.getPolicies().stream().filter(policyId -> !policyMap.containsKey(policyId))
+                        .collect(Collectors.toList());
+
+        // all (-) policies that the PDP already has
+        policiesToBeDeployed = policyMap;
+        policiesToBeDeployed.keySet().removeAll(message.getPolicies());
 
         if (PdpState.TERMINATED.equals(message.getState())) {
             processPdpTermination(pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
@@ -258,6 +277,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
             LOGGER.debug("Policy list in DB - {}. Policy list in heartbeat - {}", pdpSubGroup.getPolicies(),
                 message.getPolicies());
+            updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
                 databaseProvider);
         }
@@ -309,6 +329,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpInstance.setHealthy(message.getHealthy());
+        pdpInstance.setLastUpdate(Instant.now());
         databaseProvider.updatePdp(pdpGroup.getName(), pdpSubgroup.getPdpType(), pdpInstance);
 
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
