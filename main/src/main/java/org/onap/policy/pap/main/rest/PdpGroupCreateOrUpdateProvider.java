@@ -424,7 +424,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      *
      * @param data session data
      * @param subgrp the subgroup to be validated
-     * @param result the validation result
+     * @return the validation result
      * @throws PfModelException if an error occurred
      */
     private ValidationResult validateSupportedTypes(SessionData data, PdpSubGroup subgrp) throws PfModelException {

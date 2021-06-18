@@ -311,7 +311,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * @param dbsub subgroup from the DB, or {@code null} if this is a new subgroup
      * @param subgrp the subgroup whose policies are to be validated, updated to fully
      *        qualified versions upon return
-     * @param result the validation result
+     * @return the validation result
      * @throws PfModelException if an error occurred
      */
     private ValidationResult validatePolicies(SessionData data, PdpSubGroup dbsub, DeploymentSubGroup subgrp)
@@ -405,8 +405,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * the actual work.
      *
      * @param data session data
-     * @param extPolicies external PDP policies
-     * @return a list of requests that should be sent to configure the PDPs
+     * @param policies external PDP policies
      * @throws PfModelException if an error occurred
      */
     private void deploySimplePolicies(SessionData data, PdpDeployPolicies policies) throws PfModelException {
