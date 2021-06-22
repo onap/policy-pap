@@ -85,16 +85,17 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * Updates policies in specific PDP groups.
      *
      * @param groups PDP group deployments to be updated
+     * @param user user triggering deployment
      * @throws PfModelException if an error occurred
      */
-    public void updateGroupPolicies(DeploymentGroups groups) throws PfModelException {
+    public void updateGroupPolicies(DeploymentGroups groups, String user) throws PfModelException {
         ValidationResult result = groups.validatePapRest();
         if (!result.isValid()) {
             String msg = result.getResult().trim();
             throw new PfModelException(Status.BAD_REQUEST, msg);
         }
 
-        process(groups, this::updateGroups);
+        process(user, groups, this::updateGroups);
     }
 
     /**
@@ -383,9 +384,10 @@ public class PdpGroupDeployProvider extends ProviderBase {
      * Deploys or updates PDP policies using the simple API.
      *
      * @param policies PDP policies
+     * @param user user triggering deployment
      * @throws PfModelException if an error occurred
      */
-    public void deployPolicies(PdpDeployPolicies policies) throws PfModelException {
+    public void deployPolicies(PdpDeployPolicies policies, String user) throws PfModelException {
         try {
             MyPdpDeployPolicies checked = coder.convert(policies, MyPdpDeployPolicies.class);
             ValidationResult result = new BeanValidator().validateTop(PdpDeployPolicies.class.getSimpleName(), checked);
@@ -397,7 +399,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
             throw new PfModelException(Status.INTERNAL_SERVER_ERROR, "cannot decode request", e);
         }
 
-        process(policies, this::deploySimplePolicies);
+        process(user, policies, this::deploySimplePolicies);
     }
 
     /**

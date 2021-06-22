@@ -93,8 +93,8 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      * @param policyIdent identifier of the policy to be undeployed
      * @throws PfModelException if an error occurred
      */
-    public void undeploy(ToscaConceptIdentifierOptVersion policyIdent) throws PfModelException {
-        process(policyIdent, this::undeployPolicy);
+    public void undeploy(ToscaConceptIdentifierOptVersion policyIdent, String user) throws PfModelException {
+        process(user, policyIdent, this::undeployPolicy);
     }
 
     /**
