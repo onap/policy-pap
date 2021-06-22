@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16c31b88_d1de37ff",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-22T16:38:11Z",
+      "side": 1,
+      "message": "maybe reverse this to:\n\n  State.FAILURE.equals(xxx)",
+      "range": {
+        "startLine": 121,
+        "startChar": 12,
+        "endLine": 121,
+        "endChar": 57
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3367e116_7cfa917e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-22T16:38:11Z",
+      "side": 1,
+      "message": "maybe this method should just take an AuditFilter, the purpose of which is to avoid methods with lots of parameters, such as this one",
+      "range": {
+        "startLine": 138,
+        "startChar": 45,
+        "endLine": 139,
+        "endChar": 60
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afddbb3e_6589cc64",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-22T16:38:11Z",
+      "side": 1,
+      "message": "should also verify some of the content (e.g., one is \"DEPLOY\" and the other is \"UNDEPLOY\")",
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82cf60ea_6dc68989",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-22T16:38:11Z",
+      "side": 1,
+      "message": "should also verify that the correct one was recorded",
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e523a87_b490538d",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-22T16:38:11Z",
+      "side": 1,
+      "message": "maybe add one or two audit records here, and then verify that both are returned after line 100 (via isSameXxx())",
+      "range": {
+        "startLine": 97,
+        "startChar": 86,
+        "endLine": 97,
+        "endChar": 88
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fab0ac0_7154c3ab",
+        "filename": "main/src/test/resources/META-INF/persistence.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-22T16:38:11Z",
+      "side": 1,
+      "message": "also need to update persistence.xml in src/main/resources?",
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
