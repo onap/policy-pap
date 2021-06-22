@@ -99,7 +99,7 @@ public class TestSessionData extends ProviderSuper {
         group1 = loadGroup("group1.json");
         group2 = loadGroup("group2.json");
 
-        session = new SessionData(dao);
+        session = new SessionData(dao, DEFAULT_USER);
     }
 
     @Test
@@ -561,7 +561,7 @@ public class TestSessionData extends ProviderSuper {
 
         DeploymentStatus status = mock(DeploymentStatus.class);
 
-        session = new SessionData(dao) {
+        session = new SessionData(dao, DEFAULT_USER) {
             @Override
             protected DeploymentStatus makeDeploymentStatus(PolicyModelsProvider dao) {
                 return status;
