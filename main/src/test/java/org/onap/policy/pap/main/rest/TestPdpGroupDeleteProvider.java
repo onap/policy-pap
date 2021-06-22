@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.core.Response.Status;
-import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +69,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private ToscaConceptIdentifierOptVersion fullIdent;
     private ToscaConceptIdentifier ident;
     private Updater updater;
-
 
     @AfterClass
     public static void tearDownAfterClass() {
@@ -120,15 +118,15 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(session.getGroup(GROUP1_NAME)).thenReturn(group);
 
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
-                        .hasMessage("group is still ACTIVE");
+                .hasMessage("group is still ACTIVE");
     }
 
     @Test
     public void testDeleteGroup_NotFound() throws Exception {
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
-                        .hasMessage("group not found")
-                        .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
-                        .isEqualTo(Status.NOT_FOUND);
+                .hasMessage("group not found")
+                .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
+                .isEqualTo(Status.NOT_FOUND);
     }
 
     @Test
@@ -157,11 +155,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isSameAs(ex);
     }
 
-    @Test
-    public void testUndeploy_testUndeployPolicy() {
-        Assertions.assertThatCode(() -> prov.undeploy(optIdent)).doesNotThrowAnyException();
-    }
-
     /**
      * Tests using a real provider, just to verify end-to-end functionality.
      *
@@ -176,7 +169,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
         when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
-        new PdpGroupDeleteProvider().undeploy(fullIdent);
+        new PdpGroupDeleteProvider().undeploy(fullIdent, DEFAULT_USER);
 
         // should have updated the old group
         List<PdpGroup> updates = getGroupUpdates();
@@ -201,8 +194,8 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     public void testUndeployPolicy_NotFound() throws Exception {
         when(session.isUnchanged()).thenReturn(true);
 
-        assertThatThrownBy(() -> prov.undeploy(optIdent)).isInstanceOf(PfModelException.class)
-                        .hasMessage("policy does not appear in any PDP group: policyA null");
+        assertThatThrownBy(() -> prov.undeploy(optIdent, DEFAULT_USER)).isInstanceOf(PfModelException.class)
+                .hasMessage("policy does not appear in any PDP group: policyA null");
     }
 
     @Test
@@ -212,7 +205,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         prov = spy(prov);
         doThrow(exc).when(prov).processPolicy(any(), any());
 
-        assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
+        assertThatThrownBy(() -> prov.undeploy(optIdent, null)).isSameAs(exc);
     }
 
     @Test
@@ -222,7 +215,9 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         prov = spy(prov);
         doThrow(exc).when(prov).processPolicy(any(), any());
 
-        assertThatThrownBy(() -> prov.undeploy(optIdent)).isSameAs(exc);
+        // process method catches RuntimeException and re-throws as PfModelException
+        assertThatThrownBy(() -> prov.undeploy(fullIdent, null)).isInstanceOf(PfModelException.class)
+                .hasRootCauseMessage(EXPECTED_EXCEPTION);
     }
 
     @Test
@@ -283,7 +278,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertEquals(origSize, subgroup.getPolicies().size());
     }
 
-
     private class MyProvider extends PdpGroupDeleteProvider {
 
         @Override
@@ -293,7 +287,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         @Override
         protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
-                        throws PfModelException {
+                throws PfModelException {
             // do nothing
         }
     }
