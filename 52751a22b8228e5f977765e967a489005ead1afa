@@ -2,6 +2,305 @@
   "comments": [
     {
       "key": {
+        "uuid": "445e4c04_418571fa",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/notification/DeploymentStatus.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "I don\u0027t think we need to do this. This class tracks the deployment status of the policies send to PDP.",
+      "range": {
+        "startLine": 331,
+        "startChar": 11,
+        "endLine": 334,
+        "endChar": 45
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92494979_8164b54b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "of policy operations.",
+      "range": {
+        "startLine": 40,
+        "startChar": 47,
+        "endLine": 40,
+        "endChar": 62
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b09079b_b7fb25af",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "better name \"auditRecords\"",
+      "range": {
+        "startLine": 52,
+        "startChar": 30,
+        "endLine": 52,
+        "endChar": 41
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2eea2b8f_d90122a0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "Pls update",
+      "range": {
+        "startLine": 67,
+        "startChar": 7,
+        "endLine": 71,
+        "endChar": 46
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "473b50aa_61e29df3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "pls update",
+      "range": {
+        "startLine": 80,
+        "startChar": 7,
+        "endLine": 84,
+        "endChar": 81
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb91d7f5_425c3fbe",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "We need to pass the user here instead.",
+      "range": {
+        "startLine": 88,
+        "startChar": 88,
+        "endLine": 88,
+        "endChar": 93
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e3dc61f_552d1278",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "pls update",
+      "range": {
+        "startLine": 92,
+        "startChar": 5,
+        "endLine": 96,
+        "endChar": 81
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce7dd7ea_a5fecfbf",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "We need to pass the user here instead",
+      "range": {
+        "startLine": 100,
+        "startChar": 90,
+        "endLine": 100,
+        "endChar": 95
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f15cc15b_6fa27052",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "pls update",
+      "range": {
+        "startLine": 104,
+        "startChar": 7,
+        "endLine": 104,
+        "endChar": 47
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6162441c_65b843bb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "better name \"saveAuditRecords\"",
+      "range": {
+        "startLine": 106,
+        "startChar": 16,
+        "endLine": 106,
+        "endChar": 37
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0fbf597_8365932d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "pls update",
+      "range": {
+        "startLine": 108,
+        "startChar": 25,
+        "endLine": 108,
+        "endChar": 65
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27e11207_6d3632a4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "what if this fails?",
+      "range": {
+        "startLine": 109,
+        "startChar": 12,
+        "endLine": 109,
+        "endChar": 53
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f0be3b8_5fc2ba19",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "this method is not needed. The idea is just to provide audit for operations and not track. The tracking can be done via policy status api\u0027s.",
+      "range": {
+        "startLine": 120,
+        "startChar": 4,
+        "endLine": 120,
+        "endChar": 63
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "16c31b88_d1de37ff",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
         "patchSetId": 1
@@ -36,6 +335,30 @@
       "writtenOn": "2021-06-22T16:38:11Z",
       "side": 1,
       "message": "maybe this method should just take an AuditFilter, the purpose of which is to avoid methods with lots of parameters, such as this one",
+      "range": {
+        "startLine": 138,
+        "startChar": 45,
+        "endLine": 139,
+        "endChar": 60
+      },
+      "revId": "52751a22b8228e5f977765e967a489005ead1afa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83223bdd_8449694b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T20:04:52Z",
+      "side": 1,
+      "message": "we don\u0027t need this method here. When the api controller \u0026 provider are created, it will directly call the DB provider and get the response.",
+      "parentUuid": "3367e116_7cfa917e",
       "range": {
         "startLine": 138,
         "startChar": 45,
