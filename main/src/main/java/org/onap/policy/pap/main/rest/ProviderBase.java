@@ -24,6 +24,8 @@ package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
 import javax.ws.rs.core.Response.Status;
+import lombok.Getter;
+import lombok.Setter;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -74,6 +76,13 @@ public abstract class ProviderBase {
     private final PolicyModelsProviderFactoryWrapper daoFactory;
 
     /**
+     * User triggering the requests.
+     */
+    @Getter
+    @Setter
+    private String user;
+
+    /**
      * Constructs the object.
      */
     protected ProviderBase() {
@@ -99,6 +108,7 @@ public abstract class ProviderBase {
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
                 data = new SessionData(dao);
+                data.setUser(user);
                 processor.accept(data, request);
 
                 // make all of the DB updates

@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
@@ -104,10 +106,18 @@ public class SessionData {
     private Set<ToscaConceptIdentifier> policiesToBeUndeployed = new HashSet<>();
 
     /**
+     * User starting requests.
+     */
+    @Getter
+    @Setter
+    private String user;
+
+    /**
      * Tracks policy deployment status so notifications can be generated.
      */
     private final DeploymentStatus deployStatus;
 
+    private PolicyAuditManager auditManager;
 
     /**
      * Constructs the object.
@@ -117,6 +127,7 @@ public class SessionData {
     public SessionData(PolicyModelsProvider dao) {
         this.dao = dao;
         this.deployStatus = makeDeploymentStatus(dao);
+        this.auditManager = makePolicyAuditManager(dao);
     }
 
     /**
@@ -435,6 +446,9 @@ public class SessionData {
             dao.updatePdpGroups(updated.stream().map(GroupData::getGroup).collect(Collectors.toList()));
         }
 
+        //send deployments audits records to DB
+        auditManager.saveRecordsToDb();
+
         // flush deployment status records to the DB
         deployStatus.flush(notification);
     }
@@ -459,12 +473,13 @@ public class SessionData {
      * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup,
-            String pdpType) throws PfModelException {
+    protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup, String pdpType)
+            throws PfModelException {
         ToscaConceptIdentifier policyId = policy.getIdentifier();
         policiesToBeDeployed.put(policyId, policy);
 
         addData(policyId, pdps, pdpGroup, pdpType, true);
+        auditManager.addDeploymentAudit(policyId, pdpGroup, pdpType, user);
     }
 
     /**
@@ -479,7 +494,9 @@ public class SessionData {
     protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
             String pdpType) throws PfModelException {
         policiesToBeUndeployed.add(policyId);
+
         addData(policyId, pdps, pdpGroup, pdpType, false);
+        auditManager.addUndeploymentAudit(policyId, pdpGroup, pdpType, user);
     }
 
     /**
@@ -510,5 +527,9 @@ public class SessionData {
 
     protected DeploymentStatus makeDeploymentStatus(PolicyModelsProvider dao) {
         return new DeploymentStatus(dao);
+    }
+
+    protected PolicyAuditManager makePolicyAuditManager(PolicyModelsProvider dao) {
+        return new PolicyAuditManager(dao);
     }
 }

@@ -71,4 +71,12 @@ public class PapRestControllerV1Test {
         Response resp = ctlr.addLoggingHeaders(bldr, uuid).build();
         assertEquals(uuid.toString(), resp.getHeaderString(PapRestControllerV1.REQUEST_ID_NAME));
     }
+
+    @Test
+    public void testGetPrincipal() {
+        assertEquals("user", PapRestControllerV1.getPrincipal("Basic dXNlcjpwYXNz"));
+        assertThat(PapRestControllerV1.getPrincipal("Basic ")).isEmpty();
+        assertThat(PapRestControllerV1.getPrincipal("")).isEmpty();
+        assertThat(PapRestControllerV1.getPrincipal(null)).isEmpty();
+    }
 }
