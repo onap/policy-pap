@@ -3,6 +3,7 @@
  * ONAP
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +40,7 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
+import org.onap.policy.pap.main.rest.PolicyAuditManager;
 
 /**
  * Collection of Policy Deployment Status records. The sequence of method invocations
@@ -299,6 +301,8 @@ public class DeploymentStatus {
     public void completeDeploy(String pdpId, Set<ToscaConceptIdentifier> expectedPolicies,
                     Set<ToscaConceptIdentifier> actualPolicies) {
 
+        PolicyAuditManager auditManager = makePolicyAuditManager();
+
         for (StatusAction status : recordMap.values()) {
             PdpPolicyStatus status2 = status.getStatus();
 
@@ -323,6 +327,16 @@ public class DeploymentStatus {
                 status.setChanged();
                 status2.setState(state);
             }
+
+            // sync deploy process with audit records
+            auditManager.checkForFailure(status2);
         }
+        auditManager.saveDeploymentsAudits();
+    }
+
+
+
+    protected PolicyAuditManager makePolicyAuditManager() {
+        return new PolicyAuditManager(provider);
     }
 }

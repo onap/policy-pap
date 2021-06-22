@@ -108,6 +108,7 @@ public class SessionData {
      */
     private final DeploymentStatus deployStatus;
 
+    private PolicyAuditManager auditManager;
 
     /**
      * Constructs the object.
@@ -117,6 +118,7 @@ public class SessionData {
     public SessionData(PolicyModelsProvider dao) {
         this.dao = dao;
         this.deployStatus = makeDeploymentStatus(dao);
+        this.auditManager = makePolicyAuditManager(dao);
     }
 
     /**
@@ -435,6 +437,9 @@ public class SessionData {
             dao.updatePdpGroups(updated.stream().map(GroupData::getGroup).collect(Collectors.toList()));
         }
 
+        //send deployments audits records to DB
+        auditManager.saveDeploymentsAudits();
+
         // flush deployment status records to the DB
         deployStatus.flush(notification);
     }
@@ -459,12 +464,13 @@ public class SessionData {
      * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
-    protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup,
-            String pdpType) throws PfModelException {
+    protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup, String pdpType)
+            throws PfModelException {
         ToscaConceptIdentifier policyId = policy.getIdentifier();
         policiesToBeDeployed.put(policyId, policy);
 
         addData(policyId, pdps, pdpGroup, pdpType, true);
+        auditManager.addDeploymentAudit(policyId, pdpGroup, pdpType);
     }
 
     /**
@@ -479,7 +485,9 @@ public class SessionData {
     protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
             String pdpType) throws PfModelException {
         policiesToBeUndeployed.add(policyId);
+
         addData(policyId, pdps, pdpGroup, pdpType, false);
+        auditManager.addUndeploymentAudit(policyId, pdpGroup, pdpType);
     }
 
     /**
@@ -510,5 +518,9 @@ public class SessionData {
 
     protected DeploymentStatus makeDeploymentStatus(PolicyModelsProvider dao) {
         return new DeploymentStatus(dao);
+    }
+
+    protected PolicyAuditManager makePolicyAuditManager(PolicyModelsProvider dao) {
+        return new PolicyAuditManager(dao);
     }
 }
