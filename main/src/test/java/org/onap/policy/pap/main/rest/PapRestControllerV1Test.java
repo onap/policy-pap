@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,5 +71,13 @@ public class PapRestControllerV1Test {
         UUID uuid = UUID.randomUUID();
         Response resp = ctlr.addLoggingHeaders(bldr, uuid).build();
         assertEquals(uuid.toString(), resp.getHeaderString(PapRestControllerV1.REQUEST_ID_NAME));
+    }
+
+    @Test
+    public void testGetPrincipal() {
+        assertEquals("user", PapRestControllerV1.getPrincipal("Basic dXNlcjpwYXNz"));
+        assertThat(PapRestControllerV1.getPrincipal("Basic ")).isEmpty();
+        assertThat(PapRestControllerV1.getPrincipal("")).isEmpty();
+        assertThat(PapRestControllerV1.getPrincipal(null)).isEmpty();
     }
 }

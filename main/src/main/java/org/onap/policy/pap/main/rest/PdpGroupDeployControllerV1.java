@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,8 +92,9 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
 
     public Response updateGroupPolicies(
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+                    @HeaderParam(AUTHORIZATION_HEADER) @ApiParam String auth,
                     @ApiParam(value = "List of PDP Group Deployments", required = true) DeploymentGroups groups) {
-
+        provider.setOperationUser(getPrincipal(auth));
         return doOperation(requestId, "update policy deployments failed", () -> provider.updateGroupPolicies(groups));
     }
 
@@ -129,9 +131,10 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response deployPolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+            @HeaderParam(AUTHORIZATION_HEADER) @ApiParam String auth,
                     @ApiParam(value = "PDP Policies; only the name is required",
                                     required = true) PdpDeployPolicies policies) {
-
+        provider.setOperationUser(getPrincipal(auth));
         return doOperation(requestId, "deploy policies failed", () -> provider.deployPolicies(policies));
     }
 

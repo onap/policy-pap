@@ -24,6 +24,8 @@ package org.onap.policy.pap.main.rest;
 
 import java.util.Collection;
 import javax.ws.rs.core.Response.Status;
+import lombok.Getter;
+import lombok.Setter;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -52,6 +54,7 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
  */
 public abstract class ProviderBase {
     public static final String DB_ERROR_MSG = "DB error";
+    public static final String DEFAULT_USER = "PAP";
 
     /**
      * Lock used when updating PDPs.
@@ -74,6 +77,13 @@ public abstract class ProviderBase {
     private final PolicyModelsProviderFactoryWrapper daoFactory;
 
     /**
+     * User triggering the requests.
+     */
+    @Getter
+    @Setter
+    private String operationUser;
+
+    /**
      * Constructs the object.
      */
     protected ProviderBase() {
@@ -81,6 +91,7 @@ public abstract class ProviderBase {
         this.requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
         this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         this.notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class);
+        this.operationUser = DEFAULT_USER;
     }
 
     /**
@@ -99,6 +110,7 @@ public abstract class ProviderBase {
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
                 data = new SessionData(dao);
+                data.setOperationUser(operationUser);
                 processor.accept(data, request);
 
                 // make all of the DB updates

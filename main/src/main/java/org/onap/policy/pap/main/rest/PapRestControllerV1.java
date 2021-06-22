@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,11 +28,13 @@ import io.swagger.annotations.SecurityDefinition;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import org.apache.commons.codec.binary.Base64;
 import org.onap.policy.models.base.PfModelException;
 
 /**
@@ -71,12 +73,12 @@ public class PapRestControllerV1 {
 
     public static final String VERSION_MINOR_NAME = "X-MinorVersion";
     public static final String VERSION_MINOR_DESCRIPTION =
-                    "Used to request or communicate a MINOR version back from the client"
-                                    + " to the server, and from the server back to the client";
+            "Used to request or communicate a MINOR version back from the client"
+                    + " to the server, and from the server back to the client";
 
     public static final String VERSION_PATCH_NAME = "X-PatchVersion";
     public static final String VERSION_PATCH_DESCRIPTION = "Used only to communicate a PATCH version in a response for"
-                    + " troubleshooting purposes only, and will not be provided by" + " the client on request";
+            + " troubleshooting purposes only, and will not be provided by" + " the client on request";
 
     public static final String VERSION_LATEST_NAME = "X-LatestVersion";
     public static final String VERSION_LATEST_DESCRIPTION = "Used only to communicate an API's latest version";
@@ -86,6 +88,7 @@ public class PapRestControllerV1 {
     public static final String REQUEST_ID_PARAM_DESCRIPTION = "RequestID for http transaction";
 
     public static final String AUTHORIZATION_TYPE = "basicAuth";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     public static final int AUTHENTICATION_ERROR_CODE = HttpURLConnection.HTTP_UNAUTHORIZED;
     public static final int AUTHORIZATION_ERROR_CODE = HttpURLConnection.HTTP_FORBIDDEN;
@@ -103,7 +106,7 @@ public class PapRestControllerV1 {
      */
     public ResponseBuilder addVersionControlHeaders(ResponseBuilder respBuilder) {
         return respBuilder.header(VERSION_MINOR_NAME, "0").header(VERSION_PATCH_NAME, "0").header(VERSION_LATEST_NAME,
-                        API_VERSION);
+                API_VERSION);
     }
 
     /**
@@ -119,6 +122,26 @@ public class PapRestControllerV1 {
         }
 
         return respBuilder.header(REQUEST_ID_NAME, requestId);
+    }
+
+    /**
+     * Decode authentication to get user.
+     *
+     * @param auth Basic auth hash
+     * @return username from basic authentication
+     */
+    public static String getPrincipal(String auth) {
+        if (auth != null) {
+            auth = auth.replaceFirst("[B|b]asic ", "");
+
+            if (Base64.isBase64(auth)) {
+                byte[] bytes = Base64.decodeBase64(auth);
+
+                return new String(bytes, StandardCharsets.UTF_8).split(":")[0];
+            }
+        }
+
+        return "";
     }
 
     /**
