@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bcfa5271_48ef420f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-22T19:41:10Z",
+      "side": 1,
+      "message": "This can happen if PDP goes down and comes back before it is removed in DB by PAP.\nNice catch Jim!",
+      "range": {
+        "startLine": 160,
+        "startChar": 12,
+        "endLine": 163,
+        "endChar": 20
+      },
+      "revId": "00e9e19f5ac50cb5ce4cd09a9c403797a6e8f2b3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
