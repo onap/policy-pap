@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,24 +24,44 @@ package org.onap.policy.pap.main.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.security.Principal;
 import java.util.UUID;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.SecurityContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.internal.stubbing.answers.Returns;
 
 public class PapRestControllerV1Test {
 
-    private PapRestControllerV1 ctlr;
+    @Mock
+    SecurityContext mockSecurityContext;
+
+    @InjectMocks
+    PapRestControllerV1 mockController;
+
+    private AutoCloseable closeable;
     private ResponseBuilder bldr;
 
     @Before
     public void setUp() {
-        ctlr = new PapRestControllerV1();
         bldr = Response.status(Response.Status.OK);
+        closeable = MockitoAnnotations.openMocks(this);
+    }
+
+    @After
+    public void after() throws Exception {
+        closeable.close();
     }
 
     @Test
@@ -53,7 +74,7 @@ public class PapRestControllerV1Test {
 
     @Test
     public void testAddVersionControlHeaders() {
-        Response resp = ctlr.addVersionControlHeaders(bldr).build();
+        Response resp = mockController.addVersionControlHeaders(bldr).build();
         assertEquals("0", resp.getHeaderString(PapRestControllerV1.VERSION_MINOR_NAME));
         assertEquals("0", resp.getHeaderString(PapRestControllerV1.VERSION_PATCH_NAME));
         assertEquals("1.0.0", resp.getHeaderString(PapRestControllerV1.VERSION_LATEST_NAME));
@@ -61,14 +82,24 @@ public class PapRestControllerV1Test {
 
     @Test
     public void testAddLoggingHeaders_Null() {
-        Response resp = ctlr.addLoggingHeaders(bldr, null).build();
+        Response resp = mockController.addLoggingHeaders(bldr, null).build();
         assertNotNull(resp.getHeaderString(PapRestControllerV1.REQUEST_ID_NAME));
     }
 
     @Test
     public void testAddLoggingHeaders_NonNull() {
         UUID uuid = UUID.randomUUID();
-        Response resp = ctlr.addLoggingHeaders(bldr, uuid).build();
+        Response resp = mockController.addLoggingHeaders(bldr, uuid).build();
         assertEquals(uuid.toString(), resp.getHeaderString(PapRestControllerV1.REQUEST_ID_NAME));
+    }
+
+    @Test
+    public void testGetPrincipal() {
+        assertThat(new PapRestControllerV1().getPrincipal()).isEmpty();
+
+        Principal mockUser = mock(Principal.class, new Returns("myFakeUser"));
+        when(mockSecurityContext.getUserPrincipal()).thenReturn(mockUser);
+
+        assertEquals("myFakeUser", mockController.getPrincipal());
     }
 }
