@@ -22,6 +22,9 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
@@ -41,7 +44,6 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
-import org.onap.policy.pap.main.comm.PdpTracker;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
@@ -124,7 +126,7 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<Publisher<PolicyNotification>> notifyPub = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
-        final AtomicReference<TimerManager> heartBeatTimers = new AtomicReference<>();
+        final AtomicReference<ScheduledExecutorService> heartBeatChecker = new AtomicReference<>();
         final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
         final AtomicReference<RestServer> restServer = new AtomicReference<>();
@@ -183,14 +185,6 @@ public class PapActivator extends ServiceManagerContainer {
             () -> Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier.get()),
             () -> Registry.unregister(PapConstants.REG_POLICY_NOTIFIER));
 
-        addAction("PDP heart beat timers",
-            () -> {
-                long maxWaitHeartBeatMs = MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs();
-                heartBeatTimers.set(new TimerManager("heart beat", maxWaitHeartBeatMs));
-                startThread(heartBeatTimers.get());
-            },
-            () -> heartBeatTimers.get().stop());
-
         addAction("PDP update timers",
             () -> {
                 pdpUpdTimers.set(new TimerManager("update", pdpParams.getUpdateParameters().getMaxWaitMs()));
@@ -212,15 +206,17 @@ public class PapActivator extends ServiceManagerContainer {
         addAction("PDP modification requests",
             () -> {
                 requestMap.set(new PdpModifyRequestMap(
-                            new PdpModifyRequestMapParams()
-                                    .setDaoFactory(daoFactory.get())
-                                    .setModifyLock(pdpUpdateLock)
-                                    .setParams(pdpParams)
-                                    .setPolicyNotifier(notifier.get())
-                                    .setPdpPublisher(pdpPub.get())
-                                    .setResponseDispatcher(reqIdDispatcher)
-                                    .setStateChangeTimers(pdpStChgTimers.get())
-                                    .setUpdateTimers(pdpUpdTimers.get())));
+                            PdpModifyRequestMapParams.builder()
+                                    .maxPdpAgeMs(MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs())
+                                    .daoFactory(daoFactory.get())
+                                    .modifyLock(pdpUpdateLock)
+                                    .params(pdpParams)
+                                    .policyNotifier(notifier.get())
+                                    .pdpPublisher(pdpPub.get())
+                                    .responseDispatcher(reqIdDispatcher)
+                                    .stateChangeTimers(pdpStChgTimers.get())
+                                    .updateTimers(pdpUpdTimers.get())
+                                    .build()));
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
 
                 // now that it's registered, we can attach a "policy undeploy" provider
@@ -228,14 +224,17 @@ public class PapActivator extends ServiceManagerContainer {
             },
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
-        addAction("PDP heart beat tracker",
-            () -> Registry.register(PapConstants.REG_PDP_TRACKER, PdpTracker.builder()
-                                    .daoFactory(daoFactory.get())
-                                    .timers(heartBeatTimers.get())
-                                    .modifyLock(pdpUpdateLock)
-                                    .requestMap(requestMap.get())
-                                    .build()),
-            () -> Registry.unregister(PapConstants.REG_PDP_TRACKER));
+        addAction("PDP expiration timer",
+            () -> {
+                long frequencyMs = pdpParams.getHeartBeatMs();
+                heartBeatChecker.set(Executors.newScheduledThreadPool(1));
+                heartBeatChecker.get().scheduleWithFixedDelay(
+                    requestMap.get()::removeExpiredPdps,
+                    frequencyMs,
+                    frequencyMs,
+                    TimeUnit.MILLISECONDS);
+            },
+            () -> heartBeatChecker.get().shutdownNow());
 
         addAction("PAP client executor",
             () ->

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
@@ -34,7 +35,9 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
  * Parameters needed to create a {@link PdpModifyRequestMapParams}.
  */
 @Getter
+@Builder
 public class PdpModifyRequestMapParams {
+    private long maxPdpAgeMs;
     private Publisher<PdpMessage> pdpPublisher;
     private RequestIdDispatcher<PdpStatus> responseDispatcher;
     private Object modifyLock;
@@ -44,50 +47,14 @@ public class PdpModifyRequestMapParams {
     private PolicyModelsProviderFactoryWrapper daoFactory;
     private PolicyNotifier policyNotifier;
 
-    public PdpModifyRequestMapParams setParams(PdpParameters params) {
-        this.params = params;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setUpdateTimers(TimerManager updateTimers) {
-        this.updateTimers = updateTimers;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setStateChangeTimers(TimerManager stateChangeTimers) {
-        this.stateChangeTimers = stateChangeTimers;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setDaoFactory(PolicyModelsProviderFactoryWrapper daoFactory) {
-        this.daoFactory = daoFactory;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setPolicyNotifier(PolicyNotifier policyNotifier) {
-        this.policyNotifier = policyNotifier;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setPdpPublisher(Publisher<PdpMessage> pdpPublisher) {
-        this.pdpPublisher = pdpPublisher;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setResponseDispatcher(RequestIdDispatcher<PdpStatus> responseDispatcher) {
-        this.responseDispatcher = responseDispatcher;
-        return this;
-    }
-
-    public PdpModifyRequestMapParams setModifyLock(Object modifyLock) {
-        this.modifyLock = modifyLock;
-        return this;
-    }
-
     /**
      * Validates the parameters.
      */
     public void validate() {
+        if (maxPdpAgeMs < 1) {
+            throw new IllegalArgumentException("maxPdpAgeMs must be >= 1");
+        }
+
         if (pdpPublisher == null) {
             throw new IllegalArgumentException("missing publisher");
         }

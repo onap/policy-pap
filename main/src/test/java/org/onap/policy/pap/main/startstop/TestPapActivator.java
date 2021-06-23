@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
-import org.onap.policy.pap.main.comm.PdpTracker;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
@@ -94,7 +93,6 @@ public class TestPapActivator {
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
         assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class));
-        assertNotNull(Registry.get(PapConstants.REG_PDP_TRACKER, PdpTracker.class));
         assertNotNull(Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class));
 
         // repeat - should throw an exception
@@ -113,7 +111,6 @@ public class TestPapActivator {
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_LOCK, Object.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class, null));
-        assertNull(Registry.getOrDefault(PapConstants.REG_PDP_TRACKER, PdpTracker.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class, null));
 
         // repeat - should throw an exception

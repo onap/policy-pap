@@ -22,6 +22,7 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -37,10 +38,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response.Status;
@@ -54,12 +57,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
-import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
-import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
-import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -75,6 +75,7 @@ import org.powermock.reflect.Whitebox;
 @RunWith(MockitoJUnitRunner.class)
 public class PdpModifyRequestMapTest extends CommonRequestBase {
     private static final String MY_REASON = "my reason";
+    private static final int EXPIRED_SECONDS = 100;
 
     /**
      * Used to capture input to dao.createPdpGroups().
@@ -361,189 +362,77 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRemovePdp() throws Exception {
-        map.addRequest(update);
+    public void testRemoveExpiredPdps() throws Exception {
+        PdpGroup group1 = makeGroup(MY_GROUP);
+        group1.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1)));
 
-        // put the PDP in a group
-        PdpGroup group = makeGroup(MY_GROUP);
-        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
+        PdpGroup group2 = makeGroup(MY_GROUP2);
+        group2.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP2, PDP3), makeSubGroup(MY_SUBGROUP2, PDP4)));
 
-        final ToscaConceptIdentifier policy1 = new ToscaConceptIdentifier("MyPolicy", "10.20.30");
-        final ToscaConceptIdentifier policyType = new ToscaConceptIdentifier("MyPolicyType", "10.20.30");
+        // expire all items in group2's first subgroup
+        Instant expired = Instant.now().minusSeconds(EXPIRED_SECONDS);
+        group2.getPdpSubgroups().get(0).getPdpInstances().forEach(pdp -> pdp.setLastUpdate(expired));
 
-        // @formatter:off
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-        when(dao.getGroupPolicyStatus(any())).thenReturn(Arrays.asList(
-                        PdpPolicyStatus.builder()
-                            .pdpGroup(MY_GROUP)
-                            .pdpType(MY_SUBGROUP)
-                            .pdpId(PDP1)
-                            .policy(policy1)
-                            .policyType(policyType)
-                            .deploy(true)
-                            .state(State.SUCCESS)
-                            .build()));
-        // @formatter:on
+        when(dao.getFilteredPdpGroups(any())).thenReturn(List.of(group1, group2));
 
-        // indicate retries exhausted
-        invokeLastRetryHandler(1);
-
-        // should have stopped publishing
-        verify(requests).stopPublishing();
-
-        // should have generated a notification; yes, it should go into the "added" set
-        verify(notifier).publish(notificationCaptor.capture());
-        assertThat(notificationCaptor.getValue().getDeleted()).isEmpty();
-        assertThat(notificationCaptor.getValue().getAdded()).hasSize(1);
-
-        PolicyStatus status = notificationCaptor.getValue().getAdded().get(0);
-        assertThat(status.getPolicy()).isEqualTo(policy1);
-        assertThat(status.getPolicyType()).isEqualTo(policyType);
-        assertThat(status.getFailureCount()).isZero();
-        assertThat(status.getIncompleteCount()).isZero();
-        assertThat(status.getSuccessCount()).isZero();
+        // run it
+        map.removeExpiredPdps();
 
         // should have removed from the group
         List<PdpGroup> groups = getGroupUpdates();
-        assertEquals(1, groups.size());
-        assertSame(group, groups.get(0));
-        assertEquals(0, group.getPdpSubgroups().get(0).getCurrentInstanceCount());
+        assertThat(groups).hasSize(1);
+        assertThat(groups.get(0)).isSameAs(group2);
+        assertThat(group2.getPdpSubgroups()).hasSize(2);
+
+        final Iterator<PdpSubGroup> iter = group2.getPdpSubgroups().iterator();
+
+        PdpSubGroup subgrp = iter.next();
+        assertThat(subgrp.getPdpInstances()).hasSize(0);
+        assertThat(subgrp.getCurrentInstanceCount()).isEqualTo(0);
+
+        subgrp = iter.next();
+        assertThat(subgrp.getPdpInstances()).hasSize(1);
+        assertThat(subgrp.getCurrentInstanceCount()).isEqualTo(1);
+        assertThat(subgrp.getPdpInstances().get(0).getInstanceId()).isEqualTo(PDP4);
     }
 
     @Test
-    public void testRemovePdp_NotInGroup() throws PfModelException {
-        map.addRequest(update);
-
-        // indicate retries exhausted
-        invokeLastRetryHandler(1);
-
-        // should have stopped publishing
-        verify(requests).stopPublishing();
-
-        // should not have done any updates
-        verify(dao, never()).updatePdpGroups(any());
-
-        // and no publishes
-        verify(notifier, never()).publish(any());
-    }
-
-    @Test
-    public void testRemovePdp_AlreadyRemovedFromMap() throws PfModelException {
-        map.addRequest(change);
-        map.stopPublishing(PDP1);
-
-        // put the PDP in a group
-        PdpGroup group = makeGroup(MY_GROUP);
-        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1)));
-
-        invokeLastRetryHandler(1);
-
-        // should have stopped publishing a second time
-        verify(requests, times(2)).stopPublishing();
-
-        // should NOT have done any updates
-        verify(dao, never()).updatePdpGroups(any());
-    }
-
-    @Test
-    public void testRemovePdp_NoGroup() throws PfModelException {
-        map.addRequest(change);
-
-        invokeLastRetryHandler(1);
-
-        // should not have stopped publishing
-        verify(requests).stopPublishing();
-
-        // should not have done any updates
-        verify(dao, never()).updatePdpGroups(any());
-    }
-
-    @Test
-    public void testRemoveFromGroup() throws Exception {
-        map.addRequest(change);
-
-        PdpGroup group = makeGroup(MY_GROUP);
-        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP + "a", PDP1 + "a"),
-                        makeSubGroup(MY_SUBGROUP, PDP1), makeSubGroup(MY_SUBGROUP + "c", PDP1 + "c")));
-
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-
-        invokeLastRetryHandler(1);
-
-        // verify that the PDP was removed from the subgroup
-        List<PdpGroup> groups = getGroupUpdates();
-        assertEquals(1, groups.size());
-        assertSame(group, groups.get(0));
-
-        List<PdpSubGroup> subgroups = group.getPdpSubgroups();
-        assertEquals(3, subgroups.size());
-        assertEquals("[pdp_1a]", getPdpNames(subgroups.get(0)));
-        assertEquals("[]", getPdpNames(subgroups.get(1)));
-        assertEquals("[pdp_1c]", getPdpNames(subgroups.get(2)));
-    }
-
-    @Test
-    public void testRemoveFromGroup_DaoEx() throws Exception {
-        map.addRequest(change);
-
+    public void testRemoveExpiredPdps_DaoEx() throws Exception {
         when(dao.getFilteredPdpGroups(any())).thenThrow(makeException());
 
-        invokeLastRetryHandler(1);
-
-        // should still stop publishing
-        verify(requests).stopPublishing();
-
-        // requests should have been removed from the map so this should allocate another
-        map.addRequest(update);
-        assertEquals(2, map.nalloc);
-    }
-
-    protected PfModelException makeException() {
-        return new PfModelException(Status.BAD_REQUEST, "expected exception");
-    }
-
-    @Test
-    public void testRemoveFromGroup_NoGroups() throws Exception {
-        map.addRequest(change);
-
-        invokeLastRetryHandler(1);
-
-        verify(dao, never()).updatePdpGroups(any());
-    }
-
-    @Test
-    public void testRemoveFromGroup_NoMatchingSubgroup() throws Exception {
-        map.addRequest(change);
-
-        PdpGroup group = makeGroup(MY_GROUP);
-        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, DIFFERENT)));
-
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-
-        invokeLastRetryHandler(1);
-
-        verify(dao, never()).updatePdpGroups(any());
+        assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
     }
 
     @Test
     public void testRemoveFromSubgroup() throws Exception {
-        map.addRequest(change);
-
         PdpGroup group = makeGroup(MY_GROUP);
-        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, PDP1 + "x", PDP1 + "y")));
+        group.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1, PDP2, PDP3)));
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+        // expire pdp1 and pdp3
+        Instant expired = Instant.now().minusSeconds(EXPIRED_SECONDS);
+        List<Pdp> pdps = group.getPdpSubgroups().get(0).getPdpInstances();
+        pdps.get(0).setLastUpdate(expired);
+        pdps.get(2).setLastUpdate(expired);
 
-        invokeLastRetryHandler(1);
+        when(dao.getFilteredPdpGroups(any())).thenReturn(List.of(group));
 
-        // verify that the PDP was removed from the subgroup
+        // run it
+        map.removeExpiredPdps();
+
+        // should have removed from the group
         List<PdpGroup> groups = getGroupUpdates();
-        assertEquals(1, groups.size());
-        assertSame(group, groups.get(0));
+        assertThat(groups).hasSize(1);
+        assertThat(groups.get(0)).isSameAs(group);
+        assertThat(group.getPdpSubgroups()).hasSize(1);
+        assertThat(group.getPdpSubgroups().get(0).getCurrentInstanceCount()).isEqualTo(1);
 
-        PdpSubGroup subgroup = group.getPdpSubgroups().get(0);
-        assertEquals(2, subgroup.getCurrentInstanceCount());
-        assertEquals("[pdp_1x, pdp_1y]", getPdpNames(subgroup));
+        pdps = group.getPdpSubgroups().get(0).getPdpInstances();
+        assertThat(pdps).hasSize(1);
+        assertThat(pdps.get(0).getInstanceId()).isEqualTo(PDP2);
+    }
+
+    protected PfModelException makeException() {
+        return new PfModelException(Status.BAD_REQUEST, "expected exception");
     }
 
     @Test
@@ -740,10 +629,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
     @Test
     public void testSingletonListenerRetryCountExhausted() throws Exception {
-        map.addRequest(change);
+        final var request = map.addRequest(change);
 
         // invoke the method
-        invokeLastRetryHandler(1);
+        invokeLastRetryHandler(1, request);
 
         verify(requests).stopPublishing();
     }
@@ -771,19 +660,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * Invokes the first request's listener.retryCountExhausted() method.
      *
      * @param count expected number of requests
+     * @param request request whose count was exhausted
      */
-    private void invokeLastRetryHandler(int count) {
-        getListener(getSingletons(count).get(0)).retryCountExhausted();
-    }
-
-    /**
-     * Gets the name of the PDPs contained within a subgroup.
-     *
-     * @param subgroup subgroup of interest
-     * @return the name of the PDPs contained within the subgroup
-     */
-    private String getPdpNames(PdpSubGroup subgroup) {
-        return subgroup.getPdpInstances().stream().map(Pdp::getInstanceId).collect(Collectors.toList()).toString();
+    private void invokeLastRetryHandler(int count, Request request) {
+        getListener(getSingletons(count).get(0)).retryCountExhausted(request);
     }
 
     /**
@@ -821,6 +701,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         PdpSubGroup subgroup = new PdpSubGroup();
 
         subgroup.setPdpType(pdpType);
+        subgroup.setCurrentInstanceCount(pdpNames.length);
         subgroup.setPdpInstances(Arrays.asList(pdpNames).stream().map(this::makePdp).collect(Collectors.toList()));
 
         return subgroup;
@@ -829,6 +710,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     private Pdp makePdp(String pdpName) {
         Pdp pdp = new Pdp();
         pdp.setInstanceId(pdpName);
+        pdp.setLastUpdate(Instant.now());
 
         return pdp;
     }

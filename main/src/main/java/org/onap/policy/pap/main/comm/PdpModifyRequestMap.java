@@ -21,13 +21,16 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.Setter;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
@@ -170,10 +173,11 @@ public class PdpModifyRequestMap {
      * Adds an UPDATE request to the map.
      *
      * @param update the UPDATE request or {@code null}
+     * @return the new request (his should only be used by junit tests)
      */
-    public void addRequest(PdpUpdate update) {
+    public Request addRequest(PdpUpdate update) {
         if (update == null) {
-            return;
+            return null;
         }
 
         if (isBroadcast(update)) {
@@ -193,16 +197,18 @@ public class PdpModifyRequestMap {
         var request = new UpdateReq(reqparams, name, update);
 
         addSingleton(request);
+        return request;
     }
 
     /**
      * Adds a STATE-CHANGE request to the map.
      *
      * @param stateChange the STATE-CHANGE request or {@code null}
+     * @return the new request (his should only be used by junit tests)
      */
-    public void addRequest(PdpStateChange stateChange) {
+    public Request addRequest(PdpStateChange stateChange) {
         if (stateChange == null) {
-            return;
+            return null;
         }
 
         if (isBroadcast(stateChange)) {
@@ -222,6 +228,7 @@ public class PdpModifyRequestMap {
         var request = new StateChangeReq(reqparams, name, stateChange);
 
         addSingleton(request);
+        return request;
     }
 
     /**
@@ -251,90 +258,86 @@ public class PdpModifyRequestMap {
     }
 
     /**
-     * Removes a PDP from all active groups.
-     *
-     * @param pdpName name of the PDP to be removed
-     * @return {@code true} if the PDP was removed from a group, {@code false} if it was
-     *         not assigned to a group
-     * @throws PfModelException if an error occurred
+     * Removes expired PDPs from all active groups.
      */
-    public boolean removeFromGroups(String pdpName) throws PfModelException {
+    public void removeExpiredPdps() {
 
-        try (PolicyModelsProvider dao = daoFactory.create()) {
+        synchronized (modifyLock) {
+            logger.info("check for PDP records older than {}ms", params.getMaxPdpAgeMs());
 
-            PdpGroupFilter filter = PdpGroupFilter.builder().groupState(PdpState.ACTIVE).build();
-            List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
-            List<PdpGroup> updates = new ArrayList<>(1);
+            try (PolicyModelsProvider dao = daoFactory.create()) {
 
-            var status = new DeploymentStatus(dao);
+                PdpGroupFilter filter = PdpGroupFilter.builder().groupState(PdpState.ACTIVE).build();
+                List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
+                List<PdpGroup> updates = new ArrayList<>(1);
 
-            for (PdpGroup group : groups) {
-                if (removeFromGroup(pdpName, group)) {
-                    updates.add(group);
-                    status.loadByGroup(group.getName());
-                    status.deleteDeployment(pdpName);
+                var status = new DeploymentStatus(dao);
+
+                Instant minAge = Instant.now().minusMillis(params.getMaxPdpAgeMs());
+
+                for (PdpGroup group : groups) {
+                    Set<String> pdps = removeFromGroup(minAge, group);
+                    if (!pdps.isEmpty()) {
+                        updates.add(group);
+                        status.loadByGroup(group.getName());
+                        pdps.forEach(status::deleteDeployment);
+                    }
                 }
-            }
 
-            if (updates.isEmpty()) {
-                return false;
+                if (!updates.isEmpty()) {
+                    dao.updatePdpGroups(updates);
 
-            } else {
-                dao.updatePdpGroups(updates);
+                    var notification = new PolicyNotification();
+                    status.flush(notification);
 
-                var notification = new PolicyNotification();
-                status.flush(notification);
+                    policyNotifier.publish(notification);
+                }
 
-                policyNotifier.publish(notification);
-
-                return true;
+            } catch (PfModelException e) {
+                logger.warn("failed to remove expired PDPs", e);
             }
         }
     }
 
     /**
-     * Removes a PDP from a group.
+     * Removes expired PDPs from a group.
      *
-     * @param pdpName name of the PDP to be removed
-     * @param group group from which it should be removed
-     * @return {@code true} if the PDP was removed from the group, {@code false} if it was
-     *         not assigned to the group
+     * @param minAge minimum age for active PDPs
+     * @param group group from which expired PDPs should be removed
+     * @return he expired PDPs
      */
-    private boolean removeFromGroup(String pdpName, PdpGroup group) {
+    private Set<String> removeFromGroup(Instant minAge, PdpGroup group) {
+        Set<String> pdps = new HashSet<>();
         for (PdpSubGroup subgrp : group.getPdpSubgroups()) {
-            if (removeFromSubgroup(pdpName, group, subgrp)) {
-                return true;
-            }
+            removeFromSubgroup(minAge, group, subgrp, pdps);
         }
 
-        return false;
+        return pdps;
     }
 
     /**
-     * Removes a PDP from a subgroup.
+     * Removes expired PDPs from a subgroup.
      *
-     * @param pdpName name of the PDP to be removed
+     * @param minAge minimum age for active PDPs
      * @param group group from which to attempt to remove the PDP
      * @param subgrp subgroup from which to attempt to remove the PDP
-     * @return {@code true} if the PDP was removed, {@code false} if the PDP was not in
-     *         the group
+     * @param pdps where to place the expired PDPs
      */
-    private boolean removeFromSubgroup(String pdpName, PdpGroup group, PdpSubGroup subgrp) {
+    private void removeFromSubgroup(Instant minAge, PdpGroup group, PdpSubGroup subgrp, Set<String> pdps) {
 
         Iterator<Pdp> iter = subgrp.getPdpInstances().iterator();
 
         while (iter.hasNext()) {
             Pdp instance = iter.next();
 
-            if (pdpName.equals(instance.getInstanceId())) {
+            if (instance.getLastUpdate().isBefore(minAge)) {
+                String pdpName = instance.getInstanceId();
                 logger.info("removed {} from group={} subgroup={}", pdpName, group.getName(), subgrp.getPdpType());
                 iter.remove();
                 subgrp.setCurrentInstanceCount(subgrp.getPdpInstances().size());
-                return true;
+                pdps.add(pdpName);
             }
         }
-
-        return false;
     }
 
     /**
@@ -430,8 +433,11 @@ public class PdpModifyRequestMap {
         }
 
         @Override
-        public void retryCountExhausted() {
-            removePdp();
+        public void retryCountExhausted(Request request) {
+            if (pdp2requests.get(pdpName) == requests) {
+                requests.stopPublishing();
+                startNextRequest(request);
+            }
         }
 
         /**
@@ -442,29 +448,6 @@ public class PdpModifyRequestMap {
         private void startNextRequest(Request request) {
             if (!requests.startNextRequest(request)) {
                 pdp2requests.remove(pdpName, requests);
-            }
-        }
-
-        /**
-         * Removes a PDP from its subgroup.
-         */
-        private void removePdp() {
-            requests.stopPublishing();
-
-            // remove the requests from the map
-            if (!pdp2requests.remove(pdpName, requests)) {
-                // wasn't in the map - the requests must be old
-                logger.warn("discarding old requests for {}", pdpName);
-                return;
-            }
-
-            logger.warn("removing {}", pdpName);
-
-            // remove the PDP from all groups
-            try {
-                removeFromGroups(pdpName);
-            } catch (PfModelException e) {
-                logger.info("unable to remove PDP {} from subgroup", pdpName, e);
             }
         }
     }
