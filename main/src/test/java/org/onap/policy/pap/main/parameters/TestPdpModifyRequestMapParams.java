@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 
 package org.onap.policy.pap.main.parameters;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -33,9 +35,11 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams.PdpModifyRequestMapParamsBuilder;
 
 public class TestPdpModifyRequestMapParams {
-    private PdpModifyRequestMapParams params;
+    private static final long MAX_PDP_AGE_MS = 100;
+    private PdpModifyRequestMapParamsBuilder builder;
     private Publisher<PdpMessage> pub;
     private RequestIdDispatcher<PdpStatus> disp;
     private Object lock;
@@ -46,7 +50,7 @@ public class TestPdpModifyRequestMapParams {
     private PolicyNotifier notifier;
 
     /**
-     * Sets up the objects and creates an empty {@link #params}.
+     * Sets up the objects and creates an empty {@link #builder}.
      */
     @Before
     @SuppressWarnings("unchecked")
@@ -60,13 +64,15 @@ public class TestPdpModifyRequestMapParams {
         dao = mock(PolicyModelsProviderFactoryWrapper.class);
         notifier = mock(PolicyNotifier.class);
 
-        params = new PdpModifyRequestMapParams().setModifyLock(lock).setPdpPublisher(pub).setResponseDispatcher(disp)
-                        .setParams(pdpParams).setStateChangeTimers(stateTimers).setUpdateTimers(updTimers)
-                        .setDaoFactory(dao).setPolicyNotifier(notifier);
+        builder = PdpModifyRequestMapParams.builder().modifyLock(lock).pdpPublisher(pub).responseDispatcher(disp)
+                        .params(pdpParams).stateChangeTimers(stateTimers).updateTimers(updTimers)
+                        .daoFactory(dao).policyNotifier(notifier).maxPdpAgeMs(MAX_PDP_AGE_MS);
     }
 
     @Test
     public void testGettersSetters() {
+        PdpModifyRequestMapParams params = builder.build();
+        assertThat(params.getMaxPdpAgeMs()).isEqualTo(MAX_PDP_AGE_MS);
         assertSame(pub, params.getPdpPublisher());
         assertSame(disp, params.getResponseDispatcher());
         assertSame(lock, params.getModifyLock());
@@ -79,55 +85,64 @@ public class TestPdpModifyRequestMapParams {
 
     @Test
     public void testValidate() {
-        // no exception
-        params.validate();
+        assertThatCode(builder.build()::validate).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void testValidate_InvalidMaxPdpAge() {
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.maxPdpAgeMs(0).build().validate())
+                        .withMessageContaining("maxPdpAgeMs");
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.maxPdpAgeMs(-1).build().validate())
+                        .withMessageContaining("maxPdpAgeMs");
+
+        assertThatCode(builder.maxPdpAgeMs(1).build()::validate).doesNotThrowAnyException();
     }
 
     @Test
     public void testValidate_MissingPublisher() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setPdpPublisher(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.pdpPublisher(null).build().validate())
                         .withMessageContaining("publisher");
     }
 
     @Test
     public void testValidate_MissingDispatcher() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setResponseDispatcher(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.responseDispatcher(null).build().validate())
                         .withMessageContaining("Dispatch");
     }
 
     @Test
     public void testValidate_MissingLock() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setModifyLock(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.modifyLock(null).build().validate())
                         .withMessageContaining("Lock");
     }
 
     @Test
     public void testValidate_MissingPdpParams() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setParams(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.params(null).build().validate())
                         .withMessageContaining("PDP param");
     }
 
     @Test
     public void testValidate_MissingStateChangeTimers() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setStateChangeTimers(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.stateChangeTimers(null).build().validate())
                         .withMessageContaining("state");
     }
 
     @Test
     public void testValidate_MissingUpdateTimers() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setUpdateTimers(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.updateTimers(null).build().validate())
                         .withMessageContaining("update");
     }
 
     @Test
     public void testValidate_MissingDaoFactory() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setDaoFactory(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.daoFactory(null).build().validate())
                         .withMessageContaining("DAO");
     }
 
     @Test
     public void testValidate_MissingNotifier() {
-        assertThatIllegalArgumentException().isThrownBy(() -> params.setPolicyNotifier(null).validate())
+        assertThatIllegalArgumentException().isThrownBy(() -> builder.policyNotifier(null).build().validate())
                         .withMessageContaining("notifier");
     }
 }

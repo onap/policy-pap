@@ -2,7 +2,7 @@
     "name":"PapGroup",
     "restServerParameters":{
         "host":"0.0.0.0",
-        "port":6969,
+        "port":6901,
         "userName":"healthcheck",
         "password":"zb!XztG34"
     },

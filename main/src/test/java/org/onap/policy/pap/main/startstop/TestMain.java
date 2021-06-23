@@ -1,7 +1,7 @@
 /*
  * ============LICENSE_START=======================================================
  * Copyright (C) 2019-2020 Nordix Foundation.
- * Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ * Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,10 +28,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
+import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.resources.MessageConstants;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
@@ -44,13 +49,35 @@ import org.onap.policy.pap.main.parameters.CommonTestData;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class TestMain {
+    private static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
+
+    private static int port;
+
     private Main main;
+
+    /**
+     * Allocates a new DB name, server port, and creates a config file.
+     */
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        CommonTestData.newDb();
+        port = NetworkUtil.allocPort();
+
+        String json = new CommonTestData().getPapParameterGroupAsString(port);
+
+        File file = new File(CONFIG_FILE);
+        file.deleteOnExit();
+
+        try (FileOutputStream output = new FileOutputStream(file)) {
+            output.write(json.getBytes(StandardCharsets.UTF_8));
+        }
+    }
 
     /**
      * Set up.
      */
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         Registry.newRegistry();
         HttpServletServerFactoryInstance.getServerFactory().destroy();
     }
@@ -80,7 +107,7 @@ public class TestMain {
 
     @Test
     public void testMain() {
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        final String[] papConfigParameters = {"-c", CONFIG_FILE};
         testMainBody(papConfigParameters);
     }
 
@@ -88,7 +115,7 @@ public class TestMain {
     public void testMainCustomGroup() {
         final String[] papConfigParameters = {
             "-c",
-            "parameters/PapConfigParameters.json",
+            CONFIG_FILE,
             "-g",
             "parameters/PapDbGroup1.json"
         };
@@ -99,7 +126,7 @@ public class TestMain {
     public void testMainPapDb() {
         final String[] papConfigParameters = {
             "-c",
-            "parameters/PapConfigParameters.json",
+            CONFIG_FILE,
             "-g",
             "PapDb.json"
         };
@@ -115,7 +142,7 @@ public class TestMain {
 
     @Test
     public void testMain_InvalidArguments() {
-        final String[] papConfigParameters = {"parameters/PapConfigParameters.json"};
+        final String[] papConfigParameters = {CONFIG_FILE};
         assertThatThrownBy(() -> new Main(papConfigParameters)).isInstanceOf(PolicyPapRuntimeException.class)
             .hasMessage(String.format(MessageConstants.START_FAILURE_MSG, MessageConstants.POLICY_PAP));
     }
