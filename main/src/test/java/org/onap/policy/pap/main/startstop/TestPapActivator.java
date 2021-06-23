@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
+import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
-import org.onap.policy.pap.main.comm.PdpTracker;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
@@ -50,8 +54,19 @@ import org.onap.policy.pap.main.rest.PapStatisticsManager;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class TestPapActivator {
+    private static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
+
+    private static int port;
 
     private PapActivator activator;
+
+    /**
+     * Allocates a new DB name, server port, and creates a config file.
+     */
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        CommonTestData.newDb();
+    }
 
     /**
      * Initializes an activator.
@@ -63,7 +78,18 @@ public class TestPapActivator {
         Registry.newRegistry();
         HttpServletServerFactoryInstance.getServerFactory().destroy();
 
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
+        port = NetworkUtil.allocPort();
+
+        String json = new CommonTestData().getPapParameterGroupAsString(port);
+
+        File file = new File(CONFIG_FILE);
+        file.deleteOnExit();
+
+        try (FileOutputStream output = new FileOutputStream(file)) {
+            output.write(json.getBytes(StandardCharsets.UTF_8));
+        }
+
+        final String[] papConfigParameters = {"-c", CONFIG_FILE};
         final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
         final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
 
@@ -94,7 +120,6 @@ public class TestPapActivator {
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
         assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class));
-        assertNotNull(Registry.get(PapConstants.REG_PDP_TRACKER, PdpTracker.class));
         assertNotNull(Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class));
 
         // repeat - should throw an exception
@@ -113,7 +138,6 @@ public class TestPapActivator {
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_LOCK, Object.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class, null));
-        assertNull(Registry.getOrDefault(PapConstants.REG_PDP_TRACKER, PdpTracker.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class, null));
 
         // repeat - should throw an exception

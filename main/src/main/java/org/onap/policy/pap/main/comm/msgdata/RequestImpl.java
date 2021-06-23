@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
@@ -293,7 +293,7 @@ public abstract class RequestImpl implements Request {
 
             if (!bumpRetryCount()) {
                 logger.info("{} timeout {} - retry count {} exhausted", getName(), timerName, retryCount);
-                listener.retryCountExhausted();
+                listener.retryCountExhausted(this);
                 return;
             }
 
