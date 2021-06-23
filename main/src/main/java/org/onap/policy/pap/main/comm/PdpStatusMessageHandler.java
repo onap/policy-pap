@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -44,7 +43,6 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
-import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.slf4j.Logger;
@@ -105,14 +103,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                     handlePdpRegistration(message, databaseProvider);
                 } else {
                     handlePdpHeartbeat(message, databaseProvider);
-                }
-                /*
-                 * Indicate that a heart beat was received from the PDP. This is invoked only if handleXxx() does not
-                 * throw an exception.
-                 */
-                if (message.getName() != null) {
-                    final var pdpTracker = (PdpTracker) Registry.get(PapConstants.REG_PDP_TRACKER);
-                    pdpTracker.add(message.getName());
                 }
             } catch (final PolicyPapException exp) {
                 LOGGER.error("Operation Failed", exp);

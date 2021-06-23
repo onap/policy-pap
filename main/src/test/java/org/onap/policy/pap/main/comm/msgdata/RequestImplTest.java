@@ -361,7 +361,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         // should NOT have invoked startPublishing() a second time
         verify(dispatcher, times(1)).register(eq(msg.getRequestId()), any());
-        verify(listener, never()).retryCountExhausted();
+        verify(listener, never()).retryCountExhausted(any());
     }
 
     @Test
@@ -381,7 +381,7 @@ public class RequestImplTest extends CommonRequestBase {
         // should NOT have invoked startPublishing() a second time
         verify(dispatcher, times(1)).register(eq(msg.getRequestId()), any());
 
-        verify(listener).retryCountExhausted();
+        verify(listener).retryCountExhausted(req);
     }
 
     @Test

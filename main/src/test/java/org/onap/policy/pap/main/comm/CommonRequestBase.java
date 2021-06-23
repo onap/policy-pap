@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,10 +62,15 @@ import org.onap.policy.pap.main.parameters.RequestParams;
  */
 public class CommonRequestBase {
     protected static final String PDP1 = "pdp_1";
+    protected static final String PDP2 = "pdp_2";
+    protected static final String PDP3 = "pdp_3";
+    protected static final String PDP4 = "pdp_4";
     protected static final String MY_REQ_NAME = "my-request";
     protected static final String DIFFERENT = "different-value";
     protected static final String MY_GROUP = "my-group";
+    protected static final String MY_GROUP2 = "my-group-2";
     protected static final String MY_SUBGROUP = "my-subgroup";
+    protected static final String MY_SUBGROUP2 = "my-subgroup-2";
     protected static final String MY_NAME = "my-name";
     protected static final PdpState MY_STATE = PdpState.SAFE;
     protected static final PdpState DIFF_STATE = PdpState.TERMINATED;
@@ -128,9 +133,10 @@ public class CommonRequestBase {
         reqParams = new RequestParams().setMaxRetryCount(RETRIES).setModifyLock(lock).setPdpPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setTimers(timers);
 
-        mapParams = new PdpModifyRequestMapParams().setModifyLock(lock).setPdpPublisher(publisher)
-                        .setPolicyNotifier(notifier).setResponseDispatcher(dispatcher).setDaoFactory(daoFactory)
-                        .setUpdateTimers(timers).setStateChangeTimers(timers).setParams(pdpParams);
+        mapParams = PdpModifyRequestMapParams.builder().modifyLock(lock).pdpPublisher(publisher)
+                        .policyNotifier(notifier).responseDispatcher(dispatcher).daoFactory(daoFactory)
+                        .updateTimers(timers).stateChangeTimers(timers).params(pdpParams)
+                        .maxPdpAgeMs(100).build();
     }
 
     /**
