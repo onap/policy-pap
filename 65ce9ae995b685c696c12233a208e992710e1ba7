@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "195ac87e_68d5d67a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-23T13:03:09Z",
+      "side": 1,
+      "message": "I don\u0027t think this method is needed.  Looks like the following could be added to the classes that need the user name:\n\n  @Context\n  SecurityContext securityContext;\n\n  ...\n  restCall() {\n    String userName \u003d securityContext.getUserPrincipal().getName();\n  }\n\n(Or could add the context field to this class and make it protected.)\n\nAssuming this works, you don\u0027t need to add the AUTHORIZATION_HEADER lines to the controller class(es).",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11b38b7c_e534799d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-23T13:03:09Z",
+      "side": 1,
+      "message": "should this be done even if the previous line throws an exception?",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3278284_3c6ab129",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/ProviderBase.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-23T13:03:09Z",
+      "side": 1,
+      "message": "this won\u0027t work, as this class is multi-threaded",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a7e3590_1f365018",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/ProviderBase.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-23T13:03:09Z",
+      "side": 1,
+      "message": "might as well add this to the SessionData constructor and make the field \"final\", therein",
+      "range": {
+        "startLine": 113,
+        "startChar": 21,
+        "endLine": 113,
+        "endChar": 37
+      },
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b9bd48f_a5086870",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyAuditManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-23T13:03:09Z",
+      "side": 1,
+      "message": "still need to verify the content",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
