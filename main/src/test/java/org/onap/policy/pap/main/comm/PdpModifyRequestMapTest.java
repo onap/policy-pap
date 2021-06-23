@@ -101,6 +101,9 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Mock
     private PolicyUndeployer undeployer;
 
+    @Mock
+    private PdpStatusMessageHandler responseHandler;
+
     private MyMap map;
     private PdpUpdate update;
     private PdpStateChange change;
@@ -149,9 +152,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         assertFalse(map.isEmpty());
 
         // indicate success
-        getListener(getSingletons(1).get(0)).success(PDP1);
+        getListener(getSingletons(1).get(0)).success(PDP1, response);
 
         assertTrue(map.isEmpty());
+        verify(responseHandler, never()).handlePdpStatus(response);
     }
 
     @Test
@@ -325,7 +329,9 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         map.addRequest(change);
 
         // indicate success
-        getListener(getSingletons(1).get(0)).success(PDP1);
+        getListener(getSingletons(1).get(0)).success(PDP1, response);
+
+        verify(responseHandler, never()).handlePdpStatus(response);
 
         /*
          * the above should have removed the requests so next time should allocate a new
@@ -344,7 +350,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         // indicate success with the update
         when(requests.startNextRequest(updateReq)).thenReturn(true);
-        getListener(updateReq).success(PDP1);
+        getListener(updateReq).success(PDP1, response);
+
+        // should be called for the update
+        verify(responseHandler).handlePdpStatus(response);
 
         // should have started the next request
         verify(requests).startNextRequest(updateReq);
@@ -654,7 +663,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * @param count expected number of requests
      */
     private void invokeSuccessHandler(int count) {
-        getListener(getSingletons(count).get(0)).success(PDP1);
+        getListener(getSingletons(count).get(0)).success(PDP1, response);
     }
 
     /**
@@ -763,6 +772,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         protected PdpRequests makePdpRequests(String pdpName) {
             ++nalloc;
             return requests;
+        }
+
+        @Override
+        protected PdpStatusMessageHandler makePdpResponseHandler() {
+            return responseHandler;
         }
     }
 }

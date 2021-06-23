@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2020 AT&T Inc.
+ *  Modifications Copyright (C) 2020-2021 AT&T Inc.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,9 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
      * Set up for the test class.
      */
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpBeforeClass() throws Exception {
+        setUpBeforeClass(true);
+
         // To skip calling to the remote components
         PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
         List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
@@ -65,10 +67,12 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
      * Tear down for the test class.
      */
     @AfterClass
-    public static void tearDownClass() {
+    public static void teardownAfterClass() {
         PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
         List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
         lo.addAll(savedBusTopicParams);
+
+        CommonPapRestServer.teardownAfterClass();
     }
 
     @Test
