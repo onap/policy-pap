@@ -39,6 +39,7 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
+import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
@@ -351,6 +352,14 @@ public class PdpModifyRequestMap {
     }
 
     /**
+     * Makes a handler for PDP responses.
+     * @return a response handler
+     */
+    protected PdpStatusMessageHandler makePdpResponseHandler() {
+        return new PdpStatusMessageHandler(params.getParams());
+    }
+
+    /**
      * Listener for singleton request events.
      */
     private class SingletonListener implements RequestListener {
@@ -397,8 +406,20 @@ public class PdpModifyRequestMap {
         }
 
         @Override
-        public void success(String responsePdpName) {
+        public void success(String responsePdpName, PdpStatus response) {
             requestCompleted(responsePdpName);
+
+            if (!(request instanceof UpdateReq)) {
+                // other response types may not include the list of policies
+                return;
+            }
+
+            /*
+             * Update PDP time stamps. Also send pdp-update and pdp-state-change, as
+             * necessary, if the response does not reflect what's in the DB.
+             */
+            var handler = makePdpResponseHandler();
+            handler.handlePdpStatus(response);
         }
 
         /**
