@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "cf649c74_8348ab1b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-24T11:40:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "195ac87e_68d5d67a",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11b38b7c_e534799d",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "a785f908_fbe8eeb9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-24T11:40:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11b38b7c_e534799d",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e3278284_3c6ab129",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/ProviderBase.java",
         "patchSetId": 3
@@ -50,6 +86,24 @@
       "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f07f8358_a7fa7987",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/ProviderBase.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-24T11:40:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3278284_3c6ab129",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "ddcd68c9_8aa55164",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/ProviderBase.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-24T11:40:41Z",
+      "side": 1,
+      "message": "Done\n\nDidn\u0027t leave as final because there are some other uses of this outside the ProviderBase, so I thought it was best having two constructors for these cases.",
+      "parentUuid": "6a7e3590_1f365018",
+      "range": {
+        "startLine": 113,
+        "startChar": 21,
+        "endLine": 113,
+        "endChar": 37
+      },
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2b9bd48f_a5086870",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyAuditManager.java",
         "patchSetId": 3
@@ -90,6 +168,24 @@
       "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7ea917e_e497c211",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPolicyAuditManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-24T11:40:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b9bd48f_a5086870",
+      "revId": "65ce9ae995b685c696c12233a208e992710e1ba7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
