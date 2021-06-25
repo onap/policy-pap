@@ -48,7 +48,7 @@ public class TestPdpParameters {
         assertNotNull(state);
         assertEquals(5, state.getMaxWaitMs());
 
-        assertEquals(6L, params.getHeartBeatMs());
+        assertEquals(6000L, params.getHeartBeatMs());
 
         assertEquals(20000L, params.getMaxMessageAgeMs());
 
