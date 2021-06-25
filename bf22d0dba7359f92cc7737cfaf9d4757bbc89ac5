@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9bea8999_0b33a562",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-25T15:20:26Z",
+      "side": 1,
+      "message": "I think this method is only for \"deploy\"",
+      "range": {
+        "startLine": 79,
+        "startChar": 36,
+        "endLine": 79,
+        "endChar": 51
+      },
+      "revId": "bf22d0dba7359f92cc7737cfaf9d4757bbc89ac5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d32c72e3_6de2ae8f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-25T15:20:26Z",
+      "side": 1,
+      "message": "I think this method is only for \"undeploy\"",
+      "range": {
+        "startLine": 92,
+        "startChar": 36,
+        "endLine": 92,
+        "endChar": 51
+      },
+      "revId": "bf22d0dba7359f92cc7737cfaf9d4757bbc89ac5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85a78fe8_547143d7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-25T15:20:26Z",
+      "side": 1,
+      "message": "records in",
+      "range": {
+        "startLine": 103,
+        "startChar": 20,
+        "endLine": 103,
+        "endChar": 32
+      },
+      "revId": "bf22d0dba7359f92cc7737cfaf9d4757bbc89ac5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a67c1c2_962975b3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-25T15:20:26Z",
+      "side": 1,
+      "message": "Failed saving the audit records in DB.",
+      "range": {
+        "startLine": 114,
+        "startChar": 30,
+        "endLine": 114,
+        "endChar": 55
+      },
+      "revId": "bf22d0dba7359f92cc7737cfaf9d4757bbc89ac5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb1a9d7a_7b9c2966",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/SessionData.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-25T15:20:26Z",
+      "side": 1,
+      "message": "send audit records to DB",
+      "range": {
+        "startLine": 449,
+        "startChar": 16,
+        "endLine": 449,
+        "endChar": 27
+      },
+      "revId": "bf22d0dba7359f92cc7737cfaf9d4757bbc89ac5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
