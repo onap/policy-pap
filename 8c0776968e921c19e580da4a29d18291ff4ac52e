@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "148c6842_44a55df8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/SessionData.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-25T10:57:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f64901d_a2c4dbfa",
+      "revId": "8c0776968e921c19e580da4a29d18291ff4ac52e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4690d185_c88d24cc",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/PapRestControllerV1Test.java",
         "patchSetId": 5
@@ -33,6 +51,24 @@
       "revId": "8c0776968e921c19e580da4a29d18291ff4ac52e",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07f6d87a_65b6918c",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/PapRestControllerV1Test.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2021-06-25T10:57:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4690d185_c88d24cc",
+      "revId": "8c0776968e921c19e580da4a29d18291ff4ac52e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
