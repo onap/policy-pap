@@ -22,6 +22,30 @@
       "revId": "f76d2083c9440bac3ac866b30b52a3abedb9292c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bbcf88d_0ab175b8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-28T16:53:30Z",
+      "side": 1,
+      "message": "I definitely want the first so we at least know if there\u0027s a duplicate, but don\u0027t want the whole stack trace with that.\nThe second is there to satisfy sonar and, can be enabled via logback.xml, if the stacktrace is needed for some reason.",
+      "parentUuid": "f0287377_1db2b082",
+      "range": {
+        "startLine": 123,
+        "startChar": 20,
+        "endLine": 125,
+        "endChar": 99
+      },
+      "revId": "f76d2083c9440bac3ac866b30b52a3abedb9292c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
