@@ -85,12 +85,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response queryAllDeployedPolicies(
@@ -142,12 +148,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response queryDeployedPolicies(
@@ -195,12 +207,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response queryDeployedPolicy(@ApiParam(value = "Policy Id", required = true) @PathParam("name") String name,
@@ -249,12 +267,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response getStatusOfAllPolicies(
@@ -298,12 +322,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response getStatusOfPoliciesByGroup(
@@ -359,12 +389,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response getStatusOfPolicies(
@@ -418,12 +454,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                             response = String.class),
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        extensions = {
+            @Extension(name = EXTENSION_NAME,
+                properties = {
+                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                })
+            })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     // @formatter:on
 
     public Response getStatusOfPolicy(

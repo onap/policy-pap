@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,9 +64,10 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Fetch current statistics",
             notes = "Returns current statistics of the Policy Administration component",
             response = StatisticsReport.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     public Response statistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
         return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
@@ -87,21 +88,27 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             response = Map.class, tags = {"Policy Administration (PAP) API"},
                     authorizations = @Authorization(value = AUTHORIZATION_TYPE),
                     responseHeaders = {
-                            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                        @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
                                     response = String.class),
-                            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                        @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
                                     response = String.class),
-                            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                        @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
                                     response = String.class),
-                            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                        @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                                     response = UUID.class)},
-                    extensions = {@Extension(name = EXTENSION_NAME,
-                            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+                    extensions = {
+                        @Extension(name = EXTENSION_NAME,
+                            properties = {
+                                @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                            })
+                        })
 
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     public Response pdpStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
         try {
@@ -129,20 +136,26 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             response = Map.class, tags = {"Policy Administration (PAP) API"},
             authorizations = @Authorization(value = AUTHORIZATION_TYPE),
             responseHeaders = {
-                    @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-            extensions = {@Extension(name = EXTENSION_NAME,
-                    properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                            @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+            extensions = {
+                @Extension(name = EXTENSION_NAME,
+                    properties = {
+                        @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                        @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                    })
+                })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     public Response pdpGroupStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName) {
@@ -172,20 +185,26 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             response = Map.class, tags = {"Policy Administration (PAP) API"},
             authorizations = @Authorization(value = AUTHORIZATION_TYPE),
             responseHeaders = {
-                    @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-            extensions = {@Extension(name = EXTENSION_NAME,
-                    properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                            @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+            extensions = {
+                @Extension(name = EXTENSION_NAME,
+                    properties = {
+                        @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                        @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                    })
+                })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     public Response pdpSubGroupStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
@@ -220,21 +239,26 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             tags = {"Policy Administration (PAP) API"},
             authorizations = @Authorization(value = AUTHORIZATION_TYPE),
             responseHeaders = {
-                    @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
+                @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
+                @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
+                @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
                             response = String.class),
-                    @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
+                @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
-            extensions = {@Extension(name = EXTENSION_NAME,
-                    properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                            @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
-    @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-            @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-            @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
-
+            extensions = {
+                @Extension(name = EXTENSION_NAME,
+                    properties = {
+                        @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                        @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
+                    })
+                })
+    @ApiResponses(value = {
+        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
+    })
     public Response pdpInstanceStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
