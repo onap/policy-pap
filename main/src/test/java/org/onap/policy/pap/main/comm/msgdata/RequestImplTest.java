@@ -292,7 +292,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener).success(PDP1);
+        verify(listener).success(PDP1, response);
         verify(listener, never()).failure(any(), any());
         verify(timer).cancel();
     }
@@ -305,7 +305,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener, never()).success(any());
+        verify(listener, never()).success(any(), any());
         verify(listener, never()).failure(any(), any());
     }
 
@@ -317,7 +317,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener, never()).success(any());
+        verify(listener, never()).success(any(), any());
         verify(listener, never()).failure(any(), any());
         verify(timer, never()).cancel();
     }
@@ -330,7 +330,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener, never()).success(any());
+        verify(listener, never()).success(any(), any());
         verify(listener).failure(DIFFERENT, "PDP name does not match");
         verify(timer).cancel();
     }
@@ -390,7 +390,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener).success(PDP1);
+        verify(listener).success(PDP1, response);
         verify(listener, never()).failure(any(), any());
     }
 
@@ -402,7 +402,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener, never()).success(any());
+        verify(listener, never()).success(any(), any());
         verify(listener).failure(null, "null PDP name");
     }
 
@@ -414,7 +414,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener, never()).success(any());
+        verify(listener, never()).success(any(), any());
         verify(listener).failure(DIFFERENT, "PDP name does not match");
     }
 
@@ -427,7 +427,7 @@ public class RequestImplTest extends CommonRequestBase {
 
         invokeProcessResponse(response);
 
-        verify(listener).success(DIFFERENT);
+        verify(listener).success(DIFFERENT, response);
         verify(listener, never()).failure(any(), any());
     }
 

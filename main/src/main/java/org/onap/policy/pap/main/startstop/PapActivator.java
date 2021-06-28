@@ -234,7 +234,7 @@ public class PapActivator extends ServiceManagerContainer {
                     frequencyMs,
                     TimeUnit.MILLISECONDS);
             },
-            () -> pdpExpirationTimer.get().shutdownNow());
+            () -> pdpExpirationTimer.get().shutdown());
 
         addAction("PAP client executor",
             () ->

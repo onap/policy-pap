@@ -20,6 +20,8 @@
 
 package org.onap.policy.pap.main.comm.msgdata;
 
+import org.onap.policy.models.pdp.concepts.PdpStatus;
+
 /**
  * Listener for request events.
  */
@@ -37,8 +39,9 @@ public interface RequestListener {
      * Indicates that a successful response was received from a PDP.
      *
      * @param pdpName name of the PDP from which the response was received
+     * @param response successful response
      */
-    public void success(String pdpName);
+    public void success(String pdpName, PdpStatus response);
 
     /**
      * Indicates that the retry count was exhausted.

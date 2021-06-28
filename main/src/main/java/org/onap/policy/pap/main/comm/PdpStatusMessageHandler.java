@@ -22,8 +22,10 @@
 
 package org.onap.policy.pap.main.comm;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -90,6 +93,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
      * @param message the PdpStatus message
      */
     public void handlePdpStatus(final PdpStatus message) {
+        if (message.getPolicies() == null) {
+            message.setPolicies(Collections.emptyList());
+        }
+
         long diffms = System.currentTimeMillis() - message.getTimestampMs();
         if (diffms > params.getMaxMessageAgeMs()) {
             long diffsec = TimeUnit.SECONDS.convert(diffms, TimeUnit.MILLISECONDS);
@@ -107,9 +114,45 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             } catch (final PolicyPapException exp) {
                 LOGGER.error("Operation Failed", exp);
             } catch (final Exception exp) {
-                LOGGER.error("Failed connecting to database provider", exp);
+                if (isDuplicateKeyException(exp)) {
+                    /*
+                     * this is to be expected, if multiple PAPs are processing the same
+                     * heartbeat at a time, thus we log the exception at a trace level
+                     * instead of an error level.
+                     */
+                    LOGGER.info("Failed updating PDP information for {} - may have been added by another PAP",
+                                    message.getName());
+                    LOGGER.trace("Failed updating PDP information for {}", message.getName(), exp);
+                } else {
+                    LOGGER.error("Failed connecting to database provider", exp);
+                }
             }
         }
+    }
+
+    /**
+     * Determines if the exception indicates a duplicate key.
+     *
+     * @param thrown exception to check
+     * @return {@code true} if the exception occurred due to a duplicate key
+     */
+    protected static boolean isDuplicateKeyException(Throwable thrown) {
+        while (thrown != null) {
+            if (thrown instanceof SQLIntegrityConstraintViolationException) {
+                return true;
+            }
+
+            if (thrown instanceof EclipseLinkException) {
+                EclipseLinkException ele = (EclipseLinkException) thrown;
+                if (isDuplicateKeyException(ele.getInternalException())) {
+                    return true;
+                }
+            }
+
+            thrown = thrown.getCause();
+        }
+
+        return false;
     }
 
     private void handlePdpRegistration(final PdpStatus message, final PolicyModelsProvider databaseProvider)
