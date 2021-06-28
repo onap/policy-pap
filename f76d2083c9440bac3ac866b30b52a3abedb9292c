@@ -46,6 +46,30 @@
       "revId": "f76d2083c9440bac3ac866b30b52a3abedb9292c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9a2f24d_343d01b9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-28T17:58:23Z",
+      "side": 1,
+      "message": "Got it. Thnx!",
+      "parentUuid": "5bbcf88d_0ab175b8",
+      "range": {
+        "startLine": 123,
+        "startChar": 20,
+        "endLine": 125,
+        "endChar": 99
+      },
+      "revId": "f76d2083c9440bac3ac866b30b52a3abedb9292c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
