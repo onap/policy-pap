@@ -20,6 +20,8 @@
 
 package org.onap.policy.pap.main;
 
+import org.onap.policy.common.utils.network.NetworkUtil;
+
 /**
  * Names of various items contained in the Registry.
  */
@@ -42,6 +44,9 @@ public class PapConstants {
     public static final String POLICY_DISTRIBUTION = "distribution";
     public static final String POLICY_PAP = "pap";
     public static final String POLICY_PDPS = "pdps";
+
+    // unique name used when generating PdpMessages
+    public static final String PAP_NAME = NetworkUtil.genUniqueName("pap");
 
     private PapConstants() {
         super();

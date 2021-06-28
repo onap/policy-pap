@@ -49,6 +49,7 @@ import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.PapConstants;
 import org.powermock.reflect.Whitebox;
 
 public class TestProviderBase extends ProviderSuper {
@@ -279,6 +280,7 @@ public class TestProviderBase extends ProviderSuper {
 
         PdpUpdate update = updates.remove(0);
 
+        assertEquals(PapConstants.PAP_NAME, update.getSource());
         assertEquals(groupName, update.getPdpGroup());
         assertEquals(pdpType, update.getPdpSubgroup());
         assertEquals(pdpName, update.getName());

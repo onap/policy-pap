@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -50,6 +49,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.pap.main.PapConstants;
 
 public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -292,10 +292,12 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         assertEquals(2, pdpUpdates.size());
 
         PdpUpdate pdpUpdate = pdpUpdates.get(0);
+        assertEquals(PapConstants.PAP_NAME, pdpUpdate.getSource());
         assertEquals(PDP2, pdpUpdate.getName());
         assertNull(pdpUpdate.getPdpGroup());
 
         pdpUpdate = pdpUpdates.get(1);
+        assertEquals(PapConstants.PAP_NAME, pdpUpdate.getSource());
         assertEquals(PDP4, pdpUpdate.getName());
         assertNull(pdpUpdate.getPdpGroup());
 
@@ -304,10 +306,12 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         assertEquals(2, changes.size());
 
         PdpStateChange change = changes.get(0);
+        assertEquals(PapConstants.PAP_NAME, change.getSource());
         assertEquals(PDP2, change.getName());
         assertEquals(PdpState.PASSIVE, change.getState());
 
         change = changes.get(1);
+        assertEquals(PapConstants.PAP_NAME, change.getSource());
         assertEquals(PDP4, change.getName());
         assertEquals(PdpState.PASSIVE, change.getState());
     }
@@ -539,16 +543,6 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
             .hasMessageContaining("properties");
 
         assertNoGroupAction();
-    }
-
-    protected void assertUpdate(List<PdpUpdate> updates, String groupName, String pdpType, String pdpName) {
-
-        PdpUpdate update = updates.remove(0);
-
-        assertEquals(groupName, update.getPdpGroup());
-        assertEquals(pdpType, update.getPdpSubgroup());
-        assertEquals(pdpName, update.getName());
-        assertTrue(update.getPoliciesToBeDeployed().contains(policy1));
     }
 
     private void assertNoGroupAction() throws Exception {
