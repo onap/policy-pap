@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "936b16fd_8ea7ef4d",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-06-29T21:25:43Z",
+      "side": 1,
+      "message": "If savePdpStatisticsInDB is not provided, I think this initializes to \"false\".  I like that default behavior, but just checking that this is what you had in mind?",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6d5a3990_3a915781",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/s3pConfig.json",
         "patchSetId": 1
