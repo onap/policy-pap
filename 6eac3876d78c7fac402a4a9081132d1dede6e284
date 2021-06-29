@@ -16,6 +16,24 @@
       "revId": "6eac3876d78c7fac402a4a9081132d1dede6e284",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "526c02b6_530db3dc",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/PapConstantsTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-29T17:13:15Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "777d4215_0193cd97",
+      "revId": "6eac3876d78c7fac402a4a9081132d1dede6e284",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
