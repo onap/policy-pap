@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8f8fc9f_0e31512e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-29T21:18:23Z",
+      "side": 1,
+      "message": "need junits for true \u0026 false cases",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11ac17bc_4f4b818a",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-29T21:18:23Z",
+      "side": 1,
+      "message": "this isn\u0027t needed, but it doesn\u0027t hurt anything either",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d5a3990_3a915781",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/s3pConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-06-29T21:18:23Z",
+      "side": 1,
+      "message": "sure it\u0027s ok to delete this?  not used in s3p tests?  any references in parent/docs?",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
