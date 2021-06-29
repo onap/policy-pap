@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,19 +36,22 @@ public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
     private final PdpParameters params;
 
+    private final boolean savePdpStatistics;
+
     /**
      * Constructs the object.
      *
      * @param params PDP parameters
      */
-    public PdpHeartbeatListener(PdpParameters params) {
+    public PdpHeartbeatListener(PdpParameters params, boolean savePdpStatistics) {
         this.params = params;
+        this.savePdpStatistics = savePdpStatistics;
     }
 
     @Override
     public void onTopicEvent(final CommInfrastructure infra, final String topic, final PdpStatus message) {
 
-        final var handler = new PdpStatusMessageHandler(params);
+        final var handler = new PdpStatusMessageHandler(params, savePdpStatistics);
         handler.handlePdpStatus(message);
     }
 }
