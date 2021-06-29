@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ff374530_e5d3ed80",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatusMessageHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-29T22:09:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8f8fc9f_0e31512e",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11ac17bc_4f4b818a",
         "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "685d00c8_aa8d4ef8",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-29T22:09:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11ac17bc_4f4b818a",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "cd35edf4_e72c64e7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-29T22:09:37Z",
+      "side": 1,
+      "message": "Yes Jorge. However if anyone uses the defaultConfig.json bundled in the docker image then it will be changed to true by default. Which is good for testing and demo purposes.\nWill add the parameter in the oom config as well and default it to true.",
+      "parentUuid": "936b16fd_8ea7ef4d",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d5a3990_3a915781",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/s3pConfig.json",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "942b0311_cf27c515",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/s3pConfig.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-06-29T22:09:37Z",
+      "side": 1,
+      "message": "I think so, checked policy/parent \u0026 policy/pap repos. No references for this file.",
+      "parentUuid": "6d5a3990_3a915781",
+      "revId": "6b585c9cae0e2d7ed69f684c4ef30f835b9d5f18",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
