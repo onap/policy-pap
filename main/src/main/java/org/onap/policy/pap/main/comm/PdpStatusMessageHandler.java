@@ -62,6 +62,8 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private final PdpParameters params;
 
+    private final boolean savePdpStatistics;
+
     /**
      * List to store policies present in db.
      */
@@ -82,9 +84,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
      *
      * @param params PDP parameters
      */
-    public PdpStatusMessageHandler(PdpParameters params) {
+    public PdpStatusMessageHandler(PdpParameters params, boolean savePdpStatistics) {
         super(true);
         this.params = params;
+        this.savePdpStatistics = savePdpStatistics;
     }
 
     /**
@@ -249,12 +252,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
 
-            if (validatePdpStatisticsDetails(message, pdpInstance, pdpGroup, pdpSubGroup)) {
-                LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}",
-                        message.getStatistics());
-                createPdpStatistics(message.getStatistics(), databaseProvider);
+            if (savePdpStatistics) {
+                processPdpStatistics(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
             } else {
-                LOGGER.debug("PdpStatistics details are not correct - {}", message.getStatistics());
+                LOGGER.debug("Not processing PdpStatistics - {}", message.getStatistics());
             }
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
@@ -262,6 +263,17 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 message.getPolicies());
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
                 databaseProvider);
+        }
+    }
+
+    private void processPdpStatistics(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
+                    final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
+        if (validatePdpStatisticsDetails(message, pdpInstance, pdpGroup, pdpSubGroup)) {
+            LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}",
+                    message.getStatistics());
+            createPdpStatistics(message.getStatistics(), databaseProvider);
+        } else {
+            LOGGER.debug("PdpStatistics details are not correct - {}", message.getStatistics());
         }
     }
 
