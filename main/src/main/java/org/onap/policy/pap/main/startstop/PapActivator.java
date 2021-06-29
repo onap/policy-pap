@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +113,8 @@ public class PapActivator extends ServiceManagerContainer {
             this.papParameterGroup = papParameterGroup;
             this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
-            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters());
+            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters(),
+                            papParameterGroup.isSavePdpStatisticsInDb());
 
         } catch (final RuntimeException e) {
             throw new PolicyPapRuntimeException(e);
@@ -216,6 +218,7 @@ public class PapActivator extends ServiceManagerContainer {
                                     .responseDispatcher(reqIdDispatcher)
                                     .stateChangeTimers(pdpStChgTimers.get())
                                     .updateTimers(pdpUpdTimers.get())
+                                    .savePdpStatistics(papParameterGroup.isSavePdpStatisticsInDb())
                                     .build()));
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
 
