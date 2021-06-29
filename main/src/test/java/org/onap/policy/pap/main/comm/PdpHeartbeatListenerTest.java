@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +70,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     @Test
     public void testPdpHeartbeatListener() throws CoderException, PfModelException {
         addGroups("PdpGroups.json");
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters());
+        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), true);
 
         // Testing pdp registration success case
         final PdpStatus status1 = new PdpStatus();
@@ -222,7 +223,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         PdpParameters params = testData.getPapParameterGroup(1).getPdpParameters();
         List<ToscaConceptIdentifier> polsUndep = policies.stream().map(ToscaPolicy::getIdentifier)
                 .collect(Collectors.toList());
-        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
+        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params, true);
         PdpUpdate update10 = handler.createPdpUpdateMessage(
                 status3.getPdpGroup(), new PdpSubGroup(), "pdp_2",
                 policies, polsUndep);
@@ -234,7 +235,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     @Test
     public void testPdpStatistics() throws CoderException, PfModelException, ParseException {
         addGroups("PdpGroups.json");
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters());
+        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), true);
         timeStamp = Instant.parse("2021-02-12T17:48:01.029211400Z");
 
         // init default pdp group

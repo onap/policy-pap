@@ -27,6 +27,7 @@
         "databasePassword": "UDAxaWNZ",
         "persistenceUnit": "ToscaConceptTest"
     },
+    "savePdpStatisticsInDb": true,
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
