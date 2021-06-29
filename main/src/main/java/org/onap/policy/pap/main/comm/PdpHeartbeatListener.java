@@ -1,7 +1,12 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
  *  Modifications Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+=======
+ *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,19 +40,26 @@ public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
     private final PdpParameters params;
 
+    private final boolean savePdpStatistics;
+
     /**
      * Constructs the object.
      *
      * @param params PDP parameters
      */
-    public PdpHeartbeatListener(PdpParameters params) {
+    public PdpHeartbeatListener(PdpParameters params, boolean savePdpStatistics) {
         this.params = params;
+        this.savePdpStatistics = savePdpStatistics;
     }
 
     @Override
     public void onTopicEvent(final CommInfrastructure infra, final String topic, final PdpStatus message) {
 
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
         final PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
+=======
+        final var handler = new PdpStatusMessageHandler(params, savePdpStatistics);
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
         handler.handlePdpStatus(message);
     }
 }

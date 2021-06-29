@@ -1,7 +1,12 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
  *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
+=======
+ *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +76,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     @Test
     public void testPdpHeartbeatListener() throws CoderException, PfModelException {
         addGroups("PdpGroups.json");
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters());
+        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), true);
 
         // Testing pdp registration success case
         final PdpStatus status1 = new PdpStatus();
@@ -224,7 +229,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         PdpParameters params = testData.getPapParameterGroup(1).getPdpParameters();
         List<ToscaConceptIdentifier> polsUndep = policies.stream().map(ToscaPolicy::getIdentifier)
                 .collect(Collectors.toList());
-        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params);
+        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params, true);
         PdpUpdate update10 = handler.createPdpUpdateMessage(
                 status3.getPdpGroup(), new PdpSubGroup(), "pdp_2",
                 null, policies, policies, polsUndep);
@@ -237,7 +242,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     @Test
     public void testPdpStatistics() throws CoderException, PfModelException, ParseException {
         addGroups("PdpGroups.json");
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters());
+        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), true);
         timeStamp = Instant.parse("2021-02-12T17:48:01.029211400Z");
 
         // init default pdp group
@@ -348,6 +353,30 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
 
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);
         verifyPdpStatistics(null, DEFAULT_GROUP, null, 1);
+
+        // Test pdp statistics save disabled case, sending valid pdp status but count should still remain 1
+        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), false);
+        timeStamp = Instant.parse("2021-02-12T17:48:05.029211400Z");
+        final PdpStatus status7 = new PdpStatus();
+        status7.setName(PDP_NAME);
+        status7.setState(PdpState.ACTIVE);
+        status7.setPdpGroup(DEFAULT_GROUP);
+        status7.setPdpType(APEX_TYPE);
+        status7.setHealthy(PdpHealthStatus.HEALTHY);
+        status7.setPdpSubgroup(APEX_TYPE);
+        final List<ToscaConceptIdentifier> idents7 =
+                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        status7.setPolicies(idents7);
+
+        PdpStatistics pdpStatistics07 = new PdpStatistics();
+        pdpStatistics07.setPdpInstanceId(PDP_NAME);
+        pdpStatistics07.setPdpGroupName(DEFAULT_GROUP);
+        pdpStatistics07.setPdpSubGroupName(APEX_TYPE);
+        pdpStatistics07.setTimeStamp(timeStamp);
+        status7.setStatistics(pdpStatistics07);
+        pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7);
+        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, null, 1);
+
     }
 
     private void verifyPdpGroup(final String name, final int count) throws PfModelException {

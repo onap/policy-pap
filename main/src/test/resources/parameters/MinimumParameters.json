@@ -26,6 +26,7 @@
         "databasePassword": "P01icY",
         "persistenceUnit": "PdpGroupTest"
     },
+    "savePdpStatisticsInDb": true,
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",

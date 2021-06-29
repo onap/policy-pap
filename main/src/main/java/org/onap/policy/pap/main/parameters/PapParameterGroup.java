@@ -1,7 +1,12 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+=======
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +48,11 @@ public class PapParameterGroup extends ParameterGroupImpl {
     private RestServerParameters restServerParameters;
     private PdpParameters pdpParameters;
     private PolicyModelsProviderParameters databaseProviderParameters;
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
+=======
+    private boolean savePdpStatisticsInDb;
+    @Valid
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
     private TopicParameterGroup topicParameterGroup;
     // API, Distribution Health Check restClient parameters.
     private List<BusTopicParams> healthCheckRestClientParameters;

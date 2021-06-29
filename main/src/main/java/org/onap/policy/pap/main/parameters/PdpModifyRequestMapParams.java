@@ -2,7 +2,12 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+=======
+ * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +48,7 @@ public class PdpModifyRequestMapParams {
     private TimerManager stateChangeTimers;
     private PolicyModelsProviderFactoryWrapper daoFactory;
     private PolicyNotifier policyNotifier;
+    private boolean savePdpStatistics;
 
     public PdpModifyRequestMapParams setParams(PdpParameters params) {
         this.params = params;

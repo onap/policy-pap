@@ -28,6 +28,7 @@
         "databasePassword": "policy_user",
         "persistenceUnit": "PolicyMariaDb"
     },
+    "savePdpStatisticsInDb": true,
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",

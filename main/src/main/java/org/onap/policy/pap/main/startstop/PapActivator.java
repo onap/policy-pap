@@ -1,7 +1,12 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
+=======
+ *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +116,8 @@ public class PapActivator extends ServiceManagerContainer {
             this.papParameterGroup = papParameterGroup;
             this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
-            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters());
+            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters(),
+                            papParameterGroup.isSavePdpStatisticsInDb());
 
         } catch (final RuntimeException e) {
             throw new PolicyPapRuntimeException(e);
@@ -213,6 +219,7 @@ public class PapActivator extends ServiceManagerContainer {
         addAction("PDP modification requests",
             () -> {
                 requestMap.set(new PdpModifyRequestMap(
+<<<<<<< HEAD   (209f03 Bump pap to 2.4.5)
                             new PdpModifyRequestMapParams()
                                     .setDaoFactory(daoFactory.get())
                                     .setModifyLock(pdpUpdateLock)
@@ -222,6 +229,20 @@ public class PapActivator extends ServiceManagerContainer {
                                     .setResponseDispatcher(reqIdDispatcher)
                                     .setStateChangeTimers(pdpStChgTimers.get())
                                     .setUpdateTimers(pdpUpdTimers.get())));
+=======
+                            PdpModifyRequestMapParams.builder()
+                                    .maxPdpAgeMs(MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs())
+                                    .daoFactory(daoFactory.get())
+                                    .modifyLock(pdpUpdateLock)
+                                    .params(pdpParams)
+                                    .policyNotifier(notifier.get())
+                                    .pdpPublisher(pdpPub.get())
+                                    .responseDispatcher(reqIdDispatcher)
+                                    .stateChangeTimers(pdpStChgTimers.get())
+                                    .updateTimers(pdpUpdTimers.get())
+                                    .savePdpStatistics(papParameterGroup.isSavePdpStatisticsInDb())
+                                    .build()));
+>>>>>>> CHANGE (57e39b Add ability to turn on/off pdp statistics)
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
 
                 // now that it's registered, we can attach a "policy undeploy" provider
