@@ -138,7 +138,7 @@ public class TestProviderBase extends ProviderSuper {
     public void testProcessPolicy_NoGroups() throws Exception {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
 
-        SessionData session = new SessionData(dao);
+        SessionData session = new SessionData(dao, DEFAULT_USER);
         ToscaConceptIdentifierOptVersion ident = new ToscaConceptIdentifierOptVersion(POLICY1_NAME, POLICY1_VERSION);
         assertThatThrownBy(() -> prov.processPolicy(session, ident)).isInstanceOf(PfModelException.class)
                         .hasMessage("policy not supported by any PDP group: policyA 1.2.3");

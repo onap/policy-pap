@@ -139,7 +139,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Name", required = true) @PathParam("name") String policyName) {
 
         return doUndeployOperation(requestId, "undeploy policy failed",
-            () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, null)));
+            () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, null), getPrincipal()));
     }
 
     /**
@@ -187,7 +187,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
                     @ApiParam(value = "PDP Policy Version", required = true) @PathParam("version") String version) {
 
         return doUndeployOperation(requestId, "undeploy policy failed",
-            () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, version)));
+            () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, version), getPrincipal()));
     }
 
     /**

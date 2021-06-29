@@ -51,8 +51,8 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public static final String POLICY_STATUS_URI = "/policy/pap/v1/policies/status";
 
     public static final String DEPLOYMENT_RESPONSE_MSG = "Use the policy status url to fetch the latest status. "
-        + "Kindly note that when a policy is successfully undeployed,"
-        + " it will no longer appear in policy status response.";
+            + "Kindly note that when a policy is successfully undeployed,"
+            + " it will no longer appear in policy status response.";
 
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployControllerV1.class);
 
@@ -97,10 +97,10 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response updateGroupPolicies(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "List of PDP Group Deployments", required = true) DeploymentGroups groups) {
-
-        return doOperation(requestId, "update policy deployments failed", () -> provider.updateGroupPolicies(groups));
+            @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
+            @ApiParam(value = "List of PDP Group Deployments", required = true) DeploymentGroups groups) {
+        return doOperation(requestId, "update policy deployments failed",
+                () -> provider.updateGroupPolicies(groups, getPrincipal()));
     }
 
     /**
@@ -142,10 +142,9 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     // @formatter:on
 
     public Response deployPolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-                    @ApiParam(value = "PDP Policies; only the name is required",
-                                    required = true) PdpDeployPolicies policies) {
-
-        return doOperation(requestId, "deploy policies failed", () -> provider.deployPolicies(policies));
+            @ApiParam(value = "PDP Policies; only the name is required", required = true) PdpDeployPolicies policies) {
+        return doOperation(requestId, "deploy policies failed",
+                () -> provider.deployPolicies(policies, getPrincipal()));
     }
 
     /**
@@ -160,15 +159,14 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
         try {
             runnable.run();
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.ACCEPTED)), requestId)
-                .entity(new PdpGroupDeployResponse(DEPLOYMENT_RESPONSE_MSG, POLICY_STATUS_URI))
-                .build();
+                    .entity(new PdpGroupDeployResponse(DEPLOYMENT_RESPONSE_MSG, POLICY_STATUS_URI)).build();
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
             var resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(resp).build();
+                    requestId).entity(resp).build();
         }
     }
 }

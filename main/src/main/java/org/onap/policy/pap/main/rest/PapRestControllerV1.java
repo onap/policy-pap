@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,8 +31,10 @@ import java.net.HttpURLConnection;
 import java.util.UUID;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.SecurityContext;
 import org.onap.policy.models.base.PfModelException;
 
 /**
@@ -71,12 +73,12 @@ public class PapRestControllerV1 {
 
     public static final String VERSION_MINOR_NAME = "X-MinorVersion";
     public static final String VERSION_MINOR_DESCRIPTION =
-                    "Used to request or communicate a MINOR version back from the client"
-                                    + " to the server, and from the server back to the client";
+            "Used to request or communicate a MINOR version back from the client"
+                    + " to the server, and from the server back to the client";
 
     public static final String VERSION_PATCH_NAME = "X-PatchVersion";
     public static final String VERSION_PATCH_DESCRIPTION = "Used only to communicate a PATCH version in a response for"
-                    + " troubleshooting purposes only, and will not be provided by" + " the client on request";
+            + " troubleshooting purposes only, and will not be provided by" + " the client on request";
 
     public static final String VERSION_LATEST_NAME = "X-LatestVersion";
     public static final String VERSION_LATEST_DESCRIPTION = "Used only to communicate an API's latest version";
@@ -95,6 +97,9 @@ public class PapRestControllerV1 {
     public static final String AUTHORIZATION_ERROR_MESSAGE = "Authorization Error";
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
 
+    @Context
+    SecurityContext securityContext;
+
     /**
      * Adds version headers to the response.
      *
@@ -103,7 +108,7 @@ public class PapRestControllerV1 {
      */
     public ResponseBuilder addVersionControlHeaders(ResponseBuilder respBuilder) {
         return respBuilder.header(VERSION_MINOR_NAME, "0").header(VERSION_PATCH_NAME, "0").header(VERSION_LATEST_NAME,
-                        API_VERSION);
+                API_VERSION);
     }
 
     /**
@@ -119,6 +124,17 @@ public class PapRestControllerV1 {
         }
 
         return respBuilder.header(REQUEST_ID_NAME, requestId);
+    }
+
+    /**
+     * Get the user principal name from security context.
+     * @return username as {@link String}
+     */
+    public String getPrincipal() {
+        if (securityContext != null) {
+            return securityContext.getUserPrincipal().getName();
+        }
+        return "";
     }
 
     /**

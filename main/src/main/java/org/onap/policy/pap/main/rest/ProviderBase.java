@@ -52,6 +52,7 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
  */
 public abstract class ProviderBase {
     public static final String DB_ERROR_MSG = "DB error";
+    public static final String DEFAULT_USER = "PAP";
 
     /**
      * Lock used when updating PDPs.
@@ -86,11 +87,13 @@ public abstract class ProviderBase {
     /**
      * Processes a policy request.
      *
+     * @param user user triggering request
      * @param request PDP policy request
      * @param processor function that processes the request
      * @throws PfModelException if an error occurred
      */
-    protected <T> void process(T request, BiConsumerWithEx<SessionData, T> processor) throws PfModelException {
+    protected <T> void process(String user, T request, BiConsumerWithEx<SessionData, T> processor)
+            throws PfModelException {
 
         synchronized (updateLock) {
             SessionData data;
@@ -98,7 +101,7 @@ public abstract class ProviderBase {
 
             try (PolicyModelsProvider dao = daoFactory.create()) {
 
-                data = new SessionData(dao);
+                data = new SessionData(dao, user);
                 processor.accept(data, request);
 
                 // make all of the DB updates
@@ -120,6 +123,17 @@ public abstract class ProviderBase {
     }
 
     /**
+     * Processes a policy request.
+     *
+     * @param request PDP policy request
+     * @param processor function that processes the request
+     * @throws PfModelException if an error occurred
+     */
+    protected <T> void process(T request, BiConsumerWithEx<SessionData, T> processor) throws PfModelException {
+        this.process(DEFAULT_USER, request, processor);
+    }
+
+    /**
      * Process a single policy from the request.
      *
      * @param data session data
@@ -127,14 +141,14 @@ public abstract class ProviderBase {
      * @throws PfModelException if an error occurred
      */
     protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
-                    throws PfModelException {
+            throws PfModelException {
 
         ToscaPolicy policy = getPolicy(data, desiredPolicy);
 
         Collection<PdpGroup> groups = getGroups(data, policy.getTypeIdentifier());
         if (groups.isEmpty()) {
             throw new PfModelException(Status.BAD_REQUEST, "policy not supported by any PDP group: "
-                            + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
+                    + desiredPolicy.getName() + " " + desiredPolicy.getVersion());
         }
 
         var updater = makeUpdater(data, policy, desiredPolicy);
@@ -155,7 +169,7 @@ public abstract class ProviderBase {
      * @return a function to update a subgroup
      */
     protected abstract Updater makeUpdater(SessionData data, ToscaPolicy policy,
-                    ToscaConceptIdentifierOptVersion desiredPolicy);
+            ToscaConceptIdentifierOptVersion desiredPolicy);
 
     /**
      * Finds the active PDP group(s) that supports the given policy type.
@@ -167,7 +181,7 @@ public abstract class ProviderBase {
      * @throws PfModelException if an error occurred
      */
     private Collection<PdpGroup> getGroups(SessionData data, ToscaConceptIdentifier policyType)
-                    throws PfModelException {
+            throws PfModelException {
 
         return data.getActivePdpGroupsByPolicyType(policyType);
     }
@@ -180,8 +194,7 @@ public abstract class ProviderBase {
      * @param updater function to update a group
      * @throws PfModelException if an error occurred
      */
-    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater)
-                    throws PfModelException {
+    private void upgradeGroup(SessionData data, PdpGroup group, Updater updater) throws PfModelException {
 
         var updated = false;
 
@@ -251,14 +264,14 @@ public abstract class ProviderBase {
             ToscaPolicy policy = data.getPolicy(ident);
             if (policy == null) {
                 throw new PfModelRuntimeException(Status.NOT_FOUND,
-                                "cannot find policy: " + ident.getName() + " " + ident.getVersion());
+                        "cannot find policy: " + ident.getName() + " " + ident.getVersion());
             }
 
             return policy;
 
         } catch (PfModelException e) {
             throw new PfModelRuntimeException(e.getErrorResponse().getResponseCode(),
-                            e.getErrorResponse().getErrorMessage(), e);
+                    e.getErrorResponse().getErrorMessage(), e);
         }
     }
 
