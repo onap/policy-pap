@@ -100,7 +100,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
             @ApiParam(value = "List of PDP Group Deployments", required = true) DeploymentGroups groups) {
         return doOperation(requestId, "update policy deployments failed",
-                () -> provider.updateGroupPolicies(groups, getPrincipal()));
+            () -> provider.updateGroupPolicies(groups, getPrincipal()));
     }
 
     /**
@@ -144,7 +144,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public Response deployPolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
             @ApiParam(value = "PDP Policies; only the name is required", required = true) PdpDeployPolicies policies) {
         return doOperation(requestId, "deploy policies failed",
-                () -> provider.deployPolicies(policies, getPrincipal()));
+            () -> provider.deployPolicies(policies, getPrincipal()));
     }
 
     /**

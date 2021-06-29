@@ -392,8 +392,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         final Iterator<PdpSubGroup> iter = group2.getPdpSubgroups().iterator();
 
         PdpSubGroup subgrp = iter.next();
-        assertThat(subgrp.getPdpInstances()).hasSize(0);
-        assertThat(subgrp.getCurrentInstanceCount()).isEqualTo(0);
+        assertThat(subgrp.getPdpInstances()).isEmpty();
+        assertThat(subgrp.getCurrentInstanceCount()).isZero();
 
         subgrp = iter.next();
         assertThat(subgrp.getPdpInstances()).hasSize(1);
