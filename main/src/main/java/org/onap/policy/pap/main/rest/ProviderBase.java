@@ -241,6 +241,7 @@ public abstract class ProviderBase {
 
         var update = new PdpUpdate();
 
+        update.setSource(PapConstants.PAP_NAME);
         update.setName(pdp.getInstanceId());
         update.setDescription(group.getDescription());
         update.setPdpGroup(group.getName());

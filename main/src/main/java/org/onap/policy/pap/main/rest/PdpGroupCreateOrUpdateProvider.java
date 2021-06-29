@@ -46,6 +46,7 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.PapConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -320,11 +321,13 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
 
             // make it passive
             var change = new PdpStateChange();
+            change.setSource(PapConstants.PAP_NAME);
             change.setName(name);
             change.setState(PdpState.PASSIVE);
 
             // remove it from subgroup and undeploy all policies
             var update = new PdpUpdate();
+            update.setSource(PapConstants.PAP_NAME);
             update.setName(name);
 
             data.addRequests(update, change);

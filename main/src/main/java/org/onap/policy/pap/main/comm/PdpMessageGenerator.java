@@ -99,6 +99,7 @@ public class PdpMessageGenerator {
 
         final var update = new PdpUpdate();
 
+        update.setSource(PapConstants.PAP_NAME);
         update.setName(pdpInstanceId);
         update.setPdpGroup(pdpGroupName);
         update.setPdpSubgroup(subGroup.getPdpType());
@@ -134,6 +135,7 @@ public class PdpMessageGenerator {
                     final String pdpInstanceId, final PdpState pdpState) {
 
         final var stateChange = new PdpStateChange();
+        stateChange.setSource(PapConstants.PAP_NAME);
         stateChange.setName(pdpInstanceId);
         stateChange.setPdpGroup(pdpGroupName);
         stateChange.setPdpSubgroup(subGroup.getPdpType());
