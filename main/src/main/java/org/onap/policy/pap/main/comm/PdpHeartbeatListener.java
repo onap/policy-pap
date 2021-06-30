@@ -36,22 +36,19 @@ public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
     private final PdpParameters params;
 
-    private final boolean savePdpStatistics;
-
     /**
      * Constructs the object.
      *
      * @param params PDP parameters
      */
-    public PdpHeartbeatListener(PdpParameters params, boolean savePdpStatistics) {
+    public PdpHeartbeatListener(PdpParameters params) {
         this.params = params;
-        this.savePdpStatistics = savePdpStatistics;
     }
 
     @Override
     public void onTopicEvent(final CommInfrastructure infra, final String topic, final PdpStatus message) {
 
-        final var handler = new PdpStatusMessageHandler(params, savePdpStatistics);
+        final var handler = new PdpStatusMessageHandler(params);
         handler.handlePdpStatus(message);
     }
 }

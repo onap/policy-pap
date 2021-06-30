@@ -357,7 +357,7 @@ public class PdpModifyRequestMap {
      * @return a response handler
      */
     protected PdpStatusMessageHandler makePdpResponseHandler() {
-        return new PdpStatusMessageHandler(params.getParams(), params.isSavePdpStatistics());
+        return new PdpStatusMessageHandler(params.getParams());
     }
 
     /**
