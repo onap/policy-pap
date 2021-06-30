@@ -22,12 +22,13 @@
 
 package org.onap.policy.pap.main.startstop;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
+import org.onap.policy.common.endpoints.event.comm.TopicListener;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
 import org.onap.policy.common.endpoints.http.server.RestServer;
@@ -45,6 +46,7 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
+import org.onap.policy.pap.main.comm.PdpStatisticsListener;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
@@ -87,12 +89,14 @@ public class PapActivator extends ServiceManagerContainer {
      * {@link #reqIdDispatcher}.
      */
     private final MessageTypeDispatcher msgDispatcher;
+    private final MessageTypeDispatcher statisticsMsgDispatcher;
 
     /**
      * Listens for {@link PdpStatus} messages and then routes them to the listener associated with the ID of the
      * originating request.
      */
     private final RequestIdDispatcher<PdpStatus> reqIdDispatcher;
+    private final RequestIdDispatcher<PdpStatus> statisticsReqIdDispatcher;
 
     /**
      * Listener for anonymous {@link PdpStatus} messages either for registration or heartbeat.
@@ -112,9 +116,10 @@ public class PapActivator extends ServiceManagerContainer {
         try {
             this.papParameterGroup = papParameterGroup;
             this.msgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
+            this.statisticsMsgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.reqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
-            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters(),
-                            papParameterGroup.isSavePdpStatisticsInDb());
+            this.statisticsReqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
+            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters());
 
         } catch (final RuntimeException e) {
             throw new PolicyPapRuntimeException(e);
@@ -133,11 +138,16 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
         final AtomicReference<RestServer> restServer = new AtomicReference<>();
         final AtomicReference<PolicyNotifier> notifier = new AtomicReference<>();
+        final AtomicReference<PdpStatisticsListener> pdpStatisticsListener = new AtomicReference<>();
 
         // @formatter:off
         addAction("PAP parameters",
             () -> ParameterService.register(papParameterGroup),
             () -> ParameterService.deregister(papParameterGroup.getName()));
+
+        addAction("PDP modification lock",
+            () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
+            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
 
         addAction("DAO Factory",
             () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(
@@ -152,13 +162,28 @@ public class PapActivator extends ServiceManagerContainer {
             () -> reqIdDispatcher.register(pdpHeartbeatListener),
             () -> reqIdDispatcher.unregister(pdpHeartbeatListener));
 
+        addAction("Pdp Statistics Listener",
+            () -> {
+                pdpStatisticsListener.set(new PdpStatisticsListener(papParameterGroup.getPdpParameters()));
+                statisticsReqIdDispatcher.register(pdpStatisticsListener.get());
+            },
+            () -> statisticsReqIdDispatcher.unregister(pdpStatisticsListener.get()));
+
         addAction("Request ID Dispatcher",
             () -> msgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.reqIdDispatcher),
             () -> msgDispatcher.unregister(PdpMessageType.PDP_STATUS.name()));
 
+        addAction("Request ID Dispatcher",
+            () -> statisticsMsgDispatcher.register(PdpMessageType.PDP_STATUS.name(), this.statisticsReqIdDispatcher),
+            () -> statisticsMsgDispatcher.unregister(PdpMessageType.PDP_STATUS.name()));
+
         addAction("Message Dispatcher",
-            this::registerMsgDispatcher,
-            this::unregisterMsgDispatcher);
+            () -> registerMsgDispatcher(msgDispatcher, PapConstants.TOPIC_POLICY_PDP_PAP),
+            () -> unregisterMsgDispatcher(msgDispatcher, PapConstants.TOPIC_POLICY_PDP_PAP));
+
+        addAction("Statistics Message Dispatcher",
+            () -> registerMsgDispatcher(statisticsMsgDispatcher, PapConstants.TOPIC_POLICY_STATISTICS),
+            () -> unregisterMsgDispatcher(statisticsMsgDispatcher, PapConstants.TOPIC_POLICY_STATISTICS));
 
         addAction("topics",
             TopicEndpointManager.getManager()::start,
@@ -201,10 +226,6 @@ public class PapActivator extends ServiceManagerContainer {
             },
             () -> pdpStChgTimers.get().stop());
 
-        addAction("PDP modification lock",
-            () -> Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, pdpUpdateLock),
-            () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_LOCK));
-
         addAction("PDP modification requests",
             () -> {
                 requestMap.set(new PdpModifyRequestMap(
@@ -218,7 +239,6 @@ public class PapActivator extends ServiceManagerContainer {
                                     .responseDispatcher(reqIdDispatcher)
                                     .stateChangeTimers(pdpStChgTimers.get())
                                     .updateTimers(pdpUpdTimers.get())
-                                    .savePdpStatistics(papParameterGroup.isSavePdpStatisticsInDb())
                                     .build()));
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
 
@@ -288,21 +308,23 @@ public class PapActivator extends ServiceManagerContainer {
 
     /**
      * Registers the dispatcher with the topic source(s).
+     * @param dispatcher dispatcher to register
+     * @param topic topic of interest
      */
-    private void registerMsgDispatcher() {
-        for (final TopicSource source : TopicEndpointManager.getManager()
-                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
-            source.register(msgDispatcher);
+    private void registerMsgDispatcher(TopicListener dispatcher, String topic) {
+        for (final TopicSource source : TopicEndpointManager.getManager().getTopicSources(List.of(topic))) {
+            source.register(dispatcher);
         }
     }
 
     /**
      * Unregisters the dispatcher from the topic source(s).
+     * @param dispatcher dispatcher to unregister
+     * @param topic topic of interest
      */
-    private void unregisterMsgDispatcher() {
-        for (final TopicSource source : TopicEndpointManager.getManager()
-                .getTopicSources(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP))) {
-            source.unregister(msgDispatcher);
+    private void unregisterMsgDispatcher(TopicListener dispatcher, String topic) {
+        for (final TopicSource source : TopicEndpointManager.getManager().getTopicSources(List.of(topic))) {
+            source.unregister(dispatcher);
         }
     }
 }

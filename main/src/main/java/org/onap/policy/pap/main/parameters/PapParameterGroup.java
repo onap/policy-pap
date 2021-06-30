@@ -48,7 +48,6 @@ public class PapParameterGroup extends ParameterGroupImpl {
     private PdpParameters pdpParameters;
     @Valid
     private PolicyModelsProviderParameters databaseProviderParameters;
-    private boolean savePdpStatisticsInDb;
     @Valid
     private TopicParameterGroup topicParameterGroup;
     // API, Distribution Health Check restClient parameters.

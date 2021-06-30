@@ -12,6 +12,13 @@
             "topic" : "POLICY-PDP-PAP",
             "servers" : [ "message-router" ],
             "topicCommInfrastructure" : "dmaap"
+        },
+        {
+            "topic" : "PDP-STATISTICS",
+            "effectiveTopic": "POLICY-PDP-PAP",
+            "consumerGroup": "policy-pap",
+            "servers" : [ "message-router" ],
+            "topicCommInfrastructure" : "dmaap"
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
