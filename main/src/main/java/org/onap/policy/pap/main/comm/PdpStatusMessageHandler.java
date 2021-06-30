@@ -24,7 +24,6 @@ package org.onap.policy.pap.main.comm;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,7 +38,6 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
-import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpState;
@@ -60,34 +58,34 @@ import org.slf4j.LoggerFactory;
 public class PdpStatusMessageHandler extends PdpMessageGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpStatusMessageHandler.class);
 
-    private final PdpParameters params;
-
-    private final boolean savePdpStatistics;
+    /**
+     * Maximum message age, in milliseconds - anything older than this is discarded.
+     */
+    private final long maxMessageAgeMs;
 
     /**
      * List to store policies present in db.
      */
-    List<ToscaPolicy> policies = new LinkedList<>();
+    private List<ToscaPolicy> policies = new LinkedList<>();
 
     /**
      * List to store policies to be deployed (heartbeat).
      */
-    Map<ToscaConceptIdentifier, ToscaPolicy> policiesToBeDeployed = new HashMap<>();
+    private Map<ToscaConceptIdentifier, ToscaPolicy> policiesToBeDeployed = new HashMap<>();
 
     /**
      * List to store policies to be undeployed (heartbeat).
      */
-    List<ToscaConceptIdentifier> policiesToBeUndeployed = new LinkedList<>();
+    private List<ToscaConceptIdentifier> policiesToBeUndeployed = new LinkedList<>();
 
     /**
      * Constructs the object.
      *
      * @param params PDP parameters
      */
-    public PdpStatusMessageHandler(PdpParameters params, boolean savePdpStatistics) {
+    public PdpStatusMessageHandler(PdpParameters params) {
         super(true);
-        this.params = params;
-        this.savePdpStatistics = savePdpStatistics;
+        this.maxMessageAgeMs = params.getMaxMessageAgeMs();
     }
 
     /**
@@ -101,7 +99,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         }
 
         long diffms = System.currentTimeMillis() - message.getTimestampMs();
-        if (diffms > params.getMaxMessageAgeMs()) {
+        if (diffms > maxMessageAgeMs) {
             long diffsec = TimeUnit.SECONDS.convert(diffms, TimeUnit.MILLISECONDS);
             LOGGER.info("discarding status message from {} age {}s", message.getName(), diffsec);
             return;
@@ -288,12 +286,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
             LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
-
-            if (savePdpStatistics) {
-                processPdpStatistics(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
-            } else {
-                LOGGER.debug("Not processing PdpStatistics - {}", message.getStatistics());
-            }
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
             LOGGER.debug("Policy list in DB - {}. Policy list in heartbeat - {}", pdpSubGroup.getPolicies(),
@@ -301,17 +293,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup, databaseProvider);
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState(),
                 databaseProvider);
-        }
-    }
-
-    private void processPdpStatistics(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-                    final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
-        if (validatePdpStatisticsDetails(message, pdpInstance, pdpGroup, pdpSubGroup)) {
-            LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}",
-                    message.getStatistics());
-            createPdpStatistics(message.getStatistics(), databaseProvider);
-        } else {
-            LOGGER.debug("PdpStatistics details are not correct - {}", message.getStatistics());
         }
     }
 
@@ -339,25 +320,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 .append(subGroup.getPolicies().containsAll(message.getPolicies()), true).build();
     }
 
-    private boolean validatePdpStatisticsDetails(final PdpStatus message, final Pdp pdpInstanceDetails,
-            final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup) {
-        if (message.getStatistics() != null) {
-            return new EqualsBuilder()
-                    .append(message.getStatistics().getPdpInstanceId(), pdpInstanceDetails.getInstanceId())
-                    .append(message.getStatistics().getPdpGroupName(), pdpGroup.getName())
-                    .append(message.getStatistics().getPdpSubGroupName(), pdpSubGroup.getPdpType())
-                    .append(message.getStatistics().getPolicyDeployCount() < 0, false)
-                    .append(message.getStatistics().getPolicyDeployFailCount() < 0, false)
-                    .append(message.getStatistics().getPolicyDeploySuccessCount() < 0, false)
-                    .append(message.getStatistics().getPolicyExecutedCount() < 0, false)
-                    .append(message.getStatistics().getPolicyExecutedFailCount() < 0, false)
-                    .append(message.getStatistics().getPolicyExecutedSuccessCount() < 0, false).build();
-        } else {
-            LOGGER.debug("PdpStatistics is null");
-            return false;
-        }
-    }
-
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup, final PolicyModelsProvider databaseProvider) throws PfModelException {
         pdpInstance.setHealthy(message.getHealthy());
@@ -366,12 +328,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         databaseProvider.updatePdp(pdpGroup.getName(), pdpSubgroup.getPdpType(), pdpInstance);
 
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
-    }
-
-    private void createPdpStatistics(final PdpStatistics pdpStatistics, final PolicyModelsProvider databaseProvider)
-            throws PfModelException {
-        databaseProvider.createPdpStatistics(Arrays.asList(pdpStatistics));
-        LOGGER.debug("Created PdpStatistics in DB - {}", pdpStatistics);
     }
 
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
