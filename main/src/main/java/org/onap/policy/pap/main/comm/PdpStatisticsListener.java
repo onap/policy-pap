@@ -108,6 +108,8 @@ public class PdpStatisticsListener implements TypedMessageListener<PdpStatus> {
         if (pdpFound) {
             databaseProvider.createPdpStatistics(List.of(message.getStatistics()));
             LOGGER.debug("Created PdpStatistics in DB for {}", pdpName);
+        } else {
+            LOGGER.warn("discarding statistics message from unknown PDP {}", message.getName());
         }
     }
 
