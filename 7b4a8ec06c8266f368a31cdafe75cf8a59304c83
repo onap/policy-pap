@@ -214,6 +214,30 @@
       "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f30877e7_63981e19",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatisticsListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-07-01T18:36:09Z",
+      "side": 1,
+      "message": "Oh I didn\u0027t know that.\nFrom a RestClient point of view, I have seen multiple Rest clients registered to same DMaaP url(with same group and ID) so that only one gets the event. But probably that is because it is just treated as hitting a url, not like an actual DMaaP listener registered then.\nGood to know  (y)",
+      "parentUuid": "382a8984_3daa120f",
+      "range": {
+        "startLine": 44,
+        "startChar": 13,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
