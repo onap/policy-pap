@@ -118,6 +118,30 @@
       "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16b788bc_c6f030cf",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatisticsListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2021-07-01T14:43:50Z",
+      "side": 1,
+      "message": "I don\u0027t remember the fine details, and you probably already checked, but have to ask, did you test that the 2 endpoints combination work as you intend here?   Since there will be 2 connections from the same host to the dmaap server for the server, I am wondering if the fetchTimeout needs to be tweaked in anyway, or it wouldn\u0027t matter provided the consumerInstance is unique?",
+      "parentUuid": "eb0c7328_ec820a55",
+      "range": {
+        "startLine": 44,
+        "startChar": 13,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
