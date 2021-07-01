@@ -46,6 +46,30 @@
       "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c501f90a_116c1281",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatisticsListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-07-01T08:56:59Z",
+      "side": 1,
+      "message": "Or is it going to read from POLICY-STATISTICS topic, where saving statistics to db is done by this class, and the existing code deals with sending statistics to this new topic? But in that case, maybe can\u0027t we just send PdpStatistics into the new topic instead of the whole PdpStatus?\nSorry I am assuming things here. Maybe I will get more idea when I see the upcoming reviews you mentioned..",
+      "parentUuid": "89c26e7f_79dd97db",
+      "range": {
+        "startLine": 44,
+        "startChar": 13,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
