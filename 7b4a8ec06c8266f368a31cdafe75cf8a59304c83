@@ -22,6 +22,30 @@
       "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89c26e7f_79dd97db",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatisticsListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-07-01T08:50:02Z",
+      "side": 1,
+      "message": "*specifically for statistics?",
+      "parentUuid": "d0e2d16a_4bf4570f",
+      "range": {
+        "startLine": 44,
+        "startChar": 13,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
