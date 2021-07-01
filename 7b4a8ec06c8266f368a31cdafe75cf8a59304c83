@@ -238,6 +238,30 @@
       "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c33e5b70_8ddfd55f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatisticsListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-01T19:41:21Z",
+      "side": 1,
+      "message": "the simulator is more lenient, and it\u0027s possible that dmaap is more lenient these days, but in the past, it was unwise to use the same pair from multiple machines, as dmaap would complain that the given pair was polling too frequently",
+      "parentUuid": "f30877e7_63981e19",
+      "range": {
+        "startLine": 44,
+        "startChar": 13,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
