@@ -70,6 +70,30 @@
       "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a48db59_793abc0f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/comm/PdpStatisticsListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-01T12:56:27Z",
+      "side": 1,
+      "message": "Should become clear in the next review.\n\nThere will be two listeners polling the same topic for the same PdpStatus messages.  The actual (i.e., effective) topic will be the same for both, POLICY-PDP-PAP, but in the config file, one will be called POLICY-PDP-PAP, as is currently the case, and the other will be called POLICY-STATISTICS.  The consumerGroup for the first will be continue to be unique, while the consumerGroup for the second will be a constant used by all PAPs (i.e., \"policy-pap\").  Both listeners will monitor the same message flow and no additional messages will be published to the topic than are already being published.\n\nThe existing PdpHeartbeatListener will no longer deal with the statistics contained within the PdpStatus; this new listener will take over that job.  In addition, the saveStatisticsInDb flag will go away.  Instead, the presence or absence of the POLICY-STATISTICS item within the config.json will determine whether or not statistics are saved to the DB - if it\u0027s in the config.json, then it will be saved, otherwise, it will not.\n\nOne question I have: is there a way in helm charts to specify a UUID to be injected into the consumerInstance of the config.json?  If not, then policy-endpoints will have to include a little more logic to make that happen.  (Actually, I may add that logic anyway: if consumerGroup is specified in the config.json, but consumerInstance is not, then it generates a UUID for the instance.)",
+      "parentUuid": "c501f90a_116c1281",
+      "range": {
+        "startLine": 44,
+        "startChar": 13,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "7b4a8ec06c8266f368a31cdafe75cf8a59304c83",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
