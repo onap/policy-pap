@@ -22,6 +22,30 @@
       "revId": "0d5321cdb99b61dbd3f5c5ce6bb0e1fc2dd11c3c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c77d1ee_2d54f45c",
+        "filename": "testsuites/stability/src/main/resources/simulatorsetup/config/pdp/OnapPfConfig.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-02T13:46:55Z",
+      "side": 1,
+      "message": "right, xh!",
+      "parentUuid": "0e8c777e_8efe5035",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 21,
+        "endChar": 47
+      },
+      "revId": "0d5321cdb99b61dbd3f5c5ce6bb0e1fc2dd11c3c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
