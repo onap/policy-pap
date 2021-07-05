@@ -25,7 +25,7 @@ import org.onap.policy.common.utils.network.NetworkUtil;
 /**
  * Names of various items contained in the Registry.
  */
-public final class PapConstants {
+public class PapConstants {
 
     // Registry keys
     public static final String REG_PAP_ACTIVATOR = "object:activator/pap";
@@ -38,7 +38,6 @@ public final class PapConstants {
     // topic names
     public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";
     public static final String TOPIC_POLICY_NOTIFICATION = "POLICY-NOTIFICATION";
-    public static final String TOPIC_POLICY_STATISTICS = "POLICY-STATISTICS";
 
     // policy components names
     public static final String POLICY_API = "api";
