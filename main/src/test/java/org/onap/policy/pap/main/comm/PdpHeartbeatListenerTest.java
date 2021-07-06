@@ -342,6 +342,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
 
         pdpStatistics06.setPolicyDeployCount(-1);
         pdpStatistics06.setPolicyDeployFailCount(-1);
+        pdpStatistics06.setPolicyUndeployCount(-1);
+        pdpStatistics06.setPolicyUndeployFailCount(-1);
         status5.setStatistics(pdpStatistics06);
 
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);

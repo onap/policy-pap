@@ -349,6 +349,9 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                     .append(message.getStatistics().getPolicyDeployCount() < 0, false)
                     .append(message.getStatistics().getPolicyDeployFailCount() < 0, false)
                     .append(message.getStatistics().getPolicyDeploySuccessCount() < 0, false)
+                    .append(message.getStatistics().getPolicyUndeployCount() < 0, false)
+                    .append(message.getStatistics().getPolicyUndeployFailCount() < 0, false)
+                    .append(message.getStatistics().getPolicyUndeploySuccessCount() < 0, false)
                     .append(message.getStatistics().getPolicyExecutedCount() < 0, false)
                     .append(message.getStatistics().getPolicyExecutedFailCount() < 0, false)
                     .append(message.getStatistics().getPolicyExecutedSuccessCount() < 0, false).build();
