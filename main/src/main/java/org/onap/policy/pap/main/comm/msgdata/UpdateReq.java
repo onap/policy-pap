@@ -131,6 +131,10 @@ public class UpdateReq extends RequestImpl {
 
         PdpUpdate update = (PdpUpdate) newMessage;
 
+        // ensure lists are never null
+        update.setPoliciesToBeDeployed(alwaysList(update.getPoliciesToBeDeployed()));
+        update.setPoliciesToBeUndeployed(alwaysList(update.getPoliciesToBeUndeployed()));
+
         if (isSameContent(update)) {
             // content hasn't changed - nothing more to do
             return true;
