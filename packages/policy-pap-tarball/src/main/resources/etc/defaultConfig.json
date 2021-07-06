@@ -35,6 +35,14 @@
             "servers" : [ "message-router" ],
             "topicCommInfrastructure" : "dmaap",
             "fetchTimeout": 15000
+        },
+        {
+            "topic" : "POLICY-HEARTBEAT",
+            "effectiveTopic": "POLICY-PDP-PAP",
+            "consumerGroup": "policy-pap",
+            "servers" : [ "message-router" ],
+            "topicCommInfrastructure" : "dmaap",
+            "fetchTimeout": 15000
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
