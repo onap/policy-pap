@@ -70,6 +70,30 @@
       "revId": "18bf88fc5aed7586249319af690fb5c09451ad03",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14501e60_02436020",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-06T18:35:44Z",
+      "side": 1,
+      "message": "RequestImpl, the superclass for Update \u0026 StateChange, will register it\u0027s processResponse method as a callback action when it\u0027s start() method is called.  It gets the dispatcher from the RequestMap which gets it via the call on line 231 below.",
+      "parentUuid": "25861b5c_971879eb",
+      "range": {
+        "startLine": 156,
+        "startChar": 8,
+        "endLine": 158,
+        "endChar": 77
+      },
+      "revId": "18bf88fc5aed7586249319af690fb5c09451ad03",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
