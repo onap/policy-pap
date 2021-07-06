@@ -21,6 +21,7 @@
 package org.onap.policy.pap.main.comm.msgdata;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -196,6 +197,16 @@ public class UpdateReqTest extends CommonRequestBase {
         msg2.setPdpGroup(DIFFERENT);
         assertTrue(data.reconfigure(msg2));
         assertSame(msg2, data.getMessage());
+
+        // both lists in the update are null - should not throw an exception
+        PdpUpdate msg3 = new PdpUpdate(update);
+        msg3.setPdpGroup(DIFFERENT);
+        msg3.setPoliciesToBeDeployed(null);
+        msg3.setPoliciesToBeUndeployed(null);
+        assertThatCode(() -> data.reconfigure(msg3)).doesNotThrowAnyException();
+
+        // both lists in the current msg (i.e., msg3) are null - should not throw an exception
+        assertThatCode(() -> data.reconfigure(update)).doesNotThrowAnyException();
     }
 
     @Test
