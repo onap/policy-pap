@@ -46,6 +46,30 @@
       "revId": "18bf88fc5aed7586249319af690fb5c09451ad03",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25861b5c_971879eb",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/startstop/PapActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-07-06T18:22:07Z",
+      "side": 1,
+      "message": "okay, and for responses we don\u0027t need a listener? Is the producer, acting as listener or creating a listener to handle the response.",
+      "parentUuid": "a26b3428_c5982525",
+      "range": {
+        "startLine": 156,
+        "startChar": 8,
+        "endLine": 158,
+        "endChar": 77
+      },
+      "revId": "18bf88fc5aed7586249319af690fb5c09451ad03",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
