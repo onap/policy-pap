@@ -47,6 +47,13 @@ import org.slf4j.LoggerFactory;
 public class StatisticsRestProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsRestProvider.class);
     private static final String GET_STATISTICS_ERR_MSG = "fetch database failed";
+<<<<<<< HEAD   (2d1e09 Update Pam's email INFO.yaml)
+=======
+    private static final String DESC_ORDER = "DESC";
+    private static final String DEFAULT_GROUP = "defaultGroup";
+    private static final int MIN_RECORD_COUNT = 1;
+    private static final int MAX_RECORD_COUNT = 100;
+>>>>>>> CHANGE (190b75 Limit statistics record count)
 
     /**
      * Returns the current statistics of pap component.
@@ -84,11 +91,11 @@ public class StatisticsRestProvider {
             String pdpName, int recordCount) throws PfModelException {
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
                 Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        Map<String, Map<String, List<PdpStatistics>>> pdpStatisticsMap;
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
             Instant startTime = null;
             Instant endTime = null;
 
+<<<<<<< HEAD   (2d1e09 Update Pam's email INFO.yaml)
             if (groupName == null) {
                 pdpStatisticsMap = generatePdpStatistics(databaseProvider.getPdpStatistics(pdpName, startTime));
             } else {
@@ -97,13 +104,25 @@ public class StatisticsRestProvider {
                                     .subGroup(subType).startTime(startTime).endTime(endTime)
                                     .recordNum(recordCount).build()));
             }
+=======
+            /*
+             * getFilteredPdpStatistics() will throw an NPE if a group name is not specified, so we
+             * provide a default value
+             */
+            String grpnm = (groupName != null ? groupName : DEFAULT_GROUP);
+
+            int nrecords = Math.min(MAX_RECORD_COUNT, Math.max(MIN_RECORD_COUNT, recordCount));
+
+            return generatePdpStatistics(databaseProvider.getFilteredPdpStatistics(pdpName, grpnm,
+                            subType, startTime, endTime, DESC_ORDER, nrecords));
+
+>>>>>>> CHANGE (190b75 Limit statistics record count)
         } catch (final PfModelException exp) {
             String errorMessage = GET_STATISTICS_ERR_MSG + "groupName:" + groupName + "subType:" + subType + "pdpName:"
                     + pdpName + exp.getMessage();
             LOGGER.debug(errorMessage, exp);
             throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, errorMessage);
         }
-        return pdpStatisticsMap;
     }
 
     /**
