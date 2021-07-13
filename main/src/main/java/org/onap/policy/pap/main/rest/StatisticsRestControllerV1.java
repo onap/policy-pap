@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsRestControllerV1.class);
     private static final String GET_STATISTICS_ERR_MSG = "get pdpStatistics failed";
-    private static final int NO_COUNT_LIMIT = 0;
 
     /**
      * get statistics of PAP.
@@ -103,10 +102,12 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
             @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     public Response pdpStatistics(
-            @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+            @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
+            @ApiParam(value = "Record Count",
+                    required = false) @DefaultValue("0") @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(null, null, null, NO_COUNT_LIMIT))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(null, null, null, recordCount))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -145,10 +146,12 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     public Response pdpGroupStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName) {
+            @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
+            @ApiParam(value = "Record Count",
+                    required = false) @DefaultValue("0") @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, null, null, NO_COUNT_LIMIT))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, null, null, recordCount))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -189,11 +192,13 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     public Response pdpSubGroupStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
-            @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType) {
+            @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType,
+            @ApiParam(value = "Record Count",
+                    required = false) @DefaultValue("0") @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
                     .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, subType, null,
-                            NO_COUNT_LIMIT))
+                                    recordCount))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
