@@ -39,10 +39,10 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
-import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
+import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
@@ -85,7 +85,7 @@ public class PolicyComponentsHealthCheckProvider {
      */
     public static void initializeClientHealthCheckExecutorService(PapParameterGroup papParameterGroup,
         HttpClientFactory clientFactory) throws HttpClientConfigException {
-        for (BusTopicParams params : papParameterGroup.getHealthCheckRestClientParameters()) {
+        for (RestClientParameters params : papParameterGroup.getHealthCheckRestClientParameters()) {
             params.setManaged(false);
             clients.add(clientFactory.build(params));
         }

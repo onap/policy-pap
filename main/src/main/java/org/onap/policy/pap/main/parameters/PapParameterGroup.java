@@ -24,7 +24,7 @@ package org.onap.policy.pap.main.parameters;
 
 import java.util.List;
 import lombok.Getter;
-import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
+import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.parameters.RestServerParameters;
 import org.onap.policy.common.endpoints.parameters.TopicParameterGroup;
 import org.onap.policy.common.parameters.ParameterGroupImpl;
@@ -51,8 +51,8 @@ public class PapParameterGroup extends ParameterGroupImpl {
     private boolean savePdpStatisticsInDb;
     @Valid
     private TopicParameterGroup topicParameterGroup;
-    // API, Distribution Health Check restClient parameters.
-    private List<@NotNull @Valid BusTopicParams> healthCheckRestClientParameters;
+    // API, Distribution Health Check REST client parameters.
+    private List<@NotNull @Valid RestClientParameters> healthCheckRestClientParameters;
 
     /**
      * Create the pap parameter group.

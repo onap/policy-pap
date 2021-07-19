@@ -41,9 +41,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
+import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.coder.Coder;
@@ -134,7 +134,7 @@ public class TestPolicyComponentsHealthCheckProvider {
         when(client2.get()).thenReturn(response2);
 
         PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
-        List<BusTopicParams> params = papParameterGroup.getHealthCheckRestClientParameters();
+        List<RestClientParameters> params = papParameterGroup.getHealthCheckRestClientParameters();
         when(clientFactory.build(params.get(0))).thenReturn(client1);
         when(clientFactory.build(params.get(1))).thenReturn(client2);
 

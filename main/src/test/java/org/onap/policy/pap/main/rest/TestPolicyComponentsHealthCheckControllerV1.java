@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
- *  Modifications Copyright (C) 2020 AT&T Inc.
+ *  Modifications Copyright (C) 2020-2021 AT&T Inc.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.policy.common.endpoints.event.comm.bus.internal.BusTopicParams;
+import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.powermock.reflect.Whitebox;
@@ -47,7 +47,7 @@ import org.powermock.reflect.Whitebox;
 public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestServer {
 
     private static final String ENDPOINT = "components/healthcheck";
-    private static List<BusTopicParams> savedBusTopicParams;
+    private static List<RestClientParameters> savedRestClientParameters;
 
     /**
      * Set up for the test class.
@@ -56,8 +56,8 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
     public static void setUpClass() {
         // To skip calling to the remote components
         PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
-        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
-        savedBusTopicParams = new ArrayList<>(lo);
+        List<RestClientParameters> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
+        savedRestClientParameters = new ArrayList<>(lo);
         lo.clear();
     }
 
@@ -67,8 +67,8 @@ public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestSe
     @AfterClass
     public static void tearDownClass() {
         PapParameterGroup papParameterGroup = ParameterService.get("PapGroup");
-        List<BusTopicParams> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
-        lo.addAll(savedBusTopicParams);
+        List<RestClientParameters> lo = Whitebox.getInternalState(papParameterGroup, "healthCheckRestClientParameters");
+        lo.addAll(savedRestClientParameters);
     }
 
     @Test
