@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "881489ba_b31d8524",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-27T20:25:57Z",
+      "side": 1,
+      "message": "probably want a different package",
+      "range": {
+        "startLine": 21,
+        "startChar": 7,
+        "endLine": 21,
+        "endChar": 23
+      },
+      "revId": "38bcca110fd8cb430336c7dd7321c9871e7f632b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
