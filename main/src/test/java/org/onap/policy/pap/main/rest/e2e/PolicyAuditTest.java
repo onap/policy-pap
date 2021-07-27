@@ -19,7 +19,6 @@
 package org.onap.policy.pap.main.rest.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.rest.PolicyAuditControllerV1;
 
 public class PolicyAuditTest extends End2EndBase {
     private static final String TEST_GROUP = "testGroup";
@@ -47,6 +47,9 @@ public class PolicyAuditTest extends End2EndBase {
     private static final String DEFAULT_USER = "TEST";
     private static final String POLICY_AUDIT_ENDPOINT = "policies/audit";
     private static final String URI_SEPERATOR = "/";
+    private static final String QUERY_PARAMS_INVALID = "?recordCount=5&fromDate=2021-07-25T01:25:15";
+    private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&fromDate=1627219515&toDate=1627478715";
+    private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&fromDate=1627478715&toDate=1627565115";
 
     @Override
     @Before
@@ -57,16 +60,17 @@ public class PolicyAuditTest extends End2EndBase {
 
     private void setupEnv() {
         List<PolicyAudit> recordList = new ArrayList<>();
+        Instant auditRecordTime = Instant.ofEpochSecond(1627392315L);
         PolicyModelsProviderFactoryWrapper modelProviderWrapper =
                         Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
 
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
             PolicyAudit audit1 = PolicyAudit.builder().auditId(123L).pdpGroup(TEST_GROUP).pdpType(TEST_PDP_TYPE)
-                            .policy(POLICY_A).action(AuditAction.DEPLOYMENT).timestamp(Instant.now()).user(DEFAULT_USER)
-                            .build();
+                            .policy(POLICY_A).action(AuditAction.DEPLOYMENT)
+                            .timestamp(auditRecordTime).user(DEFAULT_USER).build();
             PolicyAudit audit2 = PolicyAudit.builder().auditId(456L).pdpGroup(TEST_GROUP).pdpType(TEST_PDP_TYPE)
-                            .policy(POLICY_B).action(AuditAction.UNDEPLOYMENT).timestamp(Instant.now())
-                            .user(DEFAULT_USER).build();
+                            .policy(POLICY_B).action(AuditAction.UNDEPLOYMENT)
+                            .timestamp(auditRecordTime).user(DEFAULT_USER).build();
             recordList.add(audit1);
             recordList.add(audit2);
             databaseProvider.createAuditRecords(recordList);
@@ -78,55 +82,101 @@ public class PolicyAuditTest extends End2EndBase {
     @Test
     public void testGetAllAuditRecords() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT;
+        sendAndValidateSuccess(uri, 2);
+    }
 
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+    @Test
+    public void testGetAllAuditRecordsWithParams() throws Exception {
+        // try with correct dates in query, should result in 2 records
+        String uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 2);
 
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 2);
+        // try with incorrect dates in query, should result in 0 record
+        uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_INCORRECT;
+        sendAndValidateSuccess(uri, 0);
+
+        // try with invalid date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_INVALID;
+        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
     }
 
     @Test
     public void testGetAuditRecordsByGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP;
+        sendAndValidateSuccess(uri, 2);
+    }
 
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+    @Test
+    public void testGetAuditRecordsByGroupWithParams() throws Exception {
+        // try with correct dates in query, should result in 2 records
+        String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 2);
 
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 2);
+        // try with incorrect dates in query, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND);
+
+        // try with invalid date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_INVALID;
+        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
     }
 
     @Test
     public void testGetAuditRecordsOfPolicyWithGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
                         + URI_SEPERATOR + POLICY_A.getVersion();
+        sendAndValidateSuccess(uri, 1);
+    }
 
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+    @Test
+    public void testGetAuditRecordsOfPolicyWithGroupWithParams() throws Exception {
+        // try with correct dates in query, should result in 1 record
+        String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
+                        + URI_SEPERATOR + POLICY_A.getVersion() + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 1);
 
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 1);
+        // try with incorrect dates in query, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
+                        + URI_SEPERATOR + POLICY_A.getVersion() + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND);
+
+        // try with invalid date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
+                        + POLICY_A.getVersion() + QUERY_PARAMS_INVALID;
+        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
     }
 
     @Test
     public void testGetAuditRecordsOfPolicyWithoutGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion();
-
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 1);
+        sendAndValidateSuccess(uri, 1);
     }
 
-    private void validateAuditRecords(List<PolicyAudit> result, int count) {
-        assertThat(result).hasSize(count);
-        for (PolicyAudit audit : result) {
+    @Test
+    public void testGetAuditRecordsOfPolicyWithoutGroupWithParams() throws Exception {
+        // try with correct dates in query, should result in 1 record
+        String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion()
+                        + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 1);
+
+        // try with incorrect dates in query, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion()
+                        + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND);
+
+        // try with invalid date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
+                        + POLICY_A.getVersion() + QUERY_PARAMS_INVALID;
+        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+    }
+
+    private void sendAndValidateSuccess(String uri, int count) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertThat(rawresp.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
+        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
+        assertThat(resp).hasSize(count);
+        for (PolicyAudit audit : resp) {
             if (audit.getAuditId() == 123L) {
                 assertThat(audit.getPdpGroup()).isEqualTo(TEST_GROUP);
                 assertThat(audit.getPdpType()).isEqualTo(TEST_PDP_TYPE);
@@ -141,5 +191,13 @@ public class PolicyAuditTest extends End2EndBase {
                 assertThat(audit.getUser()).isEqualTo(DEFAULT_USER);
             }
         }
+    }
+
+    private void sendAndValidateError(String uri, String errorMessage) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertThat(rawresp.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+        String resp = rawresp.readEntity(String.class);
+        assertThat(resp).contains(errorMessage);
     }
 }
