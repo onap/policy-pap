@@ -18,6 +18,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import com.att.aft.dme2.internal.springframework.format.annotation.DateTimeFormat;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -58,8 +59,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @return a response
      */
     // @formatter:off
@@ -98,8 +99,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate) {
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date toDate) {
 
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
@@ -121,8 +124,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @param pdpGroupName the pdp group name for the query
      * @return a response
      */
@@ -162,8 +165,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate,
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date toDate,
                     @ApiParam(value = "PDP Group Name",
                                     required = true) @PathParam("pdpGroupName") String pdpGroupName) {
 
@@ -185,8 +190,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @param pdpGroupName the pdp group name for the query
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
@@ -228,8 +233,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate,
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date toDate,
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
                     @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
                     @ApiParam(value = "Policy Version",
@@ -255,8 +262,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
      * @return a response
@@ -297,8 +304,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate,
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") @DateTimeFormat(
+                                    pattern = "yyyy-MM-dd'T'HH:mm:ss") final Date toDate,
                     @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
                     @ApiParam(value = "Policy Version",
                                     required = true) @PathParam("policyVersion") String policyVersion) {
