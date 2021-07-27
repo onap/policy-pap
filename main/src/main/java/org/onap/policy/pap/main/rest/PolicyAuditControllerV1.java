@@ -26,8 +26,9 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.UUID;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -47,10 +48,12 @@ import org.slf4j.LoggerFactory;
  * various operations on policies.
  */
 public class PolicyAuditControllerV1 extends PapRestControllerV1 {
-    private static final String GET_AUDIT_RECORD_FAILED = "get audit records failed";
 
     private static final Logger logger = LoggerFactory.getLogger(PolicyAuditControllerV1.class);
+    private static final String DATE_PARSE_ERROR = "fromDate & toDate must be in yyyy-MM-dd'T'HH:mm:ss format";
+    private static final String GET_AUDIT_RECORD_FAILED = "get audit records failed";
 
+    private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     private final PolicyAuditProvider provider = new PolicyAuditProvider();
 
     /**
@@ -58,8 +61,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @return a response
      */
     // @formatter:off
@@ -98,14 +101,15 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate) {
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final String fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final String toDate) {
 
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate((fromDate == null ? null : fromDate.toInstant()))
-                                            .toDate((toDate == null ? null : toDate.toInstant())).build()))
+                            .entity(provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount).fromDate(
+                                            (fromDate == null ? null : dateFormatter.parse(fromDate).toInstant()))
+                                            .toDate((toDate == null ? null : dateFormatter.parse(toDate).toInstant()))
+                                            .build()))
                             .build();
 
         } catch (PfModelException | PfModelRuntimeException exp) {
@@ -113,6 +117,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
             return addLoggingHeaders(
                             addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
                             requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
+        } catch (ParseException exp) {
+            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)), requestId)
+                            .entity(DATE_PARSE_ERROR).build();
         }
     }
 
@@ -121,8 +129,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @param pdpGroupName the pdp group name for the query
      * @return a response
      */
@@ -162,21 +170,27 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate,
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final String fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final String toDate,
                     @ApiParam(value = "PDP Group Name",
                                     required = true) @PathParam("pdpGroupName") String pdpGroupName) {
 
         try {
             return makeOkOrNotFoundResponse(requestId, provider.getAuditRecords(AuditFilter.builder()
-                            .recordNum(recordCount).fromDate((fromDate == null ? null : fromDate.toInstant()))
-                            .toDate((toDate == null ? null : toDate.toInstant())).pdpGroup(pdpGroupName).build()));
+                            .recordNum(recordCount)
+                            .fromDate((fromDate == null ? null : dateFormatter.parse(fromDate).toInstant()))
+                            .toDate((toDate == null ? null : dateFormatter.parse(toDate).toInstant()))
+                            .pdpGroup(pdpGroupName).build()));
 
         } catch (PfModelException | PfModelRuntimeException exp) {
             logger.warn(GET_AUDIT_RECORD_FAILED, exp);
             return addLoggingHeaders(
                             addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
                             requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
+        } catch (ParseException exp) {
+            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)), requestId)
+                            .entity(DATE_PARSE_ERROR).build();
         }
     }
 
@@ -185,8 +199,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @param pdpGroupName the pdp group name for the query
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
@@ -228,25 +242,29 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate,
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final String fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final String toDate,
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
                     @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
                     @ApiParam(value = "Policy Version",
                                     required = true) @PathParam("policyVersion") String policyVersion) {
 
         try {
-            return makeOkOrNotFoundResponse(requestId,
-                            provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate((fromDate == null ? null : fromDate.toInstant()))
-                                            .toDate((toDate == null ? null : toDate.toInstant())).pdpGroup(pdpGroupName)
-                                            .name(policyName).version(policyVersion).build()));
+            return makeOkOrNotFoundResponse(requestId, provider.getAuditRecords(AuditFilter.builder()
+                            .recordNum(recordCount)
+                            .fromDate((fromDate == null ? null : dateFormatter.parse(fromDate).toInstant()))
+                            .toDate((toDate == null ? null : dateFormatter.parse(toDate).toInstant()))
+                            .pdpGroup(pdpGroupName).name(policyName).version(policyVersion).build()));
 
         } catch (PfModelException | PfModelRuntimeException exp) {
             logger.warn(GET_AUDIT_RECORD_FAILED, exp);
             return addLoggingHeaders(
                             addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
                             requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
+        } catch (ParseException exp) {
+            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)), requestId)
+                            .entity(DATE_PARSE_ERROR).build();
         }
     }
 
@@ -255,8 +273,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query
-     * @param toDate the ending date for the query
+     * @param fromDate the starting date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
+     * @param toDate the ending date for the query in "yyyy-MM-dd'T'HH:mm:ss" format
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
      * @return a response
@@ -297,24 +315,28 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record Count",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final Date fromDate,
-                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final Date toDate,
+                    @ApiParam(value = "From Date", required = false) @QueryParam("fromDate") final String fromDate,
+                    @ApiParam(value = "To Date", required = false) @QueryParam("toDate") final String toDate,
                     @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
                     @ApiParam(value = "Policy Version",
                                     required = true) @PathParam("policyVersion") String policyVersion) {
 
         try {
-            return makeOkOrNotFoundResponse(requestId,
-                            provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate((fromDate == null ? null : fromDate.toInstant()))
-                                            .toDate((toDate == null ? null : toDate.toInstant())).name(policyName)
-                                            .version(policyVersion).build()));
+            return makeOkOrNotFoundResponse(requestId, provider.getAuditRecords(AuditFilter.builder()
+                            .recordNum(recordCount)
+                            .fromDate((fromDate == null ? null : dateFormatter.parse(fromDate).toInstant()))
+                            .toDate((toDate == null ? null : dateFormatter.parse(toDate).toInstant())).name(policyName)
+                            .version(policyVersion).build()));
 
         } catch (PfModelException | PfModelRuntimeException exp) {
             logger.warn(GET_AUDIT_RECORD_FAILED, exp);
             return addLoggingHeaders(
                             addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
                             requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
+        } catch (ParseException exp) {
+            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
+            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)), requestId)
+                            .entity(DATE_PARSE_ERROR).build();
         }
     }
 

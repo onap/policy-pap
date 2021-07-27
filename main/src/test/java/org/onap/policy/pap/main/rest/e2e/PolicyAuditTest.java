@@ -20,6 +20,7 @@ package org.onap.policy.pap.main.rest.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class PolicyAuditTest extends End2EndBase {
     private static final String DEFAULT_USER = "TEST";
     private static final String POLICY_AUDIT_ENDPOINT = "policies/audit";
     private static final String URI_SEPERATOR = "/";
+    private static final String DATE_PARSE_ERROR = "fromDate & toDate must be in yyyy-MM-dd'T'HH:mm:ss format";
+    private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&fromDate=2020-07-27T12:10";
+    private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&fromDate=2020-07-27T12:10:55";
 
     @Override
     @Before
@@ -78,55 +82,79 @@ public class PolicyAuditTest extends End2EndBase {
     @Test
     public void testGetAllAuditRecords() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT;
+        sendAndValidateSuccess(uri, 2);
+    }
 
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+    @Test
+    public void testGetAllAuditRecordsWithParams() throws Exception {
+        String uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 2);
 
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 2);
+        // try with incorrect date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri);
     }
 
     @Test
     public void testGetAuditRecordsByGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP;
+        sendAndValidateSuccess(uri, 2);
+    }
 
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+    @Test
+    public void testGetAuditRecordsByGroupWithParams() throws Exception {
+        String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 2);
 
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 2);
+        // try with incorrect date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri);
     }
 
     @Test
     public void testGetAuditRecordsOfPolicyWithGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
                         + URI_SEPERATOR + POLICY_A.getVersion();
+        sendAndValidateSuccess(uri, 1);
+    }
 
-        Invocation.Builder invocationBuilder = sendRequest(uri);
-        Response rawresp = invocationBuilder.get();
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
+    @Test
+    public void testGetAuditRecordsOfPolicyWithGroupWithParams() throws Exception {
+        String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
+                        + URI_SEPERATOR + POLICY_A.getVersion() + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 1);
 
-        List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 1);
+        // try with incorrect date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
+                        + POLICY_A.getVersion() + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri);
     }
 
     @Test
     public void testGetAuditRecordsOfPolicyWithoutGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion();
+        sendAndValidateSuccess(uri, 1);
+    }
 
+    @Test
+    public void testGetAuditRecordsOfPolicyWithoutGroupWithParams() throws Exception {
+        String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion()
+                        + QUERY_PARAMS_CORRECT;
+        sendAndValidateSuccess(uri, 1);
+
+        // try with incorrect date format, should result in error
+        uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
+                        + POLICY_A.getVersion() + QUERY_PARAMS_INCORRECT;
+        sendAndValidateError(uri);
+    }
+
+    private void sendAndValidateSuccess(String uri, int count) throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-
         List<PolicyAudit> resp = rawresp.readEntity(new GenericType<List<PolicyAudit>>() {});
-        validateAuditRecords(resp, 1);
-    }
-
-    private void validateAuditRecords(List<PolicyAudit> result, int count) {
-        assertThat(result).hasSize(count);
-        for (PolicyAudit audit : result) {
+        assertThat(resp).hasSize(count);
+        for (PolicyAudit audit : resp) {
             if (audit.getAuditId() == 123L) {
                 assertThat(audit.getPdpGroup()).isEqualTo(TEST_GROUP);
                 assertThat(audit.getPdpType()).isEqualTo(TEST_PDP_TYPE);
@@ -141,5 +169,13 @@ public class PolicyAuditTest extends End2EndBase {
                 assertThat(audit.getUser()).isEqualTo(DEFAULT_USER);
             }
         }
+    }
+
+    private void sendAndValidateError(String uri) throws Exception {
+        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.get();
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
+        String response = rawresp.readEntity(String.class);
+        assertTrue(response.contains(DATE_PARSE_ERROR));
     }
 }
