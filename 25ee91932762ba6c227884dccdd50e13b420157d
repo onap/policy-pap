@@ -45,6 +45,54 @@
       "revId": "25ee91932762ba6c227884dccdd50e13b420157d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "464718a5_d75d0da4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-07-28T21:18:35Z",
+      "side": 1,
+      "message": "yes, it seems the default epoch timestamp is seconds - https://www.epochconverter.com\nSo I kept it like that. And having the query parameter at seconds level will be enough as well.",
+      "parentUuid": "49dedd01_904800e9",
+      "range": {
+        "startLine": 103,
+        "startChar": 67,
+        "endLine": 103,
+        "endChar": 75
+      },
+      "revId": "25ee91932762ba6c227884dccdd50e13b420157d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd7673ca_4e731268",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-07-28T21:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "305be593_c3987d81",
+      "range": {
+        "startLine": 103,
+        "startChar": 84,
+        "endLine": 103,
+        "endChar": 88
+      },
+      "revId": "25ee91932762ba6c227884dccdd50e13b420157d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
