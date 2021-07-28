@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "305be593_c3987d81",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T20:56:19Z",
+      "side": 1,
+      "message": "rather than treating \"0\" as \"undefined\", might be able to change the type to \"Long\" and then modify line 340 to look for null instead of \"0\"",
+      "range": {
+        "startLine": 103,
+        "startChar": 84,
+        "endLine": 103,
+        "endChar": 88
+      },
+      "revId": "25ee91932762ba6c227884dccdd50e13b420157d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49dedd01_904800e9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T20:56:19Z",
+      "side": 1,
+      "message": "is fromDate in seconds, if so, I\u0027m OK with it as is.  If it\u0027s milliseconds, then should probably add a suffix such as Millis or Ms to make it clear",
+      "range": {
+        "startLine": 103,
+        "startChar": 67,
+        "endLine": 103,
+        "endChar": 75
+      },
+      "revId": "25ee91932762ba6c227884dccdd50e13b420157d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
