@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ccc57c59_d606f6d6",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T12:43:28Z",
+      "side": 1,
+      "message": "per the javadocs, dateFormatter must be synchronized",
+      "range": {
+        "startLine": 110,
+        "startChar": 71,
+        "endLine": 110,
+        "endChar": 90
+      },
+      "revId": "0576f33e10101c274d0f0b598bdf39fffc55ba25",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cfa4b97c_f5aa930f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T12:43:28Z",
+      "side": 1,
+      "message": "seeing this block repeatedly - maybe extract a common method",
+      "range": {
+        "startLine": 110,
+        "startChar": 44,
+        "endLine": 110,
+        "endChar": 113
+      },
+      "revId": "0576f33e10101c274d0f0b598bdf39fffc55ba25",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be3c782e_58d57b68",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/PolicyAuditTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T12:43:28Z",
+      "side": 1,
+      "message": "maybe just reference the constant in the controller rather than repeating it here",
+      "revId": "0576f33e10101c274d0f0b598bdf39fffc55ba25",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "358b362b_9eb9826b",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/e2e/PolicyAuditTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T12:43:28Z",
+      "side": 1,
+      "message": "sonar - use:\n\n  assertThat(xxx).contains(yyy)",
+      "range": {
+        "startLine": 179,
+        "startChar": 8,
+        "endLine": 179,
+        "endChar": 18
+      },
+      "revId": "0576f33e10101c274d0f0b598bdf39fffc55ba25",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}

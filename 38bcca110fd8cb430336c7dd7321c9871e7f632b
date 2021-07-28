@@ -22,6 +22,30 @@
       "revId": "38bcca110fd8cb430336c7dd7321c9871e7f632b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7ebeedb_5e1a603e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PolicyAuditControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-07-28T12:43:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "881489ba_b31d8524",
+      "range": {
+        "startLine": 21,
+        "startChar": 7,
+        "endLine": 21,
+        "endChar": 23
+      },
+      "revId": "38bcca110fd8cb430336c7dd7321c9871e7f632b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
