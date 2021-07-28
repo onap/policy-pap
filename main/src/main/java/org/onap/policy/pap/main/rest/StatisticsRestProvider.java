@@ -21,7 +21,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +35,6 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.startstop.PapActivator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class to fetch statistics of pap component.
@@ -45,11 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class StatisticsRestProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsRestProvider.class);
-    private static final String GET_STATISTICS_ERR_MSG = "fetch database failed";
-    private static final String DEFAULT_GROUP = "defaultGroup";
-    private static final int MIN_RECORD_COUNT = 1;
-    private static final int MAX_RECORD_COUNT = 100;
+    private static final String GET_STATISTICS_ERR_MSG = "database query failed";
 
     /**
      * Returns the current statistics of pap component.
@@ -76,39 +69,19 @@ public class StatisticsRestProvider {
     /**
      * Returns statistics of pdp component from database.
      *
-     * @param groupName name of the PDP group
-     * @param subType type of the sub PDP group
-     * @param pdpName the name of the PDP
-     * @param recordCount the count to query from database
+     * @param filter record filter
      * @return Report containing statistics of pdp component
      * @throws PfModelException when database can not found
      */
-    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(String groupName, String subType,
-            String pdpName, int recordCount) throws PfModelException {
+    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(PdpFilterParameters filter)
+                    throws PfModelException {
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+                        Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            Instant startTime = null;
-            Instant endTime = null;
-
-            /*
-             * getFilteredPdpStatistics() will throw an NPE if a group name is not specified, so we
-             * provide a default value
-             */
-            String grpnm = (groupName != null ? groupName : DEFAULT_GROUP);
-
-            int nrecords = Math.min(MAX_RECORD_COUNT, Math.max(MIN_RECORD_COUNT, recordCount));
-
-            return generatePdpStatistics(databaseProvider.getFilteredPdpStatistics(
-                            PdpFilterParameters.builder().name(pdpName).group(grpnm)
-                            .subGroup(subType).startTime(startTime).endTime(endTime)
-                            .recordNum(nrecords).build()));
+            return generatePdpStatistics(databaseProvider.getFilteredPdpStatistics(filter));
 
         } catch (final PfModelException exp) {
-            String errorMessage = GET_STATISTICS_ERR_MSG + "groupName:" + groupName + "subType:" + subType + "pdpName:"
-                    + pdpName + exp.getMessage();
-            LOGGER.debug(errorMessage, exp);
-            throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, errorMessage);
+            throw new PfModelRuntimeException(Response.Status.INTERNAL_SERVER_ERROR, GET_STATISTICS_ERR_MSG);
         }
     }
 
@@ -129,5 +102,3 @@ public class StatisticsRestProvider {
         return groupMap;
     }
 }
-
-

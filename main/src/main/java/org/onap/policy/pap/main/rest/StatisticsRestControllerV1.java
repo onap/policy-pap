@@ -38,6 +38,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +113,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(null, null, null, recordCount))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(
+                                    PdpFilterParameters.builder().recordNum(recordCount).build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -161,7 +163,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, null, null, recordCount))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(PdpFilterParameters.builder()
+                                    .group(groupName).recordNum(recordCount).build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -212,8 +215,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, subType, null,
-                                    recordCount))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(PdpFilterParameters.builder()
+                                    .group(groupName).subGroup(subType).recordNum(recordCount).build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -268,8 +271,9 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(groupName, subType, pdpName,
-                            recordCount))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(
+                                    PdpFilterParameters.builder().group(groupName).subGroup(subType)
+                                                    .name(pdpName).recordNum(recordCount).build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
