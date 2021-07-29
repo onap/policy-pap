@@ -84,7 +84,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     @Path("pdps/statistics")
     @ApiOperation(value = "Fetch  statistics for all PDP Groups and subgroups in the system",
             notes = "Returns for all PDP Groups and subgroups statistics of the Policy Administration component",
-            response = Map.class, tags = {"Policy Administration (PAP) API"},
+            response = Map.class, tags = {"PDP Statistics"},
                     authorizations = @Authorization(value = AUTHORIZATION_TYPE),
                     responseHeaders = {
                         @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -134,7 +134,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     @Path("pdps/statistics/{group}")
     @ApiOperation(value = "Fetch current statistics for given PDP Group",
             notes = "Returns statistics for given PDP Group of the Policy Administration component",
-            response = Map.class, tags = {"Policy Administration (PAP) API"},
+            response = Map.class, tags = {"PDP Statistics"},
             authorizations = @Authorization(value = AUTHORIZATION_TYPE),
             responseHeaders = {
                 @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -185,7 +185,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     @Path("pdps/statistics/{group}/{type}")
     @ApiOperation(value = "Fetch statistics for the specified subgroup",
             notes = "Returns  statistics for the specified subgroup of the Policy Administration component",
-            response = Map.class, tags = {"Policy Administration (PAP) API"},
+            response = Map.class, tags = {"PDP Statistics"},
             authorizations = @Authorization(value = AUTHORIZATION_TYPE),
             responseHeaders = {
                 @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -240,7 +240,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Fetch statistics for the specified pdp",
             notes = "Returns  statistics for the specified pdp of the Policy Administration component",
             response = Map.class,
-            tags = {"Policy Administration (PAP) API"},
+            tags = {"PDP Statistics"},
             authorizations = @Authorization(value = AUTHORIZATION_TYPE),
             responseHeaders = {
                 @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

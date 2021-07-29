@@ -69,7 +69,7 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Change state of a PDP Group",
         notes = "Changes state of PDP Group, returning optional error details",
         response = PdpGroupStateChangeResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"PdpGroup State Change"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

@@ -63,7 +63,7 @@ public class PdpGroupCreateOrUpdateControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Create or update PDP Groups",
         notes = "Create or update one or more PDP Groups, returning optional error details",
         response = PdpGroupUpdateResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"PdpGroup Create/Update"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

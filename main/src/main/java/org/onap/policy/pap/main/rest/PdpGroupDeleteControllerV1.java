@@ -66,7 +66,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Delete PDP Group",
         notes = "Deletes a PDP Group, returning optional error details",
         response = PdpGroupDeleteResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"PdpGroup Delete"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -110,7 +110,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Undeploy a PDP Policy from PDPs",
         notes = "Undeploys the latest version of a policy from the PDPs, returning optional error details",
         response = PdpGroupDeployResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"PdpGroup Delete"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -156,7 +156,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Undeploy version of a PDP Policy from PDPs",
         notes = "Undeploys a specific version of a policy from the PDPs, returning optional error details",
         response = PdpGroupDeployResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"PdpGroup Delete"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
