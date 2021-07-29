@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "d78b72f0-00b1-44c2-88c4-98a7a51b3932",
+        "_postman_id": "76860e78-4c44-45c1-9da0-ba001c0be587",
         "name": "Policy Framework Administration API",
         "description": "This collection lists all the Administration API's supported by ONAP Policy Framework. These API's are used to perform administrative operations for managing policies, groups, statistics & health information for all registered PDP engines.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -577,7 +577,7 @@
                     "raw": ""
                 },
                 "url": {
-                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics",
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics?recordCount=5",
                     "host": [
                         "{{POLICY-PAP-URL}}"
                     ],
@@ -587,6 +587,12 @@
                         "v1",
                         "pdps",
                         "statistics"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        }
                     ]
                 },
                 "description": "This is an API to fetch current statistics information for the all registered PDP instances."
@@ -617,7 +623,7 @@
                     "raw": ""
                 },
                 "url": {
-                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics/defaultGroup",
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics/defaultGroup?recordCount=5",
                     "host": [
                         "{{POLICY-PAP-URL}}"
                     ],
@@ -628,6 +634,12 @@
                         "pdps",
                         "statistics",
                         "defaultGroup"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        }
                     ]
                 },
                 "description": "This is an API to fetch current statistics information for the all registered PDP instances of the specified PdpGroup (example - \"defaultGroup\")."
@@ -658,7 +670,7 @@
                     "raw": ""
                 },
                 "url": {
-                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics/defaultGroup/apex",
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics/defaultGroup/apex?recordCount=5",
                     "host": [
                         "{{POLICY-PAP-URL}}"
                     ],
@@ -670,6 +682,12 @@
                         "statistics",
                         "defaultGroup",
                         "apex"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        }
                     ]
                 },
                 "description": "This is an API to fetch current statistics information for the all registered PDP instances of the specified PdpGroup (example - \"defaultGroup\") & PdpSubgroup (example - \"apex\")."
@@ -700,7 +718,7 @@
                     "raw": ""
                 },
                 "url": {
-                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics/defaultGroup/apex/dev-policy-apex-pdp-0",
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/pdps/statistics/defaultGroup/apex/dev-policy-apex-pdp-0?recordCount=5",
                     "host": [
                         "{{POLICY-PAP-URL}}"
                     ],
@@ -713,9 +731,256 @@
                         "defaultGroup",
                         "apex",
                         "dev-policy-apex-pdp-0"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        }
                     ]
                 },
                 "description": "This is an API to fetch current statistics information for the specified PDP instance (example - \"dev-policy-apex-pdp-0\") of the specified PdpGroup (example - \"defaultGroup\") & PdpSubgroup (example - \"apex\")."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch All Policy Audit Records",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/audit?recordCount=5",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "audit"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        },
+                        {
+                            "key": "fromDate",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "toDate",
+                            "value": "1627478715",
+                            "disabled": true
+                        }
+                    ]
+                },
+                "description": "This is a generic API to fetch audit records of all policies in the database."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch All Policy Audit Records of a Group",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/audit/defaultGroup?recordCount=5",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "audit",
+                        "defaultGroup"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        },
+                        {
+                            "key": "fromDate",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "toDate",
+                            "value": "1627478715",
+                            "disabled": true
+                        }
+                    ]
+                },
+                "description": "This is a generic API to fetch audit records of all policies in the database belonging to a PDP Group."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch Policy Audit Records of a Group",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/audit/defaultGroup/operational.modifyconfig/1.0.0?recordCount=5",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "audit",
+                        "defaultGroup",
+                        "operational.modifyconfig",
+                        "1.0.0"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        },
+                        {
+                            "key": "fromDate",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "toDate",
+                            "value": "1627478715",
+                            "disabled": true
+                        }
+                    ]
+                },
+                "description": "This is an API to fetch audit records of a policy in the database belonging to a PDP Group."
+            },
+            "response": []
+        },
+        {
+            "name": "Fetch Policy Audit Records",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "url": {
+                    "raw": "{{POLICY-PAP-URL}}/policy/pap/v1/policies/audit/operational.modifyconfig/1.0.0?recordCount=5",
+                    "host": [
+                        "{{POLICY-PAP-URL}}"
+                    ],
+                    "path": [
+                        "policy",
+                        "pap",
+                        "v1",
+                        "policies",
+                        "audit",
+                        "operational.modifyconfig",
+                        "1.0.0"
+                    ],
+                    "query": [
+                        {
+                            "key": "recordCount",
+                            "value": "5"
+                        },
+                        {
+                            "key": "fromDate",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "toDate",
+                            "value": "1627478715",
+                            "disabled": true
+                        }
+                    ]
+                },
+                "description": "This is an API to fetch audit records of a policy in the database."
             },
             "response": []
         },
