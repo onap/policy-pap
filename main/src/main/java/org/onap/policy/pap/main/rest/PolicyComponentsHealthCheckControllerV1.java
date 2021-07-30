@@ -70,7 +70,7 @@ public class PolicyComponentsHealthCheckControllerV1 extends PapRestControllerV1
     @ApiOperation(value = "Returns health status of all policy components, including PAP, API, Distribution, and PDPs",
         notes = "Queries health status of all policy components, returning all policy components health status",
         response = Map.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Consolidated Healthcheck"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

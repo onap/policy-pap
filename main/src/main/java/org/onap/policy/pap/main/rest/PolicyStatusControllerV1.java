@@ -74,7 +74,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Queries status of all deployed policies",
         notes = "Queries status of all deployed policies, returning success and failure counts of the PDPs",
         responseContainer = "List", response = PolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Deployment Status"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -137,7 +137,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Queries status of specific deployed policies",
         notes = "Queries status of specific deployed policies, returning success and failure counts of the PDPs",
         responseContainer = "List", response = PolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Deployment Status"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -196,7 +196,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Queries status of a specific deployed policy",
         notes = "Queries status of a specific deployed policy, returning success and failure counts of the PDPs",
         response = PolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Deployment Status"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -256,7 +256,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
         notes = "Queries status of policies in all PdpGroups, "
             + "returning status of policies in all the PDPs belonging to all PdpGroups",
         responseContainer = "List", response = PdpPolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Status"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -311,7 +311,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
         notes = "Queries status of policies in a specific PdpGroup, "
             + "returning status of policies in all the PDPs belonging to the PdpGroup",
         responseContainer = "List", response = PdpPolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Status"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

@@ -70,7 +70,7 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         notes = "Queries audit information for all the policies, "
             + "returning audit information for all the policies in the database",
         responseContainer = "List", response = PolicyAudit.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Audit"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -136,7 +136,7 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         notes = "Queries audit information for all the policies in a PdpGroup, "
             + "returning audit information for all the policies belonging to the PdpGroup",
         responseContainer = "List", response = PolicyAudit.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Audit"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -205,7 +205,7 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         notes = "Queries audit information for a specific version of a policy in a PdpGroup,"
             + " returning audit information for the policy belonging to the PdpGroup",
         response = PolicyAudit.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Audit"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -276,7 +276,7 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         notes = "Queries audit information for a specific version of a policy,"
             + " returning audit information for the policy",
         response = PolicyAudit.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Policy Audit"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

@@ -64,7 +64,7 @@ public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Query details of all PDP groups",
         notes = "Queries details of all PDP groups, returning all group details",
         response = PdpGroups.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"PdpGroup Query"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,

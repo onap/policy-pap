@@ -71,7 +71,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Updates policy deployments within specific PDP groups",
         notes = "Updates policy deployments within specific PDP groups, returning optional error details",
         response = PdpGroupDeployResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Deployments Update"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
@@ -116,7 +116,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     @ApiOperation(value = "Deploy or update PDP Policies",
         notes = "Deploys or updates PDP Policies, returning optional error details",
         response = PdpGroupDeployResponse.class,
-        tags = {"Policy Administration (PAP) API"},
+        tags = {"Deployments Update"},
         authorizations = @Authorization(value = AUTHORIZATION_TYPE),
         responseHeaders = {
             @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
