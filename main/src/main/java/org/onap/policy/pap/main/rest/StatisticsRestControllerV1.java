@@ -29,6 +29,7 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import javax.ws.rs.GET;
@@ -110,11 +111,18 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     })
     public Response pdpStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
+            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount,
+            @ApiParam(value = "From date in epoch timestamp",
+                            required = false) @QueryParam("startTime") final Long startTime,
+            @ApiParam(value = "To date in epoch timestamp",
+                            required = false) @QueryParam("endTime") final Long endTime) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(
-                                    PdpFilterParameters.builder().recordNum(recordCount).build()))
+                    .entity(new StatisticsRestProvider().fetchDatabaseStatistics(PdpFilterParameters.builder()
+                                    .recordNum(recordCount)
+                                    .startTime(convertEpochtoInstant(startTime))
+                                    .endTime(convertEpochtoInstant(endTime))
+                                    .build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -160,11 +168,19 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
     public Response pdpGroupStatistics(
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
-            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
+            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount,
+            @ApiParam(value = "From date in epoch timestamp",
+                            required = false) @QueryParam("startTime") final Long startTime,
+            @ApiParam(value = "To date in epoch timestamp",
+                            required = false) @QueryParam("endTime") final Long endTime) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
                     .entity(new StatisticsRestProvider().fetchDatabaseStatistics(PdpFilterParameters.builder()
-                                    .group(groupName).recordNum(recordCount).build()))
+                                    .group(groupName)
+                                    .recordNum(recordCount)
+                                    .startTime(convertEpochtoInstant(startTime))
+                                    .endTime(convertEpochtoInstant(endTime))
+                                    .build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -212,11 +228,20 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
             @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType,
-            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
+            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount,
+            @ApiParam(value = "From date in epoch timestamp",
+                            required = false) @QueryParam("startTime") final Long startTime,
+            @ApiParam(value = "To date in epoch timestamp",
+                            required = false) @QueryParam("endTime") final Long endTime) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
                     .entity(new StatisticsRestProvider().fetchDatabaseStatistics(PdpFilterParameters.builder()
-                                    .group(groupName).subGroup(subType).recordNum(recordCount).build()))
+                                    .group(groupName)
+                                    .subGroup(subType)
+                                    .recordNum(recordCount)
+                                    .startTime(convertEpochtoInstant(startTime))
+                                    .endTime(convertEpochtoInstant(endTime))
+                                    .build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -268,12 +293,22 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "PDP Group Name", required = true) @PathParam("group") final String groupName,
             @ApiParam(value = "PDP SubGroup type", required = true) @PathParam("type") final String subType,
             @ApiParam(value = "PDP Instance name", required = true) @PathParam("pdp") final String pdpName,
-            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount) {
+            @ApiParam(value = "Record Count", required = false) @QueryParam("recordCount") final int recordCount,
+            @ApiParam(value = "From date in epoch timestamp",
+                            required = false) @QueryParam("startTime") final Long startTime,
+            @ApiParam(value = "To date in epoch timestamp",
+                            required = false) @QueryParam("endTime") final Long endTime) {
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
                     .entity(new StatisticsRestProvider().fetchDatabaseStatistics(
-                                    PdpFilterParameters.builder().group(groupName).subGroup(subType)
-                                                    .name(pdpName).recordNum(recordCount).build()))
+                            PdpFilterParameters.builder()
+                                    .group(groupName)
+                                    .subGroup(subType)
+                                    .name(pdpName)
+                                    .recordNum(recordCount)
+                                    .startTime(convertEpochtoInstant(startTime))
+                                    .endTime(convertEpochtoInstant(endTime))
+                                    .build()))
                     .build();
         } catch (final PfModelException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
@@ -281,5 +316,9 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
                             .build();
         }
+    }
+
+    private Instant convertEpochtoInstant(Long epochSecond) {
+        return (epochSecond == null ? null : Instant.ofEpochSecond(epochSecond));
     }
 }

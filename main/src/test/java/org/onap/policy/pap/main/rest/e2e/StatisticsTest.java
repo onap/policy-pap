@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,16 +21,17 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.net.HttpURLConnection;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -44,8 +45,38 @@ import org.onap.policy.pap.main.rest.StatisticsReport;
 
 public class StatisticsTest extends End2EndBase {
     private static final String STATISTICS_ENDPOINT = "statistics";
-    private List<PdpStatistics> recordList = new ArrayList<>();
+    private static final String END_TIME_NAME = "endTime";
+    private static final String START_TIME_NAME = "startTime";
+    private static final long TIMESTAMP_SEC = 1562494272;
 
+
+    /**
+     * Adds a record to the DB.
+     */
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        End2EndBase.setUpBeforeClass();
+
+        PolicyModelsProviderFactoryWrapper modelProviderWrapper =
+                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
+
+        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
+            PdpStatistics pdpStatisticsRecord = new PdpStatistics();
+            pdpStatisticsRecord.setPdpGroupName("defaultGroup");
+            pdpStatisticsRecord.setPdpSubGroupName("apex");
+            pdpStatisticsRecord.setPdpInstanceId("pdp1");
+            pdpStatisticsRecord.setTimeStamp(Instant.ofEpochSecond(TIMESTAMP_SEC));
+            pdpStatisticsRecord.setPolicyDeployCount(1);
+            pdpStatisticsRecord.setPolicyDeployFailCount(0);
+            pdpStatisticsRecord.setPolicyDeploySuccessCount(1);
+            pdpStatisticsRecord.setPolicyExecutedCount(1);
+            pdpStatisticsRecord.setPolicyExecutedFailCount(0);
+            pdpStatisticsRecord.setPolicyExecutedSuccessCount(1);
+            databaseProvider.createPdpStatistics(List.of(pdpStatisticsRecord));
+        } catch (final PfModelException exp) {
+            throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, exp.getMessage());
+        }
+    }
 
     @Test
     public void test() throws Exception {
@@ -108,33 +139,30 @@ public class StatisticsTest extends End2EndBase {
         mgr.updatePolicyDownloadFailureCount();
     }
 
-    private void setupEnv() {
-        PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            PdpStatistics pdpStatisticsRecord = new PdpStatistics();
-            pdpStatisticsRecord.setPdpGroupName("defaultGroup");
-            pdpStatisticsRecord.setPdpSubGroupName("apex");
-            pdpStatisticsRecord.setPdpInstanceId("pdp1");
-            pdpStatisticsRecord.setTimeStamp(Instant.now());
-            pdpStatisticsRecord.setPolicyDeployCount(1);
-            pdpStatisticsRecord.setPolicyDeployFailCount(0);
-            pdpStatisticsRecord.setPolicyDeploySuccessCount(1);
-            pdpStatisticsRecord.setPolicyExecutedCount(1);
-            pdpStatisticsRecord.setPolicyExecutedFailCount(0);
-            pdpStatisticsRecord.setPolicyExecutedSuccessCount(1);
-            recordList.add(pdpStatisticsRecord);
-            databaseProvider.createPdpStatistics(recordList);
-        } catch (final PfModelException exp) {
-            throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, exp.getMessage());
-        }
-    }
-
     private void verifyResponse(String endpoint) throws Exception {
-        setupEnv();
         Invocation.Builder invocationBuilder = sendRequest(endpoint);
         verifyResponse(invocationBuilder.get());
+
+        // repeat with "from" in range
+        invocationBuilder = sendRequest(addTimeParam(endpoint, START_TIME_NAME, TIMESTAMP_SEC));
+        verifyResponse(invocationBuilder.get());
+
+        // repeat with "to" in range
+        invocationBuilder = sendRequest(addTimeParam(endpoint, END_TIME_NAME, TIMESTAMP_SEC));
+        verifyResponse(invocationBuilder.get());
+
+        // repeat with "from" and "to" dates, in range
+        invocationBuilder = sendRequest(addTimeParam(endpoint, START_TIME_NAME, TIMESTAMP_SEC - 1)
+                        + "&" + END_TIME_NAME + "=" + TIMESTAMP_SEC + 1);
+        verifyResponse(invocationBuilder.get());
+
+        // repeat with "from" out of range
+        invocationBuilder = sendRequest(addTimeParam(endpoint, START_TIME_NAME, TIMESTAMP_SEC + 1));
+        verifyEmptyResponse(invocationBuilder.get());
+
+        // repeat with "to" out of range
+        invocationBuilder = sendRequest(addTimeParam(endpoint, END_TIME_NAME, TIMESTAMP_SEC - 1));
+        verifyEmptyResponse(invocationBuilder.get());
     }
 
     private void verifyResponse(Response testResponse) {
@@ -146,5 +174,28 @@ public class StatisticsTest extends End2EndBase {
         assertEquals("pdp1", resRecord.get(0).getPdpInstanceId());
         assertEquals("apex", resRecord.get(0).getPdpSubGroupName());
         assertEquals("defaultGroup", resRecord.get(0).getPdpGroupName());
+    }
+
+    private void verifyEmptyResponse(Response testResponse) {
+        assertEquals(Response.Status.OK.getStatusCode(), testResponse.getStatus());
+        Map<String, Map<String, List<PdpStatistics>>> map =
+                testResponse.readEntity(new GenericType<Map<String, Map<String, List<PdpStatistics>>>>() {});
+        assertThat(map).isEmpty();
+    }
+
+    /**
+     * Adds a timestamp parameter to an endpoint string.
+     * @param endpoint endpoint to which it should be added
+     * @param paramName parameter name
+     * @param timeSec time, in seconds
+     * @return the new endpoint, with the added parameter
+     */
+    private String addTimeParam(String endpoint, String paramName, long timeSec) {
+        StringBuilder builder = new StringBuilder(endpoint);
+        builder.append(endpoint.contains("?") ? '&' : '?');
+        builder.append(paramName);
+        builder.append('=');
+        builder.append(timeSec);
+        return builder.toString();
     }
 }
