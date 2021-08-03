@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "17194145_17b19760",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-08-03T13:21:58Z",
+      "side": 1,
+      "message": "In Policy Audit Api\u0027s we named them \"fromDate\" \u0026 \"toDate\". Do you want to keep the same name?",
+      "range": {
+        "startLine": 116,
+        "startChar": 59,
+        "endLine": 116,
+        "endChar": 68
+      },
+      "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
