@@ -46,6 +46,30 @@
       "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8665c6a_b43df7c3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-08-03T13:38:44Z",
+      "side": 1,
+      "message": "I had originally had it as fromDate \u0026 toDate, to match audit.  However, then I noticed that the statistics records, themselves, use the name timeStamp instead of \"date\".  In addition, policy/models uses startTime \u0026 endTime all over the place.  Consequently, I reversed direction and went with startTime \u0026 endTime, instead.\n\nI did just check the audit records, and they use \"timestamp\", so if you want to change to startTime/endTime, that would be fine, too.\n\n(Hmm, I need to update the pap api docs to reflect the addition of these new parameters...)",
+      "parentUuid": "c7555ebc_be40a628",
+      "range": {
+        "startLine": 116,
+        "startChar": 59,
+        "endLine": 116,
+        "endChar": 68
+      },
+      "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
