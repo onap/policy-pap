@@ -59,8 +59,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query in epoch timestamp
-     * @param toDate the ending date for the query in epoch timestamp
+     * @param startTime the starting time for the query in epoch timestamp
+     * @param endTime the ending time for the query in epoch timestamp
      * @return a response
      */
     // @formatter:off
@@ -99,16 +99,16 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record count between 1-100",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From date in epoch timestamp",
-                                    required = false) @QueryParam("fromDate") final Long fromDate,
-                    @ApiParam(value = "To date in epoch timestamp",
-                                    required = false) @QueryParam("toDate") final Long toDate) {
+                    @ApiParam(value = "Start time in epoch timestamp",
+                                    required = false) @QueryParam("startTime") final Long startTime,
+                    @ApiParam(value = "End time in epoch timestamp",
+                                    required = false) @QueryParam("endTime") final Long endTime) {
 
         try {
             return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
                             .entity(provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate(convertEpochtoInstant(fromDate))
-                                            .toDate(convertEpochtoInstant(toDate)).build()))
+                                            .fromDate(convertEpochtoInstant(startTime))
+                                            .toDate(convertEpochtoInstant(endTime)).build()))
                             .build();
 
         } catch (PfModelException | PfModelRuntimeException exp) {
@@ -124,8 +124,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query in epoch timestamp
-     * @param toDate the ending date for the query in epoch timestamp
+     * @param startTime the starting time for the query in epoch timestamp
+     * @param endTime the ending time for the query in epoch timestamp
      * @param pdpGroupName the pdp group name for the query
      * @return a response
      */
@@ -165,18 +165,18 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record count between 1-100",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From date in epoch timestamp",
-                                    required = false) @QueryParam("fromDate") final Long fromDate,
-                    @ApiParam(value = "To date in epoch timestamp",
-                                    required = false) @QueryParam("toDate") final Long toDate,
+                    @ApiParam(value = "Start time in epoch timestamp",
+                                    required = false) @QueryParam("startTime") final Long startTime,
+                    @ApiParam(value = "End time in epoch timestamp",
+                                    required = false) @QueryParam("endTime") final Long endTime,
                     @ApiParam(value = "PDP Group Name",
                                     required = true) @PathParam("pdpGroupName") String pdpGroupName) {
 
         try {
             return makeOkOrNotFoundResponse(requestId,
                             provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate((convertEpochtoInstant(fromDate)))
-                                            .toDate(convertEpochtoInstant(toDate)).pdpGroup(pdpGroupName).build()));
+                                            .fromDate((convertEpochtoInstant(startTime)))
+                                            .toDate(convertEpochtoInstant(endTime)).pdpGroup(pdpGroupName).build()));
 
         } catch (PfModelException | PfModelRuntimeException exp) {
             logger.warn(GET_AUDIT_RECORD_FAILED, exp);
@@ -191,8 +191,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query in epoch timestamp
-     * @param toDate the ending date for the query in epoch timestamp
+     * @param startTime the starting time for the query in epoch timestamp
+     * @param endTime the ending time for the query in epoch timestamp
      * @param pdpGroupName the pdp group name for the query
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
@@ -234,10 +234,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record count between 1-100",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From date in epoch timestamp",
-                                    required = false) @QueryParam("fromDate") final Long fromDate,
-                    @ApiParam(value = "To date in epoch timestamp",
-                                    required = false) @QueryParam("toDate") final Long toDate,
+                    @ApiParam(value = "Start time in epoch timestamp",
+                                    required = false) @QueryParam("startTime") final Long startTime,
+                    @ApiParam(value = "End time in epoch timestamp",
+                                    required = false) @QueryParam("endTime") final Long endTime,
                     @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
                     @ApiParam(value = "Policy Name", required = true) @PathParam("policyName") String policyName,
                     @ApiParam(value = "Policy Version",
@@ -246,8 +246,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         try {
             return makeOkOrNotFoundResponse(requestId,
                             provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate(convertEpochtoInstant(fromDate))
-                                            .toDate(convertEpochtoInstant(toDate)).pdpGroup(pdpGroupName)
+                                            .fromDate(convertEpochtoInstant(startTime))
+                                            .toDate(convertEpochtoInstant(endTime)).pdpGroup(pdpGroupName)
                                             .name(policyName).version(policyVersion).build()));
 
         } catch (PfModelException | PfModelRuntimeException exp) {
@@ -263,8 +263,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      *
      * @param requestId request ID used in ONAP logging
      * @param recordCount number of records to fetch
-     * @param fromDate the starting date for the query in epoch timestamp
-     * @param toDate the ending date for the query in epoch timestamp
+     * @param startTime the starting time for the query in epoch timestamp
+     * @param endTime the ending time for the query in epoch timestamp
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
      * @return a response
@@ -305,18 +305,18 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
                     @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
                     @ApiParam(value = "Record count between 1-100",
                                     required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "From date in epoch timestamp",
-                                    required = false) @QueryParam("fromDate") final Long fromDate,
-                    @ApiParam(value = "To date in epoch timestamp",
-                                    required = false) @QueryParam("toDate") final Long toDate,
+                    @ApiParam(value = "Start time in epoch timestamp",
+                                    required = false) @QueryParam("startTime") final Long startTime,
+                    @ApiParam(value = "End time in epoch timestamp",
+                                    required = false) @QueryParam("endTime") final Long endTime,
                     @ApiParam(value = "Policy Name", required = true) @PathParam("policyName") String policyName,
                     @ApiParam(value = "Policy Version",
                                     required = true) @PathParam("policyVersion") String policyVersion) {
 
         try {
             return makeOkOrNotFoundResponse(requestId, provider.getAuditRecords(AuditFilter.builder()
-                            .recordNum(recordCount).fromDate(convertEpochtoInstant(fromDate))
-                            .toDate(convertEpochtoInstant(toDate)).name(policyName).version(policyVersion).build()));
+                            .recordNum(recordCount).fromDate(convertEpochtoInstant(startTime))
+                            .toDate(convertEpochtoInstant(endTime)).name(policyName).version(policyVersion).build()));
 
         } catch (PfModelException | PfModelRuntimeException exp) {
             logger.warn(GET_AUDIT_RECORD_FAILED, exp);

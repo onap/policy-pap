@@ -47,9 +47,9 @@ public class PolicyAuditTest extends End2EndBase {
     private static final String DEFAULT_USER = "TEST";
     private static final String POLICY_AUDIT_ENDPOINT = "policies/audit";
     private static final String URI_SEPERATOR = "/";
-    private static final String QUERY_PARAMS_INVALID = "?recordCount=5&fromDate=2021-07-25T01:25:15";
-    private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&fromDate=1627219515&toDate=1627478715";
-    private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&fromDate=1627478715&toDate=1627565115";
+    private static final String QUERY_PARAMS_INVALID = "?recordCount=5&startTime=2021-07-25T01:25:15";
+    private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&startTime=1627219515&endTime=1627478715";
+    private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&startTime=1627478715&endTime=1627565115";
 
     @Override
     @Before
