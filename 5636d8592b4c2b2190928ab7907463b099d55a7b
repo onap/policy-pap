@@ -118,6 +118,30 @@
       "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b5b46607_58365d55",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-08-03T17:25:57Z",
+      "side": 1,
+      "message": "My pleasure Jim!\nCreated the below jiras and assigned them to myself.\nhttps://jira.onap.org/browse/POLICY-3527\nhttps://jira.onap.org/browse/POLICY-3528",
+      "parentUuid": "f40cc1e0_d79812ee",
+      "range": {
+        "startLine": 116,
+        "startChar": 59,
+        "endLine": 116,
+        "endChar": 68
+      },
+      "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
