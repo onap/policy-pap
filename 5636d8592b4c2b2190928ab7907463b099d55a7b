@@ -94,6 +94,30 @@
       "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f40cc1e0_d79812ee",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-08-03T13:54:24Z",
+      "side": 1,
+      "message": "that would be great, thanks, Ram!",
+      "parentUuid": "8d333545_e0267d55",
+      "range": {
+        "startLine": 116,
+        "startChar": 59,
+        "endLine": 116,
+        "endChar": 68
+      },
+      "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
