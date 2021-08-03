@@ -70,6 +70,30 @@
       "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d333545_e0267d55",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsRestControllerV1.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-08-03T13:51:45Z",
+      "side": 1,
+      "message": "Makes sense to me as well, I will update in Audit Api\u0027s and push a review soon.\n\nYes, it will be good to finish the document changes together 😊\n\nAnother item - add them in the postman collection we have in pap. For audit api\u0027s, I kept them in the collection but in disabled mode. So that users are aware and can enable and provide values accordingly.\n\nI can take the above 2 if you are already full. Let me know.\nThanks!",
+      "parentUuid": "a8665c6a_b43df7c3",
+      "range": {
+        "startLine": 116,
+        "startChar": 59,
+        "endLine": 116,
+        "endChar": 68
+      },
+      "revId": "5636d8592b4c2b2190928ab7907463b099d55a7b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
