@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c9700c9_d30141f9",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/StatisticsReport.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 811
+      },
+      "writtenOn": "2021-08-05T21:02:34Z",
+      "side": 1,
+      "message": "oh my, I just had to chuckle at this one. 😄",
+      "revId": "176de86fcec998b378510b9f2a48e7be67023dad",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
