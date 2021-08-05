@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.comm;
 
+import lombok.AllArgsConstructor;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
@@ -32,21 +33,12 @@ import org.onap.policy.pap.main.parameters.PdpParameters;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@AllArgsConstructor
 public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
     private final PdpParameters params;
 
     private final boolean savePdpStatistics;
-
-    /**
-     * Constructs the object.
-     *
-     * @param params PDP parameters
-     */
-    public PdpHeartbeatListener(PdpParameters params, boolean savePdpStatistics) {
-        this.params = params;
-        this.savePdpStatistics = savePdpStatistics;
-    }
 
     @Override
     public void onTopicEvent(final CommInfrastructure infra, final String topic, final PdpStatus message) {

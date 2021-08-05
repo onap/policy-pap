@@ -29,34 +29,18 @@ import lombok.ToString;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Getter
+@Setter
 @ToString
 public class StatisticsReport {
 
-    @Getter
-    @Setter
     private int code;
-    @Getter
-    @Setter
     private long totalPdpCount;
-    @Getter
-    @Setter
     private long totalPdpGroupCount;
-    @Getter
-    @Setter
     private long totalPolicyDeployCount;
-    @Getter
-    @Setter
     private long policyDeploySuccessCount;
-    @Getter
-    @Setter
     private long policyDeployFailureCount;
-    @Getter
-    @Setter
     private long totalPolicyDownloadCount;
-    @Getter
-    @Setter
     private long policyDownloadSuccessCount;
-    @Getter
-    @Setter
     private long policyDownloadFailureCount;
 }

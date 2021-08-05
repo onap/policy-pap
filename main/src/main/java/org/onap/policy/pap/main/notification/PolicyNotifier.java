@@ -22,6 +22,7 @@
 package org.onap.policy.pap.main.notification;
 
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.provider.PolicyModelsProvider;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Notifier for completion of policy updates.
  */
+@AllArgsConstructor
 public class PolicyNotifier {
     private static final Logger logger = LoggerFactory.getLogger(PolicyNotifier.class);
 
@@ -44,19 +46,6 @@ public class PolicyNotifier {
     private final Publisher<PolicyNotification> publisher;
 
     private final PolicyModelsProviderFactoryWrapper daoFactory;
-
-
-    /**
-     * Constructs the object. Loads all deployed policies into the internal cache.
-     *
-     * @param publisher notification publisher
-     * @param daoFactory factory used to load policy deployment data from the DB
-     */
-    public PolicyNotifier(Publisher<PolicyNotification> publisher, PolicyModelsProviderFactoryWrapper daoFactory) {
-
-        this.publisher = publisher;
-        this.daoFactory = daoFactory;
-    }
 
     /**
      * Processes a response from a PDP.
