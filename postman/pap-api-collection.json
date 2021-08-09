@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "76860e78-4c44-45c1-9da0-ba001c0be587",
+        "_postman_id": "cf7db76a-e5a7-4c92-a3b7-7b97ffd006bf",
         "name": "Policy Framework Administration API",
         "description": "This collection lists all the Administration API's supported by ONAP Policy Framework. These API's are used to perform administrative operations for managing policies, groups, statistics & health information for all registered PDP engines.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -592,6 +592,16 @@
                         {
                             "key": "recordCount",
                             "value": "5"
+                        },
+                        {
+                            "key": "startTime",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "endTime",
+                            "value": "1627478715",
+                            "disabled": true
                         }
                     ]
                 },
@@ -639,6 +649,16 @@
                         {
                             "key": "recordCount",
                             "value": "5"
+                        },
+                        {
+                            "key": "startTime",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "endTime",
+                            "value": "1627478715",
+                            "disabled": true
                         }
                     ]
                 },
@@ -687,6 +707,16 @@
                         {
                             "key": "recordCount",
                             "value": "5"
+                        },
+                        {
+                            "key": "startTime",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "endTime",
+                            "value": "1627478715",
+                            "disabled": true
                         }
                     ]
                 },
@@ -736,6 +766,16 @@
                         {
                             "key": "recordCount",
                             "value": "5"
+                        },
+                        {
+                            "key": "startTime",
+                            "value": "1627219515",
+                            "disabled": true
+                        },
+                        {
+                            "key": "endTime",
+                            "value": "1627478715",
+                            "disabled": true
                         }
                     ]
                 },
@@ -795,12 +835,12 @@
                             "value": "5"
                         },
                         {
-                            "key": "fromDate",
+                            "key": "startTime",
                             "value": "1627219515",
                             "disabled": true
                         },
                         {
-                            "key": "toDate",
+                            "key": "endTime",
                             "value": "1627478715",
                             "disabled": true
                         }
@@ -852,12 +892,12 @@
                             "value": "5"
                         },
                         {
-                            "key": "fromDate",
+                            "key": "startTime",
                             "value": "1627219515",
                             "disabled": true
                         },
                         {
-                            "key": "toDate",
+                            "key": "endTime",
                             "value": "1627478715",
                             "disabled": true
                         }
@@ -911,12 +951,12 @@
                             "value": "5"
                         },
                         {
-                            "key": "fromDate",
+                            "key": "startTime",
                             "value": "1627219515",
                             "disabled": true
                         },
                         {
-                            "key": "toDate",
+                            "key": "endTime",
                             "value": "1627478715",
                             "disabled": true
                         }
@@ -969,12 +1009,12 @@
                             "value": "5"
                         },
                         {
-                            "key": "fromDate",
+                            "key": "startTime",
                             "value": "1627219515",
                             "disabled": true
                         },
                         {
-                            "key": "toDate",
+                            "key": "endTime",
                             "value": "1627478715",
                             "disabled": true
                         }
