@@ -6,7 +6,8 @@
         "userName": "healthcheck",
         "password": "zb!XztG34",
         "https": true,
-        "aaf": false
+        "aaf": false,
+        "prometheus": true
     },
     "pdpParameters": {
         "heartBeatMs": 120000,
