@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
@@ -234,7 +235,8 @@ public class CommonPapRestServer {
     private void markActivator(boolean wasAlive) {
         Object manager = Whitebox.getInternalState(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class),
                         "serviceManager");
-        Whitebox.setInternalState(manager, "running", wasAlive);
+        AtomicBoolean running = Whitebox.getInternalState(manager, "running");
+        running.set(wasAlive);
     }
 
     /**
