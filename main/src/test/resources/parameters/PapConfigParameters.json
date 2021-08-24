@@ -68,5 +68,12 @@
         "password": "zb!XztG34",
         "useHttps": true,
         "basePath": "healthcheck"
+    },
+    {
+        "clientName": "dmaap",
+        "hostname": "message-router",
+        "port": 3905,
+        "useHttps": true,
+        "basePath": "topics"
     }]
 }
