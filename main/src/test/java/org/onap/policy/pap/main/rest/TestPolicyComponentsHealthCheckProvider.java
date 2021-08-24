@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2020 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Corp.
- *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2020-2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;
@@ -89,10 +90,16 @@ public class TestPolicyComponentsHealthCheckProvider {
     private HttpClient client2;
 
     @Mock
+    private HttpClient client3;
+
+    @Mock
     private Response response1;
 
     @Mock
     private Response response2;
+
+    @Mock
+    private Response response3;
 
     private List<PdpGroup> groups;
 
@@ -133,10 +140,17 @@ public class TestPolicyComponentsHealthCheckProvider {
         when(response2.readEntity(HealthCheckReport.class)).thenReturn(createReport(HttpURLConnection.HTTP_OK, true));
         when(client2.get()).thenReturn(response2);
 
+        when(client3.getName()).thenReturn("dmaap");
+        when(client3.getBaseUrl()).thenReturn("message-router");
+        when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(createDmaapResponse());
+        when(client3.get()).thenReturn(response3);
+
         PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
         List<RestClientParameters> params = papParameterGroup.getHealthCheckRestClientParameters();
         when(clientFactory.build(params.get(0))).thenReturn(client1);
         when(clientFactory.build(params.get(1))).thenReturn(client2);
+        when(clientFactory.build(params.get(2))).thenReturn(client3);
 
         PolicyComponentsHealthCheckProvider.initializeClientHealthCheckExecutorService(papParameterGroup,
             clientFactory);
@@ -180,6 +194,20 @@ public class TestPolicyComponentsHealthCheckProvider {
         assertFalse((Boolean) result2.get(HEALTHY));
         HealthCheckReport report2 = (HealthCheckReport) result.get(CLIENT_1);
         assertFalse(report2.isHealthy());
+
+        when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(null);
+        Map<String, Object> result3 = callFetchPolicyComponentsHealthStatus();
+        assertFalse((Boolean) result3.get(HEALTHY));
+        HealthCheckReport report3 = (HealthCheckReport) result3.get("dmaap");
+        assertFalse(report3.isHealthy());
+
+        when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(new DmaapGetTopicResponse());
+        Map<String, Object> result4 = callFetchPolicyComponentsHealthStatus();
+        assertFalse((Boolean) result4.get(HEALTHY));
+        HealthCheckReport report4 = (HealthCheckReport) result4.get("dmaap");
+        assertFalse(report4.isHealthy());
     }
 
     @SuppressWarnings("unchecked")
@@ -233,5 +261,11 @@ public class TestPolicyComponentsHealthCheckProvider {
         } catch (final CoderException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private DmaapGetTopicResponse createDmaapResponse() {
+        DmaapGetTopicResponse response = new DmaapGetTopicResponse();
+        response.setTopics(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP));
+        return response;
     }
 }
