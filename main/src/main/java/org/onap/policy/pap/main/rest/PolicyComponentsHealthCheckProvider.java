@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2020 Nordix Foundation.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
- *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2020-2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,29 +192,35 @@ public class PolicyComponentsHealthCheckProvider {
     }
 
     private HealthCheckReport fetchPolicyComponentHealthStatus(HttpClient httpClient) {
-        HealthCheckReport clientReport;
+        HealthCheckReport clientReport = null;
         try {
             Response resp = httpClient.get();
-            clientReport = replaceIpWithHostname(resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl());
+            if (httpClient.getName().equalsIgnoreCase("dmaap")) {
+                clientReport = verifyDmaapClient(httpClient, resp);
+            } else {
+                clientReport = replaceIpWithHostname(resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl());
+            }
 
-            // A health report is read successfully when HTTP status is not OK, it is also not healthy
+            // A health report is read successfully when HTTP status is not OK, it is also
+            // not healthy
             // even in the report it says healthy.
             if (resp.getStatus() != HttpURLConnection.HTTP_OK) {
                 clientReport.setHealthy(false);
             }
         } catch (RuntimeException e) {
             LOGGER.warn("{} connection error", httpClient.getName());
-            clientReport = createUnHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(),
-                HttpURLConnection.HTTP_INTERNAL_ERROR, e.getMessage());
+            clientReport = createHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(),
+                            HttpURLConnection.HTTP_INTERNAL_ERROR, false, e.getMessage());
         }
         return clientReport;
     }
 
-    private HealthCheckReport createUnHealthCheckReport(String name, String url, int code, String message) {
+    private HealthCheckReport createHealthCheckReport(String name, String url, int code, boolean status,
+                    String message) {
         var report = new HealthCheckReport();
         report.setName(name);
         report.setUrl(url);
-        report.setHealthy(false);
+        report.setHealthy(status);
         report.setCode(code);
         report.setMessage(message);
         return report;
@@ -227,6 +233,19 @@ public class PolicyComponentsHealthCheckProvider {
             report.setUrl(baseUrl.replace(ip, report.getUrl()));
         }
         return report;
+    }
+
+    private HealthCheckReport verifyDmaapClient(HttpClient httpClient, Response resp) {
+        HealthCheckReport clientReport;
+        DmaapGetTopicResponse dmaapResponse = resp.readEntity(DmaapGetTopicResponse.class);
+        var topicVerificationStatus = (dmaapResponse.getTopics() != null
+                        && dmaapResponse.getTopics().contains(PapConstants.TOPIC_POLICY_PDP_PAP));
+        String message = (topicVerificationStatus ? "PAP to DMaaP connection check is successfull"
+                        : "PAP to DMaaP connection check failed");
+        int code = (topicVerificationStatus ? resp.getStatus() : 503);
+        clientReport = createHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(), code,
+                        topicVerificationStatus, message);
+        return clientReport;
     }
 
     /**
