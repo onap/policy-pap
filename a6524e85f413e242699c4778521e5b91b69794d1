@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d74abada_25920fc0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/DmaapGetTopicResponse.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-08-25T10:16:23Z",
+      "side": 1,
+      "message": "2021",
+      "range": {
+        "startLine": 3,
+        "startChar": 18,
+        "endLine": 3,
+        "endChar": 22
+      },
+      "revId": "a6524e85f413e242699c4778521e5b91b69794d1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
