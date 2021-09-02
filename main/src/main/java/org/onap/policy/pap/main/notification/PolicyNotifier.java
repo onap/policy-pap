@@ -69,7 +69,7 @@ public class PolicyNotifier {
 
             publish(notification);
 
-        } catch (PfModelException e) {
+        } catch (PfModelException | RuntimeException e) {
             logger.warn("cannot update deployment status", e);
         }
     }

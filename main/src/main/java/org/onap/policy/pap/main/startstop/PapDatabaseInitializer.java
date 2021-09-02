@@ -82,7 +82,7 @@ public class PapDatabaseInitializer {
                 LOGGER.info("Initial pdpGroup already exists in DB, skipping create - {} from {}",
                         pdpGroupsFromDb, groupsJson);
             }
-        } catch (final PfModelException | CoderException exp) {
+        } catch (final PfModelException | CoderException | RuntimeException exp) {
             throw new PolicyPapException(exp);
         }
     }

@@ -39,6 +39,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +125,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                     .endTime(convertEpochtoInstant(endTime))
                                     .build()))
                     .build();
-        } catch (final PfModelException exp) {
+        } catch (final PfModelException | PfModelRuntimeException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
@@ -182,7 +183,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                     .endTime(convertEpochtoInstant(endTime))
                                     .build()))
                     .build();
-        } catch (final PfModelException exp) {
+        } catch (final PfModelException | PfModelRuntimeException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
@@ -243,7 +244,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                     .endTime(convertEpochtoInstant(endTime))
                                     .build()))
                     .build();
-        } catch (final PfModelException exp) {
+        } catch (final PfModelException | PfModelRuntimeException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
@@ -310,7 +311,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                     .endTime(convertEpochtoInstant(endTime))
                                     .build()))
                     .build();
-        } catch (final PfModelException exp) {
+        } catch (final PfModelException | PfModelRuntimeException exp) {
             LOGGER.info(GET_STATISTICS_ERR_MSG, exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)

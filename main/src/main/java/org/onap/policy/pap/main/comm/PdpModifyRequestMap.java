@@ -295,7 +295,7 @@ public class PdpModifyRequestMap {
                     policyNotifier.publish(notification);
                 }
 
-            } catch (PfModelException e) {
+            } catch (PfModelException | RuntimeException e) {
                 logger.warn("failed to remove expired PDPs", e);
             }
         }

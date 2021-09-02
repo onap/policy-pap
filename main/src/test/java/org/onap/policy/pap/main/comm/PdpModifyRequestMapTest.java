@@ -56,6 +56,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
@@ -423,6 +424,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
+    public void testRemoveExpiredPdps_DaoRtEx() throws Exception {
+        when(dao.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
+
+        assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
+    }
+
+    @Test
     public void testRemoveFromSubgroup() throws Exception {
         PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1, PDP2, PDP3)));
@@ -452,6 +460,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
     protected PfModelException makeException() {
         return new PfModelException(Status.BAD_REQUEST, "expected exception");
+    }
+
+    protected PfModelRuntimeException makeRuntimeException() {
+        return new PfModelRuntimeException(Status.BAD_REQUEST, "expected exception");
     }
 
     @Test

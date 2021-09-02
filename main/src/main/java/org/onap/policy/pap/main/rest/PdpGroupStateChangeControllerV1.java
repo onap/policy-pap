@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.slf4j.Logger;
@@ -102,7 +103,7 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
             final Pair<Status, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
             return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
                     .entity(pair.getRight()).build();
-        } catch (final PfModelException exp) {
+        } catch (final PfModelException | PfModelRuntimeException exp) {
             LOGGER.info("group state-change failed", exp);
             return addLoggingHeaders(
                     addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
