@@ -70,6 +70,30 @@
       "revId": "347bc1022aba20ae134848ef1a04930e9cb69b09",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "681e1aba_a16c58c2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupQueryControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-09-03T10:06:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "71bcc5df_0c0da21a",
+      "range": {
+        "startLine": 100,
+        "startChar": 42,
+        "endLine": 100,
+        "endChar": 65
+      },
+      "revId": "347bc1022aba20ae134848ef1a04930e9cb69b09",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
