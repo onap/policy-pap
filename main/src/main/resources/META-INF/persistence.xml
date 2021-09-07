@@ -61,7 +61,7 @@
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="none" />
             <property name="eclipselink.ddl-generation" value="none" />
-            <property name="eclipselink.logging.level" value="INFO" />
+            <property name="eclipselink.logging.level" value="WARNING" />
         </properties>
     </persistence-unit>
 </persistence>
