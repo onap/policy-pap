@@ -10,9 +10,7 @@
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +18,7 @@
   limitations under the License.
   ============LICENSE_END=========================================================
   -->
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Policy PAP Performance" enabled="true">
       <stringProp name="TestPlan.comments">Policy PAP Performance Tests</stringProp>
@@ -31,27 +29,27 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="PAP_HOST" elementType="Argument">
             <stringProp name="Argument.name">PAP_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(PAP_HOST,10.2.0.149)}</stringProp>
+            <stringProp name="Argument.value">${__P(PAP_HOST,172.16.1.230)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PAP_PORT" elementType="Argument">
             <stringProp name="Argument.name">PAP_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(PAP_PORT,31427)}</stringProp>
+            <stringProp name="Argument.value">${__P(PAP_PORT,31937)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_HOST" elementType="Argument">
             <stringProp name="Argument.name">API_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(API_HOST,10.2.0.149)}</stringProp>
+            <stringProp name="Argument.value">${__P(API_HOST,172.16.1.230)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="API_PORT" elementType="Argument">
             <stringProp name="Argument.name">API_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(API_PORT,30443)}</stringProp>
+            <stringProp name="Argument.value">${__P(API_PORT,31339)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="HOME_PATH" elementType="Argument">
             <stringProp name="Argument.name">HOME_PATH</stringProp>
-            <stringProp name="Argument.value">${__P(HOME,/home/wayned)}</stringProp>
+            <stringProp name="Argument.value">${__P(HOME,/home/wayne/paps3p)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="LOGS_PATH" elementType="Argument">
@@ -77,14 +75,14 @@
       <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
         <collectionProp name="AuthManager.auth_list">
           <elementProp name="" elementType="Authorization">
-            <stringProp name="Authorization.url">https://${PAP_HOST}:${PAP_PORT}/policy/pap/v1</stringProp>
+            <stringProp name="Authorization.url">http://${PAP_HOST}:${PAP_PORT}/policy/pap/v1</stringProp>
             <stringProp name="Authorization.username">healthcheck</stringProp>
             <stringProp name="Authorization.password">zb!XztG34</stringProp>
             <stringProp name="Authorization.domain"></stringProp>
             <stringProp name="Authorization.realm"></stringProp>
           </elementProp>
           <elementProp name="" elementType="Authorization">
-            <stringProp name="Authorization.url">https://${API_HOST}:${API_PORT}/policy/api/v1</stringProp>
+            <stringProp name="Authorization.url">http://${API_HOST}:${API_PORT}/policy/api/v1</stringProp>
             <stringProp name="Authorization.username">healthcheck</stringProp>
             <stringProp name="Authorization.password">zb!XztG34</stringProp>
             <stringProp name="Authorization.domain"></stringProp>
@@ -109,7 +107,7 @@
       </HeaderManager>
       <hashTree/>
       <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -7574,7 +7572,7 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.common.Apex/versions/1.0.0/policies</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -15050,7 +15048,7 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.native.Apex/versions/1.0.0/policies</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -15095,7 +15093,7 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/healthcheck</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15147,7 +15145,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">policy/pap/v1/statistics</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15201,7 +15199,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">policy/pap/v1/pdps/groups/defaultGroup?state=ACTIVE</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
@@ -15231,7 +15229,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15291,7 +15289,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             </elementProp>
             <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
             <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.protocol">http</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">policy/pap/v1/pdps/policies</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -15332,7 +15330,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             </elementProp>
             <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
             <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.protocol">http</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/status/defaultGroup/operational.apex.stabilityTestDefaultDomain/1.0.0</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15357,6 +15355,68 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             </ResponseAssertion>
             <hashTree/>
           </hashTree>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check PdpGroup Audit defaultGroup" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/audit/defaultGroup</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Check PdpGroup Audit</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check PdpGroup Audit Policy (defaultGroup)" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/audit/defaultGroup/operational.apex.stabilityTestDefaultDomain/1.0.0</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Check PdpGroup Audit</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create/Update PDP Group" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -15393,7 +15453,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps/groups/batch</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -15424,7 +15484,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15499,7 +15559,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps/deployments/batch</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -15529,7 +15589,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/status/sampleGroup</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15560,7 +15620,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/status</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15591,7 +15651,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15649,13 +15709,94 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </JSR223Assertion>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check Deployed Policies" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check Audit" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/audit</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Check Audit</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check Consolidated Health" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/policy/pap/v1/components/healthcheck</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Consolidated Health Check</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper;
+
+def res = [];
+if (prev.getResponseCode() == &apos;200&apos;) {
+    def jsonSlurper = new JsonSlurper();
+    res = jsonSlurper.parseText(prev.getResponseDataAsString());
+    assert res instanceof Map;
+    assert res.pdps.xacml!=null;
+    assert res.pdps.drools!=null;
+    assert res.pdps.apex!=null;
+}
+</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check Deployed Policies" enabled="false">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/policies/deployed</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -15711,7 +15852,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps/deployments/batch</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -15746,7 +15887,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             </elementProp>
             <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
             <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.protocol">http</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">policy/pap/v1/pdps/policies/operational.apex.stabilityTestDefaultDomain</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
@@ -15777,7 +15918,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">policy/pap/v1/pdps/groups/sampleGroup_${threadCounter}?state=PASSIVE</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
@@ -15807,7 +15948,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/pap/v1/pdps/groups/sampleGroup_${threadCounter}</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
@@ -15843,7 +15984,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">policy/pap/v1/pdps/groups/defaultGroup?state=PASSIVE</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
@@ -15888,7 +16029,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${PAP_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${PAP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">policy/pap/v1/pdps/groups/defaultGroup?state=PASSIVE</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
@@ -15918,7 +16059,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.controlloop.operational.Apex/versions/1.0.0/policies/operational.apex.stabilityTestDefaultDomain/versions/1.0.0</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
@@ -15948,7 +16089,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
           </elementProp>
           <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/policy/api/v1/policytypes/onap.policies.native.Apex/versions/1.0.0/policies/operational.apex.stabilityTestSampleDomain/versions/1.0.0</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
