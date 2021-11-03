@@ -60,7 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to perform unit test of {@link PapRestServer}.
+ * Class to perform unit test of {@link PapRestControllerV1}.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
@@ -214,7 +214,7 @@ public class CommonPapRestServer {
     /**
      * Stops the "Main".
      *
-     * @throws Exception if an error occurs
+     * @throws PolicyPapException if an error occurs
      */
     private static void stopMain() throws PolicyPapException {
         if (main != null) {
@@ -294,7 +294,7 @@ public class CommonPapRestServer {
         client.register(GsonMessageBodyHandler.class);
 
         if (includeAuth) {
-            final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("healthcheck", "zb!XztG34");
+            final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("policyadmin", "zb!XztG34");
             client.register(feature);
         }
 

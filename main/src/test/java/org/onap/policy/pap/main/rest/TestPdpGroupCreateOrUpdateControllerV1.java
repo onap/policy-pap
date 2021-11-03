@@ -23,7 +23,7 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Arrays;
+import java.util.List;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
@@ -72,9 +72,9 @@ public class TestPdpGroupCreateOrUpdateControllerV1 extends CommonPapRestServer 
         PdpGroup group = new PdpGroup();
         group.setName("drools-group");
         group.setDescription("my description");
-        group.setPdpSubgroups(Arrays.asList(subgrp));
+        group.setPdpSubgroups(List.of(subgrp));
         PdpGroups groups = new PdpGroups();
-        groups.setGroups(Arrays.asList(group));
+        groups.setGroups(List.of(group));
         return Entity.entity(groups, MediaType.APPLICATION_JSON);
     }
 }

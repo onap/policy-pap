@@ -56,14 +56,14 @@
         <collectionProp name="AuthManager.auth_list">
           <elementProp name="" elementType="Authorization">
             <stringProp name="Authorization.url">http://${PAP_HOST}:${PAP_PORT}/policy/pap/v1</stringProp>
-            <stringProp name="Authorization.username">healthcheck</stringProp>
+            <stringProp name="Authorization.username">policyadmin</stringProp>
             <stringProp name="Authorization.password">zb!XztG34</stringProp>
             <stringProp name="Authorization.domain"></stringProp>
             <stringProp name="Authorization.realm"></stringProp>
           </elementProp>
           <elementProp name="" elementType="Authorization">
             <stringProp name="Authorization.url">http://${API_HOST}:${API_PORT}/policy/api/v1</stringProp>
-            <stringProp name="Authorization.username">healthcheck</stringProp>
+            <stringProp name="Authorization.username">policyadmin</stringProp>
             <stringProp name="Authorization.password">zb!XztG34</stringProp>
             <stringProp name="Authorization.domain"></stringProp>
             <stringProp name="Authorization.realm"></stringProp>

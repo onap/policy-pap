@@ -3,7 +3,7 @@
     "restServerParameters": {
         "host": "0.0.0.0",
         "port": ${port},
-        "userName": "healthcheck",
+        "userName": "policyadmin",
         "password": "zb!XztG34",
         "https": true
     },
@@ -56,7 +56,7 @@
         "clientName": "api",
         "hostname": "policy-api",
         "port": 6969,
-        "userName": "healthcheck",
+        "userName": "policyadmin",
         "password": "zb!XztG34",
         "useHttps": true,
         "basePath": "policy/api/v1/healthcheck"

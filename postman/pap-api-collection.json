@@ -1097,7 +1097,7 @@
     "variable": [
         {
             "key": "USER",
-            "value": "healthcheck",
+            "value": "policyadmin",
             "type": "string"
         },
         {
