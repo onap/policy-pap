@@ -29,30 +29,31 @@ import io.swagger.annotations.ResponseHeader;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.persistence.provider.PolicyAuditProvider.AuditFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to retrieve the audit information for
  * various operations on policies.
  */
+@RestController
+@RequestMapping(path = "/policy/pap/v1")
 public class PolicyAuditControllerV1 extends PapRestControllerV1 {
 
-    private static final Logger logger = LoggerFactory.getLogger(PolicyAuditControllerV1.class);
-    private static final String GET_AUDIT_RECORD_FAILED = "get audit records failed";
     public static final String NO_AUDIT_RECORD_FOUND = "No records found matching the input parameters";
 
-    private final PolicyAuditProvider provider = new PolicyAuditProvider();
+    @Autowired
+    private PolicyAuditProvider provider;
 
     /**
      * Queries audit information of all policies.
@@ -62,10 +63,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      * @param startTime the starting time for the query in epoch timestamp
      * @param endTime the ending time for the query in epoch timestamp
      * @return a response
+     * @throws PfModelException the exception
      */
     // @formatter:off
-    @GET
-    @Path("policies/audit")
+    @GetMapping("policies/audit")
     @ApiOperation(value = "Queries audit information for all the policies",
         notes = "Queries audit information for all the policies, "
             + "returning audit information for all the policies in the database",
@@ -94,29 +95,25 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
     })
     // @formatter:on
+    public ResponseEntity<Collection<PolicyAudit>> getAllAuditRecords(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "Record count between 1-100") @RequestParam(
+            defaultValue = "10",
+            required = false,
+            value = "recordCount") final int recordCount,
+        @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "startTime") final Long startTime,
+        @ApiParam(value = "End time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "endTime") final Long endTime)
+        throws PfModelException {
 
-    public Response getAllAuditRecords(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-                    @ApiParam(value = "Record count between 1-100",
-                                    required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "Start time in epoch timestamp",
-                                    required = false) @QueryParam("startTime") final Long startTime,
-                    @ApiParam(value = "End time in epoch timestamp",
-                                    required = false) @QueryParam("endTime") final Long endTime) {
-
-        try {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate(convertEpochtoInstant(startTime))
-                                            .toDate(convertEpochtoInstant(endTime)).build()))
-                            .build();
-
-        } catch (PfModelException | PfModelRuntimeException exp) {
-            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
-            return addLoggingHeaders(
-                            addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
-                            requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
-        }
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+            .body(provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
+                .fromDate(convertEpochtoInstant(startTime)).toDate(convertEpochtoInstant(endTime)).build()));
     }
 
     /**
@@ -128,10 +125,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      * @param endTime the ending time for the query in epoch timestamp
      * @param pdpGroupName the pdp group name for the query
      * @return a response
+     * @throws PfModelException the exception
      */
     // @formatter:off
-    @GET
-    @Path("policies/audit/{pdpGroupName}")
+    @GetMapping("policies/audit/{pdpGroupName}")
     @ApiOperation(value = "Queries audit information for all the policies in a PdpGroup",
         notes = "Queries audit information for all the policies in a PdpGroup, "
             + "returning audit information for all the policies belonging to the PdpGroup",
@@ -160,30 +157,26 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
     })
     // @formatter:on
+    public ResponseEntity<Object> getAuditRecordsByGroup(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "Record count between 1-100") @RequestParam(
+            defaultValue = "10",
+            required = false,
+            value = "recordCount") final int recordCount,
+        @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "startTime") final Long startTime,
+        @ApiParam(value = "End time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "endTime") final Long endTime,
+        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName) throws PfModelException {
 
-    public Response getAuditRecordsByGroup(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-                    @ApiParam(value = "Record count between 1-100",
-                                    required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "Start time in epoch timestamp",
-                                    required = false) @QueryParam("startTime") final Long startTime,
-                    @ApiParam(value = "End time in epoch timestamp",
-                                    required = false) @QueryParam("endTime") final Long endTime,
-                    @ApiParam(value = "PDP Group Name",
-                                    required = true) @PathParam("pdpGroupName") String pdpGroupName) {
-
-        try {
-            return makeOkOrNotFoundResponse(requestId,
-                            provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate((convertEpochtoInstant(startTime)))
-                                            .toDate(convertEpochtoInstant(endTime)).pdpGroup(pdpGroupName).build()));
-
-        } catch (PfModelException | PfModelRuntimeException exp) {
-            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
-            return addLoggingHeaders(
-                            addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
-                            requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
-        }
+        return makeOkOrNotFoundResponse(requestId,
+            provider.getAuditRecords(
+                AuditFilter.builder().recordNum(recordCount).fromDate((convertEpochtoInstant(startTime)))
+                    .toDate(convertEpochtoInstant(endTime)).pdpGroup(pdpGroupName).build()));
     }
 
     /**
@@ -197,10 +190,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
      * @return a response
+     * @throws PfModelException the exception
      */
     // @formatter:off
-    @GET
-    @Path("policies/audit/{pdpGroupName}/{policyName}/{policyVersion}")
+    @GetMapping("policies/audit/{pdpGroupName}/{policyName}/{policyVersion}")
     @ApiOperation(value = "Queries audit information for a specific version of a policy in a PdpGroup",
         notes = "Queries audit information for a specific version of a policy in a PdpGroup,"
             + " returning audit information for the policy belonging to the PdpGroup",
@@ -230,32 +223,29 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response getAuditRecordsOfPolicy(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-                    @ApiParam(value = "Record count between 1-100",
-                                    required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "Start time in epoch timestamp",
-                                    required = false) @QueryParam("startTime") final Long startTime,
-                    @ApiParam(value = "End time in epoch timestamp",
-                                    required = false) @QueryParam("endTime") final Long endTime,
-                    @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
-                    @ApiParam(value = "Policy Name", required = true) @PathParam("policyName") String policyName,
-                    @ApiParam(value = "Policy Version",
-                                    required = true) @PathParam("policyVersion") String policyVersion) {
+    public ResponseEntity<Object> getAuditRecordsOfPolicy(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "Record count between 1-100", required = false) @RequestParam(
+            defaultValue = "10",
+            required = false,
+            value = "recordCount") final int recordCount,
+        @ApiParam(value = "Start time in epoch timestamp", required = false) @RequestParam(
+            required = false,
+            value = "startTime") final Long startTime,
+        @ApiParam(value = "End time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "endTime") final Long endTime,
+        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
+        @ApiParam(value = "Policy Name") @PathVariable("policyName") String policyName,
+        @ApiParam(value = "Policy Version") @PathVariable(value = "policyVersion") String policyVersion)
+        throws PfModelException {
 
-        try {
-            return makeOkOrNotFoundResponse(requestId,
-                            provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                                            .fromDate(convertEpochtoInstant(startTime))
-                                            .toDate(convertEpochtoInstant(endTime)).pdpGroup(pdpGroupName)
-                                            .name(policyName).version(policyVersion).build()));
-
-        } catch (PfModelException | PfModelRuntimeException exp) {
-            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
-            return addLoggingHeaders(
-                            addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
-                            requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
-        }
+        return makeOkOrNotFoundResponse(requestId,
+            provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
+                .fromDate(convertEpochtoInstant(startTime)).toDate(convertEpochtoInstant(endTime))
+                .pdpGroup(pdpGroupName).name(policyName).version(policyVersion).build()));
     }
 
     /**
@@ -268,10 +258,10 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
      * @param policyName name of the Policy
      * @param policyVersion version of the Policy
      * @return a response
+     * @throws PfModelException the exception
      */
     // @formatter:off
-    @GET
-    @Path("policies/audit/{policyName}/{policyVersion}")
+    @GetMapping("policies/audit/{policyName}/{policyVersion}")
     @ApiOperation(value = "Queries audit information for a specific version of a policy",
         notes = "Queries audit information for a specific version of a policy,"
             + " returning audit information for the policy",
@@ -301,38 +291,37 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response getAuditRecordsOfPolicy(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-                    @ApiParam(value = "Record count between 1-100",
-                                    required = false) @QueryParam("recordCount") final int recordCount,
-                    @ApiParam(value = "Start time in epoch timestamp",
-                                    required = false) @QueryParam("startTime") final Long startTime,
-                    @ApiParam(value = "End time in epoch timestamp",
-                                    required = false) @QueryParam("endTime") final Long endTime,
-                    @ApiParam(value = "Policy Name", required = true) @PathParam("policyName") String policyName,
-                    @ApiParam(value = "Policy Version",
-                                    required = true) @PathParam("policyVersion") String policyVersion) {
+    public ResponseEntity<Object> getAuditRecordsOfPolicy(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "Record count between 1-100") @RequestParam(
+            defaultValue = "10",
+            required = false,
+            value = "recordCount") final int recordCount,
+        @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "startTime") final Long startTime,
+        @ApiParam(value = "End time in epoch timestamp") @RequestParam(
+            required = false,
+            value = "endTime") final Long endTime,
+        @ApiParam(value = "Policy Name") @PathVariable(required = true, value = "policyName") String policyName,
+        @ApiParam(
+            value = "Policy Version") @PathVariable(required = true, value = "policyVersion") String policyVersion)
+        throws PfModelException {
 
-        try {
-            return makeOkOrNotFoundResponse(requestId, provider.getAuditRecords(AuditFilter.builder()
-                            .recordNum(recordCount).fromDate(convertEpochtoInstant(startTime))
-                            .toDate(convertEpochtoInstant(endTime)).name(policyName).version(policyVersion).build()));
-
-        } catch (PfModelException | PfModelRuntimeException exp) {
-            logger.warn(GET_AUDIT_RECORD_FAILED, exp);
-            return addLoggingHeaders(
-                            addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())),
-                            requestId).entity(exp.getErrorResponse().getErrorMessage()).build();
-        }
+        return makeOkOrNotFoundResponse(requestId,
+            provider
+                .getAuditRecords(AuditFilter.builder().recordNum(recordCount).fromDate(convertEpochtoInstant(startTime))
+                    .toDate(convertEpochtoInstant(endTime)).name(policyName).version(policyVersion).build()));
     }
 
-    private Response makeOkOrNotFoundResponse(UUID requestId, Collection<PolicyAudit> result) {
+    private ResponseEntity<Object> makeOkOrNotFoundResponse(String requestId, Collection<PolicyAudit> result) {
         if (result.isEmpty()) {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.NOT_FOUND)), requestId)
-                            .entity(NO_AUDIT_RECORD_FOUND).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.NOT_FOUND)), requestId)
+                .body(NO_AUDIT_RECORD_FOUND);
         } else {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(result).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
         }
     }
 

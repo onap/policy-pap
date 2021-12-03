@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +92,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         fullIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), ident.getVersion());
 
         prov = new MyProvider();
-
         updater = prov.makeUpdater(session, policy1, fullIdent);
     }
 
@@ -169,7 +169,9 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
         when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
-        new PdpGroupDeleteProvider().undeploy(fullIdent, DEFAULT_USER);
+        PdpGroupDeleteProvider deleteProvider = new PdpGroupDeleteProvider();
+        deleteProvider.initialize();
+        deleteProvider.undeploy(fullIdent, DEFAULT_USER);
 
         // should have updated the old group
         List<PdpGroup> updates = getGroupUpdates();
@@ -279,6 +281,9 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     private class MyProvider extends PdpGroupDeleteProvider {
+        private MyProvider() {
+            super.initialize();
+        }
 
         @Override
         protected <T> void process(T request, BiConsumerWithEx<SessionData, T> processor) throws PfModelException {

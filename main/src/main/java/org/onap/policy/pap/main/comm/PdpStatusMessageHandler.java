@@ -86,6 +86,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
      */
     public PdpStatusMessageHandler(PdpParameters params, boolean savePdpStatistics) {
         super(true);
+        super.initialize();
         this.params = params;
         this.savePdpStatistics = savePdpStatistics;
     }
