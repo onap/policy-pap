@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,6 +91,7 @@ public class TestProviderBase extends ProviderSuper {
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
 
         prov = new MyProvider();
+        prov.initialize();
     }
 
     @Test

@@ -26,22 +26,23 @@ import org.onap.policy.models.pap.persistence.provider.PolicyAuditProvider.Audit
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to query policy audit information.
  */
+@Service
 public class PolicyAuditProvider {
 
     /**
      * Factory for PAP DAO.
      */
-    private final PolicyModelsProviderFactoryWrapper daoFactory;
+    private PolicyModelsProviderFactoryWrapper daoFactory;
 
-
-    /**
-     * Constructs the object.
-     */
-    public PolicyAuditProvider() {
+    @EventListener(ApplicationReadyEvent.class)
+    public void initialize() {
         this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
     }
 
