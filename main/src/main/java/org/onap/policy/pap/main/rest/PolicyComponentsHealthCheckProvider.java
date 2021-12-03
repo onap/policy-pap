@@ -36,15 +36,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
+import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
 import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
-import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -58,33 +60,41 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP to fetch health status of all Policy components, including PAP, API, Distribution, and PDPs.
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */
+@Service
 public class PolicyComponentsHealthCheckProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PolicyComponentsHealthCheckProvider.class);
-    private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
     private static final String HEALTH_STATUS = "healthy";
     private static final Pattern IP_REPLACEMENT_PATTERN = Pattern.compile("//(\\S+):");
     private static final String POLICY_PAP_HEALTHCHECK_URI = "/policy/pap/v1/healthcheck";
     private static List<HttpClient> clients = new ArrayList<>();
-    private static ExecutorService clientHealthCheckExecutorService;
+    private ExecutorService clientHealthCheckExecutorService;
 
-    private PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
+    @Autowired
+    private PapParameterGroup papParameterGroup;
+
+    @Value("${server.ssl.enabled:false}")
+    private boolean isHttps;
+
+    @Value("${server.port}")
+    private int port;
 
     /**
      * This method is used to initialize clients and executor.
-     * @param papParameterGroup
-     *     @{link PapParameterGroup} contains the Pap Parameters set during startup
-     * @param clientFactory
-     *     @{link HttpClientFactory} contains the client details
      */
-    public static void initializeClientHealthCheckExecutorService(PapParameterGroup papParameterGroup,
-        HttpClientFactory clientFactory) throws HttpClientConfigException {
+    @PostConstruct
+    public void initializeClientHealthCheckExecutorService() throws HttpClientConfigException {
+        HttpClientFactory clientFactory = HttpClientFactoryInstance.getClientFactory();
         for (RestClientParameters params : papParameterGroup.getHealthCheckRestClientParameters()) {
             params.setManaged(false);
             clients.add(clientFactory.build(params));
@@ -93,11 +103,20 @@ public class PolicyComponentsHealthCheckProvider {
     }
 
     /**
+     * This method clears clients {@link List} and clientHealthCheckExecutorService {@link ExecutorService}.
+     */
+    @PreDestroy
+    public void cleanup() {
+        clients.clear();
+        clientHealthCheckExecutorService.shutdown();
+    }
+
+    /**
      * Returns health status of all Policy components.
      *
      * @return a pair containing the status and the response
      */
-    public Pair<Status, Map<String, Object>> fetchPolicyComponentsHealthStatus() {
+    public Pair<HttpStatus, Map<String, Object>> fetchPolicyComponentsHealthStatus() {
         boolean isHealthy;
         Map<String, Object> result;
 
@@ -129,10 +148,8 @@ public class PolicyComponentsHealthCheckProvider {
 
         // Check PAP itself
         HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck();
-        var restServerParameters = papParameterGroup.getRestServerParameters();
-        papReport.setUrl(
-            (restServerParameters.isHttps() ? "https://" : "http://") + papReport.getUrl() + ":" + restServerParameters
-                .getPort() + POLICY_PAP_HEALTHCHECK_URI);
+        papReport
+            .setUrl(isHttps ? "https://" : "http://" + papReport.getUrl() + ":" + port + POLICY_PAP_HEALTHCHECK_URI);
         if (!papReport.isHealthy()) {
             isHealthy = false;
         }
@@ -154,7 +171,7 @@ public class PolicyComponentsHealthCheckProvider {
 
         result.put(HEALTH_STATUS, isHealthy);
         LOGGER.debug("Policy Components HealthCheck Response - {}", result);
-        return Pair.of(Status.OK, result);
+        return Pair.of(HttpStatus.OK, result);
     }
 
     private Map<String, List<Pdp>> fetchPdpsHealthStatus(List<PdpGroup> groups) {
@@ -246,11 +263,4 @@ public class PolicyComponentsHealthCheckProvider {
                         topicVerificationStatus, message);
     }
 
-    /**
-     * This method clears clients {@link List} and clientHealthCheckExecutorService {@link ExecutorService}.
-     */
-    public static void cleanup() {
-        clients.clear();
-        clientHealthCheckExecutorService.shutdown();
-    }
 }

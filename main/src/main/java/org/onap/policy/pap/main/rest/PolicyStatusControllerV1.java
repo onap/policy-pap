@@ -33,12 +33,6 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import java.util.Collection;
 import java.util.UUID;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -46,11 +40,24 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to retrieve the status of deployed
  * policies.
  */
+@DependsOn("papActivator")
+@RestController
+@RequestMapping(path = "/policy/pap/v1")
 public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     private static final String EMPTY_REGEX_ERROR_MESSAGE = "An empty string passed as a regex is not allowed";
     private static final String EMPTY_REGEX_WARNING = ". Empty string passed as Regex.";
@@ -58,7 +65,8 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(PolicyStatusControllerV1.class);
 
-    private final PolicyStatusProvider provider = new PolicyStatusProvider();
+    @Autowired
+    private PolicyStatusProvider provider;
 
     /**
      * Queries status of all deployed policies. If regex is not null or empty, the function will only return
@@ -69,8 +77,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/deployed")
+    @GetMapping("policies/deployed")
     @ApiOperation(value = "Queries status of all deployed policies",
         notes = "Queries status of all deployed policies, returning success and failure counts of the PDPs",
         responseContainer = "List", response = PolicyStatus.class,
@@ -99,9 +106,11 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response queryAllDeployedPolicies(
-        @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-        @ApiParam(value = "Regex for a policy name") @QueryParam("regex") String regex) {
+    public ResponseEntity<Object> queryAllDeployedPolicies(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "Regex for a policy name") @RequestParam(required = false, value = "regex") String regex) {
         try {
             final Collection<PolicyStatus> result;
             if (regex == null) {
@@ -115,15 +124,15 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         } catch (PatternSyntaxException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)), requestId)
-                .entity(e.getMessage()).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.BAD_REQUEST)), requestId)
+                .body(e.getMessage());
         }
     }
-
 
     /**
      * Queries status of specific deployed policies.
@@ -132,8 +141,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/deployed/{name}")
+    @GetMapping("policies/deployed/{name}")
     @ApiOperation(value = "Queries status of specific deployed policies",
         notes = "Queries status of specific deployed policies, returning success and failure counts of the PDPs",
         responseContainer = "List", response = PolicyStatus.class,
@@ -162,9 +170,11 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response queryDeployedPolicies(
-                    @ApiParam(value = "Policy Id", required = true) @PathParam("name") String name,
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+    public ResponseEntity<Object> queryDeployedPolicies(
+                    @ApiParam(value = "Policy Id") @PathVariable("name") String name,
+                    @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+                        required = false,
+                        value = REQUEST_ID_NAME) final String requestId) {
 
         try {
             Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
@@ -172,14 +182,14 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                 return makeNotFoundResponse(requestId);
 
             } else {
-                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                                .entity(result).build();
+                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
             }
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         }
     }
 
@@ -191,8 +201,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/deployed/{name}/{version}")
+    @GetMapping("policies/deployed/{name}/{version}")
     @ApiOperation(value = "Queries status of a specific deployed policy",
         notes = "Queries status of a specific deployed policy, returning success and failure counts of the PDPs",
         response = PolicyStatus.class,
@@ -221,9 +230,11 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response queryDeployedPolicy(@ApiParam(value = "Policy Id", required = true) @PathParam("name") String name,
-                    @ApiParam(value = "Policy Version", required = true) @PathParam("version") String version,
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+    public ResponseEntity<Object> queryDeployedPolicy(@ApiParam(value = "Policy Id") @PathVariable("name") String name,
+                    @ApiParam(value = "Policy Version") @PathVariable("version") String version,
+                    @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+                        required = false,
+                        value = REQUEST_ID_NAME) final String requestId) {
 
         try {
             Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
@@ -231,14 +242,15 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                 return makeNotFoundResponse(requestId);
 
             } else {
-                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                                .entity(result.iterator().next()).build();
+                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+                    .body(result.iterator().next());
             }
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         }
     }
 
@@ -250,8 +262,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/status")
+    @GetMapping("policies/status")
     @ApiOperation(value = "Queries status of policies in all PdpGroups",
         notes = "Queries status of policies in all PdpGroups, "
             + "returning status of policies in all the PDPs belonging to all PdpGroups",
@@ -281,17 +292,20 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response getStatusOfAllPolicies(
-                    @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+    public ResponseEntity<Object> getStatusOfAllPolicies(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId) {
 
         try {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                            .entity(provider.getPolicyStatus()).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+                .body(provider.getPolicyStatus());
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         }
     }
 
@@ -305,8 +319,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/status/{pdpGroupName}")
+    @GetMapping("policies/status/{pdpGroupName}")
     @ApiOperation(value = "Queries status of policies in a specific PdpGroup",
         notes = "Queries status of policies in a specific PdpGroup, "
             + "returning status of policies in all the PDPs belonging to the PdpGroup",
@@ -336,10 +349,12 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response getStatusOfPoliciesByGroup(
-        @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
-        @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-        @ApiParam(value = "Regex for a policy name") @QueryParam("regex") String regex) {
+    public ResponseEntity<Object> getStatusOfPoliciesByGroup(
+        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "Regex for a policy name") @RequestParam(required = false, value = "regex") String regex) {
 
         try {
             final Collection<PdpPolicyStatus> result;
@@ -354,12 +369,13 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         } catch (PatternSyntaxException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)), requestId)
-                .entity(e.getMessage()).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.BAD_REQUEST)), requestId)
+                .body(e.getMessage());
         }
     }
 
@@ -372,8 +388,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/status/{pdpGroupName}/{policyName}")
+    @GetMapping("policies/status/{pdpGroupName}/{policyName}")
     @ApiOperation(value = "Queries status of all versions of a specific policy in a specific PdpGroup",
         notes = "Queries status of all versions of a specific policy in a specific PdpGroup,"
             + " returning status of all versions of the policy in the PDPs belonging to the PdpGroup",
@@ -403,10 +418,12 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response getStatusOfPolicies(
-        @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
-        @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
-        @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+    public ResponseEntity<Object> getStatusOfPolicies(
+        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
+        @ApiParam(value = "Policy Id") @PathVariable("policyName") String policyName,
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId) {
 
         try {
             Collection<PdpPolicyStatus> result =
@@ -415,14 +432,15 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                 return makeNotFoundResponse(requestId);
 
             } else {
-                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                                .entity(result).build();
+                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+                    .body(result);
             }
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         }
     }
 
@@ -437,8 +455,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("policies/status/{pdpGroupName}/{policyName}/{policyVersion}")
+    @GetMapping("policies/status/{pdpGroupName}/{policyName}/{policyVersion}")
     @ApiOperation(value = "Queries status of a specific version of a specific policy in a specific PdpGroup",
         notes = "Queries status of a specific version of a specific policy in a specific PdpGroup,"
             + " returning status of the policy in the PDPs belonging to the PdpGroup",
@@ -468,11 +485,13 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     })
     // @formatter:on
 
-    public Response getStatusOfPolicy(
-        @ApiParam(value = "PDP Group Name", required = true) @PathParam("pdpGroupName") String pdpGroupName,
-        @ApiParam(value = "Policy Id", required = true) @PathParam("policyName") String policyName,
-        @ApiParam(value = "Policy Version", required = true) @PathParam("policyVersion") String policyVersion,
-        @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
+    public ResponseEntity<Object> getStatusOfPolicy(
+        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
+        @ApiParam(value = "Policy Id") @PathVariable("policyName") String policyName,
+        @ApiParam(value = "Policy Version") @PathVariable("policyVersion") String policyVersion,
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId) {
 
         try {
             Collection<PdpPolicyStatus> result = provider.getPolicyStatus(pdpGroupName,
@@ -481,14 +500,15 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                 return makeNotFoundResponse(requestId);
 
             } else {
-                return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                                .entity(result.iterator().next()).build();
+                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+                    .body(result.iterator().next());
             }
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                requestId).entity(e.getErrorResponse().getErrorMessage()).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(e.getErrorResponse().getErrorMessage());
         }
     }
 
@@ -498,23 +518,22 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param requestId request ID
      * @return a "not found" response
      */
-    private Response makeNotFoundResponse(final UUID requestId) {
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.NOT_FOUND)), requestId)
+    private ResponseEntity<Object> makeNotFoundResponse(final String requestId) {
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.NOT_FOUND)), requestId)
                         .build();
     }
 
-    private Response makeRegexNotFoundResponse(UUID requestId) {
+    private ResponseEntity<Object> makeRegexNotFoundResponse(String requestId) {
         logger.warn(GET_DEPLOYMENTS_FAILED + EMPTY_REGEX_WARNING);
-        return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.BAD_REQUEST)),
-            requestId).entity(EMPTY_REGEX_ERROR_MESSAGE).build();
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.BAD_REQUEST)),
+            requestId).body(EMPTY_REGEX_ERROR_MESSAGE);
     }
 
-    private Response makeListOrNotFoundResponse(UUID requestId, Collection<?> result) {
+    private ResponseEntity<Object> makeListOrNotFoundResponse(String requestId, Collection<?> result) {
         if (result.isEmpty()) {
             return makeNotFoundResponse(requestId);
         } else {
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Response.Status.OK)), requestId)
-                .entity(result).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
         }
     }
 }
