@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,21 +24,25 @@ package org.onap.policy.pap.main.rest;
 
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.utils.network.NetworkUtil;
-import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.startstop.PapActivator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Class to fetch health check of PAP service.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Service
 public class HealthCheckProvider {
 
     private static final String NOT_ALIVE = "not alive";
     private static final String ALIVE = "alive";
     private static final String URL = NetworkUtil.getHostname();
     private static final String NAME = "Policy PAP";
+
+    @Autowired
+    private PapActivator papActivator;
 
     /**
      * Performs the health check of PAP service.
@@ -49,7 +54,7 @@ public class HealthCheckProvider {
         report.setName(NAME);
         report.setUrl(URL);
 
-        boolean alive = Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive();
+        boolean alive = papActivator.isAlive();
 
         report.setHealthy(alive);
         report.setCode(alive ? 200 : 500);

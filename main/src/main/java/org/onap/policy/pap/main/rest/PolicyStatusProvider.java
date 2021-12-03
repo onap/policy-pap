@@ -35,10 +35,12 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.notification.DeploymentTracker;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to query policy deployment status.
  */
+@Service
 public class PolicyStatusProvider {
 
     /**

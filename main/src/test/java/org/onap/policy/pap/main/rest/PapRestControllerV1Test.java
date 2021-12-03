@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +30,6 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.UUID;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 import org.junit.After;
 import org.junit.Before;
@@ -41,6 +38,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 
 public class PapRestControllerV1Test {
 
@@ -51,11 +50,11 @@ public class PapRestControllerV1Test {
     PapRestControllerV1 mockController;
 
     private AutoCloseable closeable;
-    private ResponseBuilder bldr;
+    private BodyBuilder bldr;
 
     @Before
     public void setUp() {
-        bldr = Response.status(Response.Status.OK);
+        bldr = ResponseEntity.ok();
         closeable = MockitoAnnotations.openMocks(this);
     }
 
@@ -65,32 +64,24 @@ public class PapRestControllerV1Test {
     }
 
     @Test
-    public void testProduces() {
-        Produces annotation = PapRestControllerV1.class.getAnnotation(Produces.class);
-        assertNotNull(annotation);
-        assertThat(annotation.value()).contains(MediaType.APPLICATION_JSON)
-                        .contains(PapRestControllerV1.APPLICATION_YAML);
-    }
-
-    @Test
     public void testAddVersionControlHeaders() {
-        Response resp = mockController.addVersionControlHeaders(bldr).build();
-        assertEquals("0", resp.getHeaderString(PapRestControllerV1.VERSION_MINOR_NAME));
-        assertEquals("0", resp.getHeaderString(PapRestControllerV1.VERSION_PATCH_NAME));
-        assertEquals("1.0.0", resp.getHeaderString(PapRestControllerV1.VERSION_LATEST_NAME));
+        ResponseEntity<Object> resp = mockController.addVersionControlHeaders(bldr).build();
+        assertEquals("0", resp.getHeaders().get(PapRestControllerV1.VERSION_MINOR_NAME).get(0));
+        assertEquals("0", resp.getHeaders().get(PapRestControllerV1.VERSION_PATCH_NAME).get(0));
+        assertEquals("1.0.0", resp.getHeaders().get(PapRestControllerV1.VERSION_LATEST_NAME).get(0));
     }
 
     @Test
     public void testAddLoggingHeaders_Null() {
-        Response resp = mockController.addLoggingHeaders(bldr, null).build();
-        assertNotNull(resp.getHeaderString(PapRestControllerV1.REQUEST_ID_NAME));
+        ResponseEntity<Object> resp = mockController.addLoggingHeaders(bldr, null).build();
+        assertNotNull(resp.getHeaders().get(PapRestControllerV1.REQUEST_ID_NAME));
     }
 
     @Test
     public void testAddLoggingHeaders_NonNull() {
-        UUID uuid = UUID.randomUUID();
-        Response resp = mockController.addLoggingHeaders(bldr, uuid).build();
-        assertEquals(uuid.toString(), resp.getHeaderString(PapRestControllerV1.REQUEST_ID_NAME));
+        String uuid = UUID.randomUUID().toString();
+        ResponseEntity<Object> resp = mockController.addLoggingHeaders(bldr, uuid).build();
+        assertEquals(uuid.toString(), resp.getHeaders().get(PapRestControllerV1.REQUEST_ID_NAME).get(0));
     }
 
     @Test
