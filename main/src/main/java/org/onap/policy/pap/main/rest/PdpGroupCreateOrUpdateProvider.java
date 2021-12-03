@@ -106,6 +106,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
      */
     private void createOrUpdate(SessionData data, PdpGroups groups) throws PfModelException {
         var result = new BeanValidationResult("groups", groups);
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
 
         for (PdpGroup group : groups.getGroups()) {
             PdpGroup dbgroup = data.getGroup(group.getName());
@@ -115,6 +116,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
                 groupValidationResult = group.validatePapRest(false);
                 if (groupValidationResult.isValid()) {
                     result.addResult(addGroup(data, group));
+                    mgr.updateTotalPdpGroupCount();
                 } else {
                     result.addResult(groupValidationResult);
                 }
