@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,27 +26,34 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST endpoints for PAP component health check.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class HealthCheckRestControllerV1 extends PapRestControllerV1 {
+@RestController
+@RequestMapping(path = "/policy/pap/v1")
+public class HealthCheckRestControllerV1  extends PapRestControllerV1 {
 
-    @GET
-    @Path("healthcheck")
+    @Autowired
+    private HealthCheckProvider provider;
+
+    @GetMapping("healthcheck")
     @ApiOperation(value = "Perform healthcheck",
                     notes = "Returns healthy status of the Policy Administration component",
                     response = HealthCheckReport.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
     @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
         @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
-    public Response healthcheck() {
-        return Response.status(Response.Status.OK).entity(new HealthCheckProvider().performHealthCheck()).build();
+    public ResponseEntity<HealthCheckReport> healthcheck() {
+        return ResponseEntity.ok().body(provider.performHealthCheck());
     }
+
 }

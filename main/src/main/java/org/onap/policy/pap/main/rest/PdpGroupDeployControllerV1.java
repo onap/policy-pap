@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,6 @@ import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
@@ -43,10 +38,19 @@ import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to deploy a PDP group.
  */
+@RestController
+@RequestMapping(path = "/policy/pap/v1")
 public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public static final String POLICY_STATUS_URI = "/policy/pap/v1/policies/status";
 
@@ -56,7 +60,8 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployControllerV1.class);
 
-    private final PdpGroupDeployProvider provider = new PdpGroupDeployProvider();
+    @Autowired
+    private PdpGroupDeployProvider provider;
 
     /**
      * Updates policy deployments within specific PDP groups.
@@ -66,8 +71,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @POST
-    @Path("pdps/deployments/batch")
+    @PostMapping("pdps/deployments/batch")
     @ApiOperation(value = "Updates policy deployments within specific PDP groups",
         notes = "Updates policy deployments within specific PDP groups, returning optional error details",
         response = PdpGroupDeployResponse.class,
@@ -95,10 +99,11 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
     })
     // @formatter:on
-
-    public Response updateGroupPolicies(
-            @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-            @ApiParam(value = "List of PDP Group Deployments", required = true) DeploymentGroups groups) {
+    public ResponseEntity<PdpGroupDeployResponse> updateGroupPolicies(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "List of PDP Group Deployments", required = true) @RequestBody DeploymentGroups groups) {
         return doOperation(requestId, "update policy deployments failed",
             () -> provider.updateGroupPolicies(groups, getPrincipal()));
     }
@@ -111,8 +116,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @POST
-    @Path("pdps/policies")
+    @PostMapping("pdps/policies")
     @ApiOperation(value = "Deploy or update PDP Policies",
         notes = "Deploys or updates PDP Policies, returning optional error details",
         response = PdpGroupDeployResponse.class,
@@ -140,9 +144,11 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
     })
     // @formatter:on
-
-    public Response deployPolicies(@HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) UUID requestId,
-            @ApiParam(value = "PDP Policies; only the name is required", required = true) PdpDeployPolicies policies) {
+    public ResponseEntity<PdpGroupDeployResponse> deployPolicies(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "PDP Policies; only the name is required") @RequestBody PdpDeployPolicies policies) {
         return doOperation(requestId, "deploy policies failed",
             () -> provider.deployPolicies(policies, getPrincipal()));
     }
@@ -155,18 +161,21 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      * @param runnable operation to invoke
      * @return a {@link PdpGroupDeployResponse} response entity
      */
-    private Response doOperation(UUID requestId, String errmsg, RunnableWithPfEx runnable) {
+    private ResponseEntity<PdpGroupDeployResponse> doOperation(String requestId, String errmsg,
+        RunnableWithPfEx runnable) {
         try {
             runnable.run();
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(Status.ACCEPTED)), requestId)
-                    .entity(new PdpGroupDeployResponse(DEPLOYMENT_RESPONSE_MSG, POLICY_STATUS_URI)).build();
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.accepted()), requestId)
+                .body(new PdpGroupDeployResponse(DEPLOYMENT_RESPONSE_MSG, POLICY_STATUS_URI));
 
         } catch (PfModelException | PfModelRuntimeException e) {
             logger.warn(errmsg, e);
             var resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(e.getErrorResponse().getResponseCode())),
-                    requestId).entity(resp).build();
+            return addLoggingHeaders(
+                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
+                requestId).body(resp);
         }
     }
+
 }

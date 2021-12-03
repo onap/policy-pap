@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,31 +31,31 @@ import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to change state of a PDP group.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@RestController
+@RequestMapping(path = "/policy/pap/v1")
 public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeControllerV1.class);
-
-    private final PdpGroupStateChangeProvider provider = new PdpGroupStateChangeProvider();
+    @Autowired
+    private PdpGroupStateChangeProvider provider;
 
     /**
      * Changes state of a PDP group.
@@ -63,10 +64,10 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
      * @param groupName name of the PDP group to be deleted
      * @param state state of the PDP group
      * @return a response
+     * @throws PfModelException the exception
      */
     // @formatter:off
-    @PUT
-    @Path("pdps/groups/{name}")
+    @PutMapping("pdps/groups/{name}")
     @ApiOperation(value = "Change state of a PDP Group",
         notes = "Changes state of PDP Group, returning optional error details",
         response = PdpGroupStateChangeResponse.class,
@@ -93,21 +94,15 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
     })
     // @formatter:on
+    public ResponseEntity<PdpGroupStateChangeResponse> changeGroupState(
+        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+            required = false,
+            value = REQUEST_ID_NAME) final String requestId,
+        @ApiParam(value = "PDP Group Name") @PathVariable("name") String groupName,
+        @ApiParam(value = "PDP Group State") @RequestParam("state") final PdpState state) throws PfModelException {
 
-    public Response changeGroupState(
-            @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId,
-            @ApiParam(value = "PDP Group Name", required = true) @PathParam("name") final String groupName,
-            @ApiParam(value = "PDP Group State", required = true) @QueryParam("state") final PdpState state) {
-
-        try {
-            final Pair<Status, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                    .entity(pair.getRight()).build();
-        } catch (final PfModelException | PfModelRuntimeException exp) {
-            LOGGER.info("group state-change failed", exp);
-            return addLoggingHeaders(
-                    addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
-                            .entity(exp.getErrorResponse()).build();
-        }
+        final Pair<HttpStatus, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
+            .body(pair.getRight());
     }
 }

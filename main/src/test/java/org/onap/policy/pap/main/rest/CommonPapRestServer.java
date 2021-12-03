@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,34 +42,40 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.security.SelfSignedKeyStore;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.PolicyPapApplication;
 import org.onap.policy.pap.main.parameters.CommonTestData;
-import org.onap.policy.pap.main.startstop.Main;
 import org.onap.policy.pap.main.startstop.PapActivator;
 import org.powermock.reflect.Whitebox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Class to perform unit test of {@link PapRestControllerV1}.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class CommonPapRestServer {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = PolicyPapApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {"db.initialize=false"})
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
+public abstract class CommonPapRestServer {
 
     protected static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonPapRestServer.class);
 
     public static final String NOT_ALIVE = "not alive";
     public static final String ALIVE = "alive";
@@ -77,12 +84,15 @@ public class CommonPapRestServer {
     public static final String ENDPOINT_PREFIX = "policy/pap/v1/";
 
     private static SelfSignedKeyStore keystore;
-    private static int port;
-    protected static String httpsPrefix;
-
-    private static Main main;
 
     private boolean activatorWasAlive;
+    protected String httpsPrefix;
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private PapActivator papActivator;
 
     /**
      * Allocates a port for the server, writes a config file, and then starts Main.
@@ -103,33 +113,23 @@ public class CommonPapRestServer {
      */
     public static void setUpBeforeClass(boolean shouldStart) throws Exception {
         keystore = new SelfSignedKeyStore();
-        port = NetworkUtil.allocPort();
-
-        httpsPrefix = "https://localhost:" + port + "/";
-
+        CommonTestData.newDb();
         makeConfigFile();
 
         HttpServletServerFactoryInstance.getServerFactory().destroy();
         TopicEndpointManager.getManager().shutdown();
-
-        CommonTestData.newDb();
 
         if (shouldStart) {
             startMain();
         }
     }
 
-    /**
-     * Stops Main.
-     */
-    @AfterClass
-    public static void teardownAfterClass() {
-        try {
-            stopMain();
-
-        } catch (PolicyPapException exp) {
-            LOGGER.error("cannot stop main", exp);
-        }
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add("pap.databaseProviderParameters.databaseUrl", () -> "jdbc:h2:mem:testdb" + CommonTestData.dbNum);
+        registry.add("server.ssl.enabled", () -> "true");
+        registry.add("server.ssl.key-store", () -> keystore.getKeystoreName());
+        registry.add("server.ssl.key-store-password", () -> SelfSignedKeyStore.KEYSTORE_PASSWORD);
     }
 
     /**
@@ -139,12 +139,8 @@ public class CommonPapRestServer {
      */
     @Before
     public void setUp() throws Exception {
-        // restart, if not currently running
-        if (main == null) {
-            startMain();
-        }
-
-        activatorWasAlive = Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive();
+        httpsPrefix = "https://localhost:" + port + "/";
+        activatorWasAlive = papActivator.isAlive();
     }
 
     /**
@@ -162,10 +158,9 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected void testSwagger(final String endpoint) throws Exception {
-        final Invocation.Builder invocationBuilder = sendFqeRequest(httpsPrefix + "swagger.yaml", true);
+        final Invocation.Builder invocationBuilder = sendFqeRequest(httpsPrefix + "v2/api-docs", true);
         final String resp = invocationBuilder.get(String.class);
-
-        assertTrue(resp.contains(ENDPOINT_PREFIX + endpoint + ":"));
+        assertTrue(resp.contains(ENDPOINT_PREFIX + endpoint));
     }
 
     /**
@@ -174,7 +169,7 @@ public class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     private static void makeConfigFile() throws Exception {
-        String json = new CommonTestData().getPapParameterGroupAsString(port);
+        String json = new CommonTestData().getPapParameterGroupAsString(6969);
 
         File file = new File(CONFIG_FILE);
         file.deleteOnExit();
@@ -192,37 +187,10 @@ public class CommonPapRestServer {
     protected static void startMain() throws Exception {
         Registry.newRegistry();
 
-        // make sure port is available
-        if (NetworkUtil.isTcpPortOpen("localhost", port, 1, 1L)) {
-            throw new IllegalStateException("port " + port + " is still in use");
-        }
-
         final Properties systemProps = System.getProperties();
         systemProps.put("javax.net.ssl.keyStore", keystore.getKeystoreName());
         systemProps.put("javax.net.ssl.keyStorePassword", SelfSignedKeyStore.KEYSTORE_PASSWORD);
         System.setProperties(systemProps);
-
-        final String[] papConfigParameters = { "-c", CONFIG_FILE };
-
-        main = new Main(papConfigParameters);
-
-        if (!NetworkUtil.isTcpPortOpen("localhost", port, 6, 10000L)) {
-            throw new IllegalStateException("server is not listening on port " + port);
-        }
-    }
-
-    /**
-     * Stops the "Main".
-     *
-     * @throws PolicyPapException if an error occurs
-     */
-    private static void stopMain() throws PolicyPapException {
-        if (main != null) {
-            Main main2 = main;
-            main = null;
-
-            main2.shutdown();
-        }
     }
 
     /**
@@ -233,8 +201,7 @@ public class CommonPapRestServer {
     }
 
     private void markActivator(boolean wasAlive) {
-        Object manager = Whitebox.getInternalState(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class),
-                        "serviceManager");
+        Object manager = Whitebox.getInternalState(papActivator, "serviceManager");
         AtomicBoolean running = Whitebox.getInternalState(manager, "running");
         running.set(wasAlive);
     }
@@ -299,7 +266,6 @@ public class CommonPapRestServer {
         }
 
         final WebTarget webTarget = client.target(fullyQualifiedEndpoint);
-
         return webTarget.request(MediaType.APPLICATION_JSON);
     }
 }
