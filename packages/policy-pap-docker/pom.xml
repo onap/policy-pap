@@ -1,7 +1,7 @@
 <!--
   ============LICENSE_START=======================================================
    Copyright (C) 2019 Nordix Foundation.
-   Modifications Copyright (C) 2020 Bell Canada.
+   Modifications Copyright (C) 2020-2021 Bell Canada.
    Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -95,6 +95,12 @@
                                                 </includes>
                                                 <outputDirectory>/lib</outputDirectory>
                                                 <outputFileNameMapping>policy-pap.tar.gz</outputFileNameMapping>
+                                            </dependencySet>
+                                            <dependencySet>
+                                                <includes>
+                                                    <include>org.onap.policy.pap:pap-main</include>
+                                                </includes>
+                                                <outputFileNameMapping>pap.jar</outputFileNameMapping>
                                             </dependencySet>
                                         </dependencySets>
                                     </inline>

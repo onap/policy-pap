@@ -40,6 +40,8 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
 /**
  * Super class of providers that deploy and undeploy PDP groups. The following items must
@@ -57,27 +59,28 @@ public abstract class ProviderBase {
     /**
      * Lock used when updating PDPs.
      */
-    private final Object updateLock;
+    private Object updateLock;
 
     /**
      * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
      */
-    private final PdpModifyRequestMap requestMap;
+    private PdpModifyRequestMap requestMap;
 
     /**
      * Generates policy notifications based on responses from PDPs.
      */
-    private final PolicyNotifier notifier;
+    private PolicyNotifier notifier;
 
     /**
      * Factory for PAP DAO.
      */
-    private final PolicyModelsProviderFactoryWrapper daoFactory;
+    private PolicyModelsProviderFactoryWrapper daoFactory;
 
     /**
-     * Constructs the object.
+     * Initializes the parameters..
      */
-    protected ProviderBase() {
+    @EventListener(ApplicationReadyEvent.class)
+    public void initialize() {
         this.updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
         this.requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
         this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);

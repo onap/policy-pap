@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2020-2021 Bell Canada. All rights reserved.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,8 +29,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.List;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +48,7 @@ import org.onap.policy.models.pdp.concepts.Pdps;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.springframework.http.HttpStatus;
 
 /**
  * Class to perform unit test of {@link PdpGroupHealthCheckProvider}.
@@ -85,8 +84,8 @@ public class TestPdpGroupHealthCheckProvider {
     @Test
     public void testFetchPdpGroupHealthStatus() throws Exception {
         final PdpGroupHealthCheckProvider provider = new PdpGroupHealthCheckProvider();
-        final Pair<Status, Pdps> pair = provider.fetchPdpGroupHealthStatus();
-        assertEquals(Response.Status.OK, pair.getLeft());
+        final Pair<HttpStatus, Pdps> pair = provider.fetchPdpGroupHealthStatus();
+        assertEquals(HttpStatus.OK, pair.getLeft());
         verifyPdps(pair.getRight().getPdpList(), groups);
     }
 

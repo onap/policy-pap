@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +58,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to deploy PDP groups. The following items must be in the
@@ -67,19 +69,12 @@ import org.slf4j.LoggerFactory;
  * <li>PAP DAO Factory</li>
  * </ul>
  */
+@Service
 public class PdpGroupDeployProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployProvider.class);
     private static final StandardCoder coder = new StandardCoder();
 
     private static final String POLICY_RESULT_NAME = "policy";
-
-
-    /**
-     * Constructs the object.
-     */
-    public PdpGroupDeployProvider() {
-        super();
-    }
 
     /**
      * Updates policies in specific PDP groups.
@@ -413,7 +408,6 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private void deploySimplePolicies(SessionData data, PdpDeployPolicies policies) throws PfModelException {
 
         for (ToscaConceptIdentifierOptVersion desiredPolicy : policies.getPolicies()) {
-
             try {
                 processPolicy(data, desiredPolicy);
 

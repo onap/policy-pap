@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +45,8 @@ import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
-import org.onap.policy.pap.main.parameters.PapParameterHandler;
-import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
 
 public class PublisherTest extends Threaded {
 
@@ -85,9 +85,7 @@ public class PublisherTest extends Threaded {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
-        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-        final PapParameterGroup parameterGroup = new PapParameterHandler().getParameters(arguments);
+        final PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
         TopicEndpointManager.getManager().shutdown();
 
         TopicEndpointManager.getManager().addTopics(parameterGroup.getTopicParameterGroup());

@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.BasicAuthDefinition;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.SecurityDefinition;
@@ -29,13 +29,11 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
 import java.util.UUID;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.SecurityContext;
 import org.onap.policy.models.base.PfModelException;
+import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Version v1 common superclass to provide REST endpoints for PAP component.
@@ -43,9 +41,6 @@ import org.onap.policy.models.base.PfModelException;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 // @formatter:off
-@Path("/policy/pap/v1")
-@Api(value = "Policy Administration (PAP) API")
-@Produces({MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML})
 @SwaggerDefinition(
     info = @Info(description =
                     "Policy Administration is responsible for the deployment life cycle of policies as well as "
@@ -97,16 +92,13 @@ public class PapRestControllerV1 {
     public static final String AUTHORIZATION_ERROR_MESSAGE = "Authorization Error";
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
 
-    @Context
-    SecurityContext securityContext;
-
     /**
      * Adds version headers to the response.
      *
      * @param respBuilder response builder
      * @return the response builder, with version headers
      */
-    public ResponseBuilder addVersionControlHeaders(ResponseBuilder respBuilder) {
+    public static BodyBuilder addVersionControlHeaders(BodyBuilder respBuilder) {
         return respBuilder.header(VERSION_MINOR_NAME, "0").header(VERSION_PATCH_NAME, "0").header(VERSION_LATEST_NAME,
                 API_VERSION);
     }
@@ -117,13 +109,13 @@ public class PapRestControllerV1 {
      * @param respBuilder response builder
      * @return the response builder, with version logging
      */
-    public ResponseBuilder addLoggingHeaders(ResponseBuilder respBuilder, UUID requestId) {
+    public static BodyBuilder addLoggingHeaders(BodyBuilder respBuilder, UUID requestId) {
         if (requestId == null) {
             // Generate a random uuid if client does not embed requestId in rest request
-            return respBuilder.header(REQUEST_ID_NAME, UUID.randomUUID());
+            return respBuilder.header(REQUEST_ID_NAME, UUID.randomUUID().toString());
         }
 
-        return respBuilder.header(REQUEST_ID_NAME, requestId);
+        return respBuilder.header(REQUEST_ID_NAME, requestId.toString());
     }
 
     /**
@@ -131,8 +123,9 @@ public class PapRestControllerV1 {
      * @return username as {@link String}
      */
     public String getPrincipal() {
-        if (securityContext != null) {
-            return securityContext.getUserPrincipal().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            return authentication.getName();
         }
         return "";
     }
