@@ -30,11 +30,11 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
@@ -44,7 +44,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
-import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.coder.Coder;
@@ -62,6 +61,8 @@ import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.startstop.PapActivator;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestPolicyComponentsHealthCheckProvider {
@@ -105,6 +106,8 @@ public class TestPolicyComponentsHealthCheckProvider {
 
     private PapParameterGroup savedPapParameterGroup;
 
+    private PolicyComponentsHealthCheckProvider provider;
+
     /**
      * Configures mocks and objects.
      *
@@ -145,15 +148,15 @@ public class TestPolicyComponentsHealthCheckProvider {
         when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
         when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(createDmaapResponse());
         when(client3.get()).thenReturn(response3);
-
+        List<HttpClient> clients = new ArrayList<>();
+        clients.add(client1);
+        clients.add(client2);
+        clients.add(client3);
         PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
-        List<RestClientParameters> params = papParameterGroup.getHealthCheckRestClientParameters();
-        when(clientFactory.build(params.get(0))).thenReturn(client1);
-        when(clientFactory.build(params.get(1))).thenReturn(client2);
-        when(clientFactory.build(params.get(2))).thenReturn(client3);
-
-        PolicyComponentsHealthCheckProvider.initializeClientHealthCheckExecutorService(papParameterGroup,
-            clientFactory);
+        provider = new PolicyComponentsHealthCheckProvider();
+        ReflectionTestUtils.setField(provider, "papParameterGroup", papParameterGroup);
+        provider.initializeClientHealthCheckExecutorService();
+        ReflectionTestUtils.setField(provider, "clients", clients);
     }
 
     /**
@@ -166,15 +169,14 @@ public class TestPolicyComponentsHealthCheckProvider {
         } else {
             ParameterService.deregister(PAP_GROUP_PARAMS_NAME);
         }
-        PolicyComponentsHealthCheckProvider.cleanup();
+        provider.cleanup();
     }
 
 
     @Test
     public void testFetchPolicyComponentsHealthStatus_allHealthy() {
-        PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider();
-        Pair<Status, Map<String, Object>> ret = provider.fetchPolicyComponentsHealthStatus();
-        assertEquals(Response.Status.OK, ret.getLeft());
+        Pair<HttpStatus, Map<String, Object>> ret = provider.fetchPolicyComponentsHealthStatus();
+        assertEquals(HttpStatus.OK, ret.getLeft());
         assertTrue((Boolean) ret.getRight().get(HEALTHY));
     }
 
@@ -239,7 +241,7 @@ public class TestPolicyComponentsHealthCheckProvider {
     }
 
     private Map<String, Object> callFetchPolicyComponentsHealthStatus() {
-        PolicyComponentsHealthCheckProvider provider = new PolicyComponentsHealthCheckProvider();
+
         return provider.fetchPolicyComponentsHealthStatus().getRight();
     }
 
