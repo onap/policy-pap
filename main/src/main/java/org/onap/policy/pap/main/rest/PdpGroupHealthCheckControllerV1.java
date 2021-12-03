@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +42,15 @@ import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end point for PAP component to fetch health status of all PDPs registered with PAP.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PdpGroupHealthCheckControllerV1 extends PapRestControllerV1 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupHealthCheckControllerV1.class);

@@ -46,11 +46,14 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end points for PAP component to retrieve the status of deployed
  * policies.
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PolicyStatusControllerV1 extends PapRestControllerV1 {
     private static final String EMPTY_REGEX_ERROR_MESSAGE = "An empty string passed as a regex is not allowed";
     private static final String EMPTY_REGEX_WARNING = ". Empty string passed as Regex.";

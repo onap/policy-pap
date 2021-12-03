@@ -27,7 +27,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.onap.policy.common.endpoints.parameters.RestServerParameters;
 import org.onap.policy.common.endpoints.parameters.TopicParameterGroup;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
@@ -52,17 +51,10 @@ public class TestPapParameterGroup {
     @Test
     public void testPapParameterGroup() {
         final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(1);
-        final RestServerParameters restServerParameters = papParameters.getRestServerParameters();
         final TopicParameterGroup topicParameterGroup = papParameters.getTopicParameterGroup();
         final ValidationResult validationResult = papParameters.validate();
         assertTrue(validationResult.isValid());
         assertEquals(CommonTestData.PAP_GROUP_NAME, papParameters.getName());
-        assertEquals(restServerParameters.getHost(), papParameters.getRestServerParameters().getHost());
-        assertEquals(restServerParameters.getPort(), papParameters.getRestServerParameters().getPort());
-        assertEquals(restServerParameters.getUserName(), papParameters.getRestServerParameters().getUserName());
-        assertEquals(restServerParameters.getPassword(), papParameters.getRestServerParameters().getPassword());
-        assertTrue(papParameters.getRestServerParameters().isHttps());
-        assertFalse(papParameters.getRestServerParameters().isAaf());
         assertEquals(topicParameterGroup.getTopicSinks(), papParameters.getTopicParameterGroup().getTopicSinks());
         assertEquals(topicParameterGroup.getTopicSources(), papParameters.getTopicParameterGroup().getTopicSources());
     }
@@ -96,14 +88,4 @@ public class TestPapParameterGroup {
         assertEquals("PapNewGroup", papParameters.getName());
     }
 
-    @Test
-    public void testApiParameterGroup_EmptyRestServerParameters() throws Exception {
-        String json = commonTestData.getPapParameterGroupAsString(1);
-        json = commonTestData.nullifyField(json, "restServerParameters");
-        final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(0);
-        final ValidationResult validationResult = papParameters.validate();
-        assertFalse(validationResult.isValid());
-        assertThat(validationResult.getResult())
-                .contains("\"RestServerParameters\" INVALID, item has status INVALID");
-    }
 }

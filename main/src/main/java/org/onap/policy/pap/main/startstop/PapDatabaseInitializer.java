@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@
 package org.onap.policy.pap.main.startstop;
 
 import java.util.List;
+import javax.annotation.PostConstruct;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -32,20 +34,31 @@ import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * This class creates initial PdpGroup/SubGroup in the database.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Component
 public class PapDatabaseInitializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PapDatabaseInitializer.class);
 
     private final StandardCoder standardCoder;
     private final PolicyModelsProviderFactory factory;
+
+    @Autowired
+    private PapParameterGroup papParameterGroup;
+
+    @Value("${group-config-file:PapDb.json}")
+    private String groupConfigFile;
 
     /**
      * Constructs the object.
@@ -59,9 +72,10 @@ public class PapDatabaseInitializer {
      * Initializes database with group information.
      *
      * @param policyModelsProviderParameters the database parameters
+     * @param groupsJson the group file path
      * @throws PolicyPapException in case of errors.
      */
-    public void initializePapDatabase(
+    private void initializePapDatabase(
             final PolicyModelsProviderParameters policyModelsProviderParameters,
             String groupsJson) throws PolicyPapException {
 
@@ -85,5 +99,13 @@ public class PapDatabaseInitializer {
         } catch (final PfModelException | CoderException | RuntimeException exp) {
             throw new PolicyPapException(exp);
         }
+    }
+
+    /**
+     * Initializes database with group information.
+     */
+    @PostConstruct
+    public void loadData() throws PolicyPapException {
+        initializePapDatabase(papParameterGroup.getDatabaseProviderParameters(), groupConfigFile);
     }
 }

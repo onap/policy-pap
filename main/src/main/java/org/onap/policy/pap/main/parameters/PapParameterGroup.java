@@ -24,14 +24,17 @@ package org.onap.policy.pap.main.parameters;
 
 import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
 import org.onap.policy.common.endpoints.parameters.RestClientParameters;
-import org.onap.policy.common.endpoints.parameters.RestServerParameters;
 import org.onap.policy.common.endpoints.parameters.TopicParameterGroup;
 import org.onap.policy.common.parameters.ParameterGroupImpl;
 import org.onap.policy.common.parameters.annotations.NotBlank;
 import org.onap.policy.common.parameters.annotations.NotNull;
 import org.onap.policy.common.parameters.annotations.Valid;
+import org.onap.policy.common.parameters.validation.ParameterGroupConstraint;
 import org.onap.policy.models.provider.PolicyModelsProviderParameters;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Class to hold all parameters needed for pap component.
@@ -41,18 +44,27 @@ import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 @NotNull
 @NotBlank
 @Getter
+@Setter
+@Configuration
+@ConfigurationProperties(prefix = "pap")
 public class PapParameterGroup extends ParameterGroupImpl {
     @Valid
-    private RestServerParameters restServerParameters;
-    @Valid
+    @ParameterGroupConstraint
     private PdpParameters pdpParameters;
     @Valid
+    @ParameterGroupConstraint
     private PolicyModelsProviderParameters databaseProviderParameters;
     private boolean savePdpStatisticsInDb;
     @Valid
+    @ParameterGroupConstraint
     private TopicParameterGroup topicParameterGroup;
     // API, Distribution Health Check REST client parameters.
+    @ParameterGroupConstraint
     private List<@NotNull @Valid RestClientParameters> healthCheckRestClientParameters;
+
+    public PapParameterGroup() {
+        super();
+    }
 
     /**
      * Create the pap parameter group.

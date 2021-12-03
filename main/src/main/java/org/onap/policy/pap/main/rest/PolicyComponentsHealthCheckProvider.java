@@ -44,7 +44,6 @@ import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
 import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
-import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -67,14 +66,11 @@ import org.slf4j.LoggerFactory;
 public class PolicyComponentsHealthCheckProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PolicyComponentsHealthCheckProvider.class);
-    private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
     private static final String HEALTH_STATUS = "healthy";
     private static final Pattern IP_REPLACEMENT_PATTERN = Pattern.compile("//(\\S+):");
     private static final String POLICY_PAP_HEALTHCHECK_URI = "/policy/pap/v1/healthcheck";
     private static List<HttpClient> clients = new ArrayList<>();
     private static ExecutorService clientHealthCheckExecutorService;
-
-    private PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
 
     /**
      * This method is used to initialize clients and executor.
@@ -129,10 +125,9 @@ public class PolicyComponentsHealthCheckProvider {
 
         // Check PAP itself
         HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck();
-        var restServerParameters = papParameterGroup.getRestServerParameters();
-        papReport.setUrl(
-            (restServerParameters.isHttps() ? "https://" : "http://") + papReport.getUrl() + ":" + restServerParameters
-                .getPort() + POLICY_PAP_HEALTHCHECK_URI);
+
+        // TODO: Use full url during the next phase of spring boot migration
+        papReport.setUrl(POLICY_PAP_HEALTHCHECK_URI);
         if (!papReport.isHealthy()) {
             isHealthy = false;
         }

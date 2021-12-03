@@ -43,10 +43,13 @@ import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end points for PAP component to deploy a PDP group.
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     public static final String POLICY_STATUS_URI = "/policy/pap/v1/policies/status";
 
