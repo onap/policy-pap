@@ -3,6 +3,7 @@
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019-2020 Nordix Foundation.
 #  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
+#  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,8 +33,10 @@ else
     CONFIG_FILE=${CONFIG_FILE}
 fi
 
+touch /app/app.jar
+
 if [ -z "$CONFIG_FILE" ]; then
-    CONFIG_FILE="${POLICY_HOME}/etc/defaultConfig.json"
+    CONFIG_FILE="${POLICY_HOME}/etc/papParameters.yaml"
 fi
 
 echo "Policy pap config file: $CONFIG_FILE"
@@ -59,14 +62,15 @@ fi
 # to load a default group.
 
 if [ -f "${POLICY_HOME}/etc/mounted/groups.json" ]; then
-    CUSTOM_GROUPS="-g ${POLICY_HOME}/etc/mounted/groups.json"
+    CUSTOM_GROUPS="${POLICY_HOME}/etc/mounted/groups.json"
 fi
 
 $JAVA_HOME/bin/java -cp "${POLICY_HOME}/etc:${POLICY_HOME}/lib/*" \
     -Dlogback.configurationFile="${POLICY_HOME}/etc/logback.xml" \
-    -Djavax.net.ssl.keyStore="${KEYSTORE}" \
-    -Djavax.net.ssl.keyStorePassword="${KEYSTORE_PASSWD}" \
+    -Dserver.ssl.key-store="${KEYSTORE}" \
+    -Dserver.ssl.key-store-password="${KEYSTORE_PASSWD}" \
     -Djavax.net.ssl.trustStore="${TRUSTSTORE}" \
     -Djavax.net.ssl.trustStorePassword="${TRUSTSTORE_PASSWD}" \
-    org.onap.policy.pap.main.startstop.Main \
-    -c "${CONFIG_FILE}" ${CUSTOM_GROUPS}
+    -jar /app/app.jar \
+    --spring.config.location="${CONFIG_FILE}" \
+    --group-config-file="${CUSTOM_GROUPS}"

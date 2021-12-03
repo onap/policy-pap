@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +45,6 @@ import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
-import org.onap.policy.pap.main.parameters.PapParameterHandler;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 
@@ -89,9 +89,7 @@ public class TestPapActivator {
             output.write(json.getBytes(StandardCharsets.UTF_8));
         }
 
-        final String[] papConfigParameters = {"-c", CONFIG_FILE};
-        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-        final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
+        final PapParameterGroup parGroup = new CommonTestData().getPapParameterGroup(6969);
 
         activator = new PapActivator(parGroup);
     }

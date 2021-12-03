@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,6 @@ package org.onap.policy.pap.main.rest;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -36,23 +36,27 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to to fetch health status of all PDPs registered with PAP.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Service
 public class PdpGroupHealthCheckProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupHealthCheckProvider.class);
 
     /**
      * Returns health status of all PDPs.
+     * @return
      *
      * @return a pair containing the status and the response
      * @throws PfModelException in case of errors
      */
-    public Pair<Response.Status, Pdps> fetchPdpGroupHealthStatus() throws PfModelException {
+    public Pair<HttpStatus, Pdps> fetchPdpGroupHealthStatus() throws PfModelException {
 
         final var pdps = new Pdps();
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
@@ -68,6 +72,6 @@ public class PdpGroupHealthCheckProvider {
             pdps.setPdpList(pdpList);
         }
         LOGGER.debug("PdpGroup HealthCheck Response - {}", pdps);
-        return Pair.of(Response.Status.OK, pdps);
+        return Pair.of(HttpStatus.OK, pdps);
     }
 }
