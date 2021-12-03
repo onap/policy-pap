@@ -2,6 +2,7 @@
 # Dockerfile
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2020-2021 AT&T Intellectual Property. All rights reserved.
+#  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,14 +32,17 @@ ENV POLICY_HOME=$POLICY_HOME/pap
 RUN mkdir -p $POLICY_HOME $POLICY_LOGS $POLICY_HOME/bin && \
     chown  -R policy:policy $POLICY_HOME $POLICY_LOGS && \
     mkdir /packages
-COPY /maven/* /packages
+COPY /maven/lib/policy-pap.tar.gz /packages
+
 RUN tar xvfz /packages/policy-pap.tar.gz --directory $POLICY_HOME \
     && rm /packages/policy-pap.tar.gz
 
 WORKDIR $POLICY_HOME
 COPY policy-pap.sh  bin/.
+COPY /maven/app.jar /app
 
-RUN chown -R policy:policy * && chmod 755 bin/*.sh
+
+RUN chown -R policy:policy * && chmod 755 bin/*.sh && chown -R policy:policy /app
 
 USER policy
 WORKDIR $POLICY_HOME/bin

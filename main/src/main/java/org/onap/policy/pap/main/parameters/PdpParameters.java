@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@ package org.onap.policy.pap.main.parameters;
 
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
+import lombok.Setter;
 import org.onap.policy.common.parameters.ParameterGroupImpl;
 import org.onap.policy.common.parameters.annotations.Min;
 import org.onap.policy.common.parameters.annotations.NotBlank;
@@ -34,6 +36,7 @@ import org.onap.policy.common.parameters.annotations.Valid;
 @NotNull
 @NotBlank
 @Getter
+@Setter
 public class PdpParameters extends ParameterGroupImpl {
 
     /**

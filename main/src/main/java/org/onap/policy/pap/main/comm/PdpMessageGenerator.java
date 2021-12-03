@@ -42,6 +42,8 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
 
 /**
@@ -52,25 +54,26 @@ public class PdpMessageGenerator {
 
     private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
 
+    private boolean includeHeartBeat;
     /**
      * Lock used when updating PDPs.
      */
-    protected final Object updateLock;
+    protected Object updateLock;
 
     /**
      * Used to send UPDATE and STATE-CHANGE requests to the PDPs.
      */
-    protected final PdpModifyRequestMap requestMap;
+    protected PdpModifyRequestMap requestMap;
 
     /**
      * Factory for PAP DAO.
      */
-    protected final PolicyModelsProviderFactoryWrapper modelProviderWrapper;
+    protected PolicyModelsProviderFactoryWrapper modelProviderWrapper;
 
     /**
      * Heart beat interval, in milliseconds, to pass to PDPs, or {@code null}.
      */
-    private final Long heartBeatMs;
+    private Long heartBeatMs;
 
     /**
      * Constructs the object.
@@ -79,6 +82,14 @@ public class PdpMessageGenerator {
      *        PDP-UPDATE messages
      */
     public PdpMessageGenerator(boolean includeHeartBeat) {
+        this.includeHeartBeat = includeHeartBeat;
+    }
+
+    /**
+     * Initialize the parameters.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void initialize() {
         modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
         requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);

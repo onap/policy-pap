@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,28 +31,29 @@ import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end point for PAP component to fetch health status of all PDPs registered with PAP.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+
+@RestController
+@RequestMapping(path = "/policy/pap/v1")
 public class PdpGroupHealthCheckControllerV1 extends PapRestControllerV1 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupHealthCheckControllerV1.class);
-
-    private final PdpGroupHealthCheckProvider provider = new PdpGroupHealthCheckProvider();
+    @Autowired
+    private PdpGroupHealthCheckProvider provider;
 
     /**
      * Returns health status of all PDPs registered with PAP.
@@ -60,8 +62,7 @@ public class PdpGroupHealthCheckControllerV1 extends PapRestControllerV1 {
      * @return a response
      */
     // @formatter:off
-    @GET
-    @Path("pdps/healthcheck")
+    @GetMapping("pdps/healthcheck")
     @ApiOperation(value = "Returns health status of all PDPs registered with PAP",
         notes = "Queries health status of all PDPs, returning all pdps health status",
         response = Pdps.class,
@@ -89,19 +90,11 @@ public class PdpGroupHealthCheckControllerV1 extends PapRestControllerV1 {
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
     })
     // @formatter:on
-
-    public Response pdpGroupHealthCheck(
-            @HeaderParam(REQUEST_ID_NAME) @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) final UUID requestId) {
-
-        try {
-            final Pair<Status, Pdps> pair = provider.fetchPdpGroupHealthStatus();
-            return addLoggingHeaders(addVersionControlHeaders(Response.status(pair.getLeft())), requestId)
-                    .entity(pair.getRight()).build();
-        } catch (final PfModelException | PfModelRuntimeException exp) {
-            LOGGER.info("pdpGroup health check failed", exp);
-            return addLoggingHeaders(
-                    addVersionControlHeaders(Response.status(exp.getErrorResponse().getResponseCode())), requestId)
-                            .entity(exp.getErrorResponse()).build();
-        }
+    public ResponseEntity<Pdps> pdpGroupHealthCheck(@ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
+        required = false,
+        value = REQUEST_ID_NAME) final UUID requestId) throws PfModelException {
+        Pair<HttpStatus, Pdps> pair = provider.fetchPdpGroupHealthStatus();
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
+            .body(pair.getRight());
     }
 }

@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +39,10 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.provider.PolicyModelsProvider;
+import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.parameters.CommonTestData;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 import org.onap.policy.pap.main.rest.StatisticsReport;
 
@@ -57,10 +60,10 @@ public class StatisticsTest extends End2EndBase {
     public static void setUpBeforeClass() throws Exception {
         End2EndBase.setUpBeforeClass();
 
-        PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
+        PolicyModelsProviderFactory modelProviderWrapper = new PolicyModelsProviderFactory();
+        PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
+        try (PolicyModelsProvider databaseProvider =
+            modelProviderWrapper.createPolicyModelsProvider(parameterGroup.getDatabaseProviderParameters())) {
             PdpStatistics pdpStatisticsRecord = new PdpStatistics();
             pdpStatisticsRecord.setPdpGroupName("defaultGroup");
             pdpStatisticsRecord.setPdpSubGroupName("apex");
