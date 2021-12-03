@@ -77,6 +77,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
         super.setUp();
 
         prov = new PolicyStatusProvider();
+        prov.initialize();
     }
 
     @Test
