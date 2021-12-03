@@ -53,6 +53,7 @@ public class TestPolicyAuditProvider extends ProviderSuper {
 
         super.setUp();
         provider = new PolicyAuditProvider();
+        provider.initialize();
     }
 
     @Test
