@@ -95,7 +95,6 @@ public class PdpGroupCreateOrUpdateTest extends End2EndBase {
         context.addPdp("pdpAB_1", "pdpTypeB");
 
         context.startThreads();
-
         Invocation.Builder invocationBuilder = sendRequest(CREATEORUPDATE_GROUPS_ENDPOINT);
 
         PdpGroups groups = loadJsonFile("createGroups.json", PdpGroups.class);

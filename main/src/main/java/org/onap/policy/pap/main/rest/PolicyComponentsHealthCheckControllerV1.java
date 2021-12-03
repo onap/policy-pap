@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end point for PAP component to fetch all policy components, including PAP,
@@ -45,6 +47,8 @@ import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PolicyComponentsHealthCheckControllerV1 extends PapRestControllerV1 {
 
     private PolicyComponentsHealthCheckProvider provider;

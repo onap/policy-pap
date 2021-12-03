@@ -44,7 +44,6 @@ import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
-import org.onap.policy.pap.main.parameters.PapParameterHandler;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 
 
@@ -89,9 +88,7 @@ public class TestPapActivator {
             output.write(json.getBytes(StandardCharsets.UTF_8));
         }
 
-        final String[] papConfigParameters = {"-c", CONFIG_FILE};
-        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-        final PapParameterGroup parGroup = new PapParameterHandler().getParameters(arguments);
+        final PapParameterGroup parGroup = new CommonTestData().getPapParameterGroup(6969);
 
         activator = new PapActivator(parGroup);
     }

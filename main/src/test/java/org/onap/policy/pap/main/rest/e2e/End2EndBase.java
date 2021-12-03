@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-public class End2EndBase extends CommonPapRestServer {
+public abstract class End2EndBase extends CommonPapRestServer {
     private static final Logger logger = LoggerFactory.getLogger(End2EndBase.class);
 
     private static final Coder coder = new StandardCoder();
@@ -103,7 +103,7 @@ public class End2EndBase extends CommonPapRestServer {
             logger.warn("failed to close DAO factory", e);
         }
 
-        CommonPapRestServer.teardownAfterClass();
+        //CommonPapRestServer.teardownAfterClass();
     }
 
     /**

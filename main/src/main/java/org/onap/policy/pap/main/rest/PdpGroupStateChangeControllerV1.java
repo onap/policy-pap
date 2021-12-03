@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,12 +45,15 @@ import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end points for PAP component to change state of a PDP group.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeControllerV1.class);

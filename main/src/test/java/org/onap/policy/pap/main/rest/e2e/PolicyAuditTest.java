@@ -47,6 +47,7 @@ public class PolicyAuditTest extends End2EndBase {
     private static final String DEFAULT_USER = "TEST";
     private static final String POLICY_AUDIT_ENDPOINT = "policies/audit";
     private static final String URI_SEPERATOR = "/";
+    private static final String EMPTY_MESSAGE = "";
     private static final String QUERY_PARAMS_INVALID = "?recordCount=5&startTime=2021-07-25T01:25:15";
     private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&startTime=1627219515&endTime=1627478715";
     private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&startTime=1627478715&endTime=1627565115";
@@ -97,7 +98,7 @@ public class PolicyAuditTest extends End2EndBase {
 
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, EMPTY_MESSAGE);
     }
 
     @Test
@@ -118,7 +119,7 @@ public class PolicyAuditTest extends End2EndBase {
 
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, EMPTY_MESSAGE);
     }
 
     @Test
@@ -143,7 +144,7 @@ public class PolicyAuditTest extends End2EndBase {
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
                         + POLICY_A.getVersion() + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, EMPTY_MESSAGE);
     }
 
     @Test
@@ -167,7 +168,7 @@ public class PolicyAuditTest extends End2EndBase {
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
                         + POLICY_A.getVersion() + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, EMPTY_MESSAGE);
     }
 
     private void sendAndValidateSuccess(String uri, int count) throws Exception {

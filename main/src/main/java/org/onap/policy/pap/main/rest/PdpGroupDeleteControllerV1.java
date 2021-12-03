@@ -44,10 +44,13 @@ import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end points for PAP component to delete a PDP group.
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteControllerV1.class);
 

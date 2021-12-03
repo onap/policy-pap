@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019,2021 Nordix Foundation.
  * Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +42,13 @@ import org.onap.policy.models.pap.concepts.PdpGroupUpdateResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end points for PAP component to create or update PDP groups.
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PdpGroupCreateOrUpdateControllerV1 extends PapRestControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupCreateOrUpdateControllerV1.class);
 

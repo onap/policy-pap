@@ -41,11 +41,14 @@ import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.persistence.provider.PolicyAuditProvider.AuditFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST end points for PAP component to retrieve the audit information for
  * various operations on policies.
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class PolicyAuditControllerV1 extends PapRestControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(PolicyAuditControllerV1.class);

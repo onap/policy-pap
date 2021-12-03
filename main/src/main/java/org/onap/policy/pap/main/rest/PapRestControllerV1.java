@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +30,6 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
 import java.util.UUID;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -43,7 +43,6 @@ import org.onap.policy.models.base.PfModelException;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 // @formatter:off
-@Path("/policy/pap/v1")
 @Api(value = "Policy Administration (PAP) API")
 @Produces({MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML})
 @SwaggerDefinition(

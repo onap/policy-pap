@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +30,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class to provide REST endpoints for PAP component health check.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@DependsOn("papActivator")
+@Path("/pap/v1")
 public class HealthCheckRestControllerV1 extends PapRestControllerV1 {
 
     @GET
