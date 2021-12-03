@@ -35,22 +35,26 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.notification.DeploymentTracker;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to query policy deployment status.
  */
+@Service
 public class PolicyStatusProvider {
 
     /**
      * Factory for PAP DAO.
      */
-    private final PolicyModelsProviderFactoryWrapper daoFactory;
-
+    private PolicyModelsProviderFactoryWrapper daoFactory;
 
     /**
      * Constructs the object. Loads all deployed policies into the internal cache.
      */
-    public PolicyStatusProvider() {
+    @EventListener(ApplicationReadyEvent.class)
+    public void initialize() {
         this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
     }
 
