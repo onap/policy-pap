@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2021 Nordix Foundation.
  * Modifications Copyright (C) 2021 AT&T Intellectual Property.
+ * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +79,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         when(dao.getPolicyTypeList("typeA", "100.2.3")).thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
 
         prov = new PdpGroupCreateOrUpdateProvider();
+        prov.initialize();
     }
 
     @Test

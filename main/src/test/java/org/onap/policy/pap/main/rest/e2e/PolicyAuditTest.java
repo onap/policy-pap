@@ -50,6 +50,9 @@ public class PolicyAuditTest extends End2EndBase {
     private static final String QUERY_PARAMS_INVALID = "?recordCount=5&startTime=2021-07-25T01:25:15";
     private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&startTime=1627219515&endTime=1627478715";
     private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&startTime=1627478715&endTime=1627565115";
+    private static int NOT_FOUND_STATUS_CODE = 404;
+    private static int BAD_REQUEST_STATUS_CODE = 400;
+    private static final String BAD_REQUEST_MSG = "NumberFormatException For";
 
     @Override
     @Before
@@ -97,7 +100,7 @@ public class PolicyAuditTest extends End2EndBase {
 
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, BAD_REQUEST_MSG, BAD_REQUEST_STATUS_CODE);
     }
 
     @Test
@@ -114,11 +117,11 @@ public class PolicyAuditTest extends End2EndBase {
 
         // try with incorrect dates in query, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_INCORRECT;
-        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND);
+        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND, NOT_FOUND_STATUS_CODE);
 
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, BAD_REQUEST_MSG, BAD_REQUEST_STATUS_CODE);
     }
 
     @Test
@@ -138,12 +141,12 @@ public class PolicyAuditTest extends End2EndBase {
         // try with incorrect dates in query, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
                         + URI_SEPERATOR + POLICY_A.getVersion() + QUERY_PARAMS_INCORRECT;
-        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND);
+        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND, NOT_FOUND_STATUS_CODE);
 
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
                         + POLICY_A.getVersion() + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, BAD_REQUEST_MSG, BAD_REQUEST_STATUS_CODE);
     }
 
     @Test
@@ -162,12 +165,12 @@ public class PolicyAuditTest extends End2EndBase {
         // try with incorrect dates in query, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion()
                         + QUERY_PARAMS_INCORRECT;
-        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND);
+        sendAndValidateError(uri, PolicyAuditControllerV1.NO_AUDIT_RECORD_FOUND, NOT_FOUND_STATUS_CODE);
 
         // try with invalid date format, should result in error
         uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR
                         + POLICY_A.getVersion() + QUERY_PARAMS_INVALID;
-        sendAndValidateError(uri, Response.Status.NOT_FOUND.toString());
+        sendAndValidateError(uri, BAD_REQUEST_MSG, BAD_REQUEST_STATUS_CODE);
     }
 
     private void sendAndValidateSuccess(String uri, int count) throws Exception {
@@ -193,10 +196,10 @@ public class PolicyAuditTest extends End2EndBase {
         }
     }
 
-    private void sendAndValidateError(String uri, String errorMessage) throws Exception {
+    private void sendAndValidateError(String uri, String errorMessage, int statusCode) throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(uri);
         Response rawresp = invocationBuilder.get();
-        assertThat(rawresp.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+        assertThat(rawresp.getStatus()).isEqualTo(statusCode);
         String resp = rawresp.readEntity(String.class);
         assertThat(resp).contains(errorMessage);
     }
