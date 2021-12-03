@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.BasicAuthDefinition;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.SecurityDefinition;
@@ -29,37 +29,32 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
 import java.util.UUID;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 import org.onap.policy.models.base.PfModelException;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 
 /**
  * Version v1 common superclass to provide REST endpoints for PAP component.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-// @formatter:off
-@Path("/policy/pap/v1")
-@Api(value = "Policy Administration (PAP) API")
-@Produces({MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML})
+//@formatter:off
 @SwaggerDefinition(
-    info = @Info(description =
-                    "Policy Administration is responsible for the deployment life cycle of policies as well as "
-                    + "interworking with the mechanisms required to orchestrate the nodes and containers on which "
-                    + "policies run. It is also responsible for the administration of policies at run time;"
-                    + " ensuring that policies are available to users, that policies are executing correctly,"
-                    + " and that the state and status of policies is monitored", version = "v1.0",
-                    title = "Policy Administration"),
-    consumes = {MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML},
-    produces = {MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML},
-    schemes = {SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS},
-    tags = {@Tag(name = "policy-administration", description = "Policy Administration Service Operations")},
-    securityDefinition = @SecurityDefinition(basicAuthDefinitions = {@BasicAuthDefinition(key = "basicAuth")}))
-// @formatter:on
+ info = @Info(description =
+                 "Policy Administration is responsible for the deployment life cycle of policies as well as "
+                 + "interworking with the mechanisms required to orchestrate the nodes and containers on which "
+                 + "policies run. It is also responsible for the administration of policies at run time;"
+                 + " ensuring that policies are available to users, that policies are executing correctly,"
+                 + " and that the state and status of policies is monitored", version = "v1.0",
+                 title = "Policy Administration"),
+ consumes = {MediaType.APPLICATION_JSON_VALUE, PapRestControllerV1.APPLICATION_YAML},
+ produces = {MediaType.APPLICATION_JSON_VALUE, PapRestControllerV1.APPLICATION_YAML},
+ schemes = {SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS},
+ tags = {@Tag(name = "policy-administration", description = "Policy Administration Service Operations")},
+ securityDefinition = @SecurityDefinition(basicAuthDefinitions = {@BasicAuthDefinition(key = "basicAuth")}))
+//@formatter:on
 public class PapRestControllerV1 {
     public static final String APPLICATION_YAML = "application/yaml";
 
@@ -106,7 +101,7 @@ public class PapRestControllerV1 {
      * @param respBuilder response builder
      * @return the response builder, with version headers
      */
-    public ResponseBuilder addVersionControlHeaders(ResponseBuilder respBuilder) {
+    public BodyBuilder addVersionControlHeaders(BodyBuilder respBuilder) {
         return respBuilder.header(VERSION_MINOR_NAME, "0").header(VERSION_PATCH_NAME, "0").header(VERSION_LATEST_NAME,
                 API_VERSION);
     }
@@ -117,10 +112,10 @@ public class PapRestControllerV1 {
      * @param respBuilder response builder
      * @return the response builder, with version logging
      */
-    public ResponseBuilder addLoggingHeaders(ResponseBuilder respBuilder, UUID requestId) {
+    public BodyBuilder addLoggingHeaders(BodyBuilder respBuilder, String requestId) {
         if (requestId == null) {
             // Generate a random uuid if client does not embed requestId in rest request
-            return respBuilder.header(REQUEST_ID_NAME, UUID.randomUUID());
+            return respBuilder.header(REQUEST_ID_NAME, UUID.randomUUID().toString());
         }
 
         return respBuilder.header(REQUEST_ID_NAME, requestId);

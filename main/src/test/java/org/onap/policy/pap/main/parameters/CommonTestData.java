@@ -41,7 +41,7 @@ public class CommonTestData {
 
     private static final Coder coder = new StandardCoder();
 
-    private static int dbNum = 0;
+    public static int dbNum = 0;
 
     public static void newDb() {
         ++dbNum;

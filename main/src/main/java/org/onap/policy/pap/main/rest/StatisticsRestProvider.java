@@ -35,14 +35,20 @@ import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.startstop.PapActivator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Class to fetch statistics of pap component.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Service
 public class StatisticsRestProvider {
     private static final String GET_STATISTICS_ERR_MSG = "database query failed";
+
+    @Autowired
+    private PapActivator papActivator;
 
     /**
      * Returns the current statistics of pap component.
@@ -51,7 +57,7 @@ public class StatisticsRestProvider {
      */
     public StatisticsReport fetchCurrentStatistics() {
         final var report = new StatisticsReport();
-        report.setCode(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive() ? 200 : 500);
+        report.setCode(papActivator.isAlive() ? 200 : 500);
 
         PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
         report.setTotalPdpCount(mgr.getTotalPdpCount());

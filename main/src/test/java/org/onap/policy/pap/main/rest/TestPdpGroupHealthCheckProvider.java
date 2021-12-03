@@ -29,8 +29,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.List;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +48,7 @@ import org.onap.policy.models.pdp.concepts.Pdps;
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.springframework.http.HttpStatus;
 
 /**
  * Class to perform unit test of {@link PdpGroupHealthCheckProvider}.
@@ -85,8 +84,8 @@ public class TestPdpGroupHealthCheckProvider {
     @Test
     public void testFetchPdpGroupHealthStatus() throws Exception {
         final PdpGroupHealthCheckProvider provider = new PdpGroupHealthCheckProvider();
-        final Pair<Status, Pdps> pair = provider.fetchPdpGroupHealthStatus();
-        assertEquals(Response.Status.OK, pair.getLeft());
+        final Pair<HttpStatus, Pdps> pair = provider.fetchPdpGroupHealthStatus();
+        assertEquals(HttpStatus.OK, pair.getLeft());
         verifyPdps(pair.getRight().getPdpList(), groups);
     }
 

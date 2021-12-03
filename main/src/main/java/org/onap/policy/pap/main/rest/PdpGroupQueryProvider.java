@@ -21,7 +21,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -31,12 +30,15 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to query details of all PDP groups.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Service
 public class PdpGroupQueryProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryProvider.class);
@@ -47,7 +49,7 @@ public class PdpGroupQueryProvider {
      * @return a pair containing the status and the response
      * @throws PfModelException in case of errors
      */
-    public Pair<Response.Status, PdpGroups> fetchPdpGroupDetails() throws PfModelException {
+    public Pair<HttpStatus, PdpGroups> fetchPdpGroupDetails() throws PfModelException {
 
         final var pdpGroups = new PdpGroups();
         final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
@@ -56,6 +58,6 @@ public class PdpGroupQueryProvider {
             pdpGroups.setGroups(databaseProvider.getPdpGroups(null));
         }
         LOGGER.debug("PdpGroup Query Response - {}", pdpGroups);
-        return Pair.of(Response.Status.OK, pdpGroups);
+        return Pair.of(HttpStatus.OK, pdpGroups);
     }
 }

@@ -26,10 +26,12 @@ import org.onap.policy.models.pap.persistence.provider.PolicyAuditProvider.Audit
 import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to query policy audit information.
  */
+@Service
 public class PolicyAuditProvider {
 
     /**

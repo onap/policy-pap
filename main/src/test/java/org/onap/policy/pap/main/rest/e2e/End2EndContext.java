@@ -124,7 +124,6 @@ public class End2EndContext {
      */
     private TopicListener topicListener = (infra, topic, text) -> toPdps.add(text);
 
-
     /**
      * Constructs the object.
      */

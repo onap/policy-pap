@@ -35,10 +35,12 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to delete PDP groups.
  */
+@Service
 public class PdpGroupDeleteProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteProvider.class);
 

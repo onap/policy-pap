@@ -1,0 +1,80 @@
+spring:
+  security:
+    user:
+      name: policyadmin
+      password: zb!XztG34
+  http:
+    converters:
+      preferred-json-mapper: gson
+
+server:
+  port: 6969
+
+pap:
+  name: PapGroup
+  pdpParameters:
+    heartBeatMs: 120000
+    updateParameters:
+      maxRetryCount: 1
+      maxWaitMs: 30000
+    stateChangeParameters:
+      maxRetryCount: 1
+      maxWaitMs: 30000
+  databaseProviderParameters:
+    name: PolicyProviderParameterGroup
+    implementation: org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl
+    databaseDriver: org.mariadb.jdbc.Driver
+    databaseUrl: jdbc:mariadb://mariadb:3306/policyadmin
+    databaseUser: policy_user
+    databasePassword: policy_user
+    persistenceUnit: PolicyMariaDb
+  savePdpStatisticsInDb: true
+  topicParameterGroup:
+    topicSources:
+    - topic: POLICY-PDP-PAP
+      servers:
+      - message-router
+      topicCommInfrastructure: dmaap
+      fetchTimeout: 15000
+    - topic: POLICY-HEARTBEAT
+      effectiveTopic: POLICY-PDP-PAP
+      consumerGroup: policy-pap
+      servers:
+      - message-router
+      topicCommInfrastructure: dmaap
+      fetchTimeout: 15000
+    topicSinks:
+    - topic: POLICY-PDP-PAP
+      servers:
+      - message-router
+      topicCommInfrastructure: dmaap
+    - topic: POLICY-NOTIFICATION
+      servers:
+      - message-router
+      topicCommInfrastructure: dmaap
+  healthCheckRestClientParameters:
+  - clientName: api
+    hostname: policy-api
+    port: 6969
+    userName: policyadmin
+    password: zb!XztG34
+    useHttps: true
+    basePath: policy/api/v1/healthcheck
+  - clientName: distribution
+    hostname: policy-distribution
+    port: 6969
+    userName: healthcheck
+    password: zb!XztG34
+    useHttps: true
+    basePath: healthcheck
+  - clientName: dmaap
+    hostname: message-router
+    port: 3905
+    useHttps: true
+    basePath: topics
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus

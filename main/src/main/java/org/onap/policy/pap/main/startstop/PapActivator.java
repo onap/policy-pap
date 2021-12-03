@@ -27,11 +27,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
-import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
-import org.onap.policy.common.endpoints.http.server.RestServer;
 import org.onap.policy.common.endpoints.listeners.MessageTypeDispatcher;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.parameters.ParameterService;
@@ -51,21 +51,10 @@ import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
-import org.onap.policy.pap.main.rest.HealthCheckRestControllerV1;
-import org.onap.policy.pap.main.rest.PapAafFilter;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
-import org.onap.policy.pap.main.rest.PdpGroupCreateOrUpdateControllerV1;
-import org.onap.policy.pap.main.rest.PdpGroupDeleteControllerV1;
-import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
-import org.onap.policy.pap.main.rest.PdpGroupHealthCheckControllerV1;
-import org.onap.policy.pap.main.rest.PdpGroupQueryControllerV1;
-import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1;
-import org.onap.policy.pap.main.rest.PolicyAuditControllerV1;
-import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckControllerV1;
-import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckProvider;
-import org.onap.policy.pap.main.rest.PolicyStatusControllerV1;
 import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
-import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 /**
  * This class activates Policy Administration (PAP) as a complete service together with all its controllers, listeners &
@@ -73,6 +62,9 @@ import org.onap.policy.pap.main.rest.StatisticsRestControllerV1;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Component
+//@DependsOn("papDatabaseInitializer")
+@ConditionalOnProperty(value = "pap.activator.initialize", havingValue = "true", matchIfMissing = true)
 public class PapActivator extends ServiceManagerContainer {
     private static final String[] MSG_TYPE_NAMES = { "messageName" };
     private static final String[] REQ_ID_NAMES = { "response", "responseTo" };
@@ -82,7 +74,7 @@ public class PapActivator extends ServiceManagerContainer {
      */
     private static final int MAX_MISSED_HEARTBEATS = 3;
 
-    private final PapParameterGroup papParameterGroup;
+    private PapParameterGroup papParameterGroup;
 
     /**
      * Listens for messages on the topic, decodes them into a {@link PdpStatus} message, and then dispatches them to
@@ -108,13 +100,12 @@ public class PapActivator extends ServiceManagerContainer {
      *
      * @param papParameterGroup the parameters for the pap service
      */
-    public PapActivator(final PapParameterGroup papParameterGroup) {
+    public PapActivator(PapParameterGroup papParameterGroup) {
         super("Policy PAP");
-
+        this.papParameterGroup = papParameterGroup;
         TopicEndpointManager.getManager().addTopics(papParameterGroup.getTopicParameterGroup());
 
         try {
-            this.papParameterGroup = papParameterGroup;
             this.responseMsgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.heartbeatMsgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.responseReqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
@@ -126,7 +117,6 @@ public class PapActivator extends ServiceManagerContainer {
             throw new PolicyPapRuntimeException(e);
         }
 
-        papParameterGroup.getRestServerParameters().setName(papParameterGroup.getName());
 
         final var pdpUpdateLock = new Object();
         final var pdpParams = papParameterGroup.getPdpParameters();
@@ -137,7 +127,6 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<ScheduledExecutorService> pdpExpirationTimer = new AtomicReference<>();
         final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
-        final AtomicReference<RestServer> restServer = new AtomicReference<>();
         final AtomicReference<PolicyNotifier> notifier = new AtomicReference<>();
 
         // @formatter:off
@@ -253,30 +242,6 @@ public class PapActivator extends ServiceManagerContainer {
             },
             () -> pdpExpirationTimer.get().shutdown());
 
-        addAction("PAP client executor",
-            () ->
-                PolicyComponentsHealthCheckProvider.initializeClientHealthCheckExecutorService(papParameterGroup,
-                                HttpClientFactoryInstance.getClientFactory()),
-                PolicyComponentsHealthCheckProvider::cleanup);
-
-        addAction("REST server",
-            () -> {
-                var server = new RestServer(papParameterGroup.getRestServerParameters(), PapAafFilter.class,
-                                HealthCheckRestControllerV1.class,
-                                StatisticsRestControllerV1.class,
-                                PdpGroupCreateOrUpdateControllerV1.class,
-                                PdpGroupDeployControllerV1.class,
-                                PdpGroupDeleteControllerV1.class,
-                                PdpGroupStateChangeControllerV1.class,
-                                PdpGroupQueryControllerV1.class,
-                                PdpGroupHealthCheckControllerV1.class,
-                                PolicyStatusControllerV1.class,
-                                PolicyComponentsHealthCheckControllerV1.class,
-                                PolicyAuditControllerV1.class);
-                restServer.set(server);
-                restServer.get().start();
-            },
-            () -> restServer.get().stop());
         // @formatter:on
     }
 
@@ -320,6 +285,26 @@ public class PapActivator extends ServiceManagerContainer {
     private void unregisterMsgDispatcher(TopicListener dispatcher, String topic) {
         for (final TopicSource source : TopicEndpointManager.getManager().getTopicSources(List.of(topic))) {
             source.unregister(dispatcher);
+        }
+    }
+
+    /**
+     * Starts the PAP services.
+     */
+    @PostConstruct
+    public void startService() {
+        if (!isAlive()) {
+            start();
+        }
+    }
+
+    /**
+     * Stops the PAP services.
+     */
+    @PreDestroy
+    public void stopService() {
+        if (isAlive()) {
+            stop();
         }
     }
 }

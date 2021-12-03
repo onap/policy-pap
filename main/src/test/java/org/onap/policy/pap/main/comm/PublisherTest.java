@@ -44,9 +44,8 @@ import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
-import org.onap.policy.pap.main.parameters.PapParameterHandler;
-import org.onap.policy.pap.main.startstop.PapCommandLineArguments;
 
 public class PublisherTest extends Threaded {
 
@@ -85,9 +84,7 @@ public class PublisherTest extends Threaded {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        final String[] papConfigParameters = {"-c", "parameters/PapConfigParameters.json"};
-        final PapCommandLineArguments arguments = new PapCommandLineArguments(papConfigParameters);
-        final PapParameterGroup parameterGroup = new PapParameterHandler().getParameters(arguments);
+        final PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
         TopicEndpointManager.getManager().shutdown();
 
         TopicEndpointManager.getManager().addTopics(parameterGroup.getTopicParameterGroup());
@@ -104,6 +101,7 @@ public class PublisherTest extends Threaded {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -119,6 +117,7 @@ public class PublisherTest extends Threaded {
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(listener);

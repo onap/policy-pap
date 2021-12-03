@@ -62,6 +62,15 @@ public class PdpGroupQueryTest extends End2EndBase {
 
     @Test
     public void test() throws Exception {
+//        ResponseEntity<PdpGroups> responseEntity = sendRequest(GROUP_ENDPOINT, null, HttpMethod.GET, PdpGroups.class);
+//        PdpGroups resp = responseEntity.getBody();
+//        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+//
+//        assertEquals("[queryGroup1, queryGroup2]", mapList(resp.getGroups(), PdpGroup::getName).toString());
+//
+//        checkGroup1(resp.getGroups().get(0));
+//        checkGroup2(resp.getGroups().get(1));
+
         Invocation.Builder invocationBuilder = sendRequest(GROUP_ENDPOINT);
         Response rawresp = invocationBuilder.get();
         PdpGroups resp = rawresp.readEntity(PdpGroups.class);

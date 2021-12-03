@@ -57,6 +57,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to deploy PDP groups. The following items must be in the
@@ -67,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * <li>PAP DAO Factory</li>
  * </ul>
  */
+@Service
 public class PdpGroupDeployProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployProvider.class);
     private static final StandardCoder coder = new StandardCoder();
@@ -413,7 +415,6 @@ public class PdpGroupDeployProvider extends ProviderBase {
     private void deploySimplePolicies(SessionData data, PdpDeployPolicies policies) throws PfModelException {
 
         for (ToscaConceptIdentifierOptVersion desiredPolicy : policies.getPolicies()) {
-
             try {
                 processPolicy(data, desiredPolicy);
 
