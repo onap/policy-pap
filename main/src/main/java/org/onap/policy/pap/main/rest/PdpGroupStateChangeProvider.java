@@ -36,12 +36,15 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.PdpMessageGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to change state of PDP group.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@Service
 public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeProvider.class);
@@ -61,7 +64,7 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
      * @return a pair containing the status and the response
      * @throws PfModelException in case of errors
      */
-    public Pair<Response.Status, PdpGroupStateChangeResponse> changeGroupState(final String groupName,
+    public Pair<HttpStatus, PdpGroupStateChangeResponse> changeGroupState(final String groupName,
             final PdpState pdpGroupState) throws PfModelException {
         synchronized (updateLock) {
             switch (pdpGroupState) {
@@ -75,7 +78,7 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
                     throw new PfModelException(Response.Status.BAD_REQUEST,
                             "Only ACTIVE or PASSIVE state changes are allowed");
             }
-            return Pair.of(Response.Status.OK, new PdpGroupStateChangeResponse());
+            return Pair.of(HttpStatus.OK, new PdpGroupStateChangeResponse());
         }
     }
 
