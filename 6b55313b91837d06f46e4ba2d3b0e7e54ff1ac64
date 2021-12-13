@@ -141,6 +141,30 @@
       "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "388b0de6_32788bd7",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-13T18:04:08Z",
+      "side": 1,
+      "message": "Ok, Got it. Not really necessary here I think, but I understand constructor injection can be better compared to field based injection in some cases like testing.\nDone Thanks!",
+      "parentUuid": "6ee6d696_9bd184a2",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 14
+      },
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
