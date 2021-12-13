@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "1e87978d_76551566",
+        "filename": "main/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2021-12-13T16:43:02Z",
+      "side": 1,
+      "message": "I think we ran into some problems with versions of dependencies that Spring was pulling in and we were pulling in from policy/parent and also from oparent. We need to decide what to do here.....also shouldn\u0027t these dependencies be in policy-parent if we decide to go that way.",
+      "parentUuid": "ea4dfc88_040d42e5",
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7fc502c2_17e3d23f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
         "patchSetId": 10
