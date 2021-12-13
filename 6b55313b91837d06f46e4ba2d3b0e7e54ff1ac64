@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "c07acb84_490587c1",
+        "filename": "main/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-13T17:06:27Z",
+      "side": 1,
+      "message": "If going the policy-parent way, then yes, the dependencyManagement above for spring boot can be removed and then just use whatever defined in policy-parent. I will go that way for now to be on the safe side, as I am trying to get this merged by tomorrow before I go on vacation. Lets revisit the dependency management later if that is okay.",
+      "parentUuid": "1e87978d_76551566",
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7fc502c2_17e3d23f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
         "patchSetId": 10
