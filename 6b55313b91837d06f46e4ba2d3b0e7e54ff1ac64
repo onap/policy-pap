@@ -16,6 +16,24 @@
       "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea4dfc88_040d42e5",
+        "filename": "main/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-13T13:38:33Z",
+      "side": 1,
+      "message": "Checked with Francesco and had a look in clamp. Seems like micrometer version is specified here. Also all spring boot starter components\u0027 and versions are specified in the policy-parent. I guess we have more control this way.\nBut, just thinking which one is better. From a managing point of view isn\u0027t it better to have dependency management like this and let spring decide on versions of spring components to bring in, and we could still specify the specific version if needed in the policy-parent which should override any spring-boot managed versions.\nThoughts?",
+      "parentUuid": "4ee0c1a4_46cc1023",
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
