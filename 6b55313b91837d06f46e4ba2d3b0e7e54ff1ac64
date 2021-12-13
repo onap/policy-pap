@@ -34,6 +34,29 @@
       "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fc502c2_17e3d23f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 7565
+      },
+      "writtenOn": "2021-12-13T14:41:19Z",
+      "side": 1,
+      "message": "(since spring framework 4.3) You no longer need to specify an explicit injection annotation in such a single-constructor scenario. This is particularly elegant for classes which otherwise do not carry any container annotations at all, for example when programmatically registered (https://spring.io/blog/2016/03/04/core-container-refinements-in-spring-framework-4-3).\nOther suggestion: @RequiredArgsConstructor lombock annotation:\n\n@RestController\n@RequestMapping(path \u003d \"/policy/pap/v1\")\n@RequiredArgsConstructor\npublic class HealthCheckRestControllerV1  extends PapRestControllerV1 {\n\n    private final HealthCheckProvider provider;\n\n..........",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 14
+      },
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
