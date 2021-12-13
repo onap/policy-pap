@@ -117,6 +117,30 @@
       "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ee6d696_9bd184a2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 7565
+      },
+      "writtenOn": "2021-12-13T17:07:48Z",
+      "side": 1,
+      "message": "using lombok.RequiredArgsConstructor annotation, the constructor will implemented by lombok.\nMy suggestion is to combine the constructor injection with lombok.",
+      "parentUuid": "1a386456_f920215b",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 14
+      },
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
