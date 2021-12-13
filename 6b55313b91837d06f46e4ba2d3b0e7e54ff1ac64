@@ -57,6 +57,30 @@
       "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a386456_f920215b",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-13T15:44:57Z",
+      "side": 1,
+      "message": "I think you are talking about constructor injection for which annotation need not be specified anymore. But I don\u0027t understand how it applies here. Could you please specify which constructor you are talking about?",
+      "parentUuid": "7fc502c2_17e3d23f",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 14
+      },
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
