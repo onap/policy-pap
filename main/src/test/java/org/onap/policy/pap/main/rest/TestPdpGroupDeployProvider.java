@@ -587,6 +587,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("deployPoliciesWildCard.json"));
         prov.deployPolicies(loadRequest("multiple_requests.json"), DEFAULT_USER);
         assertEquals(mgr.getTotalPolicyDeployCount(), 3);
+        assertEquals(mgr.getPolicyDeployFailureCount(), 3);
     }
     
     @Test

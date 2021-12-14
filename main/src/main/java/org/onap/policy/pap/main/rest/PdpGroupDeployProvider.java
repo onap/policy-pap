@@ -435,7 +435,7 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         ToscaConceptIdentifier desiredIdent = policy.getIdentifier();
         ToscaConceptIdentifier desiredType = policy.getTypeIdentifier();
-        PapStatisticsManager mgr = null;
+        PapStatisticsManager mgr;
         try {
             mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
         } catch(Exception e) {
@@ -444,28 +444,29 @@ public class PdpGroupDeployProvider extends ProviderBase {
         }
         mgr.updateTotalPolicyDeployCount();
 
+        PapStatisticsManager finalMgr = mgr; //Need to convert to final for lambda expression
         return (group, subgroup) -> {
 
             if (!isPolicySupported(subgroup.getSupportedPolicyTypes(), desiredType)) {
                 // doesn't support the desired policy type
-                //mgr.updatePolicyDeployFailureCount();
+                finalMgr.updatePolicyDeployFailureCount();
                 return false;
             }
 
             if (containsPolicy(group, subgroup, desiredIdent)) {
-                //mgr.updatePolicyDeployFailureCount();
+                finalMgr.updatePolicyDeployFailureCount();
                 return false;
             }
 
             if (subgroup.getPdpInstances().isEmpty()) {
-                //mgr.updatePolicyDeployFailureCount();
+                finalMgr.updatePolicyDeployFailureCount();
                 throw new PfModelRuntimeException(Status.BAD_REQUEST, "group " + group.getName() + " subgroup "
                                 + subgroup.getPdpType() + " has no active PDPs");
             }
 
 
             // add the policy to the subgroup
-            //mgr.updatePolicyDeploySuccessCount();
+            finalMgr.updatePolicyDeploySuccessCount();
             subgroup.getPolicies().add(desiredIdent);
 
             logger.info("add policy {} to subgroup {} {} count={}", desiredIdent, group.getName(),
