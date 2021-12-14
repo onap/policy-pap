@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7937186f_b942dd00",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 13
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b60a18c2_f5a1c9f6",
+      "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a16ad9f_76fcdd34",
         "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
         "patchSetId": 13
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "af5e68b7_200030d3",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 13
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "Good point, yes. Done, thanks!",
+      "parentUuid": "3a16ad9f_76fcdd34",
+      "range": {
+        "startLine": 68,
+        "startChar": 44,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "13c083c7_5979c4db",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
         "patchSetId": 13
@@ -53,6 +95,24 @@
       "writtenOn": "2021-12-13T21:50:54Z",
       "side": 1,
       "message": "is there a reason for this section to not go inside \"pap\"?",
+      "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f9f3fe5_31300e62",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
+        "patchSetId": 13
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "This is the spring-boot server part, and we have to specify it like this. We don\u0027t use policy-endpoints anymore to create a RestServer.",
+      "parentUuid": "13c083c7_5979c4db",
       "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
@@ -76,6 +136,24 @@
     },
     {
       "key": {
+        "uuid": "4b2714bc_e7baddd5",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
+        "patchSetId": 13
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "We can if we want, by specifying server.address, but no need to specify that here.\nfor eg. \nserver:\n  address: 0.0.0.0",
+      "parentUuid": "be024119_736e644f",
+      "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "59860b90_debcf73d",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
         "patchSetId": 13
@@ -93,6 +171,24 @@
     },
     {
       "key": {
+        "uuid": "e079e283_cf49d164",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
+        "patchSetId": 13
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "We could keep it true, but thought this is better for running locally or in standalone mode.\nIn OOM and in CSITs we are mounting the startup configuration file anyway even today.",
+      "parentUuid": "59860b90_debcf73d",
+      "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bbe8c14a_45a8ae6b",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
         "patchSetId": 13
@@ -104,6 +200,24 @@
       "writtenOn": "2021-12-13T21:50:54Z",
       "side": 1,
       "message": "is pap needed? if not could reduce indentation ..",
+      "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c8d3f69_b504fb4f",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
+        "patchSetId": 13
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "Yes, with the current impementation I have done https://gerrit.onap.org/r/c/policy/pap/+/126066/14/main/src/main/java/org/onap/policy/pap/main/parameters/PapParameterGroup.java#27 , it takes everything under pap section and maps it the class automatically. We could directly map the fields one by one, but wanted to keep the changes minimal to the existing implemenation.",
+      "parentUuid": "bbe8c14a_45a8ae6b",
       "revId": "80b4528a5be071e90155c882ad7e0285bbf8eee1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true

@@ -91,6 +91,24 @@
     },
     {
       "key": {
+        "uuid": "6ddc18fd_3e7e74e3",
+        "filename": "main/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 1,
+      "message": "Created https://jira.onap.org/browse/POLICY-3860 to cover this.",
+      "parentUuid": "f9aa94a4_fb7a9600",
+      "revId": "6b55313b91837d06f46e4ba2d3b0e7e54ff1ac64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7fc502c2_17e3d23f",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckRestControllerV1.java",
         "patchSetId": 10

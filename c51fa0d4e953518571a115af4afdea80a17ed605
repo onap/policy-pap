@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4f3c4fe0_9fe1b746",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 13
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 0,
+      "message": "yes it is. To do this, in application.yaml activate \"aaf-auth\" profile by specifying:\n  profiles:\n    active: aaf-auth\nI haven\u0027t specified this here because we have aaf as false everywhere even in the config files used in OOM.\n\nI have created https://jira.onap.org/browse/POLICY-3861 for the documentation changes - to document any changes like this. Basically the only change with the spring boot migration will be in the startup configuration file, and the prometheus endpoint.",
+      "parentUuid": "405a0ecf_7c8a309d",
+      "revId": "c51fa0d4e953518571a115af4afdea80a17ed605",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1d18d3e4_fa5d6546",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 13
@@ -30,6 +48,24 @@
       "writtenOn": "2021-12-13T21:50:54Z",
       "side": 0,
       "message": "Is prometheus supported?",
+      "revId": "c51fa0d4e953518571a115af4afdea80a17ed605",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b96d7022_1c0d86d6",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
+        "patchSetId": 13
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2021-12-14T11:56:39Z",
+      "side": 0,
+      "message": "Yes it is, and it will give a lot more information now than just system metrics.",
+      "parentUuid": "1d18d3e4_fa5d6546",
       "revId": "c51fa0d4e953518571a115af4afdea80a17ed605",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
