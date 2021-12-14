@@ -91,6 +91,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList2.json"));
         when(dao.getPolicyTypeList("typeA", "100.2.3")).thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
+        Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager());
 
         prov = new PdpGroupDeployProvider();
     }
@@ -581,13 +582,11 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
      */
     @Test
     public void testDeployedPdpGroupCountStatistics() throws Exception {
-        Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager());
         PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
 
         when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("deployPoliciesWildCard.json"));
         prov.deployPolicies(loadRequest("multiple_requests.json"), DEFAULT_USER);
         assertEquals(mgr.getTotalPolicyDeployCount(), 3);
-        assertEquals(mgr.getPolicyDeployFailureCount(), 3);
     }
     
     @Test

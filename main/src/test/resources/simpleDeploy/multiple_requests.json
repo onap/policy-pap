@@ -1,19 +1,25 @@
 {
   "policies": [
     {
+      "name": "policy_test1",
       "policy-id": "policy_test1",
-      "policy-version": "1.2.3",
-      "policy-status": ""
+      "version": "1.2.3",
+      "type": "typeA",
+      "type_version": "100.2.3"
     },
     {
+      "name": "policy_test2",
       "policy-id": "policy_test2",
-      "policy-version": "4.5.6",
-      "policy-status": ""
+      "version": "4.5.6",
+      "type": "typeB",
+      "type_version": "100.2.3"
     },
     {
+      "name": "policy_test3",
       "policy-id": "policy_test3",
-      "policy-version": "7.8.9",
-      "policy-status": ""
+      "version": "1.2.3",
+      "type": "typeC",
+      "type_version": "100.2.3"
     }
   ]
 }
