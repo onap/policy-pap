@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "b3716fbe_5627377e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2021-12-14T16:51:20Z",
+      "side": 0,
+      "message": "May be this will have an impact on the yaml input/output support for PAP Api\u0027s. Please verify.",
+      "range": {
+        "startLine": 48,
+        "startChar": 39,
+        "endLine": 48,
+        "endChar": 75
+      },
+      "revId": "c51fa0d4e953518571a115af4afdea80a17ed605",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "405a0ecf_7c8a309d",
         "filename": "packages/policy-pap-tarball/src/main/resources/etc/defaultConfig.json",
         "patchSetId": 13
