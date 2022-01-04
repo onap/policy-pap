@@ -2,8 +2,8 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class ProviderSuper {
     protected PdpModifyRequestMap reqmap;
     protected PolicyModelsProviderFactoryWrapper daofact;
     protected ToscaPolicy policy1;
-
+    protected PapStatisticsManager statsmanager;
 
     /**
      * Configures DAO, captors, and various mocks.
@@ -98,6 +98,7 @@ public class ProviderSuper {
         lockit = new Object();
         daofact = mock(PolicyModelsProviderFactoryWrapper.class);
         policy1 = loadPolicy("policy.json");
+        statsmanager = mock(PapStatisticsManager.class);
 
         when(daofact.create()).thenReturn(dao);
 
@@ -112,6 +113,7 @@ public class ProviderSuper {
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);
         Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daofact);
         Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier);
+        Registry.register(PapConstants.REG_STATISTICS_MANAGER, statsmanager);
     }
 
     protected void assertGroup(List<PdpGroup> groups, String name) {
