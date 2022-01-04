@@ -1,0 +1,25 @@
+{
+  "policies": [
+    {
+      "name": "policy_test1",
+      "policy-id": "policy_test1",
+      "version": "1.2.3",
+      "type": "typeA",
+      "type_version": "100.2.3"
+    },
+    {
+      "name": "policy_test2",
+      "policy-id": "policy_test2",
+      "version": "4.5.6",
+      "type": "typeB",
+      "type_version": "100.2.3"
+    },
+    {
+      "name": "policy_test3",
+      "policy-id": "policy_test3",
+      "version": "1.2.3",
+      "type": "typeC",
+      "type_version": "100.2.3"
+    }
+  ]
+}
