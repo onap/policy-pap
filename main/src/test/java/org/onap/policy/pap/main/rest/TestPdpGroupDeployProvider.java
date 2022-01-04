@@ -53,6 +53,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.PapConstants;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
 
@@ -90,6 +91,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList2.json"));
         when(dao.getPolicyTypeList("typeA", "100.2.3")).thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
+        Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager());
 
         prov = new PdpGroupDeployProvider();
     }
@@ -573,6 +575,20 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
                 .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
     }
 
+    /**
+     * Tests PapStatisticsManager counts when policies are added to a subgroup.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testDeployedPdpGroupCountStatistics() throws Exception {
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("deployPoliciesWildCard.json"));
+        prov.deployPolicies(loadRequest("multiple_requests.json"), DEFAULT_USER);
+        assertEquals(mgr.getTotalPolicyDeployCount(), 3);
+    }
+    
     @Test
     public void testMakeUpdater() throws Exception {
         /*
