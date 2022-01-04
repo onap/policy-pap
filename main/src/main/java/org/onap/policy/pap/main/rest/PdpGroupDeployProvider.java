@@ -55,6 +55,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.PapConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -434,6 +435,8 @@ public class PdpGroupDeployProvider extends ProviderBase {
 
         ToscaConceptIdentifier desiredIdent = policy.getIdentifier();
         ToscaConceptIdentifier desiredType = policy.getTypeIdentifier();
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
+        mgr.updateTotalPolicyDeployCount();
 
         return (group, subgroup) -> {
 

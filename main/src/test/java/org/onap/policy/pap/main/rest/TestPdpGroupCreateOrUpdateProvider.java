@@ -76,6 +76,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
         super.setUp();
 
         when(dao.getPolicyTypeList("typeA", "100.2.3")).thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
+        Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager());
 
         prov = new PdpGroupCreateOrUpdateProvider();
     }
