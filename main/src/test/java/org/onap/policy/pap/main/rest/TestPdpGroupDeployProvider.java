@@ -2,9 +2,9 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
+import org.onap.policy.pap.main.PapConstants;
 
 public class TestPdpGroupDeployProvider extends ProviderSuper {
 
@@ -573,6 +574,25 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         assertThatThrownBy(() -> prov.deployPolicies(loadRequest(), DEFAULT_USER)).isInstanceOf(PfModelException.class)
                 .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
+    }
+
+    /**
+     * Tests PapStatisticsManager counts when policies are added to a subgroup.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testDeployedPdpGroupCountStatistics() throws Exception {
+        Registry.unregister(PapConstants.REG_STATISTICS_MANAGER);
+        PapStatisticsManager mgr = new PapStatisticsManager();
+        Registry.register(PapConstants.REG_STATISTICS_MANAGER, mgr);
+
+        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("deployPoliciesWildCard.json"));
+        prov.deployPolicies(loadRequest("multiple_requests.json"), DEFAULT_USER);
+        assertEquals(mgr.getTotalPolicyDeployCount(), 3);
+
+        Registry.unregister(PapConstants.REG_STATISTICS_MANAGER);
+        Registry.register(PapConstants.REG_STATISTICS_MANAGER, statsmanager);
     }
 
     @Test
