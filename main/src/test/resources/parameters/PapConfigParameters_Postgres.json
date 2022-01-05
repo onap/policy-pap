@@ -3,13 +3,12 @@
     "restServerParameters": {
         "host": "0.0.0.0",
         "port": 6969,
-        "userName": "policyadmin",
+        "userName": "healthcheck",
         "password": "zb!XztG34",
-        "https": true,
-        "aaf": false
+        "https": false
     },
     "pdpParameters": {
-        "heartBeatMs": 120000,
+        "heartBeatMs": 60000,
         "updateParameters": {
             "maxRetryCount": 1,
             "maxWaitMs": 30000
@@ -22,8 +21,8 @@
     "databaseProviderParameters": {
         "name": "PolicyProviderParameterGroup",
         "implementation": "org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl",
-        "databaseDriver": "org.mariadb.jdbc.Driver",
-        "databaseUrl": "jdbc:mariadb://mariadb:3306/policyadmin",
+        "databaseDriver": "org.postgresql.Driver",
+        "databaseUrl": "jdbc:postgresql://localhost:5432/policyadmin",
         "databaseUser": "policy_user",
         "databasePassword": "policy_user",
         "persistenceUnit": "PolicyDb"
@@ -31,27 +30,35 @@
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "10.2.0.41:3904" ],
-            "topicCommInfrastructure" : "dmaap",
-            "fetchTimeout": 15000
-        },
-        {
-            "topic" : "PDP-HEARTBEAT",
-            "effectiveTopic": "POLICY-PDP-PAP",
-            "consumerGroup": "policy-pap",
-            "servers" : [ "10.2.0.41:3904" ],
-            "topicCommInfrastructure" : "dmaap",
-            "fetchTimeout": 15000
+            "servers" : [ "localhost:3904" ],
+            "topicCommInfrastructure" : "dmaap"
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "10.2.0.41:3904" ],
+            "servers" : [ "localhost:3904" ],
             "topicCommInfrastructure" : "dmaap"
-        },
-        {
+        },{
             "topic" : "POLICY-NOTIFICATION",
-            "servers" : [ "10.2.0.41:3904" ],
+            "servers" : [ "localhost:3904" ],
             "topicCommInfrastructure" : "dmaap"
         }]
-    }
+    },
+    "healthCheckRestClientParameters":[{
+        "clientName": "api",
+        "hostname": "policy-api",
+        "port": 6968,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "useHttps": false,
+        "basePath": "policy/api/v1/healthcheck"
+    },
+    {
+        "clientName": "distribution",
+        "hostname": "policy-distribution",
+        "port": 6970,
+        "userName": "healthcheck",
+        "password": "zb!XztG34",
+        "useHttps": false,
+        "basePath": "healthcheck"
+    }]
 }
