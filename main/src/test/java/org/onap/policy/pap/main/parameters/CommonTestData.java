@@ -3,6 +3,7 @@
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modification Copyright 2022. Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +74,28 @@ public class CommonTestData {
 
         try {
             File file = new File(getParamFile());
+            String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+
+            json = json.replace("${port}", String.valueOf(port));
+            json = json.replace("${dbName}", "jdbc:h2:mem:testdb" + dbNum);
+
+            return json;
+
+        } catch (IOException e) {
+            throw new PolicyPapRuntimeException("cannot read PAP parameters", e);
+        }
+    }
+
+    /**
+     * Gets the postgres PAP parameters, as a String.
+     *
+     * @param port port to be inserted into the parameters
+     * @return the postgres PAP parameters
+     */
+    public String getPapPostgresParameterGroupAsString(int port) {
+
+        try {
+            File file = new File("src/test/resources/parameters/PapConfigParameters_Postgres.json");
             String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
             json = json.replace("${port}", String.valueOf(port));
