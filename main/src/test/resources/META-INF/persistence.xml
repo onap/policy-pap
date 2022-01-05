@@ -65,7 +65,7 @@
         </properties>
     </persistence-unit>
 
-    <persistence-unit name="PolicyMariaDb" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="PolicyDb" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
         <class>org.onap.policy.models.dao.converters.CDataConditioner</class>
