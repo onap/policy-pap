@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5d3f4c57_a0654e7c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-05T01:05:28Z",
+      "side": 1,
+      "message": "2022",
+      "revId": "2103bd56d7099a4e8d7b50ec32ff3c97570f6aac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61570f81_b45e698a",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-05T01:05:28Z",
+      "side": 1,
+      "message": "2022",
+      "revId": "2103bd56d7099a4e8d7b50ec32ff3c97570f6aac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "804f57a8_3519f662",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-05T01:05:28Z",
+      "side": 1,
+      "message": "Take a look at ProviderSuper.setUp() parent class.   See how registry is managed there for the tests, it uses that in combination with mocks.",
+      "revId": "2103bd56d7099a4e8d7b50ec32ff3c97570f6aac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80397d96_3608551f",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-05T01:05:28Z",
+      "side": 1,
+      "message": "I think here you can get a PapStatisticsManager that was used previously for a previous test and may influence the count.\nI think to make sure probably have a brand new PapStatisticsManager to make sure that it starts with a 0-count.",
+      "revId": "2103bd56d7099a4e8d7b50ec32ff3c97570f6aac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ff5f028_f9495a6c",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-05T01:05:28Z",
+      "side": 1,
+      "message": "delete extra blanks",
+      "revId": "2103bd56d7099a4e8d7b50ec32ff3c97570f6aac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
