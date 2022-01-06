@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6d82f84_cf224935",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-06T16:58:13Z",
+      "side": 1,
+      "message": "Just to make the scope clear for this review, say something \"Keep total deploy attempt counts\", something to make it clear that the scope is limited to the total deploy count.",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c163dbc_46123d6f",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/ProviderSuper.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-06T16:58:13Z",
+      "side": 1,
+      "message": "2022",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dd08dc3_ad521e97",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-06T16:58:13Z",
+      "side": 1,
+      "message": "Is this line needed?   In other words, doesn\u0027t the register line below override it?",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4eb59a2_8497dc9f",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 586,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-06T16:58:13Z",
+      "side": 1,
+      "message": "This may be a little simpler and can remove this last line.\nPapStatisticsManager mgr \u003d new PapStatisticsManager()\nRegistry.register(PapConstants.REG_STATISTICS_MANAGER, mgr);",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "789e81fb_a976df18",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 592,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-06T16:58:13Z",
+      "side": 1,
+      "message": "Is unregister needed?   Shouldn\u0027t the line below simply override (same question as in line 584)",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
