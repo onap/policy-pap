@@ -16,6 +16,29 @@
       "revId": "7734cd6ba3f5fd5afc7fb1d3764aac310ef21f4d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17ddc751_da2e5976",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestPdpGroupDeployProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-01-07T10:44:22Z",
+      "side": 1,
+      "message": "Same comment as Jorge in all files. Please only add 2022 to line 5.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "7734cd6ba3f5fd5afc7fb1d3764aac310ef21f4d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
