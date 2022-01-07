@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9f7ba75c_6e4e378e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeployProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-07T03:21:09Z",
+      "side": 1,
+      "message": "Lines 6 and 7 don\u0027t need to change from 2021, so keep them the same.  The comment applies to the other files, only need to change it for the company you represents as the author of the changes.",
+      "revId": "7734cd6ba3f5fd5afc7fb1d3764aac310ef21f4d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
