@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "38d51880_591765c5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2022-01-11T12:09:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d6d82f84_cf224935",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8c163dbc_46123d6f",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/ProviderSuper.java",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "7c9557849577ba542f4f895edfbde845424274dc",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efa14e64_da4dba92",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/ProviderSuper.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2022-01-11T12:09:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c163dbc_46123d6f",
+      "revId": "7c9557849577ba542f4f895edfbde845424274dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
