@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f2e8c77a_6964fa21",
+        "filename": "main/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2022-01-18T15:37:32Z",
+      "side": 1,
+      "message": "This s\u003dprobably should be in parent/integration/pom.xml",
+      "parentUuid": "7ec99885_dae751bd",
+      "revId": "ba6f2c8a0564b4c407ed269c3906411018695baa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0cff9835_a195ed27",
         "filename": "main/src/test/resources/parameters/PapConfigParameters_Postgres.json",
         "patchSetId": 1
