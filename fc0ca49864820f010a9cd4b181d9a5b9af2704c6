@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9f19320_e499e131",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/CommonTestData.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-20T16:27:04Z",
+      "side": 1,
+      "message": "Optional comment, just a consider removing line 98 (just a little more concise):\n\nString json \u003d new String(Files.readAllBytes(Paths.get(\"src/test/resources/parameters/PapConfigParameters_Postgres.json\") ..)",
+      "revId": "fc0ca49864820f010a9cd4b181d9a5b9af2704c6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37494ced_cca7ee53",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/parameters/TestPapParameterGroup.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-20T16:27:04Z",
+      "side": 1,
+      "message": "Can you reuse code into a common method between the this test and the testPapParamenterGroup(), they seem to be almost the same ?",
+      "revId": "fc0ca49864820f010a9cd4b181d9a5b9af2704c6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
