@@ -30,7 +30,7 @@ pap:
     databaseUser: policy_user
     databasePassword: policy_user
     persistenceUnit: PolicyMariaDb
-  savePdpStatisticsInDb: true
+  savePdpStatisticsInDb: false
   topicParameterGroup:
     topicSources:
     - topic: POLICY-PDP-PAP
