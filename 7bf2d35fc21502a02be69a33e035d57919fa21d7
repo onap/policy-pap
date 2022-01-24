@@ -16,6 +16,24 @@
       "revId": "7bf2d35fc21502a02be69a33e035d57919fa21d7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "582bd680_66ba0ed7",
+        "filename": "main/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-01-24T14:50:30Z",
+      "side": 1,
+      "message": "I don\u0027t see postgres being used in unit tests as well.",
+      "parentUuid": "fa0a8f4c_acbaa5c7",
+      "revId": "7bf2d35fc21502a02be69a33e035d57919fa21d7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
