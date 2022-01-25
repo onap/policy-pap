@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,14 @@ import com.google.gson.GsonBuilder;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication(exclude = {JacksonAutoConfiguration.class})
+@EntityScan(
+    basePackages = {"org.onap.policy.models.pap.persistence.concepts",
+        "org.onap.policy.models.pdp.persistence.concepts", "org.onap.policy.models.tosca.simple.concepts"})
 public class PolicyPapApplication {
 
     public static void main(String[] args) {
