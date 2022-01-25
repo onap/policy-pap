@@ -4,7 +4,7 @@
       "name": "group1",
       "version": "1.0.0",
       "description": "group 1",
-      "pdpGroupState": "ACTIVE",
+      "pdpGroupState": "PASSIVE",
       "pdpSubgroups": [
         {
           "pdpType": "T1",
