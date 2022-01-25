@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c69420e9_89a4d6c7",
+        "filename": "main/src/test/resources/META-INF/persistence.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-01-25T22:12:16Z",
+      "side": 1,
+      "message": "Do we still need this file?",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
