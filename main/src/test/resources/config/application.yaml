@@ -6,6 +6,18 @@ spring:
   http:
     converters:
       preferred-json-mapper: gson
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.onap.policy.pap.main.CustomImplicitNamingStrategy
 
 server:
   port: 6969
