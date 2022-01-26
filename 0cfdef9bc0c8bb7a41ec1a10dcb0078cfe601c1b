@@ -34,6 +34,24 @@
       "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2119c75d_8b5543a8",
+        "filename": "main/src/test/resources/META-INF/persistence.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-01-26T20:44:18Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6ebe998a_170dc039",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
