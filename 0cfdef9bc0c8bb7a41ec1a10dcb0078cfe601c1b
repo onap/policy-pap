@@ -16,6 +16,24 @@
       "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ebe998a_170dc039",
+        "filename": "main/src/test/resources/META-INF/persistence.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-01-26T10:40:37Z",
+      "side": 1,
+      "message": "Not for the new tests I added. But for everything else, as PAP still works using policy-models-provider.\nOnce this review is merged and the application starts using the Spring layer, then these persistence.xml files won\u0027t be needed anymore.\nThe required entities will be scanned based on whats specified here: https://gerrit.onap.org/r/c/policy/pap/+/126751/6/main/src/main/java/org/onap/policy/pap/main/PolicyPapApplication.java#33\nAnd the stuff we need to configure, like the ddl-generation can be done through application.yaml",
+      "parentUuid": "c69420e9_89a4d6c7",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
