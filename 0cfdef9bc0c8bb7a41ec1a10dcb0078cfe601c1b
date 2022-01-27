@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "10d616cf_682e33d4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/repository/PdpGroupRepository.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-27T21:51:31Z",
+      "side": 1,
+      "message": "no need of public in interface, it shows as sonars.",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e2ad64c_6ec20735",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/repository/PdpStatisticsRepository.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-27T21:51:31Z",
+      "side": 1,
+      "message": "same comment about public (cause of sonars)",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c69420e9_89a4d6c7",
         "filename": "main/src/test/resources/META-INF/persistence.xml",
         "patchSetId": 6
@@ -52,6 +86,23 @@
       "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8e12b704_6de13676",
+        "filename": "main/src/test/resources/config/application.yaml",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-01-27T21:51:31Z",
+      "side": 1,
+      "message": "is password needed for test purposes?",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
