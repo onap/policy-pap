@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "692784ea_4c9b145f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/repository/PdpGroupRepository.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-01-28T11:32:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10d616cf_682e33d4",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7e2ad64c_6ec20735",
         "filename": "main/src/main/java/org/onap/policy/pap/main/repository/PdpStatisticsRepository.java",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a7c20fe_13e6d46f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/repository/PdpStatisticsRepository.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-01-28T11:32:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e2ad64c_6ec20735",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -103,6 +139,24 @@
       "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68cfabc0_0503dcff",
+        "filename": "main/src/test/resources/config/application.yaml",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-01-28T11:32:05Z",
+      "side": 1,
+      "message": "They are not necessary, removed it.",
+      "parentUuid": "8e12b704_6de13676",
+      "revId": "0cfdef9bc0c8bb7a41ec1a10dcb0078cfe601c1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
