@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2021 Nordix Foundation.
+ *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +29,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.pap.main.service.PolicyAuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +49,17 @@ public class PolicyAuditManager {
     @Getter(value = AccessLevel.PROTECTED)
     private List<PolicyAudit> auditRecords = new ArrayList<>();
 
-    private PolicyModelsProvider provider;
+    private PolicyAuditService policyAuditService;
 
     /**
-     * Default constructor.
+     * Constructs the object.
+     *
+     * @param policyAuditService the service
      */
-    public PolicyAuditManager(PolicyModelsProvider provider) {
-        this.provider = provider;
+    public PolicyAuditManager(PolicyAuditService policyAuditService) {
+        this.policyAuditService = policyAuditService;
     }
+
 
     /**
      * Builds an audit object.
@@ -107,7 +111,7 @@ public class PolicyAuditManager {
         if (!auditRecords.isEmpty()) {
             logger.info("sending audit records to database: {}", auditRecords);
             try {
-                provider.createAuditRecords(auditRecords);
+                policyAuditService.createAuditRecords(auditRecords);
                 auditRecords.clear();
             } catch (RuntimeException excpt) {
                 // not throwing the exception to not stop the main request.

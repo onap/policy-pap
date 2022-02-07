@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import io.swagger.annotations.ResponseHeader;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
@@ -120,7 +119,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
             }
             return makeListOrNotFoundResponse(requestId, result);
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
@@ -183,7 +182,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                 return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
             }
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
@@ -244,7 +243,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     .body(result.iterator().next());
             }
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
@@ -299,7 +298,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
                 .body(provider.getPolicyStatus());
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
@@ -365,7 +364,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
             }
             return makeListOrNotFoundResponse(requestId, result);
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
@@ -434,7 +433,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     .body(result);
             }
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
@@ -502,7 +501,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
                     .body(result.iterator().next());
             }
 
-        } catch (PfModelException | PfModelRuntimeException e) {
+        } catch (PfModelRuntimeException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),

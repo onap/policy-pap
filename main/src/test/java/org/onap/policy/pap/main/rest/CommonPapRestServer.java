@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public abstract class CommonPapRestServer {
 
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("pap.databaseProviderParameters.databaseUrl", () -> "jdbc:h2:mem:testdb" + CommonTestData.dbNum);
+        registry.add("spring.datasource.url", () -> "jdbc:h2:mem:testdb" + CommonTestData.dbNum);
         registry.add("server.ssl.enabled", () -> "true");
         registry.add("server.ssl.key-store", () -> keystore.getKeystoreName());
         registry.add("server.ssl.key-store-password", () -> SelfSignedKeyStore.KEYSTORE_PASSWORD);

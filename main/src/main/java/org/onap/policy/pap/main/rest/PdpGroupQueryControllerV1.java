@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019,2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,11 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +54,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
 
-    private final PdpGroupQueryProvider provider;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryControllerV1.class);
+
+    private final PdpGroupService pdpGroupService;
 
     /**
      * Queries details of all PDP groups.
@@ -94,8 +98,11 @@ public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
         required = false,
         value = REQUEST_ID_NAME) final UUID requestId) throws PfModelException {
 
-        final Pair<HttpStatus, PdpGroups> pair = provider.fetchPdpGroupDetails();
-        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
-            .body(pair.getRight());
+        final var pdpGroups = new PdpGroups();
+        pdpGroups.setGroups(pdpGroupService.getPdpGroups());
+        LOGGER.debug("PdpGroup Query Response - {}", pdpGroups);
+
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.OK)), requestId)
+            .body(pdpGroups);
     }
 }

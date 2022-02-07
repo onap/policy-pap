@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
- * Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2020,2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,17 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PolicyAuditService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
+import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
@@ -71,10 +74,63 @@ public abstract class ProviderBase {
      */
     private PolicyNotifier notifier;
 
+    private ToscaServiceTemplateService toscaService;
+
+    private PdpGroupService pdpGroupService;
+
+    private PolicyStatusService policyStatusService;
+
+    private PolicyAuditService policyAuditService;
+
     /**
-     * Factory for PAP DAO.
+     * The setter method for injecting into Spring context.
+     *
+     * @param toscaService the toscaService to set
      */
-    private PolicyModelsProviderFactoryWrapper daoFactory;
+    @Autowired
+    public final void setToscaService(ToscaServiceTemplateService toscaService) {
+        this.toscaService = toscaService;
+    }
+
+    /**
+     * The setter method for injecting into Spring context.
+     *
+     * @param pdpGroupService the pdpGroupService to set
+     */
+    @Autowired
+    public final void setPdpGroupService(PdpGroupService pdpGroupService) {
+        this.pdpGroupService = pdpGroupService;
+    }
+
+    /**
+     * The setter method for injecting into Spring context.
+     *
+     * @param policyStatusService the policyStatusService to set
+     */
+    @Autowired
+    public final void setPolicyStatusService(PolicyStatusService policyStatusService) {
+        this.policyStatusService = policyStatusService;
+    }
+
+    /**
+     * The setter method for injecting into Spring context.
+     *
+     * @param policyAuditService the policyAuditService to set
+     */
+    @Autowired
+    public final void setPolicyAuditService(PolicyAuditService policyAuditService) {
+        this.policyAuditService = policyAuditService;
+    }
+
+    /**
+     * The setter method for injecting into Spring context.
+     *
+     * @param policyNotifier the policyNotifier to set
+     */
+    @Autowired
+    public final void setPolicyNotifier(PolicyNotifier policyNotifier) {
+        this.notifier = policyNotifier;
+    }
 
     /**
      * Initializes the parameters..
@@ -83,8 +139,6 @@ public abstract class ProviderBase {
     public void initialize() {
         this.updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
         this.requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
-        this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        this.notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class);
     }
 
     /**
@@ -102,15 +156,15 @@ public abstract class ProviderBase {
             SessionData data;
             var notif = new PolicyNotification();
 
-            try (PolicyModelsProvider dao = daoFactory.create()) {
+            try {
 
-                data = new SessionData(dao, user);
+                data = new SessionData(user, toscaService, pdpGroupService, policyStatusService, policyAuditService);
                 processor.accept(data, request);
 
                 // make all of the DB updates
                 data.updateDb(notif);
 
-            } catch (PfModelException | PfModelRuntimeException e) {
+            } catch (PfModelRuntimeException e) {
                 throw e;
 
             } catch (RuntimeException e) {

@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +32,8 @@ import org.junit.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
-import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams.PdpModifyRequestMapParamsBuilder;
 
 public class TestPdpModifyRequestMapParams {
@@ -46,8 +45,6 @@ public class TestPdpModifyRequestMapParams {
     private PdpParameters pdpParams;
     private TimerManager updTimers;
     private TimerManager stateTimers;
-    private PolicyModelsProviderFactoryWrapper dao;
-    private PolicyNotifier notifier;
 
     /**
      * Sets up the objects and creates an empty {@link #builder}.
@@ -61,12 +58,10 @@ public class TestPdpModifyRequestMapParams {
         pdpParams = mock(PdpParameters.class);
         updTimers = mock(TimerManager.class);
         stateTimers = mock(TimerManager.class);
-        dao = mock(PolicyModelsProviderFactoryWrapper.class);
-        notifier = mock(PolicyNotifier.class);
 
         builder = PdpModifyRequestMapParams.builder().modifyLock(lock).pdpPublisher(pub).responseDispatcher(disp)
                         .params(pdpParams).stateChangeTimers(stateTimers).updateTimers(updTimers)
-                        .daoFactory(dao).policyNotifier(notifier).maxPdpAgeMs(MAX_PDP_AGE_MS);
+                        .maxPdpAgeMs(MAX_PDP_AGE_MS);
     }
 
     @Test
@@ -79,8 +74,6 @@ public class TestPdpModifyRequestMapParams {
         assertSame(pdpParams, params.getParams());
         assertSame(updTimers, params.getUpdateTimers());
         assertSame(stateTimers, params.getStateChangeTimers());
-        assertSame(dao, params.getDaoFactory());
-        assertSame(notifier, params.getPolicyNotifier());
     }
 
     @Test
@@ -132,17 +125,5 @@ public class TestPdpModifyRequestMapParams {
     public void testValidate_MissingUpdateTimers() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.updateTimers(null).build().validate())
                         .withMessageContaining("update");
-    }
-
-    @Test
-    public void testValidate_MissingDaoFactory() {
-        assertThatIllegalArgumentException().isThrownBy(() -> builder.daoFactory(null).build().validate())
-                        .withMessageContaining("DAO");
-    }
-
-    @Test
-    public void testValidate_MissingNotifier() {
-        assertThatIllegalArgumentException().isThrownBy(() -> builder.policyNotifier(null).build().validate())
-                        .withMessageContaining("notifier");
     }
 }

@@ -33,14 +33,6 @@ pap:
       maxWaitMs: 3000
     heartBeatMs: 6000
     maxMessageAgeMs: 20000
-  databaseProviderParameters:
-    name: PolicyModelsProviderParameters
-    implementation: org.onap.policy.models.provider.impl.DatabasePolicyModelsProviderImpl
-    databaseDriver: org.h2.Driver
-    databaseUrl: jdbc:h2:mem:testdb0
-    databaseUser: policy
-    databasePassword: UDAxaWNZ
-    persistenceUnit: ToscaConceptTest
   savePdpStatisticsInDb: true
   topicParameterGroup:
     topicSources:

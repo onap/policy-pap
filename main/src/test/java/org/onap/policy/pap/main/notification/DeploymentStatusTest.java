@@ -3,6 +3,7 @@
  * ONAP
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +46,9 @@ import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.PdpPolicyStatusBuilder;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeploymentStatusTest {
@@ -75,7 +76,7 @@ public class DeploymentStatusTest {
     private ArgumentCaptor<List<PdpPolicyStatus>> deleted;
 
     @Mock
-    private PolicyModelsProvider provider;
+    private PolicyStatusService policyStatusService;
 
     private DeploymentStatus tracker;
 
@@ -84,7 +85,7 @@ public class DeploymentStatusTest {
      */
     @Before
     public void setUp() {
-        tracker = new DeploymentStatus(provider);
+        tracker = new DeploymentStatus(policyStatusService);
 
         // @formatter:off
         builder = PdpPolicyStatus.builder()
@@ -142,7 +143,7 @@ public class DeploymentStatusTest {
         PdpPolicyStatus status2 = builder.policy(POLICY_B).build();
         PdpPolicyStatus status3 = builder.policy(POLICY_A).pdpId(PDP_B).build();
 
-        when(provider.getGroupPolicyStatus(GROUP_A)).thenReturn(List.of(status1, status2, status3));
+        when(policyStatusService.getGroupPolicyStatus(GROUP_A)).thenReturn(List.of(status1, status2, status3));
 
         tracker.loadByGroup(GROUP_A);
 
@@ -156,7 +157,7 @@ public class DeploymentStatusTest {
 
         // try again - should not reload
         tracker.loadByGroup(GROUP_A);
-        verify(provider).getGroupPolicyStatus(anyString());
+        verify(policyStatusService).getGroupPolicyStatus(anyString());
     }
 
     @Test
@@ -198,7 +199,7 @@ public class DeploymentStatusTest {
 
         tracker.flush();
 
-        verify(provider).cudPolicyStatus(created.capture(), updated.capture(), deleted.capture());
+        verify(policyStatusService).cudPolicyStatus(created.capture(), updated.capture(), deleted.capture());
 
         assertThat(sort(created.getValue())).isEqualTo(List.of(create1, create2));
         assertThat(sort(updated.getValue())).isEqualTo(List.of(update1, update2));
