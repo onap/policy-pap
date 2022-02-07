@@ -23,6 +23,7 @@ package org.onap.policy.pap.main.service;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
@@ -46,6 +47,8 @@ public class PolicyAuditService {
     private static final Integer DEFAULT_MAX_RECORDS = 100;
     private static final Integer DEFAULT_MIN_RECORDS = 10;
 
+    private AtomicLong generatedId = new AtomicLong();
+
     private final PolicyAuditRepository policyAuditRepository;
 
     /**
@@ -61,12 +64,12 @@ public class PolicyAuditService {
         var count = 0;
         for (JpaPolicyAudit jpaAudit : jpaAudits) {
             result.addResult(jpaAudit.validate(String.valueOf(count++)));
+            jpaAudit.getKey().setGeneratedId(generatedId.incrementAndGet());
         }
 
         if (!result.isValid()) {
             throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, result.getResult());
         }
-
         policyAuditRepository.saveAll(jpaAudits);
     }
 
@@ -103,7 +106,8 @@ public class PolicyAuditService {
      * @param endTime end time of the records to be returned
      * @return list of {@link PolicyAudit} records found
      */
-    public List<PolicyAudit> getAuditRecords(String pdpGroup, int recordCount, Instant startTime, Instant endTime) {
+    public List<PolicyAudit> getAuditRecords(@NonNull String pdpGroup, int recordCount, Instant startTime,
+        Instant endTime) {
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
             return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndTimeStampBetween(pdpGroup,
@@ -130,8 +134,8 @@ public class PolicyAuditService {
      * @param endTime end time of the records to be returned
      * @return list of {@link PolicyAudit} records found
      */
-    public List<PolicyAudit> getAuditRecords(String pdpGroup, String policyName, String policyVersion, int recordCount,
-        Instant startTime, Instant endTime) {
+    public List<PolicyAudit> getAuditRecords(@NonNull String pdpGroup, @NonNull String policyName,
+        @NonNull String policyVersion, int recordCount, Instant startTime, Instant endTime) {
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
             return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampBetween(
@@ -160,7 +164,7 @@ public class PolicyAuditService {
      * @param endTime end time of the records to be returned
      * @return list of {@link PolicyAudit} records found
      */
-    public List<PolicyAudit> getAuditRecords(String policyName, String policyVersion, int recordCount,
+    public List<PolicyAudit> getAuditRecords(@NonNull String policyName, @NonNull String policyVersion, int recordCount,
         Instant startTime, Instant endTime) {
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {

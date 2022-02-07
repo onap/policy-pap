@@ -49,13 +49,15 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PolicyAuditService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
+import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 
 /**
  * Super class for TestPdpGroupDeployProviderXxx classes.
@@ -65,11 +67,19 @@ public class ProviderSuper {
     public static final String DEFAULT_USER = "PAP_TEST";
 
     @Mock
-    protected PolicyModelsProvider dao;
+    protected PdpGroupService pdpGroupService;
+
+    @Mock
+    protected PolicyStatusService policyStatusService;
+
+    @Mock
+    protected PolicyAuditService policyAuditService;
+
+    @Mock
+    protected ToscaServiceTemplateService toscaService;
 
     @Mock
     protected PolicyNotifier notifier;
-
 
     /**
      * Used to capture input to dao.updatePdpGroups() and dao.createPdpGroups().
@@ -79,7 +89,6 @@ public class ProviderSuper {
 
     protected Object lockit;
     protected PdpModifyRequestMap reqmap;
-    protected PolicyModelsProviderFactoryWrapper daofact;
     protected ToscaPolicy policy1;
     protected PapStatisticsManager statsmanager;
 
@@ -96,24 +105,33 @@ public class ProviderSuper {
         reqmap = mock(PdpModifyRequestMap.class);
 
         lockit = new Object();
-        daofact = mock(PolicyModelsProviderFactoryWrapper.class);
         policy1 = loadPolicy("policy.json");
         statsmanager = mock(PapStatisticsManager.class);
 
-        when(daofact.create()).thenReturn(dao);
-
         List<PdpGroup> groups = loadGroups("groups.json");
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(groups);
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(groups);
 
-        when(dao.createPdpGroups(any())).thenAnswer(answer -> answer.getArgument(0, List.class));
-        when(dao.updatePdpGroups(any())).thenAnswer(answer -> answer.getArgument(0, List.class));
+        when(pdpGroupService.createPdpGroups(any())).thenAnswer(answer -> answer.getArgument(0, List.class));
+        when(pdpGroupService.updatePdpGroups(any())).thenAnswer(answer -> answer.getArgument(0, List.class));
 
         Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, lockit);
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);
-        Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daofact);
         Registry.register(PapConstants.REG_POLICY_NOTIFIER, notifier);
         Registry.register(PapConstants.REG_STATISTICS_MANAGER, statsmanager);
+    }
+
+    /**
+     * Initialize services to the provider for tests.
+     *
+     * @param prov the provider
+     */
+    public void initialize(ProviderBase prov) {
+        prov.setPdpGroupService(pdpGroupService);
+        prov.setPolicyAuditService(policyAuditService);
+        prov.setPolicyStatusService(policyStatusService);
+        prov.setToscaService(toscaService);
+        prov.initialize();
     }
 
     protected void assertGroup(List<PdpGroup> groups, String name) {
@@ -138,7 +156,7 @@ public class ProviderSuper {
      * @throws Exception if an error occurred
      */
     protected List<PdpGroup> getGroupCreates() throws Exception {
-        verify(dao).createPdpGroups(updateCaptor.capture());
+        verify(pdpGroupService).createPdpGroups(updateCaptor.capture());
 
         return copyList(updateCaptor.getValue());
     }
@@ -150,7 +168,7 @@ public class ProviderSuper {
      * @throws Exception if an error occurred
      */
     protected List<PdpGroup> getGroupUpdates() throws Exception {
-        verify(dao).updatePdpGroups(updateCaptor.capture());
+        verify(pdpGroupService).updatePdpGroups(updateCaptor.capture());
 
         return copyList(updateCaptor.getValue());
     }

@@ -41,11 +41,13 @@ import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 
 
 /**
@@ -91,7 +93,9 @@ public class TestPapActivator {
 
         final PapParameterGroup parGroup = new CommonTestData().getPapParameterGroup(6969);
 
-        activator = new PapActivator(parGroup);
+        activator = new PapActivator(parGroup, new PolicyStatusService(null), new PdpHeartbeatListener(),
+            new PdpModifyRequestMap(null, null, null, null, parGroup));
+
     }
 
     /**

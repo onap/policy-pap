@@ -43,10 +43,8 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
@@ -84,8 +82,6 @@ public class CommonRequestBase {
     protected TimerManager.Timer timer;
     protected Queue<QueueToken<PdpMessage>> queue;
     protected RequestListener listener;
-    protected PolicyModelsProviderFactoryWrapper daoFactory;
-    protected PolicyModelsProvider dao;
     protected RequestParams reqParams;
     protected PdpModifyRequestMapParams mapParams;
 
@@ -105,9 +101,6 @@ public class CommonRequestBase {
         timer = mock(TimerManager.Timer.class);
         queue = new LinkedList<>();
         listener = mock(RequestListener.class);
-        daoFactory = mock(PolicyModelsProviderFactoryWrapper.class);
-        dao = mock(PolicyModelsProvider.class);
-
         PdpParameters pdpParams = mock(PdpParameters.class);
 
         doAnswer(new Answer<Object>() {
@@ -119,8 +112,6 @@ public class CommonRequestBase {
         }).when(publisher).enqueue(any());
 
         when(timers.register(any(), any())).thenReturn(timer);
-
-        when(daoFactory.create()).thenReturn(dao);
 
         PdpStateChangeParameters stateParams = mock(PdpStateChangeParameters.class);
         when(stateParams.getMaxRetryCount()).thenReturn(RETRIES);
@@ -134,7 +125,7 @@ public class CommonRequestBase {
                         .setResponseDispatcher(dispatcher).setTimers(timers);
 
         mapParams = PdpModifyRequestMapParams.builder().modifyLock(lock).pdpPublisher(publisher)
-                        .policyNotifier(notifier).responseDispatcher(dispatcher).daoFactory(daoFactory)
+                        .policyNotifier(notifier).responseDispatcher(dispatcher)
                         .updateTimers(timers).stateChangeTimers(timers).params(pdpParams)
                         .maxPdpAgeMs(100).build();
     }

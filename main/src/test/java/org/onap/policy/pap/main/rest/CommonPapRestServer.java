@@ -111,7 +111,7 @@ public abstract class CommonPapRestServer {
 
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("pap.databaseProviderParameters.databaseUrl", () -> "jdbc:h2:mem:testdb" + CommonTestData.dbNum);
+        registry.add("spring.datasource.url", () -> "jdbc:h2:mem:testdb" + CommonTestData.dbNum);
         registry.add("server.ssl.enabled", () -> "true");
         registry.add("server.ssl.key-store", () -> keystore.getKeystoreName());
         registry.add("server.ssl.key-store-password", () -> SelfSignedKeyStore.KEYSTORE_PASSWORD);

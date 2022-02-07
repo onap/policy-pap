@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import lombok.Setter;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -44,23 +43,27 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
 import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.RequestParams;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PdpStatisticsService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Maps a PDP name to requests that modify PDPs.
  */
+@Component
 public class PdpModifyRequestMap {
     private static final Logger logger = LoggerFactory.getLogger(PdpModifyRequestMap.class);
 
@@ -74,48 +77,64 @@ public class PdpModifyRequestMap {
     /**
      * PDP modification lock.
      */
-    private final Object modifyLock;
+    private Object modifyLock;
 
     /**
      * The configuration parameters.
      */
-    private final PdpModifyRequestMapParams params;
-
-    /**
-     * Factory for PAP DAO.
-     */
-    private final PolicyModelsProviderFactoryWrapper daoFactory;
+    private PdpModifyRequestMapParams params;
 
     /**
      * Used to notify when policy updates completes.
      */
-    private final PolicyNotifier policyNotifier;
+    private PolicyNotifier policyNotifier;
 
     /**
      * Used to undeploy policies from the system, when they cannot be deployed to a PDP.
      *
      * <p/>
-     * Note: there's a "catch-22" here. The request map needs an undeployer, but the
-     * undeployer needs the request map. Consequently, the request map is created first,
-     * then the undeployer, and finally, this field is set.
+     * Note: The request map needs an undeployer during creation, and the undeployer
+     * needs the request map when it's initialize method is called.
      */
-    @Setter
-    private PolicyUndeployer policyUndeployer;
+    private final PolicyUndeployer policyUndeployer;
 
+    private final PdpGroupService pdpGroupService;
+
+    private final PolicyStatusService policyStatusService;
+
+    private final PdpStatisticsService pdpStatisticsService;
+
+    private final PapParameterGroup parameterGroup;
 
     /**
      * Constructs the object.
      *
-     * @param params configuration parameters
-     *
-     * @throws IllegalArgumentException if a required parameter is not set
+     * @param pdpGroupService the pdpGroupService
+     * @param policyStatusService the policyStatusService
+     * @param pdpStatisticsService the pdpStatisticsService
+     * @param policyUndeployer the policyUndeployer
+     * @param parameterGroup the parameterGroup
      */
-    public PdpModifyRequestMap(PdpModifyRequestMapParams params) {
+    public PdpModifyRequestMap(PdpGroupService pdpGroupService, PolicyStatusService policyStatusService,
+        PdpStatisticsService pdpStatisticsService, PolicyUndeployer policyUndeployer,
+        PapParameterGroup parameterGroup) {
+        this.pdpGroupService = pdpGroupService;
+        this.policyStatusService = policyStatusService;
+        this.pdpStatisticsService = pdpStatisticsService;
+        this.policyUndeployer = policyUndeployer;
+        this.parameterGroup = parameterGroup;
+    }
+
+    /**
+     * Initializes the requestMap.
+     *
+     * @param params the parameters.
+     */
+    public void initialize(PdpModifyRequestMapParams params) {
         params.validate();
 
         this.params = params;
         this.modifyLock = params.getModifyLock();
-        this.daoFactory = params.getDaoFactory();
         this.policyNotifier = params.getPolicyNotifier();
     }
 
@@ -267,13 +286,13 @@ public class PdpModifyRequestMap {
         synchronized (modifyLock) {
             logger.info("check for PDP records older than {}ms", params.getMaxPdpAgeMs());
 
-            try (PolicyModelsProvider dao = daoFactory.create()) {
+            try {
 
                 PdpGroupFilter filter = PdpGroupFilter.builder().groupState(PdpState.ACTIVE).build();
-                List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
+                List<PdpGroup> groups = pdpGroupService.getFilteredPdpGroups(filter);
                 List<PdpGroup> updates = new ArrayList<>(1);
 
-                var status = new DeploymentStatus(dao);
+                var status = new DeploymentStatus(policyStatusService);
 
                 Instant minAge = Instant.now().minusMillis(params.getMaxPdpAgeMs());
 
@@ -287,7 +306,7 @@ public class PdpModifyRequestMap {
                 }
 
                 if (!updates.isEmpty()) {
-                    dao.updatePdpGroups(updates);
+                    pdpGroupService.updatePdpGroups(updates);
 
                     var notification = new PolicyNotification();
                     status.flush(notification);
@@ -295,7 +314,7 @@ public class PdpModifyRequestMap {
                     policyNotifier.publish(notification);
                 }
 
-            } catch (PfModelException | RuntimeException e) {
+            } catch (RuntimeException e) {
                 logger.warn("failed to remove expired PDPs", e);
             }
         }
@@ -357,7 +376,7 @@ public class PdpModifyRequestMap {
      * @return a response handler
      */
     protected PdpStatusMessageHandler makePdpResponseHandler() {
-        return new PdpStatusMessageHandler(params.getParams(), params.isSavePdpStatistics());
+        return new PdpStatusMessageHandler(parameterGroup, pdpGroupService, pdpStatisticsService);
     }
 
     /**
@@ -473,4 +492,5 @@ public class PdpModifyRequestMap {
             }
         }
     }
+
 }

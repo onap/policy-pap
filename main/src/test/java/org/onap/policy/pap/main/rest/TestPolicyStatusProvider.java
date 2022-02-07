@@ -59,7 +59,6 @@ public class TestPolicyStatusProvider extends ProviderSuper {
 
     private PolicyStatusProvider prov;
 
-
     @AfterClass
     public static void tearDownAfterClass() {
         Registry.newRegistry();
@@ -76,8 +75,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
 
         super.setUp();
 
-        prov = new PolicyStatusProvider();
-        prov.initialize();
+        prov = new PolicyStatusProvider(policyStatusService);
     }
 
     @Test
@@ -242,7 +240,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
         builder.deploy(true);
 
         // @formatter:off
-        when(dao.getAllPolicyStatus()).thenReturn(List.of(
+        when(policyStatusService.getAllPolicyStatus()).thenReturn(List.of(
                         builder.policy(POLICY_A).pdpId(PDP_A).build(),
                         builder.policy(POLICY_A).pdpId(PDP_B).build(),
                         notDeployed,
@@ -264,7 +262,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
         ToscaConceptIdentifierOptVersion optIdent = new ToscaConceptIdentifierOptVersion(POLICY_A);
 
         // @formatter:off
-        when(dao.getAllPolicyStatus(optIdent)).thenReturn(List.of(
+        when(policyStatusService.getAllPolicyStatus(optIdent)).thenReturn(List.of(
                         builder.policy(POLICY_A).pdpId(PDP_A).build(),
                         notDeployed,
                         builder.policy(POLICY_A).pdpId(PDP_C).build()
