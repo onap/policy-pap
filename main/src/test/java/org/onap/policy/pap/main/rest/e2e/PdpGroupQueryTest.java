@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -46,18 +46,19 @@ public class PdpGroupQueryTest extends End2EndBase {
     private static final String GROUP_ENDPOINT = "pdps";
 
     /**
-     * Starts Main and adds policies to the DB.
+     * Sets up.
      *
-     * @throws Exception if an error occurs
+     * @throws Exception the exception
      */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        End2EndBase.setUpBeforeClass();
+    @Override
+    @Before
+    public void setUp() throws Exception {
 
         addToscaPolicyTypes("monitoring.policy-type.yaml");
         addToscaPolicies("monitoring.policy.yaml");
 
         addGroups("queryGroup.json");
+        super.setUp();
     }
 
     @Test

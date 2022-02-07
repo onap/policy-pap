@@ -27,10 +27,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.base.Validated;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
+import org.onap.policy.pap.main.repository.PdpStatisticsRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,6 +50,9 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
 
     @Autowired
     private PdpStatisticsService pdpStatisticsService;
+
+    @Autowired
+    private PdpStatisticsRepository pdpStatisticsRepository;
 
     private PdpStatistics pdpStatistics1;
     private PdpStatistics pdpStatistics2;
@@ -67,6 +72,15 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
         pdpStatistics2 = generatePdpStatistics("name2", TIMESTAMP1, 2L, GROUP, SUBGROUP);
         pdpStatistics3 = generatePdpStatistics(NAME1, TIMESTAMP2, 3L, GROUP, SUBGROUP);
         pdpStatistics4 = generatePdpStatistics(NAME3, TIMESTAMP2, 4L, GROUP0, SUBGROUP);
+    }
+
+    /**
+     * Teardown after tests.
+     */
+    @Override
+    @After
+    public void tearDown() {
+        pdpStatisticsRepository.deleteAll();
     }
 
     @Test

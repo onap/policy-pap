@@ -84,14 +84,14 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     @Before
     @Override
     public void setUp() throws Exception {
-
         super.setUp();
+        prov = new MyProvider();
+        super.initialize(prov);
 
         ident = policy1.getIdentifier();
         optIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), null);
         fullIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), ident.getVersion());
 
-        prov = new MyProvider();
         updater = prov.makeUpdater(session, policy1, fullIdent);
     }
 
@@ -162,15 +162,15 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
      */
     @Test
     public void testUndeploy_Full() throws Exception {
-        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
         PdpGroup group = loadGroup("undeploy.json");
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
         PdpGroupDeleteProvider deleteProvider = new PdpGroupDeleteProvider();
-        deleteProvider.initialize();
+        super.initialize(deleteProvider);
         deleteProvider.undeploy(fullIdent, DEFAULT_USER);
 
         // should have updated the old group
