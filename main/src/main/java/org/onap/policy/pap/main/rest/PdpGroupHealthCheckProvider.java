@@ -24,16 +24,14 @@ package org.onap.policy.pap.main.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.Pdps;
-import org.onap.policy.models.provider.PolicyModelsProvider;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.service.PdpGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,9 +43,12 @@ import org.springframework.stereotype.Service;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 @Service
+@RequiredArgsConstructor
 public class PdpGroupHealthCheckProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupHealthCheckProvider.class);
+
+    private PdpGroupService pdpGroupService;
 
     /**
      * Returns health status of all PDPs.
@@ -58,18 +59,14 @@ public class PdpGroupHealthCheckProvider {
     public Pair<HttpStatus, Pdps> fetchPdpGroupHealthStatus() throws PfModelException {
 
         final var pdps = new Pdps();
-        final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            final List<PdpGroup> groups = databaseProvider.getPdpGroups(null);
-            final List<Pdp> pdpList = new ArrayList<>();
-            for (final PdpGroup group : groups) {
-                for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
-                    pdpList.addAll(subGroup.getPdpInstances());
-                }
+        final List<PdpGroup> groups = pdpGroupService.getPdpGroups();
+        final List<Pdp> pdpList = new ArrayList<>();
+        for (final PdpGroup group : groups) {
+            for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
+                pdpList.addAll(subGroup.getPdpInstances());
             }
-            pdps.setPdpList(pdpList);
         }
+        pdps.setPdpList(pdpList);
         LOGGER.debug("PdpGroup HealthCheck Response - {}", pdps);
         return Pair.of(HttpStatus.OK, pdps);
     }

@@ -91,11 +91,6 @@
             <version>${policy.models.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.onap.policy.models</groupId>
-            <artifactId>policy-models-provider</artifactId>
-            <version>${policy.models.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.onap.policy.common</groupId>
             <artifactId>utils-test</artifactId>
             <version>${policy.common.version}</version>

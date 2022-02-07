@@ -44,9 +44,7 @@ import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
@@ -55,6 +53,10 @@ import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.parameters.RequestParams;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PdpStatisticsService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
+import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,11 +84,6 @@ public class PdpModifyRequestMap {
     private final PdpModifyRequestMapParams params;
 
     /**
-     * Factory for PAP DAO.
-     */
-    private final PolicyModelsProviderFactoryWrapper daoFactory;
-
-    /**
      * Used to notify when policy updates completes.
      */
     private final PolicyNotifier policyNotifier;
@@ -102,6 +99,13 @@ public class PdpModifyRequestMap {
     @Setter
     private PolicyUndeployer policyUndeployer;
 
+    private PdpGroupService pdpGroupService;
+
+    private PolicyStatusService policyStatusService;
+
+    private PdpStatisticsService pdpStatisticsService;
+
+    private ToscaServiceTemplateService toscaService;
 
     /**
      * Constructs the object.
@@ -115,8 +119,11 @@ public class PdpModifyRequestMap {
 
         this.params = params;
         this.modifyLock = params.getModifyLock();
-        this.daoFactory = params.getDaoFactory();
         this.policyNotifier = params.getPolicyNotifier();
+        this.pdpGroupService = params.getPdpGroupService();
+        this.policyStatusService = params.getPolicyStatusService();
+        this.pdpStatisticsService = params.getPdpStatisticsService();
+        this.toscaService = params.getToscaService();
     }
 
     /**
@@ -267,13 +274,13 @@ public class PdpModifyRequestMap {
         synchronized (modifyLock) {
             logger.info("check for PDP records older than {}ms", params.getMaxPdpAgeMs());
 
-            try (PolicyModelsProvider dao = daoFactory.create()) {
+            try {
 
                 PdpGroupFilter filter = PdpGroupFilter.builder().groupState(PdpState.ACTIVE).build();
-                List<PdpGroup> groups = dao.getFilteredPdpGroups(filter);
+                List<PdpGroup> groups = pdpGroupService.getFilteredPdpGroups(filter);
                 List<PdpGroup> updates = new ArrayList<>(1);
 
-                var status = new DeploymentStatus(dao);
+                var status = new DeploymentStatus(policyStatusService);
 
                 Instant minAge = Instant.now().minusMillis(params.getMaxPdpAgeMs());
 
@@ -287,7 +294,7 @@ public class PdpModifyRequestMap {
                 }
 
                 if (!updates.isEmpty()) {
-                    dao.updatePdpGroups(updates);
+                    pdpGroupService.updatePdpGroups(updates);
 
                     var notification = new PolicyNotification();
                     status.flush(notification);
@@ -295,7 +302,7 @@ public class PdpModifyRequestMap {
                     policyNotifier.publish(notification);
                 }
 
-            } catch (PfModelException | RuntimeException e) {
+            } catch (RuntimeException e) {
                 logger.warn("failed to remove expired PDPs", e);
             }
         }
@@ -357,7 +364,8 @@ public class PdpModifyRequestMap {
      * @return a response handler
      */
     protected PdpStatusMessageHandler makePdpResponseHandler() {
-        return new PdpStatusMessageHandler(params.getParams(), params.isSavePdpStatistics());
+        return new PdpStatusMessageHandler(params.getParams(), params.isSavePdpStatistics(), pdpGroupService,
+            pdpStatisticsService, toscaService, policyStatusService);
     }
 
     /**

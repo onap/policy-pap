@@ -47,17 +47,14 @@ import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
 import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
-import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.service.PdpGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +79,9 @@ public class PolicyComponentsHealthCheckProvider {
 
     @Autowired
     private PapParameterGroup papParameterGroup;
+
+    @Autowired
+    private PdpGroupService pdpGroupService;
 
     @Value("${server.ssl.enabled:false}")
     private boolean isHttps;
@@ -157,14 +157,14 @@ public class PolicyComponentsHealthCheckProvider {
 
         // Check PDPs, read status from DB
         try {
-            List<PdpGroup> groups = fetchPdpGroups();
+            List<PdpGroup> groups = pdpGroupService.getPdpGroups();
             Map<String, List<Pdp>> pdpListWithType = fetchPdpsHealthStatus(groups);
             if (isHealthy && (!verifyNumberOfPdps(groups) || pdpListWithType.values().stream().flatMap(List::stream)
                             .anyMatch(pdp -> !PdpHealthStatus.HEALTHY.equals(pdp.getHealthy())))) {
                 isHealthy = false;
             }
             result.put(PapConstants.POLICY_PDPS, pdpListWithType);
-        } catch (final PfModelException exp) {
+        } catch (final PfModelRuntimeException exp) {
             result.put(PapConstants.POLICY_PDPS, exp.getErrorResponse());
             isHealthy = false;
         }
@@ -196,16 +196,6 @@ public class PolicyComponentsHealthCheckProvider {
             }
         }
         return flag;
-    }
-
-    private List<PdpGroup> fetchPdpGroups() throws PfModelException {
-        List<PdpGroup> groups = new ArrayList<>();
-        final PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                        Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            groups = databaseProvider.getPdpGroups(null);
-        }
-        return groups;
     }
 
     private HealthCheckReport fetchPolicyComponentHealthStatus(HttpClient httpClient) {

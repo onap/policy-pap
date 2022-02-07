@@ -27,8 +27,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
@@ -40,15 +40,18 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
-import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.models.tosca.simple.concepts.JpaToscaServiceTemplate;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
-import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.repository.ToscaServiceTemplateRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PdpStatisticsService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
+import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.yaml.snakeyaml.Yaml;
 
 public abstract class End2EndBase extends CommonPapRestServer {
@@ -58,20 +61,24 @@ public abstract class End2EndBase extends CommonPapRestServer {
     private static final Yaml yaml = new Yaml();
 
     /**
-     * DB connection. This is kept open until {@link #stop()} is invoked so that the in-memory DB is not destroyed.
-     */
-    private static PolicyModelsProvider dbConn;
-
-    /**
-     * DAO provider factory.
-     */
-    private static PolicyModelsProviderFactoryWrapper daoFactory;
-
-    /**
      * Context - should be initialized by setUp() method.
      */
     protected End2EndContext context = null;
 
+    @Autowired
+    public PdpGroupService pdpGroupService;
+
+    @Autowired
+    public PdpStatisticsService pdpStatisticsService;
+
+    @Autowired
+    private ToscaServiceTemplateRepository serviceTemplateRepository;
+
+    @Autowired
+    public PolicyStatusService policyStatusService;
+
+    @Autowired
+    public ToscaServiceTemplateService toscaService;
 
     /**
      * Starts Main and connects to the DB.
@@ -81,30 +88,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         CommonPapRestServer.setUpBeforeClass();
-
-        final PapParameterGroup params = new StandardCoder().decode(new File(CONFIG_FILE), PapParameterGroup.class);
-        daoFactory = new PolicyModelsProviderFactoryWrapper(params.getDatabaseProviderParameters());
-        dbConn = daoFactory.create();
     }
 
-    /**
-     * Tears down.
-     */
-    @AfterClass
-    public static void tearDownAfterClass() {
-        try {
-            dbConn.close();
-        } catch (final PfModelException e) {
-            logger.warn("failed to close the DB", e);
-        }
-
-        try {
-            daoFactory.close();
-        } catch (final Exception e) {
-            logger.warn("failed to close DAO factory", e);
-        }
-
-    }
 
     /**
      * Tears down.
@@ -130,9 +115,9 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param yamlFile name of the YAML file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addToscaPolicyTypes(final String yamlFile) throws PfModelException {
+    public void addToscaPolicyTypes(final String yamlFile) throws PfModelException {
         final ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
-        dbConn.createPolicyTypes(serviceTemplate);
+        serviceTemplateRepository.save(new JpaToscaServiceTemplate(serviceTemplate));
     }
 
     /**
@@ -141,9 +126,9 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param yamlFile name of the YAML file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addToscaPolicies(final String yamlFile) throws PfModelException {
+    public void addToscaPolicies(final String yamlFile) throws PfModelException {
         final ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
-        dbConn.createPolicies(serviceTemplate);
+        serviceTemplateRepository.save(new JpaToscaServiceTemplate(serviceTemplate));
     }
 
     /**
@@ -152,7 +137,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param jsonFile name of the JSON file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addGroups(final String jsonFile) throws PfModelException {
+    public void addGroups(final String jsonFile) throws PfModelException {
         final PdpGroups groups = loadJsonFile(jsonFile, PdpGroups.class);
 
         final ValidationResult result = groups.validatePapRest();
@@ -160,7 +145,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
             throw new PolicyPapRuntimeException("cannot init DB groups from " + jsonFile + ":\n" + result.getResult());
         }
 
-        dbConn.createPdpGroups(groups.getGroups());
+        pdpGroupService.createPdpGroups(groups.getGroups());
     }
 
     /**
@@ -169,8 +154,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param name name of the pdpGroup
      * @throws PfModelException if a DAO error occurs
      */
-    public static List<PdpGroup> fetchGroups(final String name) throws PfModelException {
-        return dbConn.getPdpGroups(name);
+    public List<PdpGroup> fetchGroups(final String name) throws PfModelException {
+        return pdpGroupService.getPdpGroups(name);
     }
 
     /**
@@ -181,10 +166,9 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param subGroupName name of the pdpSubGroup
      * @throws PfModelException if a DAO error occurs
      */
-    public static List<PdpStatistics> fetchPdpStatistics(final String instanceId, final String groupName,
+    public Map<String, Map<String, List<PdpStatistics>>> fetchPdpStatistics(final String instanceId, final String groupName,
            final String subGroupName) throws PfModelException {
-        return dbConn.getFilteredPdpStatistics(
-                        PdpFilterParameters.builder().name(instanceId).group(groupName).subGroup(subGroupName).build());
+        return pdpStatisticsService.fetchDatabaseStatistics(groupName, subGroupName, instanceId, 100, null, null);
     }
 
     /**
@@ -193,9 +177,9 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param jsonFile name of the JSON file specifying the data to be loaded
      * @throws PfModelException if a DAO error occurs
      */
-    public static void addPdpPolicyStatus(final String jsonFile) throws PfModelException {
+    public void addPdpPolicyStatus(final String jsonFile) throws PfModelException {
         final PolicyStatusRecords data = loadJsonFile(jsonFile, PolicyStatusRecords.class);
-        dbConn.cudPolicyStatus(data.records, null, null);
+        policyStatusService.cudPolicyStatus(data.records, null, null);
     }
 
     /**

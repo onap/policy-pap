@@ -26,10 +26,13 @@ import lombok.Getter;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PdpStatisticsService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
+import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 
 
 /**
@@ -45,9 +48,12 @@ public class PdpModifyRequestMapParams {
     private PdpParameters params;
     private TimerManager updateTimers;
     private TimerManager stateChangeTimers;
-    private PolicyModelsProviderFactoryWrapper daoFactory;
     private PolicyNotifier policyNotifier;
     private boolean savePdpStatistics;
+    private PdpGroupService pdpGroupService;
+    private PolicyStatusService policyStatusService;
+    private PdpStatisticsService pdpStatisticsService;
+    private ToscaServiceTemplateService toscaService;
 
     /**
      * Validates the parameters.
@@ -81,12 +87,24 @@ public class PdpModifyRequestMapParams {
             throw new IllegalArgumentException("missing stateChangeTimers");
         }
 
-        if (daoFactory == null) {
-            throw new IllegalArgumentException("missing DAO factory");
-        }
-
         if (policyNotifier == null) {
             throw new IllegalArgumentException("missing policy notifier");
+        }
+
+        if (pdpGroupService == null) {
+            throw new IllegalArgumentException("missing pdp group service");
+        }
+
+        if (policyStatusService == null) {
+            throw new IllegalArgumentException("missing policy status service");
+        }
+
+        if (pdpStatisticsService == null) {
+            throw new IllegalArgumentException("missing pdp statistics service");
+        }
+
+        if (toscaService == null) {
+            throw new IllegalArgumentException("missing tosca service");
         }
     }
 }
