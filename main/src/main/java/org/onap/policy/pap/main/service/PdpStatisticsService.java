@@ -26,17 +26,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.common.parameters.BeanValidationResult;
+import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfGeneratedIdKey;
 import org.onap.policy.models.base.PfKey;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.persistence.concepts.JpaPdpStatistics;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.repository.PdpStatisticsRepository;
+import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.onap.policy.pap.main.rest.StatisticsReport;
+import org.onap.policy.pap.main.startstop.PapActivator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -52,7 +58,30 @@ public class PdpStatisticsService {
     private static final int DEFAULT_RECORD_COUNT = 10;
     private static final int MAX_RECORD_COUNT = 100;
 
+    private AtomicLong generatedId = new AtomicLong();
     private final PdpStatisticsRepository pdpStatisticsRepository;
+
+    /**
+     * Returns the current statistics of pap component.
+     *
+     * @return Report containing statistics of pap component
+     */
+    public StatisticsReport fetchCurrentStatistics() {
+        final var report = new StatisticsReport();
+        report.setCode(Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class).isAlive() ? 200 : 500);
+
+        PapStatisticsManager mgr = Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class);
+        report.setTotalPdpCount(mgr.getTotalPdpCount());
+        report.setTotalPdpGroupCount(mgr.getTotalPdpGroupCount());
+        report.setTotalPolicyDownloadCount(mgr.getTotalPolicyDownloadCount());
+        report.setPolicyDownloadSuccessCount(mgr.getPolicyDownloadSuccessCount());
+        report.setPolicyDownloadFailureCount(mgr.getPolicyDownloadFailureCount());
+        report.setTotalPolicyDeployCount(mgr.getTotalPolicyDeployCount());
+        report.setPolicyDeploySuccessCount(mgr.getPolicyDeploySuccessCount());
+        report.setPolicyDeployFailureCount(mgr.getPolicyDeployFailureCount());
+
+        return report;
+    }
 
     /**
      * Creates PDP statistics.
@@ -68,7 +97,9 @@ public class PdpStatisticsService {
             if (!validationResult.isValid()) {
                 throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, validationResult.getResult());
             }
-            pdpStatisticsRepository.save(jpaPdpStatistics);
+            //TODO: Fix this as part of POLICY-3897
+            jpaPdpStatistics.getKey().setGeneratedId(generatedId.incrementAndGet());
+            pdpStatisticsRepository.saveAndFlush(jpaPdpStatistics);
             pdpStatistics.setGeneratedId(jpaPdpStatistics.getKey().getGeneratedId());
         }
 
@@ -95,8 +126,8 @@ public class PdpStatisticsService {
      * @param endTime end time of the records to be returned
      * @return pdpStatistics grouped by pdpGroup
      */
-    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(String pdpGroup, String pdpSubGroup,
-        String pdp, int recordCount, Instant startTime, Instant endTime) {
+    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(@NonNull String pdpGroup,
+        @NonNull String pdpSubGroup, @NonNull String pdp, int recordCount, Instant startTime, Instant endTime) {
 
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
@@ -128,8 +159,8 @@ public class PdpStatisticsService {
      * @param endTime end time of the records to be returned
      * @return pdpStatistics grouped by pdpGroup
      */
-    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(String pdpGroup, String pdpSubGroup,
-        int recordCount, Instant startTime, Instant endTime) {
+    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(@NonNull String pdpGroup,
+        @NonNull String pdpSubGroup, int recordCount, Instant startTime, Instant endTime) {
 
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
@@ -159,8 +190,8 @@ public class PdpStatisticsService {
      * @param endTime end time of the records to be returned
      * @return pdpStatistics grouped by pdpGroup
      */
-    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(String pdpGroup, int recordCount,
-        Instant startTime, Instant endTime) {
+    public Map<String, Map<String, List<PdpStatistics>>> fetchDatabaseStatistics(@NonNull String pdpGroup,
+        int recordCount, Instant startTime, Instant endTime) {
 
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {

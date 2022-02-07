@@ -41,14 +41,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PolicyNotifierTest {
@@ -61,10 +61,7 @@ public class PolicyNotifierTest {
     private Publisher<PolicyNotification> publisher;
 
     @Mock
-    private PolicyModelsProviderFactoryWrapper daoFactory;
-
-    @Mock
-    private PolicyModelsProvider dao;
+    private PolicyStatusService policyStatusService;
 
     @Mock
     private DeploymentStatus tracker;
@@ -92,8 +89,7 @@ public class PolicyNotifierTest {
     @Before
     public void setUp() {
         try {
-            when(daoFactory.create()).thenReturn(dao);
-            when(dao.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
+            when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
 
             notifier = new MyNotifier(publisher);
 
@@ -125,7 +121,8 @@ public class PolicyNotifierTest {
 
     @Test
     public void testProcessResponseString_Ex() throws PfModelException {
-        doThrow(new PfModelException(Status.BAD_REQUEST, "expected exception")).when(tracker).loadByGroup(anyString());
+        doThrow(new PfModelRuntimeException(Status.BAD_REQUEST, "expected exception")).when(tracker)
+            .loadByGroup(anyString());
 
         assertThatCode(() -> notifier.processResponse(PDP1, GROUP_A, Set.of(), Set.of())).doesNotThrowAnyException();
     }
@@ -155,20 +152,20 @@ public class PolicyNotifierTest {
     @Test
     public void testMakeDeploymentTracker() throws PfModelException {
         // make real object, which will invoke the real makeXxx() methods
-        new PolicyNotifier(publisher, daoFactory).processResponse(PDP1, GROUP_A, Set.of(), Set.of());
+        new PolicyNotifier(publisher, policyStatusService).processResponse(PDP1, GROUP_A, Set.of(), Set.of());
 
-        verify(dao).getGroupPolicyStatus(GROUP_A);
+        verify(policyStatusService).getGroupPolicyStatus(GROUP_A);
     }
 
 
     private class MyNotifier extends PolicyNotifier {
 
         public MyNotifier(Publisher<PolicyNotification> publisher) throws PfModelException {
-            super(publisher, daoFactory);
+            super(publisher, policyStatusService);
         }
 
         @Override
-        protected DeploymentStatus makeDeploymentTracker(PolicyModelsProvider dao) {
+        protected DeploymentStatus makeDeploymentTracker() {
             return tracker;
         }
     }

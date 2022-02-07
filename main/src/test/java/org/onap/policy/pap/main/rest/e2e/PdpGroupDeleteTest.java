@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicFactories;
 import org.onap.policy.common.endpoints.event.comm.bus.NoopTopicSink;
@@ -52,24 +51,13 @@ public class PdpGroupDeleteTest extends End2EndBase {
     private static final String DELETE_POLICIES_ENDPOINT = "pdps/policies";
 
     /**
-     * Starts Main and adds policies to the DB.
-     *
-     * @throws Exception if an error occurs
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        End2EndBase.setUpBeforeClass();
-
-        addToscaPolicyTypes("monitoring.policy-type.yaml");
-        addToscaPolicies("monitoring.policy.yaml");
-    }
-
-    /**
      * Sets up.
      */
     @Override
     @Before
     public void setUp() throws Exception {
+        addToscaPolicyTypes("monitoring.policy-type.yaml");
+        addToscaPolicies("monitoring.policy.yaml");
         super.setUp();
 
         context = new End2EndContext();

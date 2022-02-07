@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import lombok.Getter;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
@@ -45,7 +44,6 @@ public class PdpModifyRequestMapParams {
     private PdpParameters params;
     private TimerManager updateTimers;
     private TimerManager stateChangeTimers;
-    private PolicyModelsProviderFactoryWrapper daoFactory;
     private PolicyNotifier policyNotifier;
     private boolean savePdpStatistics;
 
@@ -79,10 +77,6 @@ public class PdpModifyRequestMapParams {
 
         if (stateChangeTimers == null) {
             throw new IllegalArgumentException("missing stateChangeTimers");
-        }
-
-        if (daoFactory == null) {
-            throw new IllegalArgumentException("missing DAO factory");
         }
 
         if (policyNotifier == null) {

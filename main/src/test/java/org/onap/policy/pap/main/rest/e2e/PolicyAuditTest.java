@@ -28,16 +28,13 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.rest.PolicyAuditControllerV1;
+import org.onap.policy.pap.main.service.PolicyAuditService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PolicyAuditTest extends End2EndBase {
     private static final String TEST_GROUP = "testGroup";
@@ -54,6 +51,9 @@ public class PolicyAuditTest extends End2EndBase {
     private static int BAD_REQUEST_STATUS_CODE = 400;
     private static final String BAD_REQUEST_MSG = "NumberFormatException For";
 
+    @Autowired
+    private PolicyAuditService policyAuditService;
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -64,10 +64,8 @@ public class PolicyAuditTest extends End2EndBase {
     private void setupEnv() {
         List<PolicyAudit> recordList = new ArrayList<>();
         Instant auditRecordTime = Instant.ofEpochSecond(1627392315L);
-        PolicyModelsProviderFactoryWrapper modelProviderWrapper =
-                        Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
 
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
+        try {
             PolicyAudit audit1 = PolicyAudit.builder().auditId(123L).pdpGroup(TEST_GROUP).pdpType(TEST_PDP_TYPE)
                             .policy(POLICY_A).action(AuditAction.DEPLOYMENT)
                             .timestamp(auditRecordTime).user(DEFAULT_USER).build();
@@ -76,8 +74,8 @@ public class PolicyAuditTest extends End2EndBase {
                             .timestamp(auditRecordTime).user(DEFAULT_USER).build();
             recordList.add(audit1);
             recordList.add(audit2);
-            databaseProvider.createAuditRecords(recordList);
-        } catch (final PfModelException exp) {
+            policyAuditService.createAuditRecords(recordList);
+        } catch (Exception exp) {
             throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, exp.getMessage());
         }
     }

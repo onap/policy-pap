@@ -36,9 +36,9 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 
 /**
  * Collection of Policy Deployment Status records. The sequence of method invocations
@@ -70,16 +70,16 @@ public class DeploymentStatus {
      */
     private DeploymentTracker tracker = new DeploymentTracker();
 
-    private PolicyModelsProvider provider;
+    private PolicyStatusService policyStatusService;
 
 
     /**
      * Constructs the object.
      *
-     * @param provider the provider to use to access the DB
+     * @param policyStatusService the policyStatusService
      */
-    public DeploymentStatus(PolicyModelsProvider provider) {
-        this.provider = provider;
+    public DeploymentStatus(PolicyStatusService policyStatusService) {
+        this.policyStatusService = policyStatusService;
     }
 
     /**
@@ -102,14 +102,14 @@ public class DeploymentStatus {
      * @param pdpGroup group whose records are to be loaded
      * @throws PfModelException if an error occurs
      */
-    public void loadByGroup(String pdpGroup) throws PfModelException {
+    public void loadByGroup(String pdpGroup) {
         if (pdpGroupLoaded.contains(pdpGroup)) {
             return;
         }
 
         pdpGroupLoaded.add(pdpGroup);
 
-        for (PdpPolicyStatus status : provider.getGroupPolicyStatus(pdpGroup)) {
+        for (PdpPolicyStatus status : policyStatusService.getGroupPolicyStatus(pdpGroup)) {
             var status2 = new StatusAction(Action.UNCHANGED, status);
             recordMap.put(new StatusKey(status), status2);
             tracker.add(status2);
@@ -153,7 +153,7 @@ public class DeploymentStatus {
             }
         }
 
-        provider.cudPolicyStatus(created, updated, deleted);
+        policyStatusService.cudPolicyStatus(created, updated, deleted);
 
         /*
          * update the records to indicate everything is now unchanged (i.e., matches what

@@ -70,6 +70,8 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.msgdata.Request;
 import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
+import org.onap.policy.pap.main.service.PdpGroupService;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.powermock.reflect.Whitebox;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -105,6 +107,12 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Mock
     private PdpStatusMessageHandler responseHandler;
 
+    @Mock
+    private PdpGroupService pdpGroupService;
+
+    @Mock
+    private PolicyStatusService policyStatusService;
+
     private MyMap map;
     private PdpUpdate update;
     private PdpStateChange change;
@@ -135,14 +143,12 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         response.setPolicies(Collections.emptyList());
 
         map = new MyMap(mapParams);
-        map.setPolicyUndeployer(undeployer);
     }
 
     @Test
     public void testPdpModifyRequestMap() {
         assertSame(mapParams, Whitebox.getInternalState(map, "params"));
         assertSame(lock, Whitebox.getInternalState(map, "modifyLock"));
-        assertSame(daoFactory, Whitebox.getInternalState(map, "daoFactory"));
     }
 
     @Test
@@ -379,7 +385,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         Instant expired = Instant.now().minusSeconds(EXPIRED_SECONDS);
         group2.getPdpSubgroups().get(0).getPdpInstances().forEach(pdp -> pdp.setLastUpdate(expired));
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(List.of(group1, group2));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1, group2));
 
         // run it
         map.removeExpiredPdps();
@@ -407,25 +413,25 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         PdpGroup group1 = makeGroup(MY_GROUP);
         group1.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1)));
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(List.of(group1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1));
 
         // run it
         map.removeExpiredPdps();
 
-        verify(dao, never()).updatePdpGroups(any());
+        verify(pdpGroupService, never()).updatePdpGroups(any());
         verify(publisher, never()).enqueue(any());
     }
 
     @Test
     public void testRemoveExpiredPdps_DaoEx() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenThrow(makeException());
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
 
         assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
     }
 
     @Test
     public void testRemoveExpiredPdps_DaoRtEx() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
 
         assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
     }
@@ -440,8 +446,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         List<Pdp> pdps = group.getPdpSubgroups().get(0).getPdpInstances();
         pdps.get(0).setLastUpdate(expired);
         pdps.get(2).setLastUpdate(expired);
-
-        when(dao.getFilteredPdpGroups(any())).thenReturn(List.of(group));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group));
 
         // run it
         map.removeExpiredPdps();
@@ -469,7 +474,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     @Test
     public void testMakePdpRequests() {
         // this should invoke the real method without throwing an exception
-        new PdpModifyRequestMap(mapParams).addRequest(change);
+        PdpModifyRequestMap reqMap =
+            new PdpModifyRequestMap(pdpGroupService, policyStatusService, null, undeployer, null);
+        reqMap.initialize(mapParams);
+        reqMap.addRequest(change);
 
         QueueToken<PdpMessage> token = queue.poll();
         assertNotNull(token);
@@ -621,7 +629,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         assertEquals(1, map.nalloc);
 
         // no updates
-        verify(dao, never()).updatePdpGroups(any());
+        verify(pdpGroupService, never()).updatePdpGroups(any());
     }
 
     @Test
@@ -753,7 +761,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * @throws Exception if an error occurred
      */
     private List<PdpGroup> getGroupUpdates() throws Exception {
-        verify(dao).updatePdpGroups(updateCaptor.capture());
+        verify(pdpGroupService).updatePdpGroups(updateCaptor.capture());
 
         return copyList(updateCaptor.getValue());
     }
@@ -777,7 +785,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         private int nalloc = 0;
 
         public MyMap(PdpModifyRequestMapParams params) {
-            super(params);
+            super(pdpGroupService, policyStatusService, null, undeployer, null);
+            super.initialize(params);;
         }
 
         @Override
