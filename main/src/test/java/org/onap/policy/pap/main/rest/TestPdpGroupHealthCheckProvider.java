@@ -23,8 +23,6 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -45,9 +43,7 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.Pdps;
-import org.onap.policy.models.provider.PolicyModelsProvider;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
+import org.onap.policy.pap.main.service.PdpGroupService;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -59,8 +55,7 @@ import org.springframework.http.HttpStatus;
 public class TestPdpGroupHealthCheckProvider {
 
     @Mock
-    private PolicyModelsProvider dao;
-    private PolicyModelsProviderFactoryWrapper daofact;
+    private PdpGroupService pdpGroupService;
     private List<PdpGroup> groups;
     private Coder coder = new StandardCoder();
 
@@ -71,19 +66,14 @@ public class TestPdpGroupHealthCheckProvider {
     public void setUp() throws Exception {
 
         Registry.newRegistry();
-        daofact = mock(PolicyModelsProviderFactoryWrapper.class);
-        when(daofact.create()).thenReturn(dao);
-
         groups = loadFile("pdpGroup.json").getGroups();
 
-        when(dao.getPdpGroups(any())).thenReturn(groups);
-
-        Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daofact);
+        when(pdpGroupService.getPdpGroups()).thenReturn(groups);
     }
 
     @Test
     public void testFetchPdpGroupHealthStatus() throws Exception {
-        final PdpGroupHealthCheckProvider provider = new PdpGroupHealthCheckProvider();
+        final PdpGroupHealthCheckProvider provider = new PdpGroupHealthCheckProvider(pdpGroupService);
         final Pair<HttpStatus, Pdps> pair = provider.fetchPdpGroupHealthStatus();
         assertEquals(HttpStatus.OK, pair.getLeft());
         verifyPdps(pair.getRight().getPdpList(), groups);

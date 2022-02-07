@@ -27,11 +27,13 @@ import static org.junit.Assert.assertThrows;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import org.junit.After;
 import org.junit.Test;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.pap.main.repository.PolicyAuditRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +48,18 @@ public class PolicyAuditServiceTest extends CommonPapRestServer {
 
     @Autowired
     private PolicyAuditService policyAuditService;
+
+    @Autowired
+    private PolicyAuditRepository policyAuditRepository;
+
+    /**
+     * Teardown after tests.
+     */
+    @Override
+    @After
+    public void tearDown() {
+        policyAuditRepository.deleteAll();
+    }
 
     @Test
     public void testCreateAuditRecordsSuccess() {
@@ -109,10 +123,10 @@ public class PolicyAuditServiceTest extends CommonPapRestServer {
     }
 
     private List<PolicyAudit> generatePolicyAudits(Instant date, String group, ToscaConceptIdentifier policy) {
-        PolicyAudit deploy = PolicyAudit.builder().pdpGroup(group).pdpType("pdpType").policy(policy).auditId(1L)
+        PolicyAudit deploy = PolicyAudit.builder().pdpGroup(group).pdpType("pdpType").policy(policy)
             .action(AuditAction.DEPLOYMENT).timestamp(date.truncatedTo(ChronoUnit.SECONDS)).build();
 
-        PolicyAudit undeploy = PolicyAudit.builder().pdpGroup(group).pdpType("pdpType").policy(policy).auditId(2L)
+        PolicyAudit undeploy = PolicyAudit.builder().pdpGroup(group).pdpType("pdpType").policy(policy)
             .action(AuditAction.UNDEPLOYMENT).timestamp(date.plusSeconds(1).truncatedTo(ChronoUnit.SECONDS)).build();
 
         return List.of(deploy, undeploy);

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,10 @@ import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
-import org.onap.policy.models.provider.PolicyModelsProviderFactory;
-import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.onap.policy.pap.main.PolicyPapException;
-import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.service.PdpGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +51,9 @@ public class PapDatabaseInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(PapDatabaseInitializer.class);
 
     private final StandardCoder standardCoder;
-    private final PolicyModelsProviderFactory factory;
 
     @Autowired
-    private PapParameterGroup papParameterGroup;
+    private PdpGroupService pdpGroupService;
 
     @Value("${group-config-file:PapDb.json}")
     private String groupConfigFile;
@@ -66,39 +62,34 @@ public class PapDatabaseInitializer {
      * Constructs the object.
      */
     public PapDatabaseInitializer() {
-        factory = new PolicyModelsProviderFactory();
         standardCoder = new StandardCoder();
     }
 
     /**
      * Initializes database with group information.
      *
-     * @param policyModelsProviderParameters the database parameters
      * @param groupsJson the group file path
      * @throws PolicyPapException in case of errors.
      */
-    private void initializePapDatabase(
-            final PolicyModelsProviderParameters policyModelsProviderParameters,
-            String groupsJson) throws PolicyPapException {
+    private void initializePapDatabase(String groupsJson) throws PolicyPapException {
 
-        try (var databaseProvider =
-                     factory.createPolicyModelsProvider(policyModelsProviderParameters)) {
+        try {
             final var originalJson = ResourceUtils.getResourceAsString(groupsJson);
             final var pdpGroupsToCreate = standardCoder.decode(originalJson, PdpGroups.class);
-            final List<PdpGroup> pdpGroupsFromDb = databaseProvider.getPdpGroups(
-                    pdpGroupsToCreate.getGroups().get(0).getName());
+            final List<PdpGroup> pdpGroupsFromDb =
+                pdpGroupService.getPdpGroups(pdpGroupsToCreate.getGroups().get(0).getName());
             if (pdpGroupsFromDb.isEmpty()) {
                 ValidationResult result = pdpGroupsToCreate.validatePapRest();
                 if (!result.isValid()) {
                     throw new PolicyPapException(result.getResult());
                 }
-                databaseProvider.createPdpGroups(pdpGroupsToCreate.getGroups());
+                pdpGroupService.createPdpGroups(pdpGroupsToCreate.getGroups());
                 LOGGER.info("Created initial pdpGroup in DB - {} from {}", pdpGroupsToCreate, groupsJson);
             } else {
-                LOGGER.info("Initial pdpGroup already exists in DB, skipping create - {} from {}",
-                        pdpGroupsFromDb, groupsJson);
+                LOGGER.info("Initial pdpGroup already exists in DB, skipping create - {} from {}", pdpGroupsFromDb,
+                    groupsJson);
             }
-        } catch (final PfModelException | CoderException | RuntimeException exp) {
+        } catch (final CoderException | RuntimeException exp) {
             throw new PolicyPapException(exp);
         }
     }
@@ -108,6 +99,6 @@ public class PapDatabaseInitializer {
      */
     @PostConstruct
     public void loadData() throws PolicyPapException {
-        initializePapDatabase(papParameterGroup.getDatabaseProviderParameters(), groupConfigFile);
+        initializePapDatabase(groupConfigFile);
     }
 }

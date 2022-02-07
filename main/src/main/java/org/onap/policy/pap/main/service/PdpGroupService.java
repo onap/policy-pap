@@ -33,7 +33,6 @@ import org.onap.policy.models.base.PfReferenceKey;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
-import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.pdp.persistence.concepts.JpaPdp;
@@ -69,7 +68,7 @@ public class PdpGroupService {
      * @param pdpGroup the name of group
      * @return the PDP groups found
      */
-    public List<PdpGroup> getPdpGroupByName(@NonNull String pdpGroup) {
+    public List<PdpGroup> getPdpGroups(@NonNull String pdpGroup) {
         return asPdpGroups(pdpGroupRepository.findByKeyName(pdpGroup));
     }
 
@@ -79,7 +78,7 @@ public class PdpGroupService {
      * @param pdpState the state of pdpGroup
      * @return the PDP groups found
      */
-    public List<PdpGroup> getPdpGroupByState(@NonNull PdpState pdpState) {
+    public List<PdpGroup> getPdpGroups(@NonNull PdpState pdpState) {
         return asPdpGroups(pdpGroupRepository.findByPdpGroupState(pdpState));
     }
 
@@ -90,7 +89,7 @@ public class PdpGroupService {
      * @param state the state of pdpGroup
      * @return the PDP groups found
      */
-    public List<PdpGroup> getPdpGroupByNameAndState(@NonNull String pdpGroup, @NonNull PdpState state) {
+    public List<PdpGroup> getPdpGroups(@NonNull String pdpGroup, @NonNull PdpState state) {
         return asPdpGroups(pdpGroupRepository.findByKeyNameAndPdpGroupState(pdpGroup, state));
     }
 
@@ -110,9 +109,21 @@ public class PdpGroupService {
      * @param pdpGroups the PDP groups to create
      * @return the PDP groups created
      */
-    public PdpGroups savePdpGroups(@NonNull final List<PdpGroup> pdpGroups) {
+    public List<PdpGroup> createPdpGroups(@NonNull final List<PdpGroup> pdpGroups) {
+        return savePdpGroups(pdpGroups);
+    }
 
-        // Return the created PDP groups
+    /**
+     * Updates PDP groups.
+     *
+     * @param pdpGroups the PDP groups to create
+     * @return the PDP groups created
+     */
+    public List<PdpGroup> updatePdpGroups(@NonNull final List<PdpGroup> pdpGroups) {
+        return savePdpGroups(pdpGroups);
+    }
+
+    private List<PdpGroup> savePdpGroups(final List<PdpGroup> pdpGroups) {
         List<PdpGroup> returnPdpGroupList = new ArrayList<>();
 
         for (PdpGroup pdpGroup : pdpGroups) {
@@ -131,9 +142,7 @@ public class PdpGroupService {
                     "Failed saving PdpGroup. " + exc.getMessage(), exc);
             }
         }
-        PdpGroups returnPdpGroups = new PdpGroups();
-        returnPdpGroups.setGroups(returnPdpGroupList);
-        return returnPdpGroups;
+        return returnPdpGroupList;
     }
 
     /**

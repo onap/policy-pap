@@ -37,7 +37,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
-import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
+import org.onap.policy.pap.main.service.PdpStatisticsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StatisticsRestControllerV1 extends PapRestControllerV1 {
 
-    private final StatisticsRestProvider provider;
+    private final PdpStatisticsService pdpStatisticsService;
 
     /**
      * get statistics of PAP.
@@ -77,7 +77,7 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             required = false,
             value = REQUEST_ID_NAME) final UUID requestId) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchCurrentStatistics());
+            .body(pdpStatisticsService.fetchCurrentStatistics());
     }
 
     /**
@@ -127,9 +127,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             @ApiParam(value = "End time in epoch timestamp") @RequestParam(
                                 required = false,
                                 value = "endTime") final Long endTime) throws PfModelException {
-        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(PdpFilterParameters.builder().recordNum(recordCount)
-                .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(pdpStatisticsService
+            .fetchDatabaseStatistics(recordCount, convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -177,11 +176,12 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 required = false,
                                 value = "startTime") final Long startTime,
             @ApiParam(value = "End time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "endTime") final Long endTime) throws PfModelException {
+            required = false,
+            value = "endTime") final Long endTime)
+        throws PfModelException {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(PdpFilterParameters.builder().group(groupName).recordNum(recordCount)
-                .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, recordCount, convertEpochtoInstant(startTime),
+                convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -234,9 +234,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 required = false,
                                 value = "endTime") final Long endTime) throws PfModelException {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(
-                PdpFilterParameters.builder().group(groupName).subGroup(subType).recordNum(recordCount)
-                    .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, recordCount,
+                convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -293,9 +292,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 required = false,
                                 value = "endTime") final Long endTime) throws PfModelException {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(
-                PdpFilterParameters.builder().group(groupName).subGroup(subType).name(pdpName).recordNum(recordCount)
-                    .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, pdpName, recordCount,
+                convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     private Instant convertEpochtoInstant(Long epochSecond) {

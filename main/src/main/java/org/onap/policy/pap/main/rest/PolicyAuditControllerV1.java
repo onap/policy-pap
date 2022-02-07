@@ -32,7 +32,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
-import org.onap.policy.models.pap.persistence.provider.PolicyAuditProvider.AuditFilter;
+import org.onap.policy.pap.main.service.PolicyAuditService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +53,7 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
 
     public static final String NO_AUDIT_RECORD_FOUND = "No records found matching the input parameters";
 
-    private final PolicyAuditProvider provider;
+    private final PolicyAuditService policyAuditService;
 
     /**
      * Queries audit information of all policies.
@@ -111,9 +111,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
             value = "endTime") final Long endTime)
         throws PfModelException {
 
-        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                .fromDate(convertEpochtoInstant(startTime)).toDate(convertEpochtoInstant(endTime)).build()));
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(policyAuditService
+            .getAuditRecords(recordCount, convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -173,10 +172,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
             value = "endTime") final Long endTime,
         @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName) throws PfModelException {
 
-        return makeOkOrNotFoundResponse(requestId,
-            provider.getAuditRecords(
-                AuditFilter.builder().recordNum(recordCount).fromDate((convertEpochtoInstant(startTime)))
-                    .toDate(convertEpochtoInstant(endTime)).pdpGroup(pdpGroupName).build()));
+        return makeOkOrNotFoundResponse(requestId, policyAuditService.getAuditRecords(pdpGroupName, recordCount,
+            convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -242,10 +239,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
         @ApiParam(value = "Policy Version") @PathVariable(value = "policyVersion") String policyVersion)
         throws PfModelException {
 
-        return makeOkOrNotFoundResponse(requestId,
-            provider.getAuditRecords(AuditFilter.builder().recordNum(recordCount)
-                .fromDate(convertEpochtoInstant(startTime)).toDate(convertEpochtoInstant(endTime))
-                .pdpGroup(pdpGroupName).name(policyName).version(policyVersion).build()));
+        return makeOkOrNotFoundResponse(requestId, policyAuditService.getAuditRecords(pdpGroupName, policyName,
+            policyVersion, recordCount, convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -310,10 +305,8 @@ public class PolicyAuditControllerV1 extends PapRestControllerV1 {
             value = "Policy Version") @PathVariable(required = true, value = "policyVersion") String policyVersion)
         throws PfModelException {
 
-        return makeOkOrNotFoundResponse(requestId,
-            provider
-                .getAuditRecords(AuditFilter.builder().recordNum(recordCount).fromDate(convertEpochtoInstant(startTime))
-                    .toDate(convertEpochtoInstant(endTime)).name(policyName).version(policyVersion).build()));
+        return makeOkOrNotFoundResponse(requestId, policyAuditService.getAuditRecords(policyName, policyVersion,
+            recordCount, convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     private ResponseEntity<Object> makeOkOrNotFoundResponse(UUID requestId, Collection<PolicyAudit> result) {

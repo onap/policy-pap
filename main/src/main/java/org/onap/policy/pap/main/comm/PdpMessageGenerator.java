@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +32,17 @@ import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.notification.DeploymentStatus;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.service.PolicyStatusService;
+import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
@@ -66,14 +67,18 @@ public class PdpMessageGenerator {
     protected PdpModifyRequestMap requestMap;
 
     /**
-     * Factory for PAP DAO.
-     */
-    protected PolicyModelsProviderFactoryWrapper modelProviderWrapper;
-
-    /**
      * Heart beat interval, in milliseconds, to pass to PDPs, or {@code null}.
      */
     private Long heartBeatMs;
+
+    @Autowired
+    private ToscaServiceTemplateService toscaService;
+
+    @Autowired
+    private PolicyStatusService policyStatusService;
+
+    @Autowired
+    private PolicyNotifier policyNotifier;
 
     /**
      * Constructs the object.
@@ -90,7 +95,6 @@ public class PdpMessageGenerator {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void initialize() {
-        modelProviderWrapper = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
         updateLock = Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class);
         requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
 
@@ -126,16 +130,14 @@ public class PdpMessageGenerator {
      * Method to return a list of policies.
      *
      * @param subGroup PdpSubGroup to retrieve policies from
-     * @param databaseProvider PolicyModelsProvider used to retrieve list of policies
+     * @throws PfModelException the exception
      * @returns a list of ToscaPolicy
      **/
-    public List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup,
-            final PolicyModelsProvider databaseProvider)
-                    throws PfModelException {
+    public List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup) throws PfModelException {
 
         final List<ToscaPolicy> policies = new LinkedList<>();
         for (final ToscaConceptIdentifier policyIdentifier : subGroup.getPolicies()) {
-            policies.addAll(databaseProvider.getPolicyList(policyIdentifier.getName(), policyIdentifier.getVersion()));
+            policies.addAll(toscaService.getPolicyList(policyIdentifier.getName(), policyIdentifier.getVersion()));
         }
 
         LOGGER.debug("Created ToscaPolicy list - {}", policies);
@@ -164,14 +166,12 @@ public class PdpMessageGenerator {
      * @param pdpType the pdp type
      * @param pdpInstanceId the pdp instance
      * @param pdpState the new state as per the PDP_STATE_CHANGE change message
-     * @param databaseProvider the database provider
      * @param policies list of policies as per the PDP_UPDATE message
      * @throws PfModelException the exception
      */
     protected void updateDeploymentStatus(final String pdpGroupName, final String pdpType, final String pdpInstanceId,
-        PdpState pdpState, final PolicyModelsProvider databaseProvider, List<ToscaPolicy> policies)
-        throws PfModelException {
-        var deploymentStatus = new DeploymentStatus(databaseProvider);
+        PdpState pdpState, List<ToscaPolicy> policies) {
+        var deploymentStatus = new DeploymentStatus(policyStatusService);
         deploymentStatus.loadByGroup(pdpGroupName);
         if (pdpState.equals(PdpState.PASSIVE)) {
             deploymentStatus.deleteDeployment(pdpInstanceId);
@@ -183,7 +183,6 @@ public class PdpMessageGenerator {
         }
         var notification = new PolicyNotification();
         deploymentStatus.flush(notification);
-        PolicyNotifier notifier = Registry.get(PapConstants.REG_POLICY_NOTIFIER);
-        notifier.publish(notification);
+        policyNotifier.publish(notification);
     }
 }

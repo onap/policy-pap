@@ -32,17 +32,12 @@ import java.util.Map;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
-import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
-import org.onap.policy.models.provider.PolicyModelsProvider;
-import org.onap.policy.models.provider.PolicyModelsProviderFactory;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.parameters.CommonTestData;
-import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
 import org.onap.policy.pap.main.rest.StatisticsReport;
 
@@ -52,6 +47,7 @@ public class StatisticsTest extends End2EndBase {
     private static final String START_TIME_NAME = "startTime";
     private static final long TIMESTAMP_SEC = 1562494272;
 
+    private static PdpStatistics pdpStatisticsRecord;
 
     /**
      * Adds a record to the DB.
@@ -60,25 +56,24 @@ public class StatisticsTest extends End2EndBase {
     public static void setUpBeforeClass() throws Exception {
         End2EndBase.setUpBeforeClass();
 
-        PolicyModelsProviderFactory modelProviderWrapper = new PolicyModelsProviderFactory();
-        PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
-        try (PolicyModelsProvider databaseProvider =
-            modelProviderWrapper.createPolicyModelsProvider(parameterGroup.getDatabaseProviderParameters())) {
-            PdpStatistics pdpStatisticsRecord = new PdpStatistics();
-            pdpStatisticsRecord.setPdpGroupName("defaultGroup");
-            pdpStatisticsRecord.setPdpSubGroupName("apex");
-            pdpStatisticsRecord.setPdpInstanceId("pdp1");
-            pdpStatisticsRecord.setTimeStamp(Instant.ofEpochSecond(TIMESTAMP_SEC));
-            pdpStatisticsRecord.setPolicyDeployCount(1);
-            pdpStatisticsRecord.setPolicyDeployFailCount(0);
-            pdpStatisticsRecord.setPolicyDeploySuccessCount(1);
-            pdpStatisticsRecord.setPolicyExecutedCount(1);
-            pdpStatisticsRecord.setPolicyExecutedFailCount(0);
-            pdpStatisticsRecord.setPolicyExecutedSuccessCount(1);
-            databaseProvider.createPdpStatistics(List.of(pdpStatisticsRecord));
-        } catch (final PfModelException exp) {
-            throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, exp.getMessage());
-        }
+        pdpStatisticsRecord = new PdpStatistics();
+        pdpStatisticsRecord.setPdpGroupName("defaultGroup");
+        pdpStatisticsRecord.setPdpSubGroupName("apex");
+        pdpStatisticsRecord.setPdpInstanceId("pdp1");
+        pdpStatisticsRecord.setTimeStamp(Instant.ofEpochSecond(TIMESTAMP_SEC));
+        pdpStatisticsRecord.setPolicyDeployCount(1);
+        pdpStatisticsRecord.setPolicyDeployFailCount(0);
+        pdpStatisticsRecord.setPolicyDeploySuccessCount(1);
+        pdpStatisticsRecord.setPolicyExecutedCount(1);
+        pdpStatisticsRecord.setPolicyExecutedFailCount(0);
+        pdpStatisticsRecord.setPolicyExecutedSuccessCount(1);
+    }
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        pdpStatisticsService.createPdpStatistics(List.of(pdpStatisticsRecord));
     }
 
     @Test

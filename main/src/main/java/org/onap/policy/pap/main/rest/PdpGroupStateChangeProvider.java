@@ -31,11 +31,12 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpState;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.PdpMessageGenerator;
+import org.onap.policy.pap.main.service.PdpGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,9 @@ import org.springframework.stereotype.Service;
 public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeProvider.class);
+
+    @Autowired
+    private PdpGroupService pdpGroupService;
 
     /**
      * Constructs the object.
@@ -83,43 +87,37 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
     }
 
     private void handleActiveState(final String groupName) throws PfModelException {
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName);
-            if (!pdpGroups.isEmpty() && !PdpState.ACTIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
-                updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.ACTIVE);
-                sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE, databaseProvider);
-            }
+        final List<PdpGroup> pdpGroups = pdpGroupService.getPdpGroups(groupName);
+        if (!pdpGroups.isEmpty() && !PdpState.ACTIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
+            updatePdpGroupAndPdp(pdpGroups, PdpState.ACTIVE);
+            sendPdpMessage(pdpGroups.get(0), PdpState.ACTIVE);
         }
     }
 
     private void handlePassiveState(final String groupName) throws PfModelException {
-        try (PolicyModelsProvider databaseProvider = modelProviderWrapper.create()) {
-            final List<PdpGroup> pdpGroups = databaseProvider.getPdpGroups(groupName);
-            if (!pdpGroups.isEmpty() && !PdpState.PASSIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
-                updatePdpGroupAndPdp(databaseProvider, pdpGroups, PdpState.PASSIVE);
-                sendPdpMessage(pdpGroups.get(0), PdpState.PASSIVE, databaseProvider);
-            }
+        final List<PdpGroup> pdpGroups = pdpGroupService.getPdpGroups(groupName);
+        if (!pdpGroups.isEmpty() && !PdpState.PASSIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
+            updatePdpGroupAndPdp(pdpGroups, PdpState.PASSIVE);
+            sendPdpMessage(pdpGroups.get(0), PdpState.PASSIVE);
         }
     }
 
-    private void updatePdpGroupAndPdp(final PolicyModelsProvider databaseProvider, final List<PdpGroup> pdpGroups,
-            final PdpState pdpState) throws PfModelException {
+    private void updatePdpGroupAndPdp(final List<PdpGroup> pdpGroups, final PdpState pdpState) {
         pdpGroups.get(0).setPdpGroupState(pdpState);
         for (final PdpSubGroup subGroup : pdpGroups.get(0).getPdpSubgroups()) {
             for (final Pdp pdp : subGroup.getPdpInstances()) {
                 pdp.setPdpState(pdpState);
             }
         }
-        databaseProvider.updatePdpGroups(pdpGroups);
+        pdpGroupService.updatePdpGroups(pdpGroups);
 
         LOGGER.debug("Updated PdpGroup and Pdp in DB - {} ", pdpGroups);
     }
 
-    private void sendPdpMessage(final PdpGroup pdpGroup, final PdpState pdpState,
-        final PolicyModelsProvider databaseProvider) throws PfModelException {
+    private void sendPdpMessage(final PdpGroup pdpGroup, final PdpState pdpState) throws PfModelException {
         String pdpGroupName = pdpGroup.getName();
         for (final PdpSubGroup subGroup : pdpGroup.getPdpSubgroups()) {
-            List<ToscaPolicy> policies = getToscaPolicies(subGroup, databaseProvider);
+            List<ToscaPolicy> policies = getToscaPolicies(subGroup);
             for (final Pdp pdp : subGroup.getPdpInstances()) {
                 String pdpInstanceId = pdp.getInstanceId();
                 final var pdpUpdatemessage =
@@ -128,7 +126,7 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
                 final var pdpStateChangeMessage =
                     createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
                 updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId,
-                    pdpStateChangeMessage.getState(), databaseProvider, pdpUpdatemessage.getPoliciesToBeDeployed());
+                    pdpStateChangeMessage.getState(), pdpUpdatemessage.getPoliciesToBeDeployed());
                 requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
                 LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);

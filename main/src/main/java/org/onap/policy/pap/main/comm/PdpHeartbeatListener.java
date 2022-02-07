@@ -23,10 +23,12 @@
 package org.onap.policy.pap.main.comm;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
-import org.onap.policy.pap.main.parameters.PdpParameters;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Listener for PDP Status messages which either represent registration or heart beat.
@@ -34,16 +36,16 @@ import org.onap.policy.pap.main.parameters.PdpParameters;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 @AllArgsConstructor
+@NoArgsConstructor
+@Component
 public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
-    private final PdpParameters params;
+    @Autowired
+    private PdpStatusMessageHandler pdpStatusMessageHandler;
 
-    private final boolean savePdpStatistics;
 
     @Override
     public void onTopicEvent(final CommInfrastructure infra, final String topic, final PdpStatus message) {
-
-        final var handler = new PdpStatusMessageHandler(params, savePdpStatistics);
-        handler.handlePdpStatus(message);
+        pdpStatusMessageHandler.handlePdpStatus(message);
     }
 }
