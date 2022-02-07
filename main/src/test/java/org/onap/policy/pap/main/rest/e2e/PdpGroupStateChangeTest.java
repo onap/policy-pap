@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +31,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
@@ -47,24 +47,13 @@ public class PdpGroupStateChangeTest extends End2EndBase {
     private static final String GROUP_ENDPOINT = "pdps/groups";
 
     /**
-     * Starts Main and adds policies to the DB.
-     *
-     * @throws Exception if an error occurs
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        End2EndBase.setUpBeforeClass();
-
-        addToscaPolicyTypes("monitoring.policy-type.yaml");
-        addToscaPolicies("monitoring.policy.yaml");
-    }
-
-    /**
      * Sets up.
      */
     @Override
     @Before
     public void setUp() throws Exception {
+        addToscaPolicyTypes("monitoring.policy-type.yaml");
+        addToscaPolicies("monitoring.policy.yaml");
         super.setUp();
 
         context = new End2EndContext();

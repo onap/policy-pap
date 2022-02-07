@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
-import org.onap.policy.models.pdp.persistence.provider.PdpFilterParameters;
+import org.onap.policy.pap.main.service.PdpStatisticsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StatisticsRestControllerV1 extends PapRestControllerV1 {
 
-    private final StatisticsRestProvider provider;
+    private final PdpStatisticsService pdpStatisticsService;
 
     /**
      * get statistics of PAP.
@@ -77,15 +76,13 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
             required = false,
             value = REQUEST_ID_NAME) final UUID requestId) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchCurrentStatistics());
+            .body(pdpStatisticsService.fetchCurrentStatistics());
     }
 
     /**
      * get all statistics of PDP groups.
      *
-     *
      * @return a response
-     * @throws PfModelException the exception
      */
     @GetMapping("pdps/statistics")
     @ApiOperation(value = "Fetch  statistics for all PDP Groups and subgroups in the system",
@@ -126,10 +123,9 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 value = "startTime") final Long startTime,
             @ApiParam(value = "End time in epoch timestamp") @RequestParam(
                                 required = false,
-                                value = "endTime") final Long endTime) throws PfModelException {
-        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(PdpFilterParameters.builder().recordNum(recordCount)
-                .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+                                value = "endTime") final Long endTime) {
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(pdpStatisticsService
+            .fetchDatabaseStatistics(recordCount, convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -137,7 +133,6 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      *
      * @param groupName name of the PDP group
      * @return a response
-     * @throws PfModelException the exception
      */
     @GetMapping("pdps/statistics/{group}")
     @ApiOperation(value = "Fetch current statistics for given PDP Group",
@@ -178,10 +173,10 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 value = "startTime") final Long startTime,
             @ApiParam(value = "End time in epoch timestamp") @RequestParam(
                                 required = false,
-                                value = "endTime") final Long endTime) throws PfModelException {
+                                value = "endTime") final Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(PdpFilterParameters.builder().group(groupName).recordNum(recordCount)
-                .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, recordCount, convertEpochtoInstant(startTime),
+                convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -190,7 +185,6 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      * @param groupName name of the PDP group
      * @param subType type of the sub PDP group
      * @return a response
-     * @throws PfModelException the exception
      */
     @GetMapping("pdps/statistics/{group}/{type}")
     @ApiOperation(value = "Fetch statistics for the specified subgroup",
@@ -232,11 +226,10 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 value = "startTime") final Long startTime,
             @ApiParam(value = "End time in epoch timestamp") @RequestParam(
                                 required = false,
-                                value = "endTime") final Long endTime) throws PfModelException {
+                                value = "endTime") final Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(
-                PdpFilterParameters.builder().group(groupName).subGroup(subType).recordNum(recordCount)
-                    .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, recordCount,
+                convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -247,7 +240,6 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      * @param pdpName the name of the PDP
      * @param recordCount the count of the query response, optional, default return all statistics stored
      * @return a response
-     * @throws PfModelException the exception
      */
     @GetMapping("pdps/statistics/{group}/{type}/{pdp}")
     @ApiOperation(value = "Fetch statistics for the specified pdp",
@@ -291,11 +283,10 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
                                 value = "startTime") final Long startTime,
             @ApiParam(value = "End time in epoch timestamp") @RequestParam(
                                 required = false,
-                                value = "endTime") final Long endTime) throws PfModelException {
+                                value = "endTime") final Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(provider.fetchDatabaseStatistics(
-                PdpFilterParameters.builder().group(groupName).subGroup(subType).name(pdpName).recordNum(recordCount)
-                    .startTime(convertEpochtoInstant(startTime)).endTime(convertEpochtoInstant(endTime)).build()));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, pdpName, recordCount,
+                convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     private Instant convertEpochtoInstant(Long epochSecond) {

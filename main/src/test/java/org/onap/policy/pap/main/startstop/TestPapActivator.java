@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
+import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.CommonTestData;
@@ -91,7 +92,9 @@ public class TestPapActivator {
 
         final PapParameterGroup parGroup = new CommonTestData().getPapParameterGroup(6969);
 
-        activator = new PapActivator(parGroup);
+        activator = new PapActivator(parGroup, new PolicyNotifier(null), new PdpHeartbeatListener(),
+            new PdpModifyRequestMap(null, null, null, null, null));
+
     }
 
     /**
@@ -118,7 +121,6 @@ public class TestPapActivator {
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_LOCK, Object.class));
         assertNotNull(Registry.get(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class));
         assertNotNull(Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class));
-        assertNotNull(Registry.get(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.start());
@@ -136,7 +138,6 @@ public class TestPapActivator {
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_LOCK, Object.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_STATISTICS_MANAGER, PapStatisticsManager.class, null));
         assertNull(Registry.getOrDefault(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class, null));
-        assertNull(Registry.getOrDefault(PapConstants.REG_POLICY_NOTIFIER, PolicyNotifier.class, null));
 
         // repeat - should throw an exception
         assertThatIllegalStateException().isThrownBy(() -> activator.stop());

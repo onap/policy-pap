@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Nordix Foundation.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,6 @@ public class TestProviderBase extends ProviderSuper {
 
     private MyProvider prov;
 
-
     @AfterClass
     public static void tearDownAfterClass() {
         Registry.newRegistry();
@@ -85,20 +84,16 @@ public class TestProviderBase extends ProviderSuper {
     @Override
     @Before
     public void setUp() throws Exception {
-
         super.setUp();
-
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
-
         prov = new MyProvider();
-        prov.initialize();
+        super.initialize(prov);
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
     }
 
     @Test
     public void testProviderBase() {
         assertSame(lockit, Whitebox.getInternalState(prov, "updateLock"));
         assertSame(reqmap, Whitebox.getInternalState(prov, "requestMap"));
-        assertSame(daofact, Whitebox.getInternalState(prov, "daoFactory"));
     }
 
     @Test
@@ -113,17 +108,9 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testProcess_CreateEx() throws Exception {
-        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
-        when(daofact.create()).thenThrow(ex);
-
-        assertThatThrownBy(() -> prov.process(loadEmptyRequest(), this::handle)).isSameAs(ex);
-    }
-
-    @Test
     public void testProcess_PfRtEx() throws Exception {
         PfModelRuntimeException ex = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
-        when(daofact.create()).thenThrow(ex);
+        when(pdpGroupService.updatePdpGroups(any())).thenThrow(ex);
 
         assertThatThrownBy(() -> prov.process(loadEmptyRequest(), this::handle)).isSameAs(ex);
     }
@@ -131,7 +118,7 @@ public class TestProviderBase extends ProviderSuper {
     @Test
     public void testProcess_RuntimeEx() throws Exception {
         RuntimeException ex = new RuntimeException(EXPECTED_EXCEPTION);
-        when(daofact.create()).thenThrow(ex);
+        when(pdpGroupService.updatePdpGroups(any())).thenThrow(ex);
 
         assertThatThrownBy(() -> prov.process(loadEmptyRequest(), this::handle)).isInstanceOf(PfModelException.class)
                         .hasMessage("request failed").hasCause(ex);
@@ -139,19 +126,20 @@ public class TestProviderBase extends ProviderSuper {
 
     @Test
     public void testProcessPolicy_NoGroups() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
 
-        SessionData session = new SessionData(dao, DEFAULT_USER);
+        SessionData session =
+            new SessionData(DEFAULT_USER, toscaService, pdpGroupService, policyStatusService, policyAuditService);
         ToscaConceptIdentifierOptVersion ident = new ToscaConceptIdentifierOptVersion(POLICY1_NAME, POLICY1_VERSION);
         assertThatThrownBy(() -> prov.processPolicy(session, ident)).isInstanceOf(PfModelException.class)
-                        .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
+            .hasMessage("policy not supported by any PDP group: policyA 1.2.3");
 
     }
 
     @Test
     public void testGetPolicy() throws Exception {
         PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
-        when(dao.getFilteredPolicyList(any())).thenThrow(exc);
+        when(toscaService.getFilteredPolicyList(any())).thenThrow(exc);
 
         ToscaConceptIdentifierOptVersion req = loadRequest();
         assertThatThrownBy(() -> prov.process(req, this::handle)).isInstanceOf(PfModelRuntimeException.class)
@@ -160,7 +148,7 @@ public class TestProviderBase extends ProviderSuper {
 
     @Test
     public void testGetPolicy_NotFound() throws Exception {
-        when(dao.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
 
         ToscaConceptIdentifierOptVersion req = loadRequest();
         assertThatThrownBy(() -> prov.process(req, this::handle)).isInstanceOf(PfModelRuntimeException.class)
@@ -171,7 +159,7 @@ public class TestProviderBase extends ProviderSuper {
 
     @Test
     public void testGetGroup() throws Exception {
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("getGroupDao.json"))
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(loadGroups("getGroupDao.json"))
                         .thenReturn(loadGroups("groups.json"));
 
         prov.process(loadRequest(), this::handle);
@@ -193,7 +181,7 @@ public class TestProviderBase extends ProviderSuper {
          * Last subgroup matches.
          */
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao.json"));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(loadGroups("upgradeGroupDao.json"));
 
         prov.clear();
         prov.add(false, true, false, true);
@@ -225,7 +213,7 @@ public class TestProviderBase extends ProviderSuper {
          * Should generate updates to pdp1, pdp2, and pdp3.
          */
 
-        when(dao.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"))
                         .thenReturn(loadPolicies("upgradeGroupPolicy2.json"))
                         .thenReturn(loadPolicies("upgradeGroupPolicy3.json"))
                         .thenReturn(loadPolicies("upgradeGroupPolicy4.json"));
@@ -238,7 +226,7 @@ public class TestProviderBase extends ProviderSuper {
          * request
          */
         // @formatter:off
-        when(dao.getFilteredPdpGroups(any()))
+        when(pdpGroupService.getFilteredPdpGroups(any()))
             .thenReturn(groups1).thenReturn(groups1)
             .thenReturn(groups2).thenReturn(groups2)
             .thenReturn(groups1).thenReturn(groups1)
@@ -272,8 +260,8 @@ public class TestProviderBase extends ProviderSuper {
 
         prov.process(loadRequest(), this::handle);
 
-        verify(dao, never()).createPdpGroups(any());
-        verify(dao, never()).updatePdpGroups(any());
+        verify(pdpGroupService, never()).createPdpGroups(any());
+        verify(pdpGroupService, never()).updatePdpGroups(any());
         verify(reqmap, never()).addRequest(any(PdpUpdate.class));
     }
 

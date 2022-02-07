@@ -27,10 +27,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.base.Validated;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
+import org.onap.policy.pap.main.repository.PdpStatisticsRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,6 +51,9 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
     @Autowired
     private PdpStatisticsService pdpStatisticsService;
 
+    @Autowired
+    private PdpStatisticsRepository pdpStatisticsRepository;
+
     private PdpStatistics pdpStatistics1;
     private PdpStatistics pdpStatistics2;
     private PdpStatistics pdpStatistics3;
@@ -63,10 +68,19 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        pdpStatistics1 = generatePdpStatistics(NAME1, TIMESTAMP1, 1L, GROUP, SUBGROUP);
-        pdpStatistics2 = generatePdpStatistics("name2", TIMESTAMP1, 2L, GROUP, SUBGROUP);
-        pdpStatistics3 = generatePdpStatistics(NAME1, TIMESTAMP2, 3L, GROUP, SUBGROUP);
-        pdpStatistics4 = generatePdpStatistics(NAME3, TIMESTAMP2, 4L, GROUP0, SUBGROUP);
+        pdpStatistics1 = generatePdpStatistics(NAME1, TIMESTAMP1, GROUP, SUBGROUP);
+        pdpStatistics2 = generatePdpStatistics("name2", TIMESTAMP1, GROUP, SUBGROUP);
+        pdpStatistics3 = generatePdpStatistics(NAME1, TIMESTAMP2, GROUP, SUBGROUP);
+        pdpStatistics4 = generatePdpStatistics(NAME3, TIMESTAMP2, GROUP0, SUBGROUP);
+    }
+
+    /**
+     * Teardown after tests.
+     */
+    @Override
+    @After
+    public void tearDown() {
+        pdpStatisticsRepository.deleteAll();
     }
 
     @Test
@@ -167,12 +181,11 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
         assertThat(created.get(GROUP0).get(SUBGROUP)).isEqualTo(List.of(pdpStatistics4));
     }
 
-    private PdpStatistics generatePdpStatistics(String pdpInstanceId, Instant date, Long id, String group,
+    private PdpStatistics generatePdpStatistics(String pdpInstanceId, Instant date, String group,
         String subgroup) {
         PdpStatistics pdpStatistics11 = new PdpStatistics();
         pdpStatistics11.setPdpInstanceId(pdpInstanceId);
         pdpStatistics11.setTimeStamp(date);
-        pdpStatistics11.setGeneratedId(id);
         pdpStatistics11.setPdpGroupName(group);
         pdpStatistics11.setPdpSubGroupName(subgroup);
         pdpStatistics11.setPolicyDeployCount(2);

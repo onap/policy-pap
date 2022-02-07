@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.List;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
@@ -41,15 +41,11 @@ public class PolicyStatusTest extends End2EndBase {
     private static final String POLICY_STATUS_ENDPOINT = "policies/deployed";
     private static final String POLICY_DEPLOYMENT_STATUS_ENDPOINT = "policies/status";
 
-    /**
-     * Starts Main and adds policies to the DB.
-     *
-     * @throws Exception if an error occurs
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        End2EndBase.setUpBeforeClass();
+    @Override
+    @Before
+    public void setUp() throws Exception {
         addPdpPolicyStatus("policyStatus.json");
+        super.setUp();
     }
 
     @Test
