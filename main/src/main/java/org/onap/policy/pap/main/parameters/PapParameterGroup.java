@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.onap.policy.common.parameters.annotations.NotBlank;
 import org.onap.policy.common.parameters.annotations.NotNull;
 import org.onap.policy.common.parameters.annotations.Valid;
 import org.onap.policy.common.parameters.validation.ParameterGroupConstraint;
-import org.onap.policy.models.provider.PolicyModelsProviderParameters;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,9 +50,6 @@ public class PapParameterGroup extends ParameterGroupImpl {
     @Valid
     @ParameterGroupConstraint
     private PdpParameters pdpParameters;
-    @Valid
-    @ParameterGroupConstraint
-    private PolicyModelsProviderParameters databaseProviderParameters;
     private boolean savePdpStatisticsInDb;
     @Valid
     @ParameterGroupConstraint

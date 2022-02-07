@@ -34,6 +34,7 @@ import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaEntity;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaTypedEntityFilter;
 import org.onap.policy.models.tosca.simple.concepts.JpaToscaServiceTemplate;
 import org.onap.policy.models.tosca.simple.provider.SimpleToscaProvider;
 import org.onap.policy.models.tosca.utils.ToscaUtils;
@@ -79,6 +80,18 @@ public class ToscaServiceTemplateService {
 
         LOGGER.debug("<-getPolicyList: name={}, version={}, policyList={}", name, version, policyList);
         return policyList;
+    }
+
+    /**
+     * Get filtered policies.
+     *
+     * @param filter the filter for the policies to get
+     * @return the policies found
+     * @throws PfModelException on errors getting policies
+     */
+    public List<ToscaPolicy> getFilteredPolicyList(ToscaTypedEntityFilter<ToscaPolicy> filter) throws PfModelException {
+        String version = ToscaTypedEntityFilter.LATEST_VERSION.equals(filter.getVersion()) ? null : filter.getVersion();
+        return filter.filter(getPolicyList(filter.getName(), version));
     }
 
     /**
@@ -172,4 +185,5 @@ public class ToscaServiceTemplateService {
             throw pfme;
         }
     }
+
 }

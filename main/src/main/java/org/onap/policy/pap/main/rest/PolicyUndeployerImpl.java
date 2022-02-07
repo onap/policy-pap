@@ -36,19 +36,14 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.PolicyUndeployer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of policy undeployer.
  */
+@Component
 public class PolicyUndeployerImpl extends ProviderBase implements PolicyUndeployer {
     private static final Logger logger = LoggerFactory.getLogger(PolicyUndeployerImpl.class);
-
-    /**
-     * Constructs the object.
-     */
-    public PolicyUndeployerImpl() {
-        super.initialize();
-    }
 
     @Override
     public void undeploy(String group, String subgroup, Collection<ToscaConceptIdentifier> policies)

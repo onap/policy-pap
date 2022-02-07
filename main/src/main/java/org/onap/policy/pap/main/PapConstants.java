@@ -32,8 +32,6 @@ public final class PapConstants {
     public static final String REG_STATISTICS_MANAGER = "object:manager/statistics";
     public static final String REG_PDP_MODIFY_LOCK = "lock:pdp";
     public static final String REG_PDP_MODIFY_MAP = "object:pdp/modify/map";
-    public static final String REG_POLICY_NOTIFIER = "object:policy/notifier";
-    public static final String REG_PAP_DAO_FACTORY = "object:pap/dao/factory";
 
     // topic names
     public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";

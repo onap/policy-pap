@@ -26,48 +26,31 @@ import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.onap.policy.common.utils.services.Registry;
+import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
-import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.notification.DeploymentTracker;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.springframework.stereotype.Service;
 
 /**
  * Provider for PAP component to query policy deployment status.
  */
 @Service
+@RequiredArgsConstructor
 public class PolicyStatusProvider {
 
-    /**
-     * Factory for PAP DAO.
-     */
-    private PolicyModelsProviderFactoryWrapper daoFactory;
-
-    /**
-     * Constructs the object. Loads all deployed policies into the internal cache.
-     */
-    @EventListener(ApplicationReadyEvent.class)
-    public void initialize() {
-        this.daoFactory = Registry.get(PapConstants.REG_PAP_DAO_FACTORY, PolicyModelsProviderFactoryWrapper.class);
-    }
+    private final PolicyStatusService policyStatusService;
 
     /**
      * Gets the deployment status of all policies.
      *
      * @return the deployment status of all policies
-     * @throws PfModelException if a DB error occurs
      */
-    public Collection<PolicyStatus> getStatus() throws PfModelException {
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            return accumulate(dao.getAllPolicyStatus());
-        }
+    public Collection<PolicyStatus> getStatus() {
+        return accumulate(policyStatusService.getAllPolicyStatus());
     }
 
     /**
@@ -75,12 +58,9 @@ public class PolicyStatusProvider {
      *
      * @param policy policy of interest
      * @return the deployment status of all policies
-     * @throws PfModelException if a DB error occurs
      */
-    public Collection<PolicyStatus> getStatus(ToscaConceptIdentifierOptVersion policy) throws PfModelException {
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            return accumulate(dao.getAllPolicyStatus(policy));
-        }
+    public Collection<PolicyStatus> getStatus(ToscaConceptIdentifierOptVersion policy) {
+        return accumulate(policyStatusService.getAllPolicyStatus(policy));
     }
 
     /**
@@ -88,16 +68,13 @@ public class PolicyStatusProvider {
      *
      * @param patternString policy of interest
      * @return the deployment status of all policies
-     * @throws PfModelException if a DB error occurs
      */
-    public Collection<PolicyStatus> getByRegex(String patternString) throws PfModelException {
+    public Collection<PolicyStatus> getByRegex(String patternString) {
         // try to make pattern out of regex
         final var pattern = Pattern.compile(patternString);
         // get all the statuses
         final List<PdpPolicyStatus> policyStatuses;
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            policyStatuses = dao.getAllPolicyStatus();
-        }
+        policyStatuses = policyStatusService.getAllPolicyStatus();
         // filter out statuses with the wrong name
         final Collection<PdpPolicyStatus> pdpPolicyStatuses = filterWithPattern(pattern, policyStatuses);
 
@@ -129,41 +106,30 @@ public class PolicyStatusProvider {
      * Gets the status of all policies.
      *
      * @return the status of all policies
-     * @throws PfModelException if a DB error occurs
      */
-    public Collection<PdpPolicyStatus> getPolicyStatus() throws PfModelException {
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            return dao.getAllPolicyStatus();
-        }
+    public Collection<PdpPolicyStatus> getPolicyStatus() {
+        return policyStatusService.getAllPolicyStatus();
     }
 
     /**
      * Gets the status of policies in a PdpGroup.
      *
      * @param pdpGroupName the pdp group
-     * @return the deployment status of policies
-     * @throws PfModelException if a DB error occurs
      */
-    public Collection<PdpPolicyStatus> getPolicyStatus(String pdpGroupName) throws PfModelException {
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            return dao.getGroupPolicyStatus(pdpGroupName);
-        }
+    public Collection<PdpPolicyStatus> getPolicyStatus(String pdpGroupName) {
+        return policyStatusService.getGroupPolicyStatus(pdpGroupName);
     }
 
     /**
      * Gets the status of a policy in a PdpGroup.
      *
      * @param pdpGroupName the pdp group
-     * @param policy       the policy
+     * @param policy the policy
      * @return the deployment status of the policy
-     * @throws PfModelException if a DB error occurs
      */
-    public Collection<PdpPolicyStatus> getPolicyStatus(String pdpGroupName, ToscaConceptIdentifierOptVersion policy)
-        throws PfModelException {
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            return dao.getAllPolicyStatus(policy).stream().filter(p -> p.getPdpGroup().equals(pdpGroupName))
-                .collect(Collectors.toList());
-        }
+    public Collection<PdpPolicyStatus> getPolicyStatus(String pdpGroupName, ToscaConceptIdentifierOptVersion policy) {
+        return policyStatusService.getAllPolicyStatus(policy).stream().filter(p -> p.getPdpGroup().equals(pdpGroupName))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -174,8 +140,7 @@ public class PolicyStatusProvider {
      * @return the deployment status of policies
      * @throws PfModelException if a DB error occurs
      */
-    public Collection<PdpPolicyStatus> getPolicyStatusByRegex(String pdpGroupName, String patternString)
-        throws PfModelException {
+    public Collection<PdpPolicyStatus> getPolicyStatusByRegex(String pdpGroupName, String patternString) {
         final var pattern = Pattern.compile(patternString);
         // get all the statuses
         final Collection<PdpPolicyStatus> policyStatuses = getPolicyStatus(pdpGroupName);

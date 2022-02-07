@@ -22,30 +22,32 @@
 package org.onap.policy.pap.main.notification;
 
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import org.onap.policy.models.base.PfModelException;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Notifier for completion of policy updates.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Component
 public class PolicyNotifier {
     private static final Logger logger = LoggerFactory.getLogger(PolicyNotifier.class);
+
+    private final PolicyStatusService policyStatusService;
 
     /**
      * Notification publisher.
      */
-    private final Publisher<PolicyNotification> publisher;
-
-    private final PolicyModelsProviderFactoryWrapper daoFactory;
+    @Setter
+    private Publisher<PolicyNotification> publisher;
 
     /**
      * Processes a response from a PDP.
@@ -59,8 +61,8 @@ public class PolicyNotifier {
     public synchronized void processResponse(String pdp, String pdpGroup, Set<ToscaConceptIdentifier> expectedPolicies,
                     Set<ToscaConceptIdentifier> actualPolicies) {
 
-        try (PolicyModelsProvider dao = daoFactory.create()) {
-            DeploymentStatus status = makeDeploymentTracker(dao);
+        try {
+            DeploymentStatus status = makeDeploymentTracker();
             status.loadByGroup(pdpGroup);
             status.completeDeploy(pdp, expectedPolicies, actualPolicies);
 
@@ -69,7 +71,7 @@ public class PolicyNotifier {
 
             publish(notification);
 
-        } catch (PfModelException | RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.warn("cannot update deployment status", e);
         }
     }
@@ -88,7 +90,7 @@ public class PolicyNotifier {
 
     // the following methods may be overridden by junit tests
 
-    protected DeploymentStatus makeDeploymentTracker(PolicyModelsProvider dao) {
-        return new DeploymentStatus(dao);
+    protected DeploymentStatus makeDeploymentTracker() {
+        return new DeploymentStatus(policyStatusService);
     }
 }
