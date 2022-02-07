@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>${version.springboot}</version>
+            <version>${version.springboot.actuator}</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
