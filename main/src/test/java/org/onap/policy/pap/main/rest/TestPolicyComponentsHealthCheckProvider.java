@@ -25,7 +25,6 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -55,11 +54,10 @@ import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.enums.PdpHealthStatus;
-import org.onap.policy.models.provider.PolicyModelsProvider;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
+import org.onap.policy.pap.main.service.PdpGroupService;
 import org.onap.policy.pap.main.startstop.PapActivator;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -73,10 +71,7 @@ public class TestPolicyComponentsHealthCheckProvider {
     private static final String HEALTHY = "healthy";
 
     @Mock
-    private PolicyModelsProvider dao;
-
-    @Mock
-    private PolicyModelsProviderFactoryWrapper daofact;
+    private PdpGroupService pdpGroupService;
 
     @Mock
     private HttpClientFactory clientFactory;
@@ -116,11 +111,9 @@ public class TestPolicyComponentsHealthCheckProvider {
     @Before
     public void setUp() throws Exception {
         groups = loadPdpGroupsFromFile().getGroups();
-        when(dao.getPdpGroups(any())).thenReturn(groups);
+        when(pdpGroupService.getPdpGroups()).thenReturn(groups);
 
-        when(daofact.create()).thenReturn(dao);
         Registry.newRegistry();
-        Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daofact);
 
         when(papActivator.isAlive()).thenReturn(true);
         Registry.register(PapConstants.REG_PAP_ACTIVATOR, papActivator);
@@ -153,7 +146,7 @@ public class TestPolicyComponentsHealthCheckProvider {
         clients.add(client2);
         clients.add(client3);
         PapParameterGroup papParameterGroup = ParameterService.get(PAP_GROUP_PARAMS_NAME);
-        provider = new PolicyComponentsHealthCheckProvider();
+        provider = new PolicyComponentsHealthCheckProvider(papParameterGroup, pdpGroupService);
         ReflectionTestUtils.setField(provider, "papParameterGroup", papParameterGroup);
         provider.initializeClientHealthCheckExecutorService();
         ReflectionTestUtils.setField(provider, "clients", clients);

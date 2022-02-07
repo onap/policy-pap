@@ -71,7 +71,7 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
     public void setUp() throws Exception {
         super.setUp();
         PdpGroups defaultGroup = coder.decode(ResourceUtils.getResourceAsString("e2e/PdpGroups.json"), PdpGroups.class);
-        pdpGroupService.savePdpGroups(defaultGroup.getGroups());
+        pdpGroupService.createPdpGroups(defaultGroup.getGroups());
         groupsToCreate = coder.decode(ResourceUtils.getResourceAsString("e2e/createGroups.json"), PdpGroups.class);
     }
 
@@ -82,23 +82,23 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
         assertThat(pdpGroups).hasSize(1);
         assertThat(pdpGroups.get(0).getName()).isEqualTo(DEFAULT_GROUP);
 
-        pdpGroupService.savePdpGroups(groupsToCreate.getGroups());
+        pdpGroupService.createPdpGroups(groupsToCreate.getGroups());
 
         assertThat(pdpGroupService.getPdpGroups()).hasSize(2);
 
-        pdpGroups = pdpGroupService.getPdpGroupByName(CREATE_GROUPS);
+        pdpGroups = pdpGroupService.getPdpGroups(CREATE_GROUPS);
         assertThat(pdpGroups).hasSize(1);
         assertThat(pdpGroups.get(0).getName()).isEqualTo(CREATE_GROUPS);
 
-        assertThat(pdpGroupService.getPdpGroupByState(PdpState.PASSIVE)).isEqualTo(pdpGroups);
+        assertThat(pdpGroupService.getPdpGroups(PdpState.PASSIVE)).isEqualTo(pdpGroups);
 
-        List<PdpGroup> activePdpGroups = pdpGroupService.getPdpGroupByState(PdpState.ACTIVE);
+        List<PdpGroup> activePdpGroups = pdpGroupService.getPdpGroups(PdpState.ACTIVE);
         assertThat(activePdpGroups).hasSize(1);
         assertThat(activePdpGroups.get(0).getPdpSubgroups()).hasSize(3);
 
-        assertThat(pdpGroupService.getPdpGroupByNameAndState(CREATE_GROUPS, PdpState.PASSIVE)).hasSize(1);
-        assertThat(pdpGroupService.getPdpGroupByNameAndState("invalid-group", PdpState.PASSIVE)).hasSize(0);
-        assertThat(pdpGroupService.getPdpGroupByNameAndState(DEFAULT_GROUP, PdpState.ACTIVE)).hasSize(1);
+        assertThat(pdpGroupService.getPdpGroups(CREATE_GROUPS, PdpState.PASSIVE)).hasSize(1);
+        assertThat(pdpGroupService.getPdpGroups("invalid-group", PdpState.PASSIVE)).hasSize(0);
+        assertThat(pdpGroupService.getPdpGroups(DEFAULT_GROUP, PdpState.ACTIVE)).hasSize(1);
 
         PdpGroupFilter filter = PdpGroupFilter.builder()
             .policyTypeList(
@@ -116,20 +116,21 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
 
     @Test
     public void testPdpGroupsCrudFailure() {
-        assertThatThrownBy(() -> pdpGroupService.getPdpGroupByState(null))
+        PdpState pdpState = null;
+        assertThatThrownBy(() -> pdpGroupService.getPdpGroups(pdpState))
             .hasMessage(String.format(FIELD_IS_NULL, "pdpState"));
-        pdpGroupService.savePdpGroups(groupsToCreate.getGroups());
+        pdpGroupService.createPdpGroups(groupsToCreate.getGroups());
         assertThatThrownBy(() -> pdpGroupService.deletePdpGroup("invalid-group"))
             .hasMessage("delete of PDP group \"invalid-group\" failed, PDP group does not exist");
         assertThat(pdpGroupService.getPdpGroups()).hasSize(2);
 
-        assertThatThrownBy(() -> pdpGroupService.savePdpGroups(null))
+        assertThatThrownBy(() -> pdpGroupService.createPdpGroups(null))
             .hasMessage(String.format(FIELD_IS_NULL, "pdpGroups"));
 
         PdpGroup invalidPdpGroup = new PdpGroup(groupsToCreate.getGroups().get(0));
         invalidPdpGroup.setName("invalidPdpGroup");
         invalidPdpGroup.setPdpGroupState(null);
-        assertThatThrownBy(() -> pdpGroupService.savePdpGroups(List.of(invalidPdpGroup)))
+        assertThatThrownBy(() -> pdpGroupService.createPdpGroups(List.of(invalidPdpGroup)))
             .hasMessageContaining("Failed saving PdpGroup.")
             .hasMessageContaining("item \"pdpGroupState\" value \"null\" INVALID, is null");
         pdpGroupService.deletePdpGroup(CREATE_GROUPS);
@@ -154,16 +155,16 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
             pdpGroupService.updatePdp(NAME, TYPE, new Pdp());
         }).hasMessage(LOCALNAME_IS_NULL);
 
-        pdpGroupService.savePdpGroups(groupsToCreate.getGroups());
+        pdpGroupService.createPdpGroups(groupsToCreate.getGroups());
         assertThat(pdpGroupService.getPdpGroups()).hasSize(2);
-        PdpGroup pdpGroup = pdpGroupService.getPdpGroupByName(CREATE_GROUPS).get(0);
+        PdpGroup pdpGroup = pdpGroupService.getPdpGroups(CREATE_GROUPS).get(0);
         Pdp pdp = pdpGroup.getPdpSubgroups().get(0).getPdpInstances().get(0);
         assertThat(pdp.getHealthy()).isEqualTo(PdpHealthStatus.HEALTHY);
 
         // now update and test
         pdp.setHealthy(PdpHealthStatus.NOT_HEALTHY);
         pdpGroupService.updatePdp(CREATE_GROUPS, "pdpTypeA", pdp);
-        PdpGroup updatGroup = pdpGroupService.getPdpGroupByName(CREATE_GROUPS).get(0);
+        PdpGroup updatGroup = pdpGroupService.getPdpGroups(CREATE_GROUPS).get(0);
         assertThat(updatGroup.getPdpSubgroups().get(0).getPdpInstances().get(0).getHealthy())
             .isEqualTo(PdpHealthStatus.NOT_HEALTHY);
         pdpGroupService.deletePdpGroup(CREATE_GROUPS);
@@ -183,16 +184,16 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
             pdpGroupService.updatePdpSubGroup(NAME, new PdpSubGroup());
         }).hasMessage(LOCALNAME_IS_NULL);
 
-        pdpGroupService.savePdpGroups(groupsToCreate.getGroups());
+        pdpGroupService.createPdpGroups(groupsToCreate.getGroups());
         assertThat(pdpGroupService.getPdpGroups()).hasSize(2);
-        PdpGroup pdpGroup = pdpGroupService.getPdpGroupByName(CREATE_GROUPS).get(0);
+        PdpGroup pdpGroup = pdpGroupService.getPdpGroups(CREATE_GROUPS).get(0);
         PdpSubGroup pdpSubGroup = pdpGroup.getPdpSubgroups().get(0);
         assertThat(pdpSubGroup.getDesiredInstanceCount()).isEqualTo(2);
 
         // now update and test
         pdpSubGroup.setDesiredInstanceCount(1);
         pdpGroupService.updatePdpSubGroup(CREATE_GROUPS, pdpSubGroup);
-        PdpGroup updatGroup = pdpGroupService.getPdpGroupByName(CREATE_GROUPS).get(0);
+        PdpGroup updatGroup = pdpGroupService.getPdpGroups(CREATE_GROUPS).get(0);
         assertThat(updatGroup.getPdpSubgroups().get(0).getDesiredInstanceCount()).isEqualTo(1);
         pdpGroupService.deletePdpGroup(CREATE_GROUPS);
     }

@@ -52,7 +52,7 @@ public class TestPolicyAuditManager extends ProviderSuper {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        auditManager = new PolicyAuditManager(dao);
+        auditManager = new PolicyAuditManager(policyAuditService);
     }
 
     @AfterClass
@@ -88,7 +88,7 @@ public class TestPolicyAuditManager extends ProviderSuper {
 
         assertThat(auditManager.getAuditRecords()).hasSize(1);
 
-        doThrow(PfModelRuntimeException.class).when(dao).createAuditRecords(any());
+        doThrow(PfModelRuntimeException.class).when(policyAuditService).createAuditRecords(any());
         auditManager.saveRecordsToDb();
 
         assertThat(auditManager.getAuditRecords()).isNotEmpty();

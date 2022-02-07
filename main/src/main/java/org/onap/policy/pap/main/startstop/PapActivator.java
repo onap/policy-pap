@@ -40,7 +40,6 @@ import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpMessageType;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyModelsProviderFactoryWrapper;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
@@ -50,7 +49,7 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
-import org.onap.policy.pap.main.rest.PolicyUndeployerImpl;
+import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -89,16 +88,12 @@ public class PapActivator extends ServiceManagerContainer {
     private final RequestIdDispatcher<PdpStatus> heartbeatReqIdDispatcher;
 
     /**
-     * Listener for anonymous {@link PdpStatus} messages either for registration or heartbeat.
-     */
-    private final PdpHeartbeatListener pdpHeartbeatListener;
-
-    /**
      * Instantiate the activator for policy pap as a complete service.
      *
      * @param papParameterGroup the parameters for the pap service
      */
-    public PapActivator(PapParameterGroup papParameterGroup) {
+    public PapActivator(PapParameterGroup papParameterGroup, PolicyStatusService policyStatusService,
+        PdpHeartbeatListener pdpHeartbeatListener, PdpModifyRequestMap pdpModifyRequestMap) {
         super("Policy PAP");
         this.papParameterGroup = papParameterGroup;
         TopicEndpointManager.getManager().addTopics(papParameterGroup.getTopicParameterGroup());
@@ -108,8 +103,6 @@ public class PapActivator extends ServiceManagerContainer {
             this.heartbeatMsgDispatcher = new MessageTypeDispatcher(MSG_TYPE_NAMES);
             this.responseReqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
             this.heartbeatReqIdDispatcher = new RequestIdDispatcher<>(PdpStatus.class, REQ_ID_NAMES);
-            this.pdpHeartbeatListener = new PdpHeartbeatListener(papParameterGroup.getPdpParameters(),
-                            papParameterGroup.isSavePdpStatisticsInDb());
 
         } catch (final RuntimeException e) {
             throw new PolicyPapRuntimeException(e);
@@ -123,7 +116,6 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<TimerManager> pdpUpdTimers = new AtomicReference<>();
         final AtomicReference<TimerManager> pdpStChgTimers = new AtomicReference<>();
         final AtomicReference<ScheduledExecutorService> pdpExpirationTimer = new AtomicReference<>();
-        final AtomicReference<PolicyModelsProviderFactoryWrapper> daoFactory = new AtomicReference<>();
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
         final AtomicReference<PolicyNotifier> notifier = new AtomicReference<>();
 
@@ -131,15 +123,6 @@ public class PapActivator extends ServiceManagerContainer {
         addAction("PAP parameters",
             () -> ParameterService.register(papParameterGroup),
             () -> ParameterService.deregister(papParameterGroup.getName()));
-
-        addAction("DAO Factory",
-            () -> daoFactory.set(new PolicyModelsProviderFactoryWrapper(
-                                    papParameterGroup.getDatabaseProviderParameters())),
-            () -> daoFactory.get().close());
-
-        addAction("DAO Factory registration",
-            () -> Registry.register(PapConstants.REG_PAP_DAO_FACTORY, daoFactory.get()),
-            () -> Registry.unregister(PapConstants.REG_PAP_DAO_FACTORY));
 
         addAction("Pdp Heartbeat Listener",
             () -> heartbeatReqIdDispatcher.register(pdpHeartbeatListener),
@@ -184,7 +167,7 @@ public class PapActivator extends ServiceManagerContainer {
             () -> {
                 notifyPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_NOTIFICATION));
                 startThread(notifyPub.get());
-                notifier.set(new PolicyNotifier(notifyPub.get(), daoFactory.get()));
+                notifier.set(new PolicyNotifier(notifyPub.get(), policyStatusService));
             },
             () -> notifyPub.get().stop());
 
@@ -212,23 +195,20 @@ public class PapActivator extends ServiceManagerContainer {
 
         addAction("PDP modification requests",
             () -> {
-                requestMap.set(new PdpModifyRequestMap(
-                            PdpModifyRequestMapParams.builder()
-                                    .maxPdpAgeMs(MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs())
-                                    .daoFactory(daoFactory.get())
-                                    .modifyLock(pdpUpdateLock)
-                                    .params(pdpParams)
-                                    .policyNotifier(notifier.get())
-                                    .pdpPublisher(pdpPub.get())
-                                    .responseDispatcher(responseReqIdDispatcher)
-                                    .stateChangeTimers(pdpStChgTimers.get())
-                                    .updateTimers(pdpUpdTimers.get())
-                                    .savePdpStatistics(papParameterGroup.isSavePdpStatisticsInDb())
-                                    .build()));
+                pdpModifyRequestMap.initialize(
+                    PdpModifyRequestMapParams.builder()
+                    .maxPdpAgeMs(MAX_MISSED_HEARTBEATS * pdpParams.getHeartBeatMs())
+                    .modifyLock(pdpUpdateLock)
+                    .params(pdpParams)
+                    .policyNotifier(notifier.get())
+                    .pdpPublisher(pdpPub.get())
+                    .responseDispatcher(responseReqIdDispatcher)
+                    .stateChangeTimers(pdpStChgTimers.get())
+                    .updateTimers(pdpUpdTimers.get())
+                    .savePdpStatistics(papParameterGroup.isSavePdpStatisticsInDb())
+                    .build());
+                requestMap.set(pdpModifyRequestMap);
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());
-
-                // now that it's registered, we can attach a "policy undeploy" provider
-                requestMap.get().setPolicyUndeployer(new PolicyUndeployerImpl());
             },
             () -> Registry.unregister(PapConstants.REG_PDP_MODIFY_MAP));
 
