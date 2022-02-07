@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2021 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
@@ -46,8 +47,10 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.parameters.CommonTestData;
+import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.rest.e2e.End2EndBase;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class to perform unit test of {@link PdpHeartbeatListener}.
@@ -65,12 +68,16 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     private static final String TOPIC = "my-topic";
 
     private Instant timeStamp;
+
+    @Autowired
     private PdpHeartbeatListener pdpHeartbeatListener;
 
     @Test
     public void testPdpHeartbeatListener() throws CoderException, PfModelException {
         addGroups("PdpGroups.json");
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), true);
+        PapParameterGroup parameterGroup = new PapParameterGroup();
+        parameterGroup.setPdpParameters(new PdpParameters());
+        parameterGroup.setSavePdpStatisticsInDb(true);
 
         // Testing pdp registration success case
         final PdpStatus status1 = new PdpStatus();
@@ -219,14 +226,14 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         List<ToscaPolicy> policies = new ArrayList<>();
         policies.add(polA);
         policies.add(polB);
-        final CommonTestData testData = new CommonTestData();
-        PdpParameters params = testData.getPapParameterGroup(1).getPdpParameters();
-        List<ToscaConceptIdentifier> polsUndep = policies.stream().map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
-        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(params, true);
-        PdpUpdate update10 = handler.createPdpUpdateMessage(
-                status3.getPdpGroup(), new PdpSubGroup(), "pdp_2",
-                policies, polsUndep);
+        final PapParameterGroup testGroup = new CommonTestData().getPapParameterGroup(1);
+        testGroup.setSavePdpStatisticsInDb(true);
+        List<ToscaConceptIdentifier> polsUndep =
+            policies.stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList());
+        PdpStatusMessageHandler handler = new PdpStatusMessageHandler(testGroup, pdpGroupService,
+            pdpStatisticsService);
+        PdpUpdate update10 =
+            handler.createPdpUpdateMessage(status3.getPdpGroup(), new PdpSubGroup(), "pdp_2", policies, polsUndep);
         assertSame(update10.getPoliciesToBeDeployed(), policies);
         assertSame(update10.getPoliciesToBeUndeployed(), polsUndep);
         assertThat(update10.getPoliciesToBeDeployed()).isInstanceOf(List.class);
@@ -235,7 +242,9 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     @Test
     public void testPdpStatistics() throws CoderException, PfModelException, ParseException {
         addGroups("PdpGroups.json");
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), true);
+        PapParameterGroup parameterGroup = new PapParameterGroup();
+        parameterGroup.setPdpParameters(new PdpParameters());
+        parameterGroup.setSavePdpStatisticsInDb(true);
         timeStamp = Instant.parse("2021-02-12T17:48:01.029211400Z");
 
         // init default pdp group
@@ -283,7 +292,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         pdpStatistics03.setTimeStamp(timeStamp);
         status3.setStatistics(pdpStatistics03);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status3);
-        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, null, 1);
+        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, APEX_TYPE, 1);
 
         // Testing pdp statistics failure having the pdpStatistics null in the heartbeat for already registered pdp
         final PdpStatus status4 = new PdpStatus();
@@ -298,7 +307,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status4.setPolicies(idents4);
         status4.setStatistics(null);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status4);
-        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, null, 1);
+        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, APEX_TYPE, 1);
 
         // Testing pdp statistics failure passing different pdpGroup, PdpSubGroup & pdpInstanceId
         final PdpStatus status5 = new PdpStatus();
@@ -320,7 +329,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status5.setStatistics(pdpStatistics05);
 
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);
-        verifyPdpStatistics(null, DEFAULT_GROUP, null, 1);
+        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, APEX_TYPE, 1);
 
         // Test pdp statistics failure passing negative values
         final PdpStatus status6 = new PdpStatus();
@@ -347,10 +356,12 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status5.setStatistics(pdpStatistics06);
 
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);
-        verifyPdpStatistics(null, DEFAULT_GROUP, null, 1);
+        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, APEX_TYPE, 1);
 
         // Test pdp statistics save disabled case, sending valid pdp status but count should still remain 1
-        pdpHeartbeatListener = new PdpHeartbeatListener(new PdpParameters(), false);
+        parameterGroup = new PapParameterGroup();
+        parameterGroup.setPdpParameters(new PdpParameters());
+        parameterGroup.setSavePdpStatisticsInDb(false);
         timeStamp = Instant.parse("2021-02-12T17:48:05.029211400Z");
         final PdpStatus status7 = new PdpStatus();
         status7.setName(PDP_NAME);
@@ -370,7 +381,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         pdpStatistics07.setTimeStamp(timeStamp);
         status7.setStatistics(pdpStatistics07);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7);
-        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, null, 1);
+        verifyPdpStatistics(PDP_NAME, DEFAULT_GROUP, APEX_TYPE, 1);
 
     }
 
@@ -389,7 +400,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
 
     private void verifyPdpStatistics(final String pdpInstanceId, final String pdpGroupName,
             final String pdpSubGroupName, final int count) throws  PfModelException {
-        final List<PdpStatistics> fetchedPdpStatistics =
+        final Map<String, Map<String, List<PdpStatistics>>> fetchedPdpStatistics =
                 fetchPdpStatistics(pdpInstanceId, pdpGroupName, pdpSubGroupName);
         assertEquals(count, fetchedPdpStatistics.size());
     }

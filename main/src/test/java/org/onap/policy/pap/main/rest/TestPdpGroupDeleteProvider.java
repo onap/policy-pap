@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2020-2021 Nordix Foundation.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
+import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -84,14 +85,14 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     @Before
     @Override
     public void setUp() throws Exception {
-
         super.setUp();
+        prov = new MyProvider();
+        super.initialize(prov);
 
         ident = policy1.getIdentifier();
         optIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), null);
         fullIdent = new ToscaConceptIdentifierOptVersion(ident.getName(), ident.getVersion());
 
-        prov = new MyProvider();
         updater = prov.makeUpdater(session, policy1, fullIdent);
     }
 
@@ -144,12 +145,12 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeleteGroup_DaoEx() throws Exception {
+    public void testDeleteGroup_Ex() throws Exception {
         PdpGroup group = loadGroup("deleteGroup.json");
 
         when(session.getGroup(GROUP1_NAME)).thenReturn(group);
 
-        PfModelException ex = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
+        PfModelRuntimeException ex = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
         doThrow(ex).when(session).deleteGroupFromDb(group);
 
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isSameAs(ex);
@@ -162,15 +163,15 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
      */
     @Test
     public void testUndeploy_Full() throws Exception {
-        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
         PdpGroup group = loadGroup("undeploy.json");
 
-        when(dao.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-        when(dao.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
 
         PdpGroupDeleteProvider deleteProvider = new PdpGroupDeleteProvider();
-        deleteProvider.initialize();
+        super.initialize(deleteProvider);
         deleteProvider.undeploy(fullIdent, DEFAULT_USER);
 
         // should have updated the old group
