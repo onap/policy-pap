@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d21861b_6a772119",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-02-09T20:46:20Z",
+      "side": 1,
+      "message": "Francesco is using a mariadb 10.3+ dialect line here, see \nhttps://gerrit.onap.org/r/c/policy/clamp/+/127016/1/runtime-controlloop/src/main/resources/application.yaml\nwhich one to use?",
+      "revId": "f51c7532ac04d349d7faad2fc3dc53ffbda43032",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
