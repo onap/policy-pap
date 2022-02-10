@@ -52,13 +52,13 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testHealthCheck_500() throws Exception {
+    public void testHealthCheckFailure() throws Exception {
 
         markActivatorDead();
 
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
-        validateHealthCheckReport(NAME, SELF, false, 500, NOT_ALIVE, report);
+        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
     }
 
     private void validateHealthCheckReport(final String name, final String url, final boolean healthy, final int code,
