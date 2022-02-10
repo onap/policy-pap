@@ -145,8 +145,8 @@ public class PolicyComponentsHealthCheckProvider {
             throw new PfModelRuntimeException(Status.BAD_REQUEST, "Client Health check interrupted ", exp);
         }
 
-        // Check PAP itself
-        HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck();
+        // Check PAP itself excluding connectivity to Policy DB
+        HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck(false);
         papReport
             .setUrl(isHttps ? "https://" : "http://" + papReport.getUrl() + ":" + port + POLICY_PAP_HEALTHCHECK_URI);
         if (!papReport.isHealthy()) {
