@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "36e7f9c5_460abcf3",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-02-10T19:44:12Z",
+      "side": 1,
+      "message": "may be a shorter name - \"verifyDbConnection\" or \"checkDbConnection\" ?",
+      "range": {
+        "startLine": 58,
+        "startChar": 56,
+        "endLine": 58,
+        "endChar": 84
+      },
+      "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0126db5a_907a5438",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
         "patchSetId": 1
@@ -18,6 +41,29 @@
         "startChar": 12,
         "endLine": 66,
         "endChar": 61
+      },
+      "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "938e1f93_0a1c6f73",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-02-10T19:44:12Z",
+      "side": 1,
+      "message": "may be 503? to keep consistent with policy-api.",
+      "range": {
+        "startLine": 70,
+        "startChar": 37,
+        "endLine": 70,
+        "endChar": 40
       },
       "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
