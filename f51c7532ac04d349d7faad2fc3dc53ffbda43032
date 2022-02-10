@@ -16,6 +16,24 @@
       "revId": "f51c7532ac04d349d7faad2fc3dc53ffbda43032",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5770fb6b_af86f565",
+        "filename": "packages/policy-pap-tarball/src/main/resources/etc/papParameters.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-02-10T10:39:04Z",
+      "side": 1,
+      "message": "It wasn\u0027t really making a difference, but I agree with Francesco, MariaDB dialect is more appropriate. I have changed my reviews with this change.",
+      "parentUuid": "9d21861b_6a772119",
+      "revId": "f51c7532ac04d349d7faad2fc3dc53ffbda43032",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
