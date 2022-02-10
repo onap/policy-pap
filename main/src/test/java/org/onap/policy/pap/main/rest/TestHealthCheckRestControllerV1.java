@@ -2,6 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +23,13 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import javax.ws.rs.client.Invocation;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.onap.policy.models.base.PfModelRuntimeException;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * Class to perform unit test of {@link PapRestServer}.
@@ -35,6 +39,9 @@ import org.onap.policy.common.endpoints.report.HealthCheckReport;
 public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
 
     private static final String HEALTHCHECK_ENDPOINT = "healthcheck";
+
+    @MockBean
+    private PolicyStatusProvider policyStatusProvider;
 
     @Test
     public void testSwagger() throws Exception {
@@ -52,13 +59,21 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testHealthCheck_500() throws Exception {
+    public void testHealthCheckActivatorFailure() throws Exception {
 
         markActivatorDead();
 
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
-        validateHealthCheckReport(NAME, SELF, false, 500, NOT_ALIVE, report);
+        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
+    }
+
+    @Test
+    public void testHealthCheckDbConnectionFailure() throws Exception {
+        when(policyStatusProvider.getPolicyStatus()).thenThrow(PfModelRuntimeException.class);
+        final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
+        final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
     }
 
     private void validateHealthCheckReport(final String name, final String url, final boolean healthy, final int code,
