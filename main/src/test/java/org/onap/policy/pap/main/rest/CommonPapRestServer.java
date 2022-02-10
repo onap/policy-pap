@@ -46,6 +46,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
+import org.onap.policy.common.endpoints.http.server.YamlMessageBodyHandler;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.security.SelfSignedKeyStore;
@@ -143,7 +144,8 @@ public abstract class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected void testSwagger(final String endpoint) throws Exception {
-        final Invocation.Builder invocationBuilder = sendFqeRequest(httpsPrefix + "v2/api-docs", true);
+        final Invocation.Builder invocationBuilder =
+                        sendFqeRequest(httpsPrefix + "v2/api-docs", true, MediaType.APPLICATION_JSON);
         final String resp = invocationBuilder.get(String.class);
         assertTrue(resp.contains(ENDPOINT_PREFIX + endpoint));
     }
@@ -198,7 +200,19 @@ public abstract class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected Invocation.Builder sendRequest(final String endpoint) throws Exception {
-        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, true);
+        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, true, MediaType.APPLICATION_JSON);
+    }
+
+    /**
+     * Sends a request to an endpoint.
+     *
+     * @param endpoint the target endpoint
+     * @param mediaType the media type for the request
+     * @return a request builder
+     * @throws Exception if an error occurs
+     */
+    protected Invocation.Builder sendRequest(final String endpoint, String mediaType) throws Exception {
+        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, true, mediaType);
     }
 
     /**
@@ -209,7 +223,7 @@ public abstract class CommonPapRestServer {
      * @throws Exception if an error occurs
      */
     protected Invocation.Builder sendNoAuthRequest(final String endpoint) throws Exception {
-        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, false);
+        return sendFqeRequest(httpsPrefix + ENDPOINT_PREFIX + endpoint, false, MediaType.APPLICATION_JSON);
     }
 
     /**
@@ -220,8 +234,8 @@ public abstract class CommonPapRestServer {
      * @return a request builder
      * @throws Exception if an error occurs
      */
-    protected Invocation.Builder sendFqeRequest(final String fullyQualifiedEndpoint, boolean includeAuth)
-                    throws Exception {
+    protected Invocation.Builder sendFqeRequest(final String fullyQualifiedEndpoint, boolean includeAuth,
+                    String mediaType) throws Exception {
         final SSLContext sc = SSLContext.getInstance("TLSv1.2");
         sc.init(null, NetworkUtil.getAlwaysTrustingManager(), new SecureRandom());
         final ClientBuilder clientBuilder =
@@ -229,7 +243,8 @@ public abstract class CommonPapRestServer {
         final Client client = clientBuilder.build();
 
         client.property(ClientProperties.METAINF_SERVICES_LOOKUP_DISABLE, "true");
-        client.register(GsonMessageBodyHandler.class);
+        client.register((mediaType.equalsIgnoreCase(MediaType.APPLICATION_JSON) ? GsonMessageBodyHandler.class
+                        : YamlMessageBodyHandler.class));
 
         if (includeAuth) {
             final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("policyadmin", "zb!XztG34");
@@ -238,6 +253,6 @@ public abstract class CommonPapRestServer {
 
         final WebTarget webTarget = client.target(fullyQualifiedEndpoint);
 
-        return webTarget.request(MediaType.APPLICATION_JSON);
+        return webTarget.request(mediaType);
     }
 }

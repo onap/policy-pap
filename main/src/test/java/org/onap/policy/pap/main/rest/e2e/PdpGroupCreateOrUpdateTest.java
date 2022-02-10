@@ -77,18 +77,30 @@ public class PdpGroupCreateOrUpdateTest extends End2EndBase {
     }
 
     @Test
-    public void testCreateGroups() throws Exception {
+    public void testCreateGroupsJson() throws Exception {
 
+        createPdpGroups("createGroups.json", MediaType.APPLICATION_JSON);
+    }
+
+    @Test
+    public void testCreateGroupsYaml() throws Exception {
+
+        createPdpGroups("createGroups.yaml", "application/yaml");
+    }
+
+    private void createPdpGroups(String fileName, String mediaType) throws Exception, InterruptedException {
         context.addPdp("pdpAA_1", CREATE_SUBGROUP);
         context.addPdp("pdpAA_2", CREATE_SUBGROUP);
         context.addPdp("pdpAB_1", "pdpTypeB");
 
         context.startThreads();
 
-        Invocation.Builder invocationBuilder = sendRequest(CREATEORUPDATE_GROUPS_ENDPOINT);
+        Invocation.Builder invocationBuilder = sendRequest(CREATEORUPDATE_GROUPS_ENDPOINT, mediaType);
 
-        PdpGroups groups = loadJsonFile("createGroups.json", PdpGroups.class);
-        Entity<PdpGroups> entity = Entity.entity(groups, MediaType.APPLICATION_JSON);
+        PdpGroups groups = (mediaType.equalsIgnoreCase(MediaType.APPLICATION_JSON)
+                        ? loadJsonFile(fileName, PdpGroups.class)
+                        : loadYamlFile(fileName, PdpGroups.class));
+        Entity<PdpGroups> entity = Entity.entity(groups, mediaType);
         Response rawresp = invocationBuilder.post(entity);
         PdpGroupUpdateResponse resp = rawresp.readEntity(PdpGroupUpdateResponse.class);
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
