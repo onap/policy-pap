@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main;
+package org.onap.policy.pap.main.exception;
 
 import java.util.UUID;
 import org.onap.policy.models.base.PfModelException;
@@ -34,9 +34,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
-public class PapExceptionHandler {
+public class ControllerExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(PapExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
     /**
      * Handle PfModelException.
