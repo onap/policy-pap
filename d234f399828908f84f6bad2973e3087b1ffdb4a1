@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da9c1356_b44079ce",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 7498
+      },
+      "writtenOn": "2022-02-11T16:42:01Z",
+      "side": 1,
+      "message": "Changed to verifyPapDbConnectivity()",
+      "parentUuid": "36e7f9c5_460abcf3",
+      "range": {
+        "startLine": 58,
+        "startChar": 56,
+        "endLine": 58,
+        "endChar": 84
+      },
+      "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0126db5a_907a5438",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "66c35fc9_008041af",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7498
+      },
+      "writtenOn": "2022-02-11T16:42:01Z",
+      "side": 1,
+      "message": "Resolved as discussed.",
+      "parentUuid": "0126db5a_907a5438",
+      "range": {
+        "startLine": 66,
+        "startChar": 12,
+        "endLine": 66,
+        "endChar": 61
+      },
+      "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "938e1f93_0a1c6f73",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3e47468_fab00bf0",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 7498
+      },
+      "writtenOn": "2022-02-11T16:42:01Z",
+      "side": 1,
+      "message": "Changed to 503, updated UT\u0027s accordingly.",
+      "parentUuid": "938e1f93_0a1c6f73",
+      "range": {
+        "startLine": 70,
+        "startChar": 37,
+        "endLine": 70,
+        "endChar": 40
+      },
+      "revId": "d234f399828908f84f6bad2973e3087b1ffdb4a1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }

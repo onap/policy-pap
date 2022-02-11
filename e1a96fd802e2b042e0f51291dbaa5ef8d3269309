@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5fbed20c_6ab6bce4",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/HealthCheckProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 7498
+      },
+      "writtenOn": "2022-02-11T16:42:01Z",
+      "side": 1,
+      "message": "Added blank line.",
+      "parentUuid": "4663657e_8addabcb",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 2
+      },
+      "revId": "e1a96fd802e2b042e0f51291dbaa5ef8d3269309",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3c1bc233_4b6c9463",
         "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestHealthCheckRestControllerV1.java",
         "patchSetId": 3
@@ -36,6 +60,24 @@
       "writtenOn": "2022-02-11T11:17:01Z",
       "side": 1,
       "message": "Can you verify that the unit tests verify the code coverage in the verifyPapDbConnectivity in the HealthCheckProvider class?\n\nI\u0027m not sure if this method is called in the current tests and also I\u0027m not sure if the catch block (line 86 and 86) is being executed in the unit tests?\n\nWe just need to keep an eye on the code coverage figures.",
+      "revId": "e1a96fd802e2b042e0f51291dbaa5ef8d3269309",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d145cdb_fe03b3d4",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestHealthCheckRestControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 7498
+      },
+      "writtenOn": "2022-02-11T16:42:01Z",
+      "side": 1,
+      "message": "verifyPapDbConnectivity() try block is covered already via line 46 -\u003e testHealthCheckSuccess()\n\nFor catch block/DB exception coverage, added new test testHealthCheckDbConnectionFailure()",
+      "parentUuid": "3c1bc233_4b6c9463",
       "revId": "e1a96fd802e2b042e0f51291dbaa5ef8d3269309",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
