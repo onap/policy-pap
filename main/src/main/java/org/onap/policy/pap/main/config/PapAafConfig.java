@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ package org.onap.policy.pap.main.config;
 
 import javax.servlet.Filter;
 import org.onap.policy.pap.main.rest.PapAafFilter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile(value = {"aaf-auth"})
+@ConditionalOnProperty(value = "pap.aaf", havingValue = "true")
 public class PapAafConfig {
 
     /**
