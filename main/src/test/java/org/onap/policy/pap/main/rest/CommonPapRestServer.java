@@ -51,11 +51,11 @@ import org.onap.policy.common.gson.GsonMessageBodyHandler;
 import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.security.SelfSignedKeyStore;
 import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapApplication;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.startstop.PapActivator;
 import org.powermock.reflect.Whitebox;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
@@ -91,7 +91,6 @@ public abstract class CommonPapRestServer {
     @LocalServerPort
     private int port;
 
-    @Autowired
     private PapActivator papActivator;
 
     /**
@@ -126,6 +125,7 @@ public abstract class CommonPapRestServer {
     @Before
     public void setUp() throws Exception {
         httpsPrefix = "https://localhost:" + port + "/";
+        papActivator = Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class);
         activatorWasAlive = papActivator.isAlive();
     }
 
