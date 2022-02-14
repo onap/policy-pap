@@ -81,6 +81,24 @@
       "revId": "e1a96fd802e2b042e0f51291dbaa5ef8d3269309",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57f5f5db_1f5cb4af",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/TestHealthCheckRestControllerV1.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2022-02-14T10:55:22Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1d145cdb_fe03b3d4",
+      "revId": "e1a96fd802e2b042e0f51291dbaa5ef8d3269309",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
