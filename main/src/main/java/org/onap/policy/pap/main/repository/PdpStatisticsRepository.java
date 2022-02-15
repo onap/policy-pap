@@ -22,14 +22,13 @@ package org.onap.policy.pap.main.repository;
 
 import java.util.Date;
 import java.util.List;
-import org.onap.policy.models.base.PfGeneratedIdKey;
 import org.onap.policy.models.pdp.persistence.concepts.JpaPdpStatistics;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PdpStatisticsRepository extends JpaRepository<JpaPdpStatistics, PfGeneratedIdKey> {
+public interface PdpStatisticsRepository extends JpaRepository<JpaPdpStatistics, Long> {
 
     List<JpaPdpStatistics> findByTimeStampBetween(Date startTime, Date endTime, Pageable topRecordsSize);
 
@@ -60,26 +59,26 @@ public interface PdpStatisticsRepository extends JpaRepository<JpaPdpStatistics,
     List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndTimeStampLessThanEqual(String pdpGroup,
         String pdpSubGroup, Date endTime, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndKeyName(String pdpGroup, String pdpSubGroup,
+    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndName(String pdpGroup, String pdpSubGroup,
         String pdp, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndKeyNameAndTimeStampGreaterThanEqual(String pdpGroup,
+    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndNameAndTimeStampGreaterThanEqual(String pdpGroup,
         String pdpSubGroup, String pdp, Date startTime, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndKeyNameAndTimeStampLessThanEqual(String pdpGroup,
+    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndNameAndTimeStampLessThanEqual(String pdpGroup,
         String pdpSubGroup, String pdp, Date endTime, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndKeyNameAndTimeStampBetween(String pdpGroup,
+    List<JpaPdpStatistics> findByPdpGroupNameAndPdpSubGroupNameAndNameAndTimeStampBetween(String pdpGroup,
         String pdpSubGroup, String pdp, Date startTime, Date endTime, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByKeyName(String pdp, Pageable topRecordsSize);
+    List<JpaPdpStatistics> findByName(String pdp, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByKeyNameAndTimeStampGreaterThanEqual(String pdp, Date startTime,
+    List<JpaPdpStatistics> findByNameAndTimeStampGreaterThanEqual(String pdp, Date startTime,
         Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByKeyNameAndTimeStampLessThanEqual(String pdp, Date startTime, Pageable topRecordsSize);
+    List<JpaPdpStatistics> findByNameAndTimeStampLessThanEqual(String pdp, Date startTime, Pageable topRecordsSize);
 
-    List<JpaPdpStatistics> findByKeyNameAndTimeStampBetween(String pdp, Date startTime, Date endTime,
+    List<JpaPdpStatistics> findByNameAndTimeStampBetween(String pdp, Date startTime, Date endTime,
         Pageable topRecordsSize);
 
 }

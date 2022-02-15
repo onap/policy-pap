@@ -22,14 +22,13 @@ package org.onap.policy.pap.main.repository;
 
 import java.util.Date;
 import java.util.List;
-import org.onap.policy.models.base.PfGeneratedIdKey;
 import org.onap.policy.models.pap.persistence.concepts.JpaPolicyAudit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PolicyAuditRepository extends JpaRepository<JpaPolicyAudit, PfGeneratedIdKey> {
+public interface PolicyAuditRepository extends JpaRepository<JpaPolicyAudit, Long> {
 
     List<JpaPolicyAudit> findByTimeStampBetween(Date startTime, Date endTime, Pageable topRecordsSize);
 
@@ -48,26 +47,26 @@ public interface PolicyAuditRepository extends JpaRepository<JpaPolicyAudit, PfG
     List<JpaPolicyAudit> findByPdpGroupAndTimeStampBetween(String pdpGroup, Date startTime, Date endTime,
         Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByPdpGroupAndKeyNameAndKeyVersion(String pdpGroup, String policyName, String policyVersion,
+    List<JpaPolicyAudit> findByPdpGroupAndNameAndVersion(String pdpGroup, String policyName, String policyVersion,
         Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampGreaterThanEqual(String pdpGroup,
+    List<JpaPolicyAudit> findByPdpGroupAndNameAndVersionAndTimeStampGreaterThanEqual(String pdpGroup,
         String policyName, String policyVersion, Date startTime, Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampLessThanEqual(String pdpGroup,
+    List<JpaPolicyAudit> findByPdpGroupAndNameAndVersionAndTimeStampLessThanEqual(String pdpGroup,
         String policyName, String policyVersion, Date endTime, Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampBetween(String pdpGroup, String policyName,
+    List<JpaPolicyAudit> findByPdpGroupAndNameAndVersionAndTimeStampBetween(String pdpGroup, String policyName,
         String policyVersion, Date startTime, Date endTime, Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByKeyNameAndKeyVersion(String policyName, String policyVersion, Pageable topRecordsSize);
+    List<JpaPolicyAudit> findByNameAndVersion(String policyName, String policyVersion, Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByKeyNameAndKeyVersionAndTimeStampGreaterThanEqual(String policyName, String policyVersion,
+    List<JpaPolicyAudit> findByNameAndVersionAndTimeStampGreaterThanEqual(String policyName, String policyVersion,
         Date startTime, Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByKeyNameAndKeyVersionAndTimeStampLessThanEqual(String policyName, String policyVersion,
+    List<JpaPolicyAudit> findByNameAndVersionAndTimeStampLessThanEqual(String policyName, String policyVersion,
         Date endTime, Pageable topRecordsSize);
 
-    List<JpaPolicyAudit> findByKeyNameAndKeyVersionAndTimeStampBetween(String policyName, String policyVersion,
+    List<JpaPolicyAudit> findByNameAndVersionAndTimeStampBetween(String policyName, String policyVersion,
         Date startTime, Date endTime, Pageable topRecordsSize);
 }

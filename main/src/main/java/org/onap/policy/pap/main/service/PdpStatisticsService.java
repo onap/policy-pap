@@ -26,15 +26,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.common.parameters.BeanValidationResult;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfGeneratedIdKey;
-import org.onap.policy.models.base.PfKey;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.persistence.concepts.JpaPdpStatistics;
@@ -57,8 +54,6 @@ public class PdpStatisticsService {
     private static final String TIMESTAMP = "timeStamp";
     private static final int DEFAULT_RECORD_COUNT = 10;
     private static final int MAX_RECORD_COUNT = 100;
-
-    private AtomicLong generatedId = new AtomicLong();
 
     private final PdpStatisticsRepository pdpStatisticsRepository;
 
@@ -98,19 +93,15 @@ public class PdpStatisticsService {
             if (!validationResult.isValid()) {
                 throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, validationResult.getResult());
             }
-            //TODO: Fix this as part of POLICY-3897
-            jpaPdpStatistics.getKey().setGeneratedId(generatedId.incrementAndGet());
             pdpStatisticsRepository.saveAndFlush(jpaPdpStatistics);
-            pdpStatistics.setGeneratedId(jpaPdpStatistics.getKey().getGeneratedId());
+            pdpStatistics.setGeneratedId(jpaPdpStatistics.getGeneratedId());
         }
 
         // Return the created PDP statistics
         List<PdpStatistics> pdpStatistics = new ArrayList<>(pdpStatisticsList.size());
 
         for (PdpStatistics pdpStatisticsItem : pdpStatisticsList) {
-            var jpaPdpStatistics =
-                pdpStatisticsRepository.getById(new PfGeneratedIdKey(pdpStatisticsItem.getPdpInstanceId(),
-                    PfKey.NULL_KEY_VERSION, pdpStatisticsItem.getGeneratedId()));
+            var jpaPdpStatistics = pdpStatisticsRepository.getById(pdpStatisticsItem.getGeneratedId());
             pdpStatistics.add(jpaPdpStatistics.toAuthorative());
         }
         return pdpStatistics;
@@ -133,19 +124,19 @@ public class PdpStatisticsService {
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
             return generatePdpStatistics(asPdpStatisticsList(pdpStatisticsRepository
-                .findByPdpGroupNameAndPdpSubGroupNameAndKeyNameAndTimeStampBetween(pdpGroup, pdpSubGroup, pdp,
+                .findByPdpGroupNameAndPdpSubGroupNameAndNameAndTimeStampBetween(pdpGroup, pdpSubGroup, pdp,
                     convertInstantToDate(startTime), convertInstantToDate(endTime), recordSize)));
         } else if (startTime == null && endTime == null) {
             return generatePdpStatistics(
-                asPdpStatisticsList(pdpStatisticsRepository.findByPdpGroupNameAndPdpSubGroupNameAndKeyName(pdpGroup,
+                asPdpStatisticsList(pdpStatisticsRepository.findByPdpGroupNameAndPdpSubGroupNameAndName(pdpGroup,
                     pdpSubGroup, pdp, recordSize)));
         } else if (startTime != null) {
             return generatePdpStatistics(asPdpStatisticsList(
-                pdpStatisticsRepository.findByPdpGroupNameAndPdpSubGroupNameAndKeyNameAndTimeStampGreaterThanEqual(
+                pdpStatisticsRepository.findByPdpGroupNameAndPdpSubGroupNameAndNameAndTimeStampGreaterThanEqual(
                     pdpGroup, pdpSubGroup, pdp, convertInstantToDate(startTime), recordSize)));
         } else {
             return generatePdpStatistics(asPdpStatisticsList(
-                pdpStatisticsRepository.findByPdpGroupNameAndPdpSubGroupNameAndKeyNameAndTimeStampLessThanEqual(
+                pdpStatisticsRepository.findByPdpGroupNameAndPdpSubGroupNameAndNameAndTimeStampLessThanEqual(
                     pdpGroup, pdpSubGroup, pdp, convertInstantToDate(endTime), recordSize)));
         }
     }

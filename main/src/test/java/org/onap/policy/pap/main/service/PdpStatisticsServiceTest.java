@@ -30,7 +30,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.policy.models.base.Validated;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.pap.main.repository.PdpStatisticsRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
@@ -101,11 +100,9 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
         PdpStatistics pdpStatisticsErr = new PdpStatistics();
         pdpStatisticsErr.setPdpInstanceId("NULL");
         pdpStatisticsErr.setPdpGroupName(GROUP);
-
         assertThatThrownBy(() -> {
             pdpStatisticsService.createPdpStatistics(List.of(pdpStatisticsErr));
-        }).hasMessageContaining("pdp statistics").hasMessageContaining("key")
-            .hasMessageContaining(Validated.IS_A_NULL_KEY);
+        }).hasMessageContaining("item \"name\" value \"NULL\" INVALID, is null");
     }
 
     @Test

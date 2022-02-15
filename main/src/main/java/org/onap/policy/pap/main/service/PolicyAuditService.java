@@ -23,7 +23,6 @@ package org.onap.policy.pap.main.service;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
@@ -47,8 +46,6 @@ public class PolicyAuditService {
     private static final Integer DEFAULT_MAX_RECORDS = 100;
     private static final Integer DEFAULT_MIN_RECORDS = 10;
 
-    private AtomicLong generatedId = new AtomicLong();
-
     private final PolicyAuditRepository policyAuditRepository;
 
     /**
@@ -64,8 +61,6 @@ public class PolicyAuditService {
         var count = 0;
         for (JpaPolicyAudit jpaAudit : jpaAudits) {
             result.addResult(jpaAudit.validate(String.valueOf(count++)));
-            // TODO: Fix this as part of POLICY-3897
-            jpaAudit.getKey().setGeneratedId(generatedId.incrementAndGet());
         }
 
         if (!result.isValid()) {
@@ -139,19 +134,17 @@ public class PolicyAuditService {
         @NonNull String policyVersion, int recordCount, Instant startTime, Instant endTime) {
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
-            return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampBetween(
-                pdpGroup, policyName, policyVersion, Date.from(startTime), Date.from(endTime), recordSize));
+            return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndNameAndVersionAndTimeStampBetween(pdpGroup,
+                policyName, policyVersion, Date.from(startTime), Date.from(endTime), recordSize));
         } else if (startTime == null && endTime == null) {
-            return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndKeyNameAndKeyVersion(pdpGroup, policyName,
-                policyVersion, recordSize));
+            return asPolicyAuditList(
+                policyAuditRepository.findByPdpGroupAndNameAndVersion(pdpGroup, policyName, policyVersion, recordSize));
         } else if (startTime != null) {
-            return asPolicyAuditList(
-                policyAuditRepository.findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampGreaterThanEqual(pdpGroup,
-                    policyName, policyVersion, Date.from(startTime), recordSize));
+            return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndNameAndVersionAndTimeStampGreaterThanEqual(
+                pdpGroup, policyName, policyVersion, Date.from(startTime), recordSize));
         } else {
-            return asPolicyAuditList(
-                policyAuditRepository.findByPdpGroupAndKeyNameAndKeyVersionAndTimeStampLessThanEqual(pdpGroup,
-                    policyName, policyVersion, Date.from(endTime), recordSize));
+            return asPolicyAuditList(policyAuditRepository.findByPdpGroupAndNameAndVersionAndTimeStampLessThanEqual(
+                pdpGroup, policyName, policyVersion, Date.from(endTime), recordSize));
         }
     }
 
@@ -169,17 +162,16 @@ public class PolicyAuditService {
         Instant startTime, Instant endTime) {
         Pageable recordSize = getRecordSize(recordCount);
         if (startTime != null && endTime != null) {
-            return asPolicyAuditList(policyAuditRepository.findByKeyNameAndKeyVersionAndTimeStampBetween(policyName,
+            return asPolicyAuditList(policyAuditRepository.findByNameAndVersionAndTimeStampBetween(policyName,
                 policyVersion, Date.from(startTime), Date.from(endTime), recordSize));
         } else if (startTime == null && endTime == null) {
-            return asPolicyAuditList(
-                policyAuditRepository.findByKeyNameAndKeyVersion(policyName, policyVersion, recordSize));
+            return asPolicyAuditList(policyAuditRepository.findByNameAndVersion(policyName, policyVersion, recordSize));
         } else if (startTime != null) {
-            return asPolicyAuditList(policyAuditRepository.findByKeyNameAndKeyVersionAndTimeStampGreaterThanEqual(
-                policyName, policyVersion, Date.from(startTime), recordSize));
+            return asPolicyAuditList(policyAuditRepository.findByNameAndVersionAndTimeStampGreaterThanEqual(policyName,
+                policyVersion, Date.from(startTime), recordSize));
         } else {
-            return asPolicyAuditList(policyAuditRepository.findByKeyNameAndKeyVersionAndTimeStampLessThanEqual(
-                policyName, policyVersion, Date.from(endTime), recordSize));
+            return asPolicyAuditList(policyAuditRepository.findByNameAndVersionAndTimeStampLessThanEqual(policyName,
+                policyVersion, Date.from(endTime), recordSize));
         }
     }
 
