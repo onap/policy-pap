@@ -22,7 +22,7 @@ package org.onap.policy.pap.main.config;
 
 import java.util.Arrays;
 import java.util.List;
-import org.onap.policy.pap.main.config.converter.YamlHttpMessageConverter;
+import org.onap.policy.common.spring.utils.YamlHttpMessageConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        YamlHttpMessageConverter yamlConverter = new YamlHttpMessageConverter();
+        var yamlConverter = new YamlHttpMessageConverter();
         yamlConverter.setSupportedMediaTypes(Arrays.asList(MediaType.parseMediaType("application/yaml")));
         converters.add(yamlConverter);
     }

@@ -17,7 +17,7 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        implicit-strategy: org.onap.policy.pap.main.CustomImplicitNamingStrategy
+        implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
 
 server:
   port: 6969
