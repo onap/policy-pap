@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c493d5c5_580bc753",
+        "filename": "packages/policy-pap-docker/src/main/docker/policy-pap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 7498
+      },
+      "writtenOn": "2022-02-17T17:42:05Z",
+      "side": 1,
+      "message": "Wondering if you need to align the same on the test script here - https://gerrit.onap.org/r/gitweb?p\u003dpolicy/pap.git;a\u003dblob;f\u003dtestsuites/stability/src/main/resources/papsetup/config/pap/bin/policy-pap.sh;h\u003de5cc5a91ccf58ff39061797d611432e16d9bf206;hb\u003drefs/heads/master#l41",
+      "range": {
+        "startLine": 73,
+        "startChar": 36,
+        "endLine": 73,
+        "endChar": 52
+      },
+      "revId": "e19b808526ebe4db4528523b0268c1b35bc59b0f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
