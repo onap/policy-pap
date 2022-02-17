@@ -3,7 +3,7 @@
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019-2020 Nordix Foundation.
 #  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
-#  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+#  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,10 +63,14 @@ fi
 
 if [ -f "${POLICY_HOME}/etc/mounted/groups.json" ]; then
     CUSTOM_GROUPS="${POLICY_HOME}/etc/mounted/groups.json"
+else
+    CUSTOM_GROUPS="PapDb.json"
 fi
 
+echo "PDP group configuration file: ${CUSTOM_GROUPS}"
+
 $JAVA_HOME/bin/java \
-    -Dlogback.configurationFile="${POLICY_HOME}/etc/logback.xml" \
+    -Dlogging.config="${POLICY_HOME}/etc/logback.xml" \
     -Dserver.ssl.key-store="${KEYSTORE}" \
     -Dserver.ssl.key-store-password="${KEYSTORE_PASSWD}" \
     -Djavax.net.ssl.trustStore="${TRUSTSTORE}" \
