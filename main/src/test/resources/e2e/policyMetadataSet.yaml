@@ -1,0 +1,20 @@
+---
+tosca_definitions_version: tosca_simple_yaml_1_1_0
+node_types:
+  org.onap.nodetypes.policy.MetadataSet:
+    derived_from: tosca.nodetypes.Root
+    version: 1.0.0
+topology_template:
+  node_templates:
+    tca_metadata:
+      version: 1.0.0
+      type: org.onap.nodetypes.policy.MetadataSet
+      type_version: 1.0.0
+      description: Metadata set for tca
+      metadata:
+        policyModel:
+          key:
+            name: tcaModel
+            version: 1.0.0
+        threshold: 3.14
+        state: active

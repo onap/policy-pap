@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +33,7 @@ import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaEntity;
+import org.onap.policy.models.tosca.authorative.concepts.ToscaNodeTemplate;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicyType;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaTypedEntityFilter;
@@ -51,7 +53,13 @@ public class ToscaServiceTemplateService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ToscaServiceTemplateService.class);
 
+    private static final String METADATASET_NAME = "metadataSetName";
+    private static final String METADATASET_VERSION = "metadataSetVersion";
+    private static final String METADATASET = "metadataSet";
+
     private final ToscaServiceTemplateRepository serviceTemplateRepository;
+
+    private final ToscaNodeTemplateService nodeTemplateService;
 
     /**
      * Get policies.
@@ -71,6 +79,7 @@ public class ToscaServiceTemplateService {
             List<Map<String, ToscaPolicy>> policies = getToscaServiceTemplate(name, version, "policy").toAuthorative()
                 .getToscaTopologyTemplate().getPolicies();
             policyList = policies.stream().flatMap(policy -> policy.values().stream()).collect(Collectors.toList());
+            populateMetadataSet(policyList);
         } catch (PfModelRuntimeException pfme) {
             return handlePfModelRuntimeException(pfme);
         } catch (Exception exc) {
@@ -183,6 +192,22 @@ public class ToscaServiceTemplateService {
             return Collections.emptyList();
         } else {
             throw pfme;
+        }
+    }
+
+    /**
+     * Populates metadataSet in policy->metadata if metadataSet reference is provided.
+     *
+     * @param policies List of policies
+     */
+    private void populateMetadataSet(List<ToscaPolicy> policies) {
+        for (ToscaPolicy policy : policies) {
+            if (policy.getMetadata().keySet().containsAll(List.of(METADATASET_NAME, METADATASET_VERSION))) {
+                var name = String.valueOf(policy.getMetadata().get(METADATASET_NAME));
+                var version = String.valueOf(policy.getMetadata().get(METADATASET_VERSION));
+                policy.getMetadata().putIfAbsent(METADATASET,
+                    nodeTemplateService.getToscaNodeTemplate(name, version).getMetadata());
+            }
         }
     }
 
