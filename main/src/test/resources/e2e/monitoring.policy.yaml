@@ -8,6 +8,8 @@ topology_template:
            version: 1.0.0
            metadata:
              policy-id: onap.restart.tca
+             metadataSetName: tca_metadata
+             metadataSetVersion: 1.0.0
            properties:
              tca_policy:
                 domain: measurementsForVfScaling
