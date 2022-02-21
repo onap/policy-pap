@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -148,6 +149,8 @@ public class PdpGroupDeleteTest extends End2EndBase {
         assertEquals(0, deleted.getFailureCount());
         assertEquals(0, deleted.getIncompleteCount());
         assertEquals(new ToscaConceptIdentifier("onap.restart.tcaB", "1.0.0"), deleted.getPolicy());
+
+        assertThat(meterRegistry.counter(deploymentsCounterName, unDeploymentSuccessTag).count()).isEqualTo(2);
 
         rawresp = invocationBuilder.delete();
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);

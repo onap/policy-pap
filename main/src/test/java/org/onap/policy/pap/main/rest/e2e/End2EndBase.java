@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,12 +35,14 @@ import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
+import org.onap.policy.common.utils.resources.PrometheusUtils;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
 import org.onap.policy.models.tosca.simple.concepts.JpaToscaServiceTemplate;
@@ -81,6 +84,15 @@ public abstract class End2EndBase extends CommonPapRestServer {
     @Autowired
     public ToscaServiceTemplateService toscaService;
 
+    @Autowired
+    public MeterRegistry meterRegistry;
+
+    public String deploymentsCounterName = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
+    public String[] deploymentSuccessTag = {PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
+        PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()};
+    public String[] unDeploymentSuccessTag = {PrometheusUtils.OPERATION_METRIC_LABEL,
+        PrometheusUtils.UNDEPLOY_OPERATION, PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()};
+
     /**
      * Tears down.
      */
@@ -95,7 +107,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
             }
             context = null;
         }
-
+        meterRegistry.clear();
         super.tearDown();
     }
 

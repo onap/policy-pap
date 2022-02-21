@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -121,6 +122,8 @@ public class PdpGroupDeployTest extends End2EndBase {
         assertEquals(PdpGroupDeployControllerV1.POLICY_STATUS_URI, resp.getUri());
         assertNull(resp.getErrorDetails());
 
+        assertThat(meterRegistry.counter(deploymentsCounterName, deploymentSuccessTag).count()).isEqualTo(2);
+
         // repeat with unknown group - should fail
         DeploymentGroup group = groups.getGroups().get(0);
         group.setName("unknown-group");
@@ -167,6 +170,8 @@ public class PdpGroupDeployTest extends End2EndBase {
             notifications.add(msg);
         });
 
+        assertThat(meterRegistry.counter(deploymentsCounterName, deploymentSuccessTag).count()).isEqualTo(0);
+
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
 
         PdpDeployPolicies policies = loadJsonFile("deployPoliciesReq2.json", PdpDeployPolicies.class);
@@ -202,5 +207,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
         assertEquals(Response.Status.ACCEPTED.getStatusCode(), rawresp.getStatus());
         assertNull(resp.getErrorDetails());
+
+        assertThat(meterRegistry.counter(deploymentsCounterName, deploymentSuccessTag).count()).isEqualTo(2);
     }
 }

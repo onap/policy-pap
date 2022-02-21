@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -93,7 +94,7 @@ public class TestPapActivator {
         final PapParameterGroup parGroup = new CommonTestData().getPapParameterGroup(6969);
 
         activator = new PapActivator(parGroup, new PolicyNotifier(null), new PdpHeartbeatListener(),
-            new PdpModifyRequestMap(null, null, null, null, null));
+            new PdpModifyRequestMap(null, null, null, null, null), new SimpleMeterRegistry());
 
     }
 
