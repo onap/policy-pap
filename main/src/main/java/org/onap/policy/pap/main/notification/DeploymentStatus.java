@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.notification;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,10 +34,13 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.onap.policy.common.utils.resources.PrometheusUtils;
+import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 
@@ -51,6 +55,7 @@ import org.onap.policy.pap.main.service.PolicyStatusService;
  * </ol>
  */
 public class DeploymentStatus {
+
     /**
      * Tracks the groups that have been loaded.
      */
@@ -123,8 +128,30 @@ public class DeploymentStatus {
     public void flush(PolicyNotification notif) {
         // must add notifications BEFORE deleting undeployments
         addNotifications(notif);
+        updateMetrics();
         deleteUndeployments();
         flush();
+    }
+
+    private void updateMetrics() {
+        MeterRegistry meterRegistry = Registry.get(PapConstants.REG_METER_REGISTRY, MeterRegistry.class);
+        String counterName = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
+        recordMap.forEach((key, value) -> {
+            if (value.getAction().equals(StatusAction.Action.UPDATED)) {
+                if (value.getStatus().getState().equals(State.SUCCESS)) {
+                    meterRegistry.counter(counterName, PrometheusUtils.OPERATION_METRIC_LABEL,
+                        value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
+                            : PrometheusUtils.UNDEPLOY_OPERATION,
+                        PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()).increment();
+                } else if (value.getStatus().getState().equals(State.FAILURE)) {
+                    meterRegistry.counter(counterName, PrometheusUtils.OPERATION_METRIC_LABEL,
+                        value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
+                            : PrometheusUtils.UNDEPLOY_OPERATION,
+                        PrometheusUtils.STATUS_METRIC_LABEL, State.FAILURE.name()).increment();
+                }
+            }
+        });
+
     }
 
     /**

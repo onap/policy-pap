@@ -33,6 +33,7 @@ public final class PapConstants {
     public static final String REG_STATISTICS_MANAGER = "object:manager/statistics";
     public static final String REG_PDP_MODIFY_LOCK = "lock:pdp";
     public static final String REG_PDP_MODIFY_MAP = "object:pdp/modify/map";
+    public static final String REG_METER_REGISTRY = "object:meter/registry";
 
     // topic names
     public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";
