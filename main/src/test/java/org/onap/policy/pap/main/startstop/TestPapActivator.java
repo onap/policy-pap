@@ -93,7 +93,7 @@ public class TestPapActivator {
         final PapParameterGroup parGroup = new CommonTestData().getPapParameterGroup(6969);
 
         activator = new PapActivator(parGroup, new PolicyNotifier(null), new PdpHeartbeatListener(),
-            new PdpModifyRequestMap(null, null, null, null, null));
+            new PdpModifyRequestMap(null, null, null, null, null), null);
 
     }
 

@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.startstop;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -92,7 +93,8 @@ public class PapActivator extends ServiceManagerContainer {
      * @param papParameterGroup the parameters for the pap service
      */
     public PapActivator(PapParameterGroup papParameterGroup, PolicyNotifier policyNotifier,
-        PdpHeartbeatListener pdpHeartbeatListener, PdpModifyRequestMap pdpModifyRequestMap) {
+        PdpHeartbeatListener pdpHeartbeatListener, PdpModifyRequestMap pdpModifyRequestMap,
+        MeterRegistry meterRegistry) {
         super("Policy PAP");
         this.papParameterGroup = papParameterGroup;
         TopicEndpointManager.getManager().addTopics(papParameterGroup.getTopicParameterGroup());
@@ -118,6 +120,11 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
 
         // @formatter:off
+
+        addAction("Meter Registry",
+            () -> Registry.register(PapConstants.REG_METER_REGISTRY, meterRegistry),
+            () -> Registry.unregister(PapConstants.REG_METER_REGISTRY));
+
         addAction("PAP parameters",
             () -> ParameterService.register(papParameterGroup),
             () -> ParameterService.deregister(papParameterGroup.getName()));
