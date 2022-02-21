@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,13 +34,16 @@ import java.util.Map;
 import java.util.Set;
 import lombok.NonNull;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
@@ -47,6 +51,7 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.PdpPolicyStatusBuilder;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 
@@ -81,6 +86,22 @@ public class DeploymentStatusTest {
     private DeploymentStatus tracker;
 
     /**
+     * Set up the meter registry for tests.
+     */
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        Registry.register(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
+    }
+
+    /**
+     * Tear down the meter registry after tests.
+     */
+    @AfterClass
+    public static void tearDownAfterClass() {
+        Registry.unregister(PapConstants.REG_METER_REGISTRY);
+    }
+
+    /**
      * Sets up.
      */
     @Before
@@ -97,6 +118,7 @@ public class DeploymentStatusTest {
                         .deploy(true)
                         .state(State.SUCCESS);
         // @formatter:on
+
     }
 
     @Test

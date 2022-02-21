@@ -30,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,6 +93,7 @@ public class ProviderSuper {
     protected PdpModifyRequestMap reqmap;
     protected ToscaPolicy policy1;
     protected PapStatisticsManager statsmanager;
+    protected MeterRegistry meterRegistry;
 
     /**
      * Configures DAO, captors, and various mocks.
@@ -109,6 +111,8 @@ public class ProviderSuper {
         policy1 = loadPolicy("policy.json");
         statsmanager = mock(PapStatisticsManager.class);
 
+        meterRegistry = mock(MeterRegistry.class);
+
         List<PdpGroup> groups = loadGroups("groups.json");
 
         when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(groups);
@@ -119,6 +123,8 @@ public class ProviderSuper {
         Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, lockit);
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);
         Registry.register(PapConstants.REG_STATISTICS_MANAGER, statsmanager);
+        Registry.register(PapConstants.REG_METER_REGISTRY, meterRegistry);
+
     }
 
     /**
