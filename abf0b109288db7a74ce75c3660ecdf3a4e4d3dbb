@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3fa6b51a_51b68af2",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/service/ToscaNodeTemplateService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2022-02-23T09:31:46Z",
+      "side": 1,
+      "message": "Is ERROR not a bit severe here?",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 3
+      },
+      "revId": "abf0b109288db7a74ce75c3660ecdf3a4e4d3dbb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
