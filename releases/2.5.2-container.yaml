@@ -1,0 +1,8 @@
+distribution_type: 'container'
+container_release_tag: '2.5.2'
+project: 'policy-pap'
+log_dir: 'policy-pap-maven-docker-stage-istanbul/138'
+ref: 57303aa8069ff0d252400561d28a40f029505f0c
+containers:
+    - name: 'policy-pap'
+      version: '2.5.2-20220301T0500'
