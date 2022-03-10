@@ -53,7 +53,8 @@ public class HealthCheckRestControllerV1  extends PapRestControllerV1 {
         @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
         @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     public ResponseEntity<HealthCheckReport> healthcheck() {
-        return ResponseEntity.ok().body(provider.performHealthCheck(true));
+        var report = provider.performHealthCheck(true);
+        return ResponseEntity.status(report.getCode()).body(report);
     }
 
 }

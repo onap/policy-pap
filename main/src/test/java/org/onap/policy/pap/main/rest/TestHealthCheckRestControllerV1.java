@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +65,9 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
         markActivatorDead();
 
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
-        final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+        var response = invocationBuilder.get();
+        var report = response.readEntity(HealthCheckReport.class);
+        assertThat(response.getStatus()).isEqualTo(503);
         validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
     }
 
@@ -72,7 +75,9 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     public void testHealthCheckDbConnectionFailure() throws Exception {
         when(policyStatusProvider.getPolicyStatus()).thenThrow(PfModelRuntimeException.class);
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
-        final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
+        var response = invocationBuilder.get();
+        var report = response.readEntity(HealthCheckReport.class);
+        assertThat(response.getStatus()).isEqualTo(503);
         validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
     }
 
