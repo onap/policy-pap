@@ -22,9 +22,11 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Invocation;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
@@ -64,16 +66,16 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
         markActivatorDead();
 
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
-        final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
-        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
+        assertThatThrownBy(() -> invocationBuilder.get(HealthCheckReport.class))
+            .isInstanceOf(ServiceUnavailableException.class);
     }
 
     @Test
     public void testHealthCheckDbConnectionFailure() throws Exception {
         when(policyStatusProvider.getPolicyStatus()).thenThrow(PfModelRuntimeException.class);
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
-        final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
-        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
+        assertThatThrownBy(() -> invocationBuilder.get(HealthCheckReport.class))
+            .isInstanceOf(ServiceUnavailableException.class);
     }
 
     private void validateHealthCheckReport(final String name, final String url, final boolean healthy, final int code,
