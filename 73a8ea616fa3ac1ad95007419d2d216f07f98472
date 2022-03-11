@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dc88c260_292df506",
+        "filename": "releases/2.6.1-container.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-03-11T17:31:58Z",
+      "side": 1,
+      "message": "It seems this is not right!",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 45
+      },
+      "revId": "73a8ea616fa3ac1ad95007419d2d216f07f98472",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
