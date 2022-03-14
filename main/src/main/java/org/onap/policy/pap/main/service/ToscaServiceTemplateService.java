@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import org.onap.policy.common.utils.coder.CoderException;
+import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -60,6 +62,8 @@ public class ToscaServiceTemplateService {
     private final ToscaServiceTemplateRepository serviceTemplateRepository;
 
     private final ToscaNodeTemplateService nodeTemplateService;
+
+    private StandardCoder coder = new StandardCoder();
 
     /**
      * Get policies.
@@ -200,13 +204,13 @@ public class ToscaServiceTemplateService {
      *
      * @param policies List of policies
      */
-    private void populateMetadataSet(List<ToscaPolicy> policies) {
+    private void populateMetadataSet(List<ToscaPolicy> policies) throws CoderException {
         for (ToscaPolicy policy : policies) {
             if (policy.getMetadata().keySet().containsAll(List.of(METADATASET_NAME, METADATASET_VERSION))) {
                 var name = String.valueOf(policy.getMetadata().get(METADATASET_NAME));
                 var version = String.valueOf(policy.getMetadata().get(METADATASET_VERSION));
-                policy.getMetadata().putIfAbsent(METADATASET,
-                    nodeTemplateService.getToscaNodeTemplate(name, version).getMetadata());
+                policy.getMetadata().putIfAbsent(METADATASET, coder.decode(nodeTemplateService
+                        .getToscaNodeTemplate(name, version).getMetadata().toString(), Object.class));
             }
         }
     }
