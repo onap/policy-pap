@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1572c106_f89ab79c",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/service/ToscaServiceTemplateService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 4903
+      },
+      "writtenOn": "2022-03-15T10:03:55Z",
+      "side": 1,
+      "message": "Question: If you are adding changes to decode in toAuthoritative method in the jpa class, why it needs to be docoded again here?\nIsn\u0027t it already decoded https://github.com/onap/policy-pap/blob/master/main/src/main/java/org/onap/policy/pap/main/service/ToscaNodeTemplateService.java#L61 ?",
+      "revId": "468d62b9171a2162972ea25ff1cda59b7523efb8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
