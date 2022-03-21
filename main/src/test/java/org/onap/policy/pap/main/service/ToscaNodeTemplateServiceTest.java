@@ -78,7 +78,7 @@ public class ToscaNodeTemplateServiceTest {
         assertDoesNotThrow(() -> nodeTemplateService.getToscaNodeTemplate(NODE_TEMPLATE_NAME, NODE_TEMPLATE_VERSION));
 
         assertThat(nodeTemplateService.getToscaNodeTemplate(NODE_TEMPLATE_NAME, NODE_TEMPLATE_VERSION).getMetadata())
-            .containsEntry("policyModel", nodeTemplate.getMetadata().get("policyModel").toString());
+            .containsEntry("policyModel", nodeTemplate.getMetadata().get("policyModel"));
 
         assertThatThrownBy(() -> nodeTemplateService.getToscaNodeTemplate("invalid_name", "1.0.0"))
             .isInstanceOf(PfModelRuntimeException.class)
