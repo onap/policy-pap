@@ -148,7 +148,7 @@ public class PolicyComponentsHealthCheckProvider {
         // Check PAP itself excluding connectivity to Policy DB
         HealthCheckReport papReport = new HealthCheckProvider().performHealthCheck(false);
         papReport
-            .setUrl(isHttps ? "https://" : "http://" + papReport.getUrl() + ":" + port + POLICY_PAP_HEALTHCHECK_URI);
+            .setUrl((isHttps ? "https://" : "http://") + papReport.getUrl() + ":" + port + POLICY_PAP_HEALTHCHECK_URI);
         if (!papReport.isHealthy()) {
             isHealthy = false;
         }
