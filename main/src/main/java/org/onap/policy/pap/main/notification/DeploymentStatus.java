@@ -21,6 +21,7 @@
 
 package org.onap.policy.pap.main.notification;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,8 @@ import org.onap.policy.pap.main.service.PolicyStatusService;
  */
 public class DeploymentStatus {
 
+    private static final String COUNTER_NAME = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
+
     /**
      * Tracks the groups that have been loaded.
      */
@@ -77,6 +80,10 @@ public class DeploymentStatus {
 
     private PolicyStatusService policyStatusService;
 
+    private Counter deploymentSuccessCounter;
+    private Counter unDeploymentSuccessCounter;
+    private Counter deploymentFailureCounter;
+    private Counter unDeploymentFailureCounter;
 
     /**
      * Constructs the object.
@@ -85,6 +92,26 @@ public class DeploymentStatus {
      */
     public DeploymentStatus(PolicyStatusService policyStatusService) {
         this.policyStatusService = policyStatusService;
+        initializeMetrics();
+    }
+
+    private void initializeMetrics() {
+        MeterRegistry meterRegistry = Registry.get(PapConstants.REG_METER_REGISTRY, MeterRegistry.class);
+        deploymentSuccessCounter =
+            Counter.builder(COUNTER_NAME).tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()).register(meterRegistry);
+
+        unDeploymentSuccessCounter = Counter.builder(COUNTER_NAME).tags(PrometheusUtils.OPERATION_METRIC_LABEL,
+            PrometheusUtils.UNDEPLOY_OPERATION, PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name())
+            .register(meterRegistry);
+
+        deploymentFailureCounter =
+            Counter.builder(COUNTER_NAME).tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, State.FAILURE.name()).register(meterRegistry);
+
+        unDeploymentFailureCounter =
+            Counter.builder(COUNTER_NAME).tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, State.FAILURE.name()).register(meterRegistry);
     }
 
     /**
@@ -178,20 +205,12 @@ public class DeploymentStatus {
     }
 
     private void updateMetrics() {
-        MeterRegistry meterRegistry = Registry.get(PapConstants.REG_METER_REGISTRY, MeterRegistry.class);
-        String counterName = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
         recordMap.forEach((key, value) -> {
             if (value.getAction().equals(StatusAction.Action.UPDATED)) {
                 if (value.getStatus().getState().equals(State.SUCCESS)) {
-                    meterRegistry.counter(counterName, PrometheusUtils.OPERATION_METRIC_LABEL,
-                        value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
-                            : PrometheusUtils.UNDEPLOY_OPERATION,
-                        PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()).increment();
+                    (value.getStatus().isDeploy() ? deploymentSuccessCounter : unDeploymentSuccessCounter).increment();
                 } else if (value.getStatus().getState().equals(State.FAILURE)) {
-                    meterRegistry.counter(counterName, PrometheusUtils.OPERATION_METRIC_LABEL,
-                        value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
-                            : PrometheusUtils.UNDEPLOY_OPERATION,
-                        PrometheusUtils.STATUS_METRIC_LABEL, State.FAILURE.name()).increment();
+                    (value.getStatus().isDeploy() ? deploymentFailureCounter : unDeploymentFailureCounter).increment();
                 }
             }
         });
