@@ -31,6 +31,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Collections;
 import java.util.Set;
 import javax.ws.rs.core.Response.Status;
@@ -41,11 +42,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
+import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
@@ -91,7 +94,7 @@ public class PolicyNotifierTest {
     public void setUp() {
         try {
             when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
-
+            Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
             notifier = new MyNotifier(publisher);
 
         } catch (PfModelException e) {
