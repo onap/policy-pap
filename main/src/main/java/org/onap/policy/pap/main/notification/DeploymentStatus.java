@@ -77,6 +77,12 @@ public class DeploymentStatus {
 
     private PolicyStatusService policyStatusService;
 
+    private static final String COUNTER_NAME = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
+
+    /**
+     * Used to lock updates to the meterRegistry.
+     */
+    private static final Object lockit = new Object();
 
     /**
      * Constructs the object.
@@ -178,23 +184,24 @@ public class DeploymentStatus {
     }
 
     private void updateMetrics() {
-        MeterRegistry meterRegistry = Registry.get(PapConstants.REG_METER_REGISTRY, MeterRegistry.class);
-        String counterName = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
-        recordMap.forEach((key, value) -> {
-            if (value.getAction().equals(StatusAction.Action.UPDATED)) {
-                if (value.getStatus().getState().equals(State.SUCCESS)) {
-                    meterRegistry.counter(counterName, PrometheusUtils.OPERATION_METRIC_LABEL,
-                        value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
-                            : PrometheusUtils.UNDEPLOY_OPERATION,
-                        PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()).increment();
-                } else if (value.getStatus().getState().equals(State.FAILURE)) {
-                    meterRegistry.counter(counterName, PrometheusUtils.OPERATION_METRIC_LABEL,
-                        value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
-                            : PrometheusUtils.UNDEPLOY_OPERATION,
-                        PrometheusUtils.STATUS_METRIC_LABEL, State.FAILURE.name()).increment();
+        synchronized (lockit) {
+            MeterRegistry meterRegistry = Registry.get(PapConstants.REG_METER_REGISTRY, MeterRegistry.class);
+            recordMap.forEach((key, value) -> {
+                if (value.getAction().equals(StatusAction.Action.UPDATED)) {
+                    if (value.getStatus().getState().equals(State.SUCCESS)) {
+                        meterRegistry.counter(COUNTER_NAME, PrometheusUtils.OPERATION_METRIC_LABEL,
+                            value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
+                                : PrometheusUtils.UNDEPLOY_OPERATION,
+                            PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()).increment();
+                    } else if (value.getStatus().getState().equals(State.FAILURE)) {
+                        meterRegistry.counter(COUNTER_NAME, PrometheusUtils.OPERATION_METRIC_LABEL,
+                            value.getStatus().isDeploy() ? PrometheusUtils.DEPLOY_OPERATION
+                                : PrometheusUtils.UNDEPLOY_OPERATION,
+                            PrometheusUtils.STATUS_METRIC_LABEL, State.FAILURE.name()).increment();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
