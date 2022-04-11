@@ -90,7 +90,7 @@ public class DeploymentStatusTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() {
-        Registry.register(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
+        Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
     }
 
     /**

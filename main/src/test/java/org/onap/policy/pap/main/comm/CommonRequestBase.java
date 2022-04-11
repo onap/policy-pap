@@ -28,17 +28,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Consumer;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
+import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
@@ -85,6 +88,11 @@ public class CommonRequestBase {
     protected RequestListener listener;
     protected RequestParams reqParams;
     protected PdpModifyRequestMapParams mapParams;
+
+    @BeforeClass
+    public static void setupBeforeAll() {
+        Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
+    }
 
     /**
      * Sets up.
