@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # ============LICENSE_START=======================================================
-#  Copyright (C) 2019-2020 Nordix Foundation.
+#  Copyright (C) 2019-2022 Nordix Foundation.
 #  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,6 @@
 # ============LICENSE_END=========================================================
 #
 
-JAVA_HOME=/usr/lib/jvm/java-11-openjdk/
 POLICY_PAP_HOME=/opt/app/policy/pap
 KEYSTORE="${POLICY_HOME}/etc/ssl/policy-keystore"
 TRUSTSTORE="${POLICY_HOME}/etc/ssl/policy-truststore"

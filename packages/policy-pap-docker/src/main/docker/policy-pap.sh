@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 #
 # ============LICENSE_START=======================================================
-#  Copyright (C) 2019-2020 Nordix Foundation.
+#  Copyright (C) 2019-2022 Nordix Foundation.
 #  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
 #  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
 # ================================================================================
@@ -21,7 +21,6 @@
 # ============LICENSE_END=========================================================
 #
 
-JAVA_HOME=/usr/lib/jvm/java-11-openjdk/
 KEYSTORE="${KEYSTORE:-$POLICY_HOME/etc/ssl/policy-keystore}"
 TRUSTSTORE="${TRUSTSTORE:-$POLICY_HOME/etc/ssl/policy-truststore}"
 KEYSTORE_PASSWD="${KEYSTORE_PASSWD:-Pol1cy_0nap}"
