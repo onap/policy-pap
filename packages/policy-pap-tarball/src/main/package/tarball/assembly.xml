@@ -26,17 +26,6 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>true</useProjectArtifact>
-            <outputDirectory>${file.separator}lib</outputDirectory>
-            <unpack>false</unpack>
-            <scope>runtime</scope>
-            <includes>
-                <include>*:jar</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/src/main/resources/etc

@@ -21,6 +21,11 @@
 # ============LICENSE_END=========================================================
 #-------------------------------------------------------------------------------
 
+FROM busybox AS tarball
+RUN mkdir /packages /extracted
+COPY /maven/lib/policy-pap.tar.gz /packages/
+RUN tar xvzf /packages/policy-pap.tar.gz --directory /extracted/
+
 FROM onap/policy-jre-alpine:2.4.3
 
 LABEL maintainer="Policy Team"
@@ -38,20 +43,16 @@ ARG POLICY_LOGS=/var/log/onap/policy/pap
 ENV POLICY_LOGS=$POLICY_LOGS
 ENV POLICY_HOME=$POLICY_HOME/pap
 
-RUN mkdir -p $POLICY_HOME $POLICY_LOGS $POLICY_HOME/bin && \
-    chown  -R policy:policy $POLICY_HOME $POLICY_LOGS && \
-    mkdir /packages
-COPY /maven/lib/policy-pap.tar.gz /packages
+RUN mkdir -p $POLICY_HOME $POLICY_LOGS && \
+    chown -R policy:policy $POLICY_HOME $POLICY_LOGS
 
-RUN tar xvfz /packages/policy-pap.tar.gz --directory $POLICY_HOME \
-    && rm /packages/policy-pap.tar.gz
+COPY --chown=policy:policy --from=tarball /extracted $POLICY_HOME
 
 WORKDIR $POLICY_HOME
-COPY policy-pap.sh  bin/.
-COPY /maven/pap.jar /app
+COPY --chown=policy:policy policy-pap.sh bin/
+COPY --chown=policy:policy /maven/pap.jar /app/
 
-
-RUN chown -R policy:policy * && chmod 755 bin/*.sh && chown -R policy:policy /app
+RUN chmod 755 bin/*.sh
 
 USER policy
 WORKDIR $POLICY_HOME/bin
