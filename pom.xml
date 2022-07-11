@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.onap.policy.parent</groupId>
         <artifactId>integration</artifactId>
-        <version>3.3.2</version>
+        <version>3.3.3-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -41,8 +41,8 @@
     <description>Code that implements the Policy Administration Backend.</description>
 
     <properties>
-        <policy.common.version>1.8.2</policy.common.version>
-        <policy.models.version>2.4.4</policy.models.version>
+        <policy.common.version>1.8.3-SNAPSHOT</policy.common.version>
+        <policy.models.version>2.4.6-SNAPSHOT</policy.models.version>
     </properties>
 
     <modules>
