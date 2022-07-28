@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "181505d7_831fa378",
+        "filename": "main/src/main/resources/openapi/openapi.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 477
+      },
+      "writtenOn": "2022-07-28T14:55:38Z",
+      "side": 1,
+      "message": "The commit message says swagger but this is not a swagger specification (which has different structure).\nCould you clarify these aspects for me?\n1- what\u0027s the purpose of this spec?\n2- how it\u0027s generated\n3- what\u0027s the maintanence plan for this file, does it need to change, everytime somebody does development work on the REST API?  Can it be automated?\n4- how this spec will be used and with which tools, ..\nthanks Francesco!",
+      "revId": "2c4b7d5737e8cacf5ec180493ae0f47452f5f69a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
