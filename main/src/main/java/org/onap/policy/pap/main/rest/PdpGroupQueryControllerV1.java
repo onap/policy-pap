@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
+ *  Modifications Copyright (C) 2019,2022 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,11 +76,11 @@ public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
             @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
                             response = UUID.class)},
         extensions = {@Extension(name = EXTENSION_NAME,
-            properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
+                properties = {@ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
+                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)})})
     @ApiResponses(value = {@ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-                    @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-                    @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
+        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
+        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
     // @formatter:on
 
     public Response queryGroupDetails(
