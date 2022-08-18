@@ -1,0 +1,8 @@
+distribution_type: 'container'
+container_release_tag: '2.4.6'
+project: 'policy-pap'
+log_dir: 'policy-pap-maven-docker-stage-honolulu/520'
+ref: 2d619ff88ce9cf66c8f71e497cbec9a73f2cc6b9
+containers:
+    - name: 'policy-pap'
+      version: '2.4.6-20220817T2215'
