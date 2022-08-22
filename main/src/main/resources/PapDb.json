@@ -34,6 +34,10 @@
               "version": "1.0.0"
             },
             {
+              "name": "onap.policies.monitoring.*",
+              "version": "2.0.0"
+            },
+            {
               "name": "onap.policies.optimization.*",
               "version": "1.0.0"
             },
