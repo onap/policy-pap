@@ -1,0 +1,8 @@
+distribution_type: 'container'
+container_release_tag: '2.6.4'
+project: 'policy-pap'
+log_dir: 'policy-pap-maven-docker-stage-jakarta/118'
+ref: c1fd9bf7eb65f9e281061dfc93392a8c5bb11603
+containers:
+    - name: 'policy-pap'
+      version: '2.6.4-20220902T1306'
