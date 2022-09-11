@@ -19,7 +19,7 @@
 # ============LICENSE_END=========================================================
 #-------------------------------------------------------------------------------
 
-FROM onap/policy-jre-alpine:2.3.2
+FROM onap/policy-jre-alpine:2.3.3-SNAPSHOT
 
 LABEL maintainer="Policy Team"
 
