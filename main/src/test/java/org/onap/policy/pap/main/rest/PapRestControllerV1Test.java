@@ -61,7 +61,7 @@ public class PapRestControllerV1Test {
 
     @Test
     public void testAddVersionControlHeaders() {
-        ResponseEntity<Object> resp = mockController.addVersionControlHeaders(bldr).build();
+        ResponseEntity<Object> resp = PapRestControllerV1.addVersionControlHeaders(bldr).build();
         assertEquals("0", resp.getHeaders().get(PapRestControllerV1.VERSION_MINOR_NAME).get(0));
         assertEquals("0", resp.getHeaders().get(PapRestControllerV1.VERSION_PATCH_NAME).get(0));
         assertEquals("1.0.0", resp.getHeaders().get(PapRestControllerV1.VERSION_LATEST_NAME).get(0));
@@ -69,14 +69,14 @@ public class PapRestControllerV1Test {
 
     @Test
     public void testAddLoggingHeaders_Null() {
-        ResponseEntity<Object> resp = mockController.addLoggingHeaders(bldr, null).build();
+        ResponseEntity<Object> resp = PapRestControllerV1.addLoggingHeaders(bldr, null).build();
         assertNotNull(resp.getHeaders().get(PapRestControllerV1.REQUEST_ID_NAME));
     }
 
     @Test
     public void testAddLoggingHeaders_NonNull() {
         UUID uuid = UUID.randomUUID();
-        ResponseEntity<Object> resp = mockController.addLoggingHeaders(bldr, uuid).build();
+        ResponseEntity<Object> resp = PapRestControllerV1.addLoggingHeaders(bldr, uuid).build();
         assertEquals(uuid.toString(), resp.getHeaders().get(PapRestControllerV1.REQUEST_ID_NAME).get(0));
     }
 
