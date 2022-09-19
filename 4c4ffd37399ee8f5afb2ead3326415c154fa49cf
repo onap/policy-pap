@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d2ac9674_7bbca76c",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/rest/PapRestControllerV1Test.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-09-19T14:07:38Z",
+      "side": 1,
+      "message": "Wondering if we are still using this or it can be removed?",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 39
+      },
+      "revId": "4c4ffd37399ee8f5afb2ead3326415c154fa49cf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
