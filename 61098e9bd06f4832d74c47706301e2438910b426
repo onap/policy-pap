@@ -46,6 +46,29 @@
       "revId": "61098e9bd06f4832d74c47706301e2438910b426",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fa818f1_29caaa2a",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/service/PolicyAuditServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2022-11-16T20:00:18Z",
+      "side": 1,
+      "message": "this one too :)",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 58
+      },
+      "revId": "61098e9bd06f4832d74c47706301e2438910b426",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
