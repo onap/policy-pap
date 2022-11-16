@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +44,6 @@ import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
-import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
@@ -57,6 +57,8 @@ public class PublisherTest extends Threaded {
     // MSG1 & MSG2, respectively, encoded as JSON
     private static final String JSON1;
     private static final String JSON2;
+
+    protected static final String PDP_PAP_TOPIC = "POLICY-PDP-PAP";
 
     static {
         try {
@@ -81,10 +83,9 @@ public class PublisherTest extends Threaded {
     /**
      * Configures the topic and attaches a listener.
      *
-     * @throws Exception if an error occurs
      */
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpBeforeClass() {
         final PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
         TopicEndpointManager.getManager().shutdown();
 
@@ -93,7 +94,7 @@ public class PublisherTest extends Threaded {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownAfterClass() {
         TopicEndpointManager.getManager().shutdown();
     }
 
@@ -106,10 +107,10 @@ public class PublisherTest extends Threaded {
     public void setUp() throws Exception {
         super.setUp();
 
-        pub = new Publisher<>(PapConstants.TOPIC_POLICY_PDP_PAP);
+        pub = new Publisher<>(PDP_PAP_TOPIC);
 
         listener = new MyListener();
-        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(listener);
+        TopicEndpointManager.getManager().getNoopTopicSink(PDP_PAP_TOPIC).register(listener);
     }
 
     /**
@@ -119,7 +120,7 @@ public class PublisherTest extends Threaded {
      */
     @After
     public void tearDown() throws Exception {
-        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(listener);
+        TopicEndpointManager.getManager().getNoopTopicSink(PDP_PAP_TOPIC).unregister(listener);
 
         super.tearDown();
     }
@@ -143,7 +144,7 @@ public class PublisherTest extends Threaded {
     }
 
     @Test
-    public void testPublisher_Ex() throws Exception {
+    public void testPublisher_Ex() {
         assertThatThrownBy(() -> new Publisher<>("unknwon-topic")).isInstanceOf(PolicyPapException.class);
     }
 

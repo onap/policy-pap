@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Copyright (C) 2019-2020, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,12 +27,15 @@ import javax.ws.rs.client.Invocation;
 import org.junit.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Class to perform unit test of {@link PapRestServer}.
+ * Class to perform unit test of {@link StatisticsRestControllerV1}.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@ActiveProfiles("test")
 public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
 
     private static final String STATISTICS_ENDPOINT = "statistics";

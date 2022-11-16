@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021 Nordix Foundation.
+ *  Copyright (C) 2019-2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.List;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
@@ -36,10 +37,12 @@ import org.onap.policy.models.pdp.concepts.DeploymentGroup;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.onap.policy.models.pdp.concepts.DeploymentSubGroup;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
+@ActiveProfiles("test")
 public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
     private static final String DEPLOY_GROUP_ENDPOINT = "pdps/deployments/batch";
@@ -95,10 +98,10 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
         DeploymentGroup group = new DeploymentGroup();
         group.setName("drools-group");
-        group.setDeploymentSubgroups(Arrays.asList(subgrp));
+        group.setDeploymentSubgroups(List.of(subgrp));
 
         DeploymentGroups groups = new DeploymentGroups();
-        groups.setGroups(Arrays.asList(group));
+        groups.setGroups(List.of(group));
 
         return Entity.entity(groups, MediaType.APPLICATION_JSON);
     }

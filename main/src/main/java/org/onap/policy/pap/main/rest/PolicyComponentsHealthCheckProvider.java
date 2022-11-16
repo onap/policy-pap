@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Copyright (C) 2019-2020, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -87,6 +87,9 @@ public class PolicyComponentsHealthCheckProvider {
 
     @Value("${server.port}")
     private int port;
+
+    @Value("${pap.topic.pdp-pap.name:POLICY-PDP-PAP}")
+    private String topicPolicyPdpPap;
 
     /**
      * This method is used to initialize clients and executor.
@@ -244,8 +247,8 @@ public class PolicyComponentsHealthCheckProvider {
     private HealthCheckReport verifyDmaapClient(HttpClient httpClient, Response resp) {
         DmaapGetTopicResponse dmaapResponse = resp.readEntity(DmaapGetTopicResponse.class);
         var topicVerificationStatus = (dmaapResponse.getTopics() != null
-                        && dmaapResponse.getTopics().contains(PapConstants.TOPIC_POLICY_PDP_PAP));
-        String message = (topicVerificationStatus ? "PAP to DMaaP connection check is successfull"
+                        && dmaapResponse.getTopics().contains(topicPolicyPdpPap));
+        String message = (topicVerificationStatus ? "PAP to DMaaP connection check is successful"
                         : "PAP to DMaaP connection check failed");
         int code = (topicVerificationStatus ? resp.getStatus() : 503);
         return createHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(), code,

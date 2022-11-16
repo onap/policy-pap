@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2020 Nordix Foundation.
+ *  Copyright (C) 2020, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Corp.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;
@@ -150,6 +149,7 @@ public class TestPolicyComponentsHealthCheckProvider {
         ReflectionTestUtils.setField(provider, "papParameterGroup", papParameterGroup);
         provider.initializeClientHealthCheckExecutorService();
         ReflectionTestUtils.setField(provider, "clients", clients);
+        ReflectionTestUtils.setField(provider, "topicPolicyPdpPap", "POLICY-PDP-PAP");
     }
 
     /**
@@ -260,7 +260,7 @@ public class TestPolicyComponentsHealthCheckProvider {
 
     private DmaapGetTopicResponse createDmaapResponse() {
         DmaapGetTopicResponse response = new DmaapGetTopicResponse();
-        response.setTopics(Arrays.asList(PapConstants.TOPIC_POLICY_PDP_PAP));
+        response.setTopics(List.of("POLICY-PDP-PAP"));
         return response;
     }
 }

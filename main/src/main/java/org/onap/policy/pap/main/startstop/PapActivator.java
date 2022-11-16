@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.Getter;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
 import org.onap.policy.common.endpoints.event.comm.TopicSource;
@@ -50,6 +51,7 @@ import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.rest.PapStatisticsManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -63,15 +65,29 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PapActivator extends ServiceManagerContainer {
+
+    // topic names
+    @Getter
+    @Value("${pap.topic.pdp-pap.name}")
+    private String topicPolicyPdpPap = "POLICY-PDP-PAP";
+
+    @Getter
+    @Value("${pap.topic.notification.name}")
+    private String topicPolicyNotification = "POLICY-NOTIFICATION";
+
+    @Getter
+    @Value("${pap.topic.heartbeat.name}")
+    private String topicPolicyHeartbeat = "POLICY-HEARTBEAT";
+
     private static final String[] MSG_TYPE_NAMES = { "messageName" };
     private static final String[] REQ_ID_NAMES = { "response", "responseTo" };
 
     /**
-     * Max number of heat beats that can be missed before PAP removes a PDP.
+     * Max number of heart beats that can be missed before PAP removes a PDP.
      */
     private static final int MAX_MISSED_HEARTBEATS = 3;
 
-    private PapParameterGroup papParameterGroup;
+    private final PapParameterGroup papParameterGroup;
 
     /**
      * Listens for messages on the topic, decodes them into a {@link PdpStatus} message, and then dispatches them to
@@ -142,12 +158,12 @@ public class PapActivator extends ServiceManagerContainer {
             () -> heartbeatMsgDispatcher.unregister(PdpMessageType.PDP_STATUS.name()));
 
         addAction("Response Message Dispatcher",
-            () -> registerMsgDispatcher(responseMsgDispatcher, PapConstants.TOPIC_POLICY_PDP_PAP),
-            () -> unregisterMsgDispatcher(responseMsgDispatcher, PapConstants.TOPIC_POLICY_PDP_PAP));
+            () -> registerMsgDispatcher(responseMsgDispatcher, topicPolicyPdpPap),
+            () -> unregisterMsgDispatcher(responseMsgDispatcher, topicPolicyPdpPap));
 
         addAction("Heartbeat Message Dispatcher",
-            () -> registerMsgDispatcher(heartbeatMsgDispatcher, PapConstants.TOPIC_POLICY_HEARTBEAT),
-            () -> unregisterMsgDispatcher(heartbeatMsgDispatcher, PapConstants.TOPIC_POLICY_HEARTBEAT));
+            () -> registerMsgDispatcher(heartbeatMsgDispatcher, topicPolicyHeartbeat),
+            () -> unregisterMsgDispatcher(heartbeatMsgDispatcher, topicPolicyHeartbeat));
 
         addAction("topics",
             TopicEndpointManager.getManager()::start,
@@ -163,14 +179,14 @@ public class PapActivator extends ServiceManagerContainer {
 
         addAction("PDP publisher",
             () -> {
-                pdpPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_PDP_PAP));
+                pdpPub.set(new Publisher<>(topicPolicyPdpPap));
                 startThread(pdpPub.get());
             },
             () -> pdpPub.get().stop());
 
         addAction("Policy Notification publisher",
             () -> {
-                notifyPub.set(new Publisher<>(PapConstants.TOPIC_POLICY_NOTIFICATION));
+                notifyPub.set(new Publisher<>(topicPolicyNotification));
                 startThread(notifyPub.get());
                 policyNotifier.setPublisher(notifyPub.get());
             },

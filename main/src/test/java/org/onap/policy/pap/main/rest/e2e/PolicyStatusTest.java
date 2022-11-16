@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +51,11 @@ public class PolicyStatusTest extends End2EndBase {
 
     @Test
     public void testQueryAllDeployedPolicies() throws Exception {
-        String uri = POLICY_STATUS_ENDPOINT;
-
-        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Invocation.Builder invocationBuilder = sendRequest(POLICY_STATUS_ENDPOINT);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
 
-        List<PolicyStatus> resp = rawresp.readEntity(new GenericType<List<PolicyStatus>>() {});
+        List<PolicyStatus> resp = rawresp.readEntity(new GenericType<>() {});
         assertEquals(1, resp.size());
         checkAssertions(resp.get(0));
     }
@@ -69,7 +68,7 @@ public class PolicyStatusTest extends End2EndBase {
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
 
-        List<PolicyStatus> resp = rawresp.readEntity(new GenericType<List<PolicyStatus>>() {});
+        List<PolicyStatus> resp = rawresp.readEntity(new GenericType<>() {});
         assertEquals(1, resp.size());
         checkAssertions(resp.get(0));
     }
@@ -88,13 +87,11 @@ public class PolicyStatusTest extends End2EndBase {
 
     @Test
     public void testGetStatusOfAllDeployedPolicies() throws Exception {
-        String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT;
-
-        Invocation.Builder invocationBuilder = sendRequest(uri);
+        Invocation.Builder invocationBuilder = sendRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
 
-        List<PdpPolicyStatus> resp = rawresp.readEntity(new GenericType<List<PdpPolicyStatus>>() {});
+        List<PdpPolicyStatus> resp = rawresp.readEntity(new GenericType<>() {});
         assertEquals(1, resp.size());
         checkAssertionsForDeploymentStatus(resp.get(0));
     }
@@ -107,7 +104,7 @@ public class PolicyStatusTest extends End2EndBase {
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
 
-        List<PdpPolicyStatus> resp = rawresp.readEntity(new GenericType<List<PdpPolicyStatus>>() {});
+        List<PdpPolicyStatus> resp = rawresp.readEntity(new GenericType<>() {});
         assertEquals(1, resp.size());
         checkAssertionsForDeploymentStatus(resp.get(0));
     }

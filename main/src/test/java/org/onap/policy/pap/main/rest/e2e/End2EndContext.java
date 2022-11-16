@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,14 +125,15 @@ public class End2EndContext {
      */
     private TopicListener topicListener = (infra, topic, text) -> toPdps.add(text);
 
+    private String topicPolicyPdpPap = "pdp-pap-topic";
 
     /**
      * Constructs the object.
      */
     public End2EndContext() {
-        toPapTopic = TopicEndpointManager.getManager().getNoopTopicSource(PapConstants.TOPIC_POLICY_PDP_PAP);
+        toPapTopic = TopicEndpointManager.getManager().getNoopTopicSource(topicPolicyPdpPap);
 
-        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).register(topicListener);
+        TopicEndpointManager.getManager().getNoopTopicSink(topicPolicyPdpPap).register(topicListener);
 
         dispatcher = new MessageTypeDispatcher("messageName");
         dispatcher.register(PdpMessageType.PDP_UPDATE.name(), new UpdateListener());
@@ -200,7 +202,7 @@ public class End2EndContext {
         toPap.clear();
         pdps.forEach(pdp -> toPap.add(DONE));
 
-        TopicEndpointManager.getManager().getNoopTopicSink(PapConstants.TOPIC_POLICY_PDP_PAP).unregister(topicListener);
+        TopicEndpointManager.getManager().getNoopTopicSink(topicPolicyPdpPap).unregister(topicListener);
     }
 
     /**
@@ -245,7 +247,7 @@ public class End2EndContext {
                     break;
                 }
 
-                dispatcher.onTopicEvent(CommInfrastructure.NOOP, PapConstants.TOPIC_POLICY_PDP_PAP, text);
+                dispatcher.onTopicEvent(CommInfrastructure.NOOP, topicPolicyPdpPap, text);
             }
         }
     }
@@ -256,15 +258,11 @@ public class End2EndContext {
      * {@link End2EndContext#DONE} message <i>for each PDP</i>.
      */
     private class ToPapThread extends Thread {
-        /**
-         * Number of DONE messages that have been received.
-         */
-        private long ndone;
 
         @Override
         public void run() {
             // pretend we received DONE from PDPs that are already finished
-            ndone = pdps.stream().filter(pdp -> pdp.finished).count();
+            long ndone = pdps.stream().filter(pdp -> pdp.finished).count();
 
             while (ndone < pdps.size()) {
                 String text;
@@ -364,9 +362,8 @@ public class End2EndContext {
          *
          * @param reply reply to be added to the list
          * @return this PDP
-         * @throws CoderException if the reply cannot be encoded
          */
-        public PseudoPdp addReply(PdpStatus reply) throws CoderException {
+        public PseudoPdp addReply(PdpStatus reply) {
             replies.add(reply);
             finished = false;
             return this;

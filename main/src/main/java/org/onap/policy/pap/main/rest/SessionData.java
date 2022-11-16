@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,12 +96,12 @@ public class SessionData {
     /**
      * Map's a policy's identifier to the policies for deployment.
      */
-    private Map<ToscaConceptIdentifier, ToscaPolicy> policiesToBeDeployed = new HashMap<>();
+    private final Map<ToscaConceptIdentifier, ToscaPolicy> policiesToBeDeployed = new HashMap<>();
 
     /**
      * Set of policies to be undeployed.
      */
-    private Set<ToscaConceptIdentifier> policiesToBeUndeployed = new HashSet<>();
+    private final Set<ToscaConceptIdentifier> policiesToBeUndeployed = new HashSet<>();
 
     /**
      * User starting requests.
@@ -114,11 +114,11 @@ public class SessionData {
      */
     private final DeploymentStatus deployStatus;
 
-    private PolicyAuditManager auditManager;
+    private final PolicyAuditManager auditManager;
 
-    private ToscaServiceTemplateService toscaService;
+    private final ToscaServiceTemplateService toscaService;
 
-    private PdpGroupService pdpGroupService;
+    private final PdpGroupService pdpGroupService;
 
     /**
      * Constructs the object.
@@ -368,9 +368,8 @@ public class SessionData {
      *
      * @param type desired policy type
      * @return the active groups supporting the given policy
-     * @throws PfModelException if an error occurred
      */
-    public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaConceptIdentifier type) throws PfModelException {
+    public List<PdpGroup> getActivePdpGroupsByPolicyType(ToscaConceptIdentifier type) {
         /*
          * Cannot use computeIfAbsent() because the enclosed code throws an unchecked exception and handling that would
          * obfuscate the code too much, thus disabling the sonar.
@@ -392,7 +391,7 @@ public class SessionData {
     /**
      * Gets the list of policies to be deployed to the PDPs.
      *
-     * @returns a list of policies to be deployed
+     * @return a list of policies to be deployed
      */
     public List<ToscaPolicy> getPoliciesToBeDeployed() {
         return new LinkedList<>(this.policiesToBeDeployed.values());
@@ -401,7 +400,7 @@ public class SessionData {
     /**
      * Gets the list of policies to be undeployed from the PDPs.
      *
-     * @returns a list of policies to be undeployed
+     * @return a list of policies to be undeployed
      */
     public List<ToscaConceptIdentifier> getPoliciesToBeUndeployed() {
         return new LinkedList<>(this.policiesToBeUndeployed);

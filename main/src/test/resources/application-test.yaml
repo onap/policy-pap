@@ -7,16 +7,14 @@ spring:
     converters:
       preferred-json-mapper: gson
   datasource:
-    url: jdbc:mariadb://mariadb:3306/policyadmin
-    driverClassName: org.mariadb.jdbc.Driver
-    username: policy_user
-    password: policy_user
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDB103Dialect
+        dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
@@ -25,44 +23,43 @@ server:
   port: 6969
 
 pap:
-  name: PapGroup
+  name: "PapGroup"
   aaf: false
   topic:
     pdp-pap.name: POLICY-PDP-PAP
     notification.name: POLICY-NOTIFICATION
     heartbeat.name: POLICY-HEARTBEAT
   pdpParameters:
-    heartBeatMs: 120000
     updateParameters:
       maxRetryCount: 1
-      maxWaitMs: 30000
+      maxWaitMs: 3000
     stateChangeParameters:
       maxRetryCount: 1
-      maxWaitMs: 30000
+      maxWaitMs: 3000
+    heartBeatMs: 6000
+    maxMessageAgeMs: 20000
   savePdpStatisticsInDb: true
   topicParameterGroup:
     topicSources:
     - topic: ${pap.topic.pdp-pap.name}
       servers:
       - message-router
-      topicCommInfrastructure: dmaap
-      fetchTimeout: 15000
+      topicCommInfrastructure: noop
     - topic: ${pap.topic.heartbeat.name}
       effectiveTopic: ${pap.topic.pdp-pap.name}
       consumerGroup: policy-pap
       servers:
       - message-router
-      topicCommInfrastructure: dmaap
-      fetchTimeout: 15000
+      topicCommInfrastructure: noop
     topicSinks:
     - topic: ${pap.topic.pdp-pap.name}
       servers:
       - message-router
-      topicCommInfrastructure: dmaap
+      topicCommInfrastructure: noop
     - topic: ${pap.topic.notification.name}
       servers:
       - message-router
-      topicCommInfrastructure: dmaap
+      topicCommInfrastructure: noop
   healthCheckRestClientParameters:
   - clientName: api
     hostname: policy-api

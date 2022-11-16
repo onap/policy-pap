@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  * Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +24,13 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
+@ActiveProfiles("test")
 public class TestPolicyAuditControllerV1 extends CommonPapRestServer {
 
     private static final String POLICY_AUDIT_ENDPOINT = "policies/audit";

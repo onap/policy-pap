@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +37,10 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.repository.PolicyAuditRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class PolicyAuditServiceTest extends CommonPapRestServer {
 
     private static final String FIELD_IS_NULL = "%s is marked .*ull but is null";

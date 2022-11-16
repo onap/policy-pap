@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,10 @@ import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.pap.main.repository.PdpStatisticsRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class PdpStatisticsServiceTest extends CommonPapRestServer {
 
     private static final String NAME3 = "name3";
