@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2019-2020 Nordix Foundation.
+ * Modifications Copyright (C) 2019-2020, 2022 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.Getter;
 import org.junit.After;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
@@ -38,7 +39,6 @@ import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.PrometheusUtils;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfConceptKey;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
@@ -56,8 +56,10 @@ import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.yaml.snakeyaml.Yaml;
 
+@ActiveProfiles("test-e2e")
 public abstract class End2EndBase extends CommonPapRestServer {
     private static final Logger logger = LoggerFactory.getLogger(End2EndBase.class);
 
@@ -87,6 +89,12 @@ public abstract class End2EndBase extends CommonPapRestServer {
     @Autowired
     public MeterRegistry meterRegistry;
 
+    @Getter
+    private final String topicPolicyPdpPap = "pdp-pap-topic";
+
+    @Getter
+    private final String topicPolicyNotification = "notification-topic";
+
     public String deploymentsCounterName = "pap_" + PrometheusUtils.POLICY_DEPLOYMENTS_METRIC;
     public String[] deploymentSuccessTag = {PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
         PrometheusUtils.STATUS_METRIC_LABEL, State.SUCCESS.name()};
@@ -115,9 +123,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Adds Tosca Policy Types to the DB.
      *
      * @param yamlFile name of the YAML file specifying the data to be loaded
-     * @throws PfModelException if a DAO error occurs
      */
-    public void addToscaPolicyTypes(final String yamlFile) throws PfModelException {
+    public void addToscaPolicyTypes(final String yamlFile) {
         final ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
         JpaToscaServiceTemplate jpaToscaServiceTemplate = mergeWithExistingTemplate(serviceTemplate);
         serviceTemplateRepository.save(jpaToscaServiceTemplate);
@@ -127,9 +134,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Adds Tosca Policies to the DB.
      *
      * @param yamlFile name of the YAML file specifying the data to be loaded
-     * @throws PfModelException if a DAO error occurs
      */
-    public void addToscaPolicies(final String yamlFile) throws PfModelException {
+    public void addToscaPolicies(final String yamlFile) {
         final ToscaServiceTemplate serviceTemplate = loadYamlFile(yamlFile, ToscaServiceTemplate.class);
         JpaToscaServiceTemplate jpaToscaServiceTemplate = mergeWithExistingTemplate(serviceTemplate);
         serviceTemplateRepository.save(jpaToscaServiceTemplate);
@@ -139,7 +145,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
         JpaToscaServiceTemplate jpaToscaServiceTemplate = new JpaToscaServiceTemplate(serviceTemplate);
         Optional<JpaToscaServiceTemplate> dbServiceTemplateOpt = serviceTemplateRepository
             .findById(new PfConceptKey(JpaToscaServiceTemplate.DEFAULT_NAME, JpaToscaServiceTemplate.DEFAULT_VERSION));
-        if (!dbServiceTemplateOpt.isEmpty()) {
+        if (dbServiceTemplateOpt.isPresent()) {
             JpaToscaServiceTemplate dbServiceTemplate = dbServiceTemplateOpt.get();
             if (dbServiceTemplate.getPolicyTypes() != null) {
                 jpaToscaServiceTemplate.setPolicyTypes(dbServiceTemplate.getPolicyTypes());
@@ -159,9 +165,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Adds PDP groups to the DB.
      *
      * @param jsonFile name of the JSON file specifying the data to be loaded
-     * @throws PfModelException if a DAO error occurs
      */
-    public void addGroups(final String jsonFile) throws PfModelException {
+    public void addGroups(final String jsonFile) {
         final PdpGroups groups = loadJsonFile(jsonFile, PdpGroups.class);
 
         final ValidationResult result = groups.validatePapRest();
@@ -176,9 +181,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Fetch PDP groups from the DB.
      *
      * @param name name of the pdpGroup
-     * @throws PfModelException if a DAO error occurs
      */
-    public List<PdpGroup> fetchGroups(final String name) throws PfModelException {
+    public List<PdpGroup> fetchGroups(final String name) {
         return pdpGroupService.getPdpGroups(name);
     }
 
@@ -188,10 +192,9 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * @param instanceId name of the pdpStatistics
      * @param groupName name of the pdpGroup
      * @param subGroupName name of the pdpSubGroup
-     * @throws PfModelException if a DAO error occurs
      */
     public Map<String, Map<String, List<PdpStatistics>>> fetchPdpStatistics(final String instanceId,
-        final String groupName, final String subGroupName) throws PfModelException {
+        final String groupName, final String subGroupName) {
         return pdpStatisticsService.fetchDatabaseStatistics(groupName, subGroupName, instanceId, 100, null, null);
     }
 
@@ -199,9 +202,8 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Adds PdpPolicyStatus records to the DB.
      *
      * @param jsonFile name of the JSON file specifying the data to be loaded
-     * @throws PfModelException if a DAO error occurs
      */
-    public void addPdpPolicyStatus(final String jsonFile) throws PfModelException {
+    public void addPdpPolicyStatus(final String jsonFile) {
         final PolicyStatusRecords data = loadJsonFile(jsonFile, PolicyStatusRecords.class);
         policyStatusService.cudPolicyStatus(data.records, null, null);
     }

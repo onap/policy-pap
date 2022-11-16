@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019,2021 Nordix Foundation.
+ *  Copyright (C) 2019, 2021-2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -26,12 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
+@ActiveProfiles("test")
 public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
 
     private static final String POLICY_STATUS_ENDPOINT = "policies/deployed";
@@ -51,10 +54,8 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testQueryAllDeployedPolicies() throws Exception {
-        String uri = POLICY_STATUS_ENDPOINT;
-
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(POLICY_STATUS_ENDPOINT, SyncInvoker::get);
         checkRequest(POLICY_STATUS_ENDPOINT);
     }
 
@@ -73,10 +74,8 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
 
     @Test
     public void testGetStatusOfAllPolicies() throws Exception {
-        String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT;
-
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT, SyncInvoker::get);
     }
 
     @Test
@@ -102,7 +101,7 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(uri, SyncInvoker::get);
     }
 
     private void checkInvalidRegexRequest(String uri) throws Exception {
@@ -113,7 +112,7 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
         assertThat(entity).contains("error parsing regexp");
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(uri, SyncInvoker::get);
     }
 
     private void checkEmptyRegexRequest(String uri) throws Exception {
@@ -124,6 +123,6 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
         assertThat(entity).contains("empty string passed as a regex");
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(uri, SyncInvoker::get);
     }
 }

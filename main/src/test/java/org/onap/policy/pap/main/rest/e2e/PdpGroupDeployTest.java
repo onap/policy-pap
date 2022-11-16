@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +49,6 @@ import org.onap.policy.models.pdp.concepts.DeploymentGroups;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
 
 public class PdpGroupDeployTest extends End2EndBase {
@@ -83,7 +81,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         status11.setPdpType(DEPLOY_SUBGROUP);
         status11.setPdpSubgroup(DEPLOY_SUBGROUP);
 
-        List<ToscaConceptIdentifier> idents = Arrays.asList(new ToscaConceptIdentifier("onap.restart.tca", "1.0.0"));
+        List<ToscaConceptIdentifier> idents = List.of(new ToscaConceptIdentifier("onap.restart.tca", "1.0.0"));
         status11.setPolicies(idents);
 
         PdpStatus status12 = new PdpStatus();
@@ -144,10 +142,10 @@ public class PdpGroupDeployTest extends End2EndBase {
         status11.setPdpType(DEPLOY_SUBGROUP);
         status11.setPdpSubgroup(DEPLOY_SUBGROUP);
 
-        final ToscaConceptIdentifier ident = new ToscaConceptIdentifier("onap.restart.tcaB", "1.0.0");
+        final ToscaConceptIdentifier identifier = new ToscaConceptIdentifier("onap.restart.tcaB", "1.0.0");
 
-        List<ToscaConceptIdentifier> idents = Arrays.asList(ident);
-        status11.setPolicies(idents);
+        List<ToscaConceptIdentifier> identifiers = List.of(identifier);
+        status11.setPolicies(identifiers);
 
         PdpStatus status12 = new PdpStatus();
         status12.setName("pdpBA_2");
@@ -155,7 +153,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         status12.setPdpGroup("deployPolicies");
         status12.setPdpType(DEPLOY_SUBGROUP);
         status12.setPdpSubgroup(DEPLOY_SUBGROUP);
-        status12.setPolicies(idents);
+        status12.setPolicies(identifiers);
 
         context.addPdp("pdpBA_1", DEPLOY_SUBGROUP).addReply(status11);
         context.addPdp("pdpBA_2", DEPLOY_SUBGROUP).addReply(status12);
@@ -165,12 +163,10 @@ public class PdpGroupDeployTest extends End2EndBase {
 
         // arrange to catch notifications
         LinkedBlockingQueue<String> notifications = new LinkedBlockingQueue<>();
-        NoopTopicSink notifier = NoopTopicFactories.getSinkFactory().get(PapConstants.TOPIC_POLICY_NOTIFICATION);
-        notifier.register((infra, topic, msg) -> {
-            notifications.add(msg);
-        });
+        NoopTopicSink notifier = NoopTopicFactories.getSinkFactory().get(getTopicPolicyNotification());
+        notifier.register((infra, topic, msg) -> notifications.add(msg));
 
-        assertThat(meterRegistry.counter(deploymentsCounterName, deploymentSuccessTag).count()).isEqualTo(0);
+        assertThat(meterRegistry.counter(deploymentsCounterName, deploymentSuccessTag).count()).isZero();
 
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);
 
@@ -197,7 +193,7 @@ public class PdpGroupDeployTest extends End2EndBase {
         assertEquals(2, added.getSuccessCount());
         assertEquals(0, added.getFailureCount());
         assertEquals(0, added.getIncompleteCount());
-        assertEquals(ident, added.getPolicy());
+        assertEquals(identifier, added.getPolicy());
 
         // one of the PDPs should not have handled any requests
         assertEquals(1, context.getPdps().stream().filter(pdp -> pdp.getHandled().isEmpty()).count());

@@ -14,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
@@ -23,8 +23,12 @@ server:
   port: 6969
 
 pap:
-  name: "PapGroup"
+  name: "PapGroupE2E"
   aaf: false
+  topic:
+    pdp-pap.name: pdp-pap-topic
+    notification.name: notification-topic
+    heartbeat.name: heartbeat-topic
   pdpParameters:
     updateParameters:
       maxRetryCount: 1
@@ -37,24 +41,24 @@ pap:
   savePdpStatisticsInDb: true
   topicParameterGroup:
     topicSources:
-    - topic: POLICY-PDP-PAP
+    - topic: ${pap.topic.pdp-pap.name}
       servers:
-      - message-router
+        - message-router
       topicCommInfrastructure: noop
-    - topic: POLICY-HEARTBEAT
-      effectiveTopic: POLICY-PDP-PAP
+    - topic: ${pap.topic.heartbeat.name}
+      effectiveTopic: ${pap.topic.pdp-pap.name}
       consumerGroup: policy-pap
       servers:
-      - message-router
+        - message-router
       topicCommInfrastructure: noop
     topicSinks:
-    - topic: POLICY-PDP-PAP
+    - topic: ${pap.topic.pdp-pap.name}
       servers:
-      - message-router
+        - message-router
       topicCommInfrastructure: noop
-    - topic: POLICY-NOTIFICATION
+    - topic: ${pap.topic.notification.name}
       servers:
-      - message-router
+        - message-router
       topicCommInfrastructure: noop
   healthCheckRestClientParameters:
   - clientName: api

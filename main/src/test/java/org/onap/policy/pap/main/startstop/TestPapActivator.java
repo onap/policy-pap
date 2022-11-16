@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -34,14 +34,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.utils.network.NetworkUtil;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.comm.PdpHeartbeatListener;
 import org.onap.policy.pap.main.comm.PdpModifyRequestMap;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
@@ -58,15 +59,13 @@ import org.onap.policy.pap.main.rest.PapStatisticsManager;
 public class TestPapActivator {
     private static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
 
-    private static int port;
-
     private PapActivator activator;
 
     /**
      * Allocates a new DB name, server port, and creates a config file.
      */
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpBeforeClass() {
         CommonTestData.newDb();
     }
 
@@ -78,9 +77,10 @@ public class TestPapActivator {
     @Before
     public void setUp() throws Exception {
         Registry.newRegistry();
+        TopicEndpointManager.getManager().shutdown();
         HttpServletServerFactoryInstance.getServerFactory().destroy();
 
-        port = NetworkUtil.allocPort();
+        int port = NetworkUtil.allocPort();
 
         String json = new CommonTestData().getPapParameterGroupAsString(port);
 
@@ -110,8 +110,13 @@ public class TestPapActivator {
         }
     }
 
+    @AfterClass
+    public static void afterClass() {
+        Registry.newRegistry();
+    }
+
     @Test
-    public void testPapActivator() throws PolicyPapException {
+    public void testPapActivator() {
         assertFalse(activator.isAlive());
         activator.start();
         assertTrue(activator.isAlive());
@@ -130,7 +135,7 @@ public class TestPapActivator {
     }
 
     @Test
-    public void testTerminate() throws Exception {
+    public void testTerminate() {
         activator.start();
         activator.stop();
         assertFalse(activator.isAlive());

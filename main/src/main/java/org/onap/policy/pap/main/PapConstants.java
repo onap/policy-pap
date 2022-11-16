@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +36,7 @@ public final class PapConstants {
     public static final String REG_PDP_MODIFY_MAP = "object:pdp/modify/map";
     public static final String REG_METER_REGISTRY = "object:meter/registry";
 
-    // topic names
-    public static final String TOPIC_POLICY_PDP_PAP = "POLICY-PDP-PAP";
-    public static final String TOPIC_POLICY_NOTIFICATION = "POLICY-NOTIFICATION";
-    public static final String TOPIC_POLICY_HEARTBEAT = "POLICY-HEARTBEAT";
-
     // policy components names
-    public static final String POLICY_API = "api";
-    public static final String POLICY_DISTRIBUTION = "distribution";
     public static final String POLICY_PAP = "pap";
     public static final String POLICY_PDPS = "pdps";
 

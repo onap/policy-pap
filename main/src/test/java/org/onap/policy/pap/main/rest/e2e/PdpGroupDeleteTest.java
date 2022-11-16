@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,6 @@ import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
-import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.rest.PdpGroupDeployControllerV1;
 
 public class PdpGroupDeleteTest extends End2EndBase {
@@ -119,10 +118,8 @@ public class PdpGroupDeleteTest extends End2EndBase {
 
         // arrange to catch notifications
         LinkedBlockingQueue<String> notifications = new LinkedBlockingQueue<>();
-        NoopTopicSink notifier = NoopTopicFactories.getSinkFactory().get(PapConstants.TOPIC_POLICY_NOTIFICATION);
-        notifier.register((infra, topic, msg) -> {
-            notifications.add(msg);
-        });
+        NoopTopicSink notifier = NoopTopicFactories.getSinkFactory().get(getTopicPolicyNotification());
+        notifier.register((infra, topic, msg) -> notifications.add(msg));
 
         String uri = DELETE_POLICIES_ENDPOINT + "/onap.restart.tcaB";
 

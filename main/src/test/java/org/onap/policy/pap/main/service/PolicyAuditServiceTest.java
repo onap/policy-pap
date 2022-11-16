@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +37,9 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.repository.PolicyAuditRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class PolicyAuditServiceTest extends CommonPapRestServer {
 
     private static final String FIELD_IS_NULL = "%s is marked .*ull but is null";
@@ -74,14 +77,12 @@ public class PolicyAuditServiceTest extends CommonPapRestServer {
             PolicyAudit.builder().pdpType("pdpType").action(AuditAction.DEPLOYMENT).timestamp(Instant.now()).build());
 
         assertThrows(PfModelRuntimeException.class, () -> policyAuditService.createAuditRecords(audits));
-        assertThatThrownBy(() -> {
-            policyAuditService.createAuditRecords(audits);
-        }).isInstanceOf(PfModelRuntimeException.class)
+        assertThatThrownBy(() -> policyAuditService.createAuditRecords(audits))
+            .isInstanceOf(PfModelRuntimeException.class)
             .hasMessageContaining("\"createAuditRecords\" INVALID, item has status INVALID");
 
-        assertThatThrownBy(() -> {
-            policyAuditService.createAuditRecords(null);
-        }).hasMessageMatching(String.format(FIELD_IS_NULL, "audits"));
+        assertThatThrownBy(() -> policyAuditService.createAuditRecords(null))
+            .hasMessageMatching(String.format(FIELD_IS_NULL, "audits"));
     }
 
     @Test
@@ -109,9 +110,9 @@ public class PolicyAuditServiceTest extends CommonPapRestServer {
             NUMBER_RECORDS, null, null)).hasSize(2);
         assertThat(
             policyAuditService.getAuditRecords(GROUP_A, MY_POLICY.getName(), "9.9.9", NUMBER_RECORDS, null, null))
-                .hasSize(0);
+                .isEmpty();
         assertThat(policyAuditService.getAuditRecords(GROUP_B, MY_POLICY.getName(), MY_POLICY.getVersion(),
-            NUMBER_RECORDS, null, null)).hasSize(0);
+            NUMBER_RECORDS, null, null)).isEmpty();
         assertThat(policyAuditService.getAuditRecords(GROUP_B, MY_POLICY2.getName(), MY_POLICY2.getVersion(),
             NUMBER_RECORDS, null, null)).hasSize(2);
         assertThat(policyAuditService.getAuditRecords(MY_POLICY2.getName(), MY_POLICY2.getVersion(), NUMBER_RECORDS,

@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,15 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Class to perform unit test of {@link PdpGroupStateChangeControllerV1}.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@ActiveProfiles("test")
 public class TestPdpGroupStateChangeControllerV1 extends CommonPapRestServer {
 
     private static final String GROUP_ENDPOINT = "pdps/groups";
@@ -44,7 +47,7 @@ public class TestPdpGroupStateChangeControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testchangeGroupState() throws Exception {
+    public void testChangeGroupState() throws Exception {
         final String uri = GROUP_ENDPOINT + "/my-name?state=ACTIVE";
 
         final Invocation.Builder invocationBuilder = sendRequest(uri);

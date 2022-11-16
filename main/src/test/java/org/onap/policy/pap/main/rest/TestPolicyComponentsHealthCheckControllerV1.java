@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020 Nordix Foundation.
+ *  Copyright (C) 2019-2020, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Inc.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -35,12 +35,14 @@ import org.junit.Test;
 import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Class to perform unit test of {@link PolicyComponentsHealthCheckControllerV1}.
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */
+@ActiveProfiles("test")
 public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestServer {
 
     private static final String ENDPOINT = "components/healthcheck";

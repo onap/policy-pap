@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,9 @@ import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.pap.main.repository.PdpStatisticsRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class PdpStatisticsServiceTest extends CommonPapRestServer {
 
     private static final String NAME3 = "name3";
@@ -67,10 +70,10 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        pdpStatistics1 = generatePdpStatistics(NAME1, TIMESTAMP1, GROUP, SUBGROUP);
-        pdpStatistics2 = generatePdpStatistics("name2", TIMESTAMP1, GROUP, SUBGROUP);
-        pdpStatistics3 = generatePdpStatistics(NAME1, TIMESTAMP2, GROUP, SUBGROUP);
-        pdpStatistics4 = generatePdpStatistics(NAME3, TIMESTAMP2, GROUP0, SUBGROUP);
+        pdpStatistics1 = generatePdpStatistics(NAME1, TIMESTAMP1, GROUP);
+        pdpStatistics2 = generatePdpStatistics("name2", TIMESTAMP1, GROUP);
+        pdpStatistics3 = generatePdpStatistics(NAME1, TIMESTAMP2, GROUP);
+        pdpStatistics4 = generatePdpStatistics(NAME3, TIMESTAMP2, GROUP0);
     }
 
     /**
@@ -93,98 +96,90 @@ public class PdpStatisticsServiceTest extends CommonPapRestServer {
     @Test
     public void testCreatePdpStatisticsFailure() {
 
-        assertThatThrownBy(() -> {
-            pdpStatisticsService.createPdpStatistics(null);
-        }).hasMessageMatching(LIST_IS_NULL);
+        assertThatThrownBy(() -> pdpStatisticsService.createPdpStatistics(null)).hasMessageMatching(LIST_IS_NULL);
 
         PdpStatistics pdpStatisticsErr = new PdpStatistics();
         pdpStatisticsErr.setPdpInstanceId("NULL");
         pdpStatisticsErr.setPdpGroupName(GROUP);
-        assertThatThrownBy(() -> {
-            pdpStatisticsService.createPdpStatistics(List.of(pdpStatisticsErr));
-        }).hasMessageContaining("item \"name\" value \"NULL\" INVALID, is null");
+        assertThatThrownBy(() -> pdpStatisticsService.createPdpStatistics(List.of(pdpStatisticsErr)))
+            .hasMessageContaining("item \"name\" value \"NULL\" INVALID, is null");
     }
 
     @Test
     public void testFetchDatabaseStatistics() {
-
         List<PdpStatistics> createList = List.of(pdpStatistics1, pdpStatistics3, pdpStatistics4, pdpStatistics2);
         pdpStatisticsService.createPdpStatistics(createList);
-        Map<String, Map<String, List<PdpStatistics>>> created =
-            pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, null, null);
-        assertThat(created).hasSize(2);
-        assertThat(created.get(GROUP0)).hasSize(1);
-        assertThat(created.get(GROUP0).get(SUBGROUP)).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(3);
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, TIMESTAMP2, TIMESTAMP2);
-        assertThat(created).hasSize(2);
-        assertThat(created.get(GROUP0)).hasSize(1);
-        assertThat(created.get(GROUP0).get(SUBGROUP)).isEqualTo(List.of(pdpStatistics4));
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).isEqualTo(List.of(pdpStatistics3));
+        Map<String, Map<String, List<PdpStatistics>>> statistics;
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, null, TIMESTAMP1);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(2);
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, null, null);
+        assertGroupAndSubgroupSize(statistics, 2, GROUP0, 1);
+        assertGroupAndSubgroupSize(statistics, 2, GROUP, 3);
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, TIMESTAMP2, null);
-        assertThat(created).hasSize(2);
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, TIMESTAMP2, TIMESTAMP2);
+        assertGroupAndSubgroupSize(statistics, 2, GROUP0, 1);
+        assertThat(statistics.get(GROUP0)).containsEntry(SUBGROUP, List.of(pdpStatistics4));
+        assertGroupAndSubgroupSize(statistics, 2, GROUP, 1);
+        assertThat(statistics.get(GROUP)).containsEntry(SUBGROUP, List.of(pdpStatistics3));
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP0, NUMBER_RECORDS, TIMESTAMP2, TIMESTAMP2);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP0)).hasSize(1);
-        assertThat(created.get(GROUP0).get(SUBGROUP)).isEqualTo(List.of(pdpStatistics4));
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, null, TIMESTAMP1);
+        assertGroupAndSubgroupSize(statistics, 1, GROUP, 2);
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP, NUMBER_RECORDS, null, TIMESTAMP1);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(2);
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(NUMBER_RECORDS, TIMESTAMP2, null);
+        assertThat(statistics).hasSize(2);
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP, NUMBER_RECORDS, TIMESTAMP2, null);
-        assertThat(created).hasSize(1);
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP0, NUMBER_RECORDS, TIMESTAMP2, TIMESTAMP2);
+        assertThat(statistics).hasSize(1);
+        assertThat(statistics.get(GROUP0)).hasSize(1);
+        assertThat(statistics.get(GROUP0)).containsEntry(SUBGROUP, List.of(pdpStatistics4));
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NUMBER_RECORDS, TIMESTAMP1, TIMESTAMP2);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(3);
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP, NUMBER_RECORDS, null, TIMESTAMP1);
+        assertGroupAndSubgroupSize(statistics, 1, GROUP, 2);
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NUMBER_RECORDS, null, TIMESTAMP1);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(2);
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP, NUMBER_RECORDS, TIMESTAMP2, null);
+        assertThat(statistics).hasSize(1);
 
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NUMBER_RECORDS, TIMESTAMP2, null);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).isEqualTo(List.of(pdpStatistics3));
-
-        created = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NAME1, NUMBER_RECORDS, TIMESTAMP1,
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NUMBER_RECORDS, TIMESTAMP1,
             TIMESTAMP2);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(2);
+        assertGroupAndSubgroupSize(statistics, 1, GROUP, 3);
 
-        created =
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NUMBER_RECORDS, null, TIMESTAMP1);
+        assertGroupAndSubgroupSize(statistics, 1, GROUP, 2);
+
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NUMBER_RECORDS, TIMESTAMP2, null);
+        assertThat(statistics).hasSize(1);
+        assertThat(statistics.get(GROUP)).containsEntry(SUBGROUP, List.of(pdpStatistics3));
+
+        statistics = pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NAME1, NUMBER_RECORDS, TIMESTAMP1,
+            TIMESTAMP2);
+        assertGroupAndSubgroupSize(statistics, 1, GROUP, 2);
+
+        statistics =
             pdpStatisticsService.fetchDatabaseStatistics(GROUP, SUBGROUP, NAME1, NUMBER_RECORDS, null, TIMESTAMP1);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP)).hasSize(1);
-        assertThat(created.get(GROUP).get(SUBGROUP)).hasSize(1);
+        assertGroupAndSubgroupSize(statistics, 1, GROUP, 1);
 
-        created =
+        statistics =
             pdpStatisticsService.fetchDatabaseStatistics(GROUP0, SUBGROUP, NAME3, NUMBER_RECORDS, TIMESTAMP2, null);
-        assertThat(created).hasSize(1);
-        assertThat(created.get(GROUP0).get(SUBGROUP)).isEqualTo(List.of(pdpStatistics4));
+        assertThat(statistics).hasSize(1);
+        assertThat(statistics.get(GROUP0)).containsEntry(SUBGROUP, List.of(pdpStatistics4));
     }
 
-    private PdpStatistics generatePdpStatistics(String pdpInstanceId, Instant date, String group,
-        String subgroup) {
+    /**
+     * Asserts if statistics list is the expected size and the subgroup list is also the expected size.
+     */
+    private void assertGroupAndSubgroupSize(Map<String, Map<String, List<PdpStatistics>>> statistics, int listSize,
+                                            String group, int subGroupSize) {
+        assertThat(statistics).hasSize(listSize);
+        assertThat(statistics.get(group)).hasSize(1);
+        assertThat(statistics.get(group).get(SUBGROUP)).hasSize(subGroupSize);
+    }
+
+    private PdpStatistics generatePdpStatistics(String pdpInstanceId, Instant date, String group) {
         PdpStatistics pdpStatistics11 = new PdpStatistics();
         pdpStatistics11.setPdpInstanceId(pdpInstanceId);
         pdpStatistics11.setTimeStamp(date);
         pdpStatistics11.setPdpGroupName(group);
-        pdpStatistics11.setPdpSubGroupName(subgroup);
+        pdpStatistics11.setPdpSubGroupName(PdpStatisticsServiceTest.SUBGROUP);
         pdpStatistics11.setPolicyDeployCount(2);
         pdpStatistics11.setPolicyDeployFailCount(1);
         pdpStatistics11.setPolicyDeploySuccessCount(1);

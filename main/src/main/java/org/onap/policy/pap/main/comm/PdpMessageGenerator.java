@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ package org.onap.policy.pap.main.comm;
 
 import java.util.LinkedList;
 import java.util.List;
+import lombok.Getter;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -43,6 +44,7 @@ import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
@@ -53,9 +55,7 @@ import org.springframework.context.event.EventListener;
 public class PdpMessageGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpMessageGenerator.class);
 
-    private static final String PAP_GROUP_PARAMS_NAME = "PapGroup";
-
-    private boolean includeHeartBeat;
+    private final boolean includeHeartBeat;
     /**
      * Lock used when updating PDPs.
      */
@@ -80,6 +80,10 @@ public class PdpMessageGenerator {
     @Autowired
     private PolicyNotifier policyNotifier;
 
+    @Getter
+    @Value("${pap.name}")
+    private String papGroupParamName = "PapGroup";
+
     /**
      * Constructs the object.
      *
@@ -99,7 +103,7 @@ public class PdpMessageGenerator {
         requestMap = Registry.get(PapConstants.REG_PDP_MODIFY_MAP, PdpModifyRequestMap.class);
 
         if (includeHeartBeat) {
-            PapParameterGroup params = ParameterService.get(PAP_GROUP_PARAMS_NAME);
+            PapParameterGroup params = ParameterService.get(papGroupParamName);
             heartBeatMs = params.getPdpParameters().getHeartBeatMs();
 
         } else {
@@ -130,8 +134,8 @@ public class PdpMessageGenerator {
      * Method to return a list of policies.
      *
      * @param subGroup PdpSubGroup to retrieve policies from
+     * @return a list of ToscaPolicy
      * @throws PfModelException the exception
-     * @returns a list of ToscaPolicy
      **/
     public List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup) throws PfModelException {
 
@@ -167,7 +171,6 @@ public class PdpMessageGenerator {
      * @param pdpInstanceId the pdp instance
      * @param pdpState the new state as per the PDP_STATE_CHANGE change message
      * @param policies list of policies as per the PDP_UPDATE message
-     * @throws PfModelException the exception
      */
     protected void updateDeploymentStatus(final String pdpGroupName, final String pdpType, final String pdpInstanceId,
         PdpState pdpState, List<ToscaPolicy> policies) {

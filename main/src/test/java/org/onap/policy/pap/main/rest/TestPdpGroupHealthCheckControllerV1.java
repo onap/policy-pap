@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pdp.concepts.Pdps;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Class to perform unit test of {@link PdpGroupHealthCheckControllerV1}.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@ActiveProfiles("test")
 public class TestPdpGroupHealthCheckControllerV1 extends CommonPapRestServer {
 
     private static final String ENDPOINT = "pdps/healthcheck";
@@ -58,6 +61,6 @@ public class TestPdpGroupHealthCheckControllerV1 extends CommonPapRestServer {
         assertNotNull(resp);
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(uri, SyncInvoker::get);
     }
 }

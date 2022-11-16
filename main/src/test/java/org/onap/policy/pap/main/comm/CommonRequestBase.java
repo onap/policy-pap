@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,6 @@ import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
@@ -77,6 +76,7 @@ public class CommonRequestBase {
     protected static final PdpState MY_STATE = PdpState.SAFE;
     protected static final PdpState DIFF_STATE = PdpState.TERMINATED;
     protected static final int RETRIES = 1;
+    protected static final String PDP_PAP_TOPIC = "POLICY-PDP-PAP";
 
     protected Publisher<PdpMessage> publisher;
     protected PolicyNotifier notifier;
@@ -112,12 +112,9 @@ public class CommonRequestBase {
         listener = mock(RequestListener.class);
         PdpParameters pdpParams = mock(PdpParameters.class);
 
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                queue.add(invocation.getArgument(0, QueueToken.class));
-                return null;
-            }
+        doAnswer((Answer<Object>) invocation -> {
+            queue.add(invocation.getArgument(0, QueueToken.class));
+            return null;
         }).when(publisher).enqueue(any());
 
         when(timers.register(any(), any())).thenReturn(timer);
@@ -151,7 +148,7 @@ public class CommonRequestBase {
 
         verify(dispatcher).register(any(), processResp.capture());
 
-        processResp.getValue().onTopicEvent(CommInfrastructure.NOOP, PapConstants.TOPIC_POLICY_PDP_PAP, response);
+        processResp.getValue().onTopicEvent(CommInfrastructure.NOOP, PDP_PAP_TOPIC, response);
     }
 
     /**

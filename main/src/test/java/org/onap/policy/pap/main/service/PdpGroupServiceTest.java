@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +40,9 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class PdpGroupServiceTest extends CommonPapRestServer {
 
     private static final String FIELD_IS_NULL = "%s is marked non-null but is null";
@@ -97,7 +100,7 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
         assertThat(activePdpGroups.get(0).getPdpSubgroups()).hasSize(3);
 
         assertThat(pdpGroupService.getPdpGroups(CREATE_GROUPS, PdpState.PASSIVE)).hasSize(1);
-        assertThat(pdpGroupService.getPdpGroups("invalid-group", PdpState.PASSIVE)).hasSize(0);
+        assertThat(pdpGroupService.getPdpGroups("invalid-group", PdpState.PASSIVE)).isEmpty();
         assertThat(pdpGroupService.getPdpGroups(DEFAULT_GROUP, PdpState.ACTIVE)).hasSize(1);
 
         PdpGroupFilter filter = PdpGroupFilter.builder()

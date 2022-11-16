@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -27,16 +27,19 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.SyncInvoker;
 import org.junit.Test;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Class to perform unit test of {@link PapRestServer}.
+ * Class to perform unit test of {@link HealthCheckRestControllerV1}.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
+@ActiveProfiles("test")
 public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
 
     private static final String HEALTHCHECK_ENDPOINT = "healthcheck";
@@ -53,10 +56,10 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     public void testHealthCheckSuccess() throws Exception {
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
-        validateHealthCheckReport(NAME, SELF, true, 200, ALIVE, report);
+        validateHealthCheckReport(true, 200, ALIVE, report);
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(HEALTHCHECK_ENDPOINT, req -> req.get());
+        checkUnauthRequest(HEALTHCHECK_ENDPOINT, SyncInvoker::get);
     }
 
     @Test
@@ -68,7 +71,7 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
         var response = invocationBuilder.get();
         var report = response.readEntity(HealthCheckReport.class);
         assertThat(response.getStatus()).isEqualTo(503);
-        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
+        validateHealthCheckReport(false, 503, NOT_ALIVE, report);
     }
 
     @Test
@@ -78,13 +81,13 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
         var response = invocationBuilder.get();
         var report = response.readEntity(HealthCheckReport.class);
         assertThat(response.getStatus()).isEqualTo(503);
-        validateHealthCheckReport(NAME, SELF, false, 503, NOT_ALIVE, report);
+        validateHealthCheckReport(false, 503, NOT_ALIVE, report);
     }
 
-    private void validateHealthCheckReport(final String name, final String url, final boolean healthy, final int code,
-            final String message, final HealthCheckReport report) {
-        assertEquals(name, report.getName());
-        assertEquals(url, report.getUrl());
+    private void validateHealthCheckReport(final boolean healthy, final int code,
+                                           final String message, final HealthCheckReport report) {
+        assertEquals(CommonPapRestServer.NAME, report.getName());
+        assertEquals(CommonPapRestServer.SELF, report.getUrl());
         assertEquals(healthy, report.isHealthy());
         assertEquals(code, report.getCode());
         assertEquals(message, report.getMessage());

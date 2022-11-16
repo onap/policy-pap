@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,13 +24,16 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
+@ActiveProfiles("test")
 public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
     private static final String GROUP_NOT_FOUND = "group not found";
@@ -61,7 +64,7 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         assertEquals(GROUP_NOT_FOUND, resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.delete());
+        checkUnauthRequest(uri, SyncInvoker::delete);
     }
 
     @Test
@@ -80,7 +83,7 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         assertEquals("cannot find policy: my-name null", resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.delete());
+        checkUnauthRequest(uri, SyncInvoker::delete);
     }
 
     @Test
@@ -99,6 +102,6 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
         assertEquals("cannot find policy: my-name 3", resp.getErrorDetails());
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.delete());
+        checkUnauthRequest(uri, SyncInvoker::delete);
     }
 }
