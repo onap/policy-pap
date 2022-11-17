@@ -1,0 +1,3712 @@
+openapi: 3.0.3
+info:
+  title: Api Documentation
+  description: Api Documentation
+  termsOfService: urn:tos
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  version: '1.0'
+servers:
+  - url: http://localhost:30442
+    description: Inferred Url
+tags:
+  - name: pdp-group-controller
+    description: Pdp Group Controller
+paths:
+  /policy/pap/v1/healthcheck:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Perform healthcheck
+      description: Returns healthy status of the Policy Administration component
+      operationId: healthcheck
+      responses:
+        200:
+          description: OK, serialised instance of
+            [HealthCheckReport](https://github.com/onap/policy-common/blob/master/policy-endpoints/src/main/java/org/onap/policy/common/endpoints/report/HealthCheckReport.java)
+          headers:
+            X-LatestVersion:
+              schema:
+                type: string
+            X-PatchVersion:
+              schema:
+                type: string
+            X-MinorVersion:
+              schema:
+                type: string
+            X-onap-RequestId:
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckReport'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/HealthCheckReport'
+        401:
+          description: Authentication Error
+        403:
+          description: Authorization Error
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+      security:
+        - basicAuth: []
+  /policy/pap/v1/pdps/healthcheck:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Returns health status of all PDPs registered with PAP
+      description: Queries health status of all PDPs, returning all pdps health status
+      operationId: pdpGroupHealthCheck
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, health check result of the PDPs in a serialised instance of
+            [Pdps](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/Pdps.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdps'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/Pdps'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/groups/batch:
+    post:
+      tags:
+        - pdp-group-controller
+      summary: Create or update PDP Groups
+      description: >-
+        Create or update one or more PDP Groups, returning optional error
+        details
+      operationId: createOrUpdateGroups
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: The PDP groups to create or update in an instance of
+            [PdpGroups](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpGroups.java)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdpGroups'
+          application/yaml:
+            schema:
+              $ref: '#/components/schemas/PdpGroups'
+      responses:
+        200:
+          description: OK, returning the response in an instance of
+            [PdpGroupUpdateResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupUpdateResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupUpdateResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupUpdateResponse'
+        201:
+          description: Created, returning the response in an instance of
+            [PdpGroupUpdateResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupUpdateResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupUpdateResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupUpdateResponse'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/groups/{name}:
+    put:
+      tags:
+        - pdp-group-controller
+      summary: Change state of a PDP Group
+      description: Changes state of PDP Group, returning optional error details
+      operationId: changeGroupState
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: name
+          in: path
+          description: PDP Group Name on which to change the state
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: state
+          in: query
+          description: PDP Group State, an instance of
+            [PdpState](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/enums/PdpState.java)
+          required: true
+          style: form
+          schema:
+            $ref: '#/components/schemas/PdpState'
+      responses:
+        200:
+          description: OK, the result of the state shange operation in an instance of
+            [PdpGroupStateChangeResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupStateChangeResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupStateChangeResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupStateChangeResponse'
+        201:
+          description: Created, the result of the state shange operation in an instance of
+            [PdpGroupStateChangeResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupStateChangeResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupStateChangeResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupStateChangeResponse'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+    delete:
+      tags:
+        - pdp-group-controller
+      summary: Delete PDP Group
+      description: Deletes a PDP Group, returning optional error details
+      operationId: deleteGroup
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: name
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, the result of the delete operation in an instance of
+            [PdpGroupDeleteResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupDeleteResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeleteResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeleteResponse'
+        204:
+          description: No Content
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/policies/{name}:
+    delete:
+      tags:
+        - pdp-group-controller
+      summary: Undeploy a PDP Policy from PDPs
+      description: >-
+        Undeploys the latest version of a policy from the PDPs, returning
+        optional error details
+      operationId: deletePolicy
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: name
+          in: path
+          description: PDP Policy Name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, the result of the undeploy operation in an instance of
+            [PdpGroupDeployResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupDeployResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+        204:
+          description: No Content
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/policies/{name}/versions/{version}:
+    delete:
+      tags:
+        - pdp-group-controller
+      summary: Undeploy version of a PDP Policy from PDPs
+      description: >-
+        Undeploys a specific version of a policy from the PDPs, returning
+        optional error details
+      operationId: deletePolicyVersion
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: name
+          in: path
+          description: PDP Policy Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: version
+          in: path
+          description: PDP Policy Version
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, the result of the undeploy operation in an instance of
+            [PdpGroupDeployResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupDeployResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+        204:
+          description: No Content
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/deployments/batch:
+    post:
+      tags:
+        - pdp-group-controller
+      summary: Updates policy deployments within specific PDP groups
+      description: >-
+        Updates policy deployments within specific PDP groups, returning
+        optional error details
+      operationId: updateGroupPolicies
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: The Depoloyment Groups to update in an instance of
+            [DeploymentGroups](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/DeploymentGroups.java)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentGroups'
+          application/yaml:
+            schema:
+              $ref: '#/components/schemas/DeploymentGroups'
+      responses:
+        200:
+          description: OK, the result of the deploy update operation in an instance of
+            [PdpGroupDeployResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupDeployResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+        201:
+          description: Created
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/policies:
+    post:
+      tags:
+        - pdp-group-controller
+      summary: Deploy or update PDP Policies
+      description: Deploys or updates PDP Policies, returning optional error details
+      operationId: deployPolicies
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: The deployment details in an instance of
+            [PdpDeployPolicies](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpDeployPolicies.java)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdpDeployPolicies'
+          application/yaml:
+            schema:
+              $ref: '#/components/schemas/PdpDeployPolicies'
+      responses:
+        200:
+          description: OK, the result of the deploy operation in an instance of
+            [PdpGroupDeployResponse](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PdpGroupDeployResponse.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroupDeployResponse'
+        201:
+          description: Created
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Query details of all PDP groups
+      description: Queries details of all PDP groups, returning all group details
+      operationId: queryGroupDetails
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, details of all PDP groups in an instance of
+            [PdpGroups](httpshttps://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpGroups.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpGroups'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpGroups'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/audit:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries audit information for all the policies
+      description: >-
+        Queries audit information for all the policies, returning audit
+        information for all the policies in the database
+      operationId: getAllAuditRecords
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recordCount
+          in: query
+          description: Record count between 1-100
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK, audit records for all found policies in an array of instances of
+            [PolicyAudit](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyAudit.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/audit/{pdpGroupName}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries audit information for all the policies in a PdpGroup
+      description: >-
+        Queries audit information for all the policies in a PdpGroup, returning
+        audit information for all the policies belonging to the PdpGroup
+      operationId: getAuditRecordsByGroup
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recordCount
+          in: query
+          description: Record count between 1-100
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: pdpGroupName
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, audit records for all found policies in an array of instances of
+            [PolicyAudit](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyAudit.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/audit/{pdpGroupName}/{policyName}/{policyVersion}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: >-
+        Queries audit information for a specific version of a policy in a
+        PdpGroup
+      description: >-
+        Queries audit information for a specific version of a policy in a
+        PdpGroup, returning audit information for the policy belonging to the
+        PdpGroup
+      operationId: getAuditRecordsOfPolicyinPdpGroup
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recordCount
+          in: query
+          description: Record count between 1-100
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: pdpGroupName
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: policyName
+          in: path
+          description: Policy Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: policyVersion
+          in: path
+          description: Policy Version
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, audit records for all found policies in an array of instances of
+            [PolicyAudit](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyAudit.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/audit/{policyName}/{policyVersion}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries audit information for a specific version of a policy
+      description: >-
+        Queries audit information for a specific version of a policy, returning
+        audit information for the policy
+      operationId: getAuditRecordsOfPolicy
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recordCount
+          in: query
+          description: Record count between 1-100
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: policyName
+          in: path
+          description: Policy Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: policyVersion
+          in: path
+          description: Policy Version
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, audit records for all found policies in an array of instances of
+            [PolicyAudit](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyAudit.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyAudit'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/components/healthcheck:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: >-
+        Returns health status of all policy components, including PAP, API,
+        Distribution, and PDPs
+      description: >-
+        Queries health status of all policy components, returning all policy
+        components health status
+      operationId: policyComponentsHealthCheck
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, a map of health check reports keyed by PDP names, where each map entry
+            value is an instance of 
+            [HealthCheckReport](https://github.com/onap/policy-common/blob/master/policy-endpoints/src/main/java/org/onap/policy/common/endpoints/report/HealthCheckReport.java)
+          content:
+            application/json:
+              schema:
+                type: string
+                additionalProperties:
+                  $ref: '#/components/schemas/HealthCheckReport'
+            application/yaml:
+              schema:
+                type: string
+                additionalProperties:
+                  $ref: '#/components/schemas/HealthCheckReport'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/deployed:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries status of all deployed policies
+      description: >-
+        Queries status of all deployed policies, returning success and failure
+        counts of the PDPs
+      operationId: queryAllDeployedPolicies
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: regex
+          in: query
+          description: Regex for a policy name
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, status of all found policies in an array of instances of
+            [PolicyStatus](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/deployed/{name}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries status of specific deployed policies
+      description: >-
+        Queries status of specific deployed policies, returning success and
+        failure counts of the PDPs
+      operationId: queryDeployedPolicies
+      parameters:
+        - name: name
+          in: path
+          description: Policy Id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, status of all found policies in an array of instances of
+            [PolicyStatus](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/deployed/{name}/{version}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries status of a specific deployed policy
+      description: >-
+        Queries status of a specific deployed policy, returning success and
+        failure counts of the PDPs
+      operationId: queryDeployedPolicy
+      parameters:
+        - name: name
+          in: path
+          description: Policy Id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: version
+          in: path
+          description: Policy Version
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, status of all found policies in an array of instances of
+            [PolicyStatus](https://github.com/onap/policy-models/blob/master/models-pap/src/main/java/org/onap/policy/models/pap/concepts/PolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/status:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries status of policies in all PdpGroups
+      description: >-
+        Queries status of policies in all PdpGroups, returning status of
+        policies in all the PDPs belonging to all PdpGroups
+      operationId: getStatusOfAllPolicies
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, status of all found policies in the queried PDP groups an array of instances of
+            [PdpPolicyStatus](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpPolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/status/{pdpGroupName}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Queries status of policies in a specific PdpGroup
+      description: >-
+        Queries status of policies in a specific PdpGroup, returning status of
+        policies in all the PDPs belonging to the PdpGroup
+      operationId: getStatusOfPoliciesByGroup
+      parameters:
+        - name: pdpGroupName
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: regex
+          in: query
+          description: Regex for a policy name
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK, status of all found policies in the queried PDP groups an array of instances of
+            [PdpPolicyStatus](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpPolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/status/{pdpGroupName}/{policyName}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: >-
+        Queries status of all versions of a specific policy in a specific
+        PdpGroup
+      description: >-
+        Queries status of all versions of a specific policy in a specific
+        PdpGroup, returning status of all versions of the policy in the PDPs
+        belonging to the PdpGroup
+      operationId: getStatusOfPolicies
+      parameters:
+        - name: pdpGroupName
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: policyName
+          in: path
+          description: Policy Id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, status of all found policies in the queried PDP groups an array of instances of
+            [PdpPolicyStatus](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpPolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/policies/status/{pdpGroupName}/{policyName}/{policyVersion}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: >-
+        Queries status of a specific version of a specific policy in a specific
+        PdpGroup
+      description: >-
+        Queries status of a specific version of a specific policy in a specific
+        PdpGroup, returning status of the policy in the PDPs belonging to the
+        PdpGroup
+      operationId: getStatusOfPolicy
+      parameters:
+        - name: pdpGroupName
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: policyName
+          in: path
+          description: Policy Id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: policyVersion
+          in: path
+          description: Policy Version
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, status of all found policies in the queried PDP groups an array of instances of
+            [PdpPolicyStatus](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpPolicyStatus.java)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+            application/yaml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyStatus'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/statistics:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Fetch  statistics for all PDP Groups and subgroups in the system
+      description: >-
+        Returns for all PDP Groups and subgroups statistics of the Policy
+        Administration component
+      operationId: pdpStatistics
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recordCount
+          in: query
+          description: Record Count
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK, a map for each PDP group keyed by PDP group name that contains another
+           map keyed by PDP subgroup name that contains the statistics for each PDP in the PDP
+           subgroup as a list of instances of
+            [PdpStatistics](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpStatistics.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpStatistics'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpStatistics'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/statistics/{group}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Fetch current statistics for given PDP Group
+      description: >-
+        Returns statistics for given PDP Group of the Policy Administration
+        component
+      operationId: pdpGroupStatistics
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: group
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: recordCount
+          in: query
+          description: Record Count
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK, a map for each PDP group keyed by PDP group name that contains another
+           map keyed by PDP subgroup name that contains the statistics for each PDP in the PDP
+           subgroup as a list of instances of
+            [PdpStatistics](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpStatistics.java)
+          content:
+            application/json:
+              schema:
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
+            application/yaml:
+              schema:
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/statistics/{group}/{type}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Fetch statistics for the specified subgroup
+      description: >-
+        Returns  statistics for the specified subgroup of the Policy
+        Administration component
+      operationId: pdpSubGroupStatistics
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: group
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: type
+          in: path
+          description: PDP SubGroup type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: recordCount
+          in: query
+          description: Record Count
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK, a map for each PDP group keyed by PDP group name that contains another
+           map keyed by PDP subgroup name that contains the statistics for each PDP in the PDP
+           subgroup as a list of instances of
+            [PdpStatistics](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpStatistics.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpStatistics'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpStatistics'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/pdps/statistics/{group}/{type}/{pdp}:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Fetch statistics for the specified pdp
+      description: >-
+        Returns  statistics for the specified pdp of the Policy Administration
+        component
+      operationId: pdpInstanceStatistics
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: group
+          in: path
+          description: PDP Group Name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: type
+          in: path
+          description: PDP SubGroup type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: pdp
+          in: path
+          description: PDP Instance name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: recordCount
+          in: query
+          description: Record Count
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: startTime
+          in: query
+          description: Start time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+        - name: endTime
+          in: query
+          description: End time in epoch timestamp
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK, a map for each PDP group keyed by PDP group name that contains another
+           map keyed by PDP subgroup name that contains the statistics for each PDP in the PDP
+           subgroup as a list of instances of
+            [PdpStatistics](https://github.com/onap/policy-models/blob/master/models-pdp/src/main/java/org/onap/policy/models/pdp/concepts/PdpStatistics.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdpStatistics'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/PdpStatistics'
+        401:
+          description: Authentication Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        403:
+          description: Authorization Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+          headers:
+            X-LatestVersion:
+              description: Used only to communicate an API's latest version
+              required: true
+              schema:
+                type: string
+            X-PatchVersion:
+              description: >-
+                Used only to communicate a PATCH version in a response for
+                troubleshooting purposes only, and will not be provided by the
+                client on request
+              required: true
+              schema:
+                type: string
+            X-MinorVersion:
+              description: >-
+                Used to request or communicate a MINOR version back from the
+                client to the server, and from the server back to the client
+              required: true
+              schema:
+                type: string
+            X-ONAP-RequestID:
+              description: Used to track REST transactions for logging purpose
+              required: true
+              schema:
+                type: string
+                format: uuid
+      security:
+        - basicAuth: []
+      x-interface info:
+        api-version: 1.0.0
+        last-mod-release: Dublin
+  /policy/pap/v1/statistics:
+    get:
+      tags:
+        - pdp-group-controller
+      summary: Fetch current statistics
+      description: Returns current statistics of the Policy Administration component
+      operationId: statistics
+      parameters:
+        - name: X-ONAP-RequestID
+          in: header
+          description: RequestID for http transaction
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK, the statistics report in an instance of
+            [StatisticsReport](https://github.com/onap/policy-api/blob/master/main/src/main/java/org/onap/policy/api/main/rest/provider/statistics/StatisticsReport.java)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsReport'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/StatisticsReport'
+        401:
+          description: Authentication Error
+        403:
+          description: Authorization Error
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+      security:
+        - basicAuth: []
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    HealthCheckReport:
+      title: HealthCheckReport
+      type: object
+    Pdps:
+      title: Pdps
+      type: object
+    PdpState:
+      title: PdpState
+      type: string
+    PdpGroupUpdateResponse:
+      title: PdpGroupUpdateResponse
+      type: object
+    PdpGroupStateChangeResponse:
+      title: PdpGroupStateChangeResponse
+      type: object
+    PdpGroupDeleteResponse:
+      title: PdpGroupDeleteResponse
+      type: object
+    PdpGroupDeployResponse:
+      title: PdpGroupDeployResponse
+      type: object
+    DeploymentGroups:
+      title: DeploymentGroups
+      type: object
+    PdpDeployPolicies:
+      title: PdpDeployPolicies
+      type: object
+    PdpGroups:
+      title: PdpGroups
+      type: object
+    PolicyAudit:
+      title: PolicyAudit
+      type: object
+    PolicyStatus:
+      title: PolicyStatus
+      type: object
+    PdpStatistics:
+      title: PdpStatistics
+      type: object
+    StatisticsReport:
+      title: StatisticsReport
+      type: object
