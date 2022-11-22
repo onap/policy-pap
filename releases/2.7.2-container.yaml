@@ -1,0 +1,8 @@
+distribution_type: 'container'
+container_release_tag: '2.7.2'
+project: 'policy-pap'
+log_dir: 'policy-pap-maven-docker-stage-kohn/30'
+ref: 333e00af6186c6374103f95f2c97a9df25127b7f
+containers:
+    - name: 'policy-pap'
+      version: '2.7.2-20221122T1825'
