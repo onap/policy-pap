@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
 
 package org.onap.policy.pap.main.rest;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -30,15 +32,20 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.onap.policy.common.utils.resources.PrometheusUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.DeploymentGroups;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,6 +69,33 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeployControllerV1.class);
 
     private final PdpGroupDeployProvider provider;
+    private Timer deploySuccessTimer;
+    private Timer deployFailureTimer;
+
+
+    @Autowired
+    public PdpGroupDeployControllerV1(PdpGroupDeployProvider provider, MeterRegistry meterRegistry) {
+        this.provider = provider;
+        initMetrics(meterRegistry);
+    }
+
+    /**
+     * Initializes the metrics for delete operation.
+     *
+     * @param meterRegistry spring bean for MeterRegistry to add the new metric
+     */
+    public void initMetrics(MeterRegistry meterRegistry) {
+        String metricName = String.join(".", "pap", "policy", "deployments");
+        String description = "Timer for HTTP request to deploy/undeploy a policy";
+        deploySuccessTimer = Timer.builder(metricName).description(description)
+            .tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, PdpPolicyStatus.State.SUCCESS.name())
+            .register(meterRegistry);
+        deployFailureTimer = Timer.builder(metricName).description(description)
+            .tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.DEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, PdpPolicyStatus.State.FAILURE.name())
+            .register(meterRegistry);
+    }
 
     /**
      * Updates policy deployments within specific PDP groups.
@@ -163,8 +197,10 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      */
     private ResponseEntity<PdpGroupDeployResponse> doOperation(UUID requestId, String errmsg,
         RunnableWithPfEx runnable) {
+        Instant start = Instant.now();
         try {
             runnable.run();
+            deploySuccessTimer.record(Duration.between(start, Instant.now()));
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.accepted()), requestId)
                 .body(new PdpGroupDeployResponse(DEPLOYMENT_RESPONSE_MSG, POLICY_STATUS_URI));
 
@@ -172,6 +208,7 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
             logger.warn(errmsg, e);
             var resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            deployFailureTimer.record(Duration.between(start, Instant.now()));
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
                 requestId).body(resp);

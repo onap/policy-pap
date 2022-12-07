@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2022 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.core.Response.Status;
@@ -97,20 +96,6 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeleteGroup_Inctive() throws Exception {
-        PdpGroup group = loadGroup("deleteGroup.json");
-
-        when(session.getGroup(GROUP1_NAME)).thenReturn(group);
-
-        prov.deleteGroup(GROUP1_NAME);
-
-        verify(session).deleteGroupFromDb(group);
-
-        // should be no PDP requests
-        verify(session, never()).addRequests(any(), any());
-    }
-
-    @Test
     public void testDeleteGroup_Active() throws Exception {
         PdpGroup group = loadGroup("deleteGroup.json");
 
@@ -123,7 +108,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    public void testDeleteGroup_NotFound() throws Exception {
+    public void testDeleteGroup_NotFound() {
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
                 .hasMessage("group not found")
                 .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
@@ -140,7 +125,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         verify(session).deleteGroupFromDb(group);
 
-        // should done no requests for the PDPs
+        // should have done no requests for the PDPs
         verify(session, never()).addRequests(any(), any());
     }
 
@@ -163,12 +148,12 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
      */
     @Test
     public void testUndeploy_Full() throws Exception {
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         PdpGroup group = loadGroup("undeploy.json");
 
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group));
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         PdpGroupDeleteProvider deleteProvider = new PdpGroupDeleteProvider();
         super.initialize(deleteProvider);
@@ -190,11 +175,11 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         assertEquals("pdpA", req.getName());
         assertEquals(GROUP1_NAME, req.getPdpGroup());
         assertEquals("pdpTypeA", req.getPdpSubgroup());
-        assertEquals(Arrays.asList(policy1.getIdentifier()), req.getPoliciesToBeUndeployed());
+        assertEquals(List.of(policy1.getIdentifier()), req.getPoliciesToBeUndeployed());
     }
 
     @Test
-    public void testUndeployPolicy_NotFound() throws Exception {
+    public void testUndeployPolicy_NotFound() {
         when(session.isUnchanged()).thenReturn(true);
 
         assertThatThrownBy(() -> prov.undeploy(optIdent, DEFAULT_USER)).isInstanceOf(PfModelException.class)
@@ -282,6 +267,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     private class MyProvider extends PdpGroupDeleteProvider {
+
         private MyProvider() {
             super.initialize();
         }
