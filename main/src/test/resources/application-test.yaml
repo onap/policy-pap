@@ -87,4 +87,5 @@ management:
       base-path: /
       exposure:
         include: health, metrics, prometheus
+      path-mapping.metrics: plain-metrics
       path-mapping.prometheus: metrics

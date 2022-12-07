@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,8 +33,9 @@ import static org.mockito.Mockito.when;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
@@ -160,9 +161,8 @@ public class ProviderSuper {
      * Gets the input to the create() method.
      *
      * @return the input that was passed to the dao.updatePdpGroups() method
-     * @throws Exception if an error occurred
      */
-    protected List<PdpGroup> getGroupCreates() throws Exception {
+    protected List<PdpGroup> getGroupCreates() {
         verify(pdpGroupService).createPdpGroups(updateCaptor.capture());
 
         return copyList(updateCaptor.getValue());
@@ -172,9 +172,8 @@ public class ProviderSuper {
      * Gets the input to the update() method.
      *
      * @return the input that was passed to the dao.updatePdpGroups() method
-     * @throws Exception if an error occurred
      */
-    protected List<PdpGroup> getGroupUpdates() throws Exception {
+    protected List<PdpGroup> getGroupUpdates() {
         verify(pdpGroupService).updatePdpGroups(updateCaptor.capture());
 
         return copyList(updateCaptor.getValue());
@@ -191,7 +190,7 @@ public class ProviderSuper {
 
         verify(reqmap, times(count)).addRequest(any(), captor.capture());
 
-        return captor.getAllValues().stream().filter(req -> req != null).collect(Collectors.toList());
+        return captor.getAllValues().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -205,7 +204,7 @@ public class ProviderSuper {
 
         verify(reqmap, times(count)).addRequest(captor.capture(), any());
 
-        return captor.getAllValues().stream().filter(req -> req != null).collect(Collectors.toList());
+        return captor.getAllValues().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -216,7 +215,7 @@ public class ProviderSuper {
      */
     private List<PdpGroup> copyList(List<PdpGroup> source) {
         List<PdpGroup> newlst = new ArrayList<>(source);
-        Collections.sort(newlst, (left, right) -> left.getName().compareTo(right.getName()));
+        newlst.sort(Comparator.comparing(PdpGroup::getName));
         return newlst;
     }
 

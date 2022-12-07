@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2022 Nordix Foundation.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,10 @@
 
 package org.onap.policy.pap.main.rest;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -36,6 +40,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,6 +49,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class PdpGroupDeleteProvider extends ProviderBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteProvider.class);
+    private Timer undeployTimer;
+
+    @Autowired
+    public PdpGroupDeleteProvider(MeterRegistry meterRegistry) {
+        initMetrics(meterRegistry);
+    }
+
+    /**
+     * Initializes the metrics for delete operation.
+     *
+     * @param meterRegistry spring bean for MeterRegistry to add the new metric
+     */
+    public void initMetrics(MeterRegistry meterRegistry) {
+        String metricName = String.join(".", "http.requests", "pap", "policy");
+        undeployTimer = Timer.builder(metricName).description("description").tag("method", "DELETE")
+            .register(meterRegistry);
+    }
 
     /**
      * Deletes a PDP group.
@@ -89,7 +111,10 @@ public class PdpGroupDeleteProvider extends ProviderBase {
      * @throws PfModelException if an error occurred
      */
     public void undeploy(ToscaConceptIdentifierOptVersion policyIdent, String user) throws PfModelException {
+        Instant start = Instant.now();
         process(user, policyIdent, this::undeployPolicy);
+
+        undeployTimer.record(Duration.between(start, Instant.now()));
     }
 
     /**
