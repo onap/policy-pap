@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2022 Nordix Foundation.
  * Modifications Copyright (C) 2020,2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,6 @@ import org.springframework.context.event.EventListener;
  * </ul>
  */
 public abstract class ProviderBase {
-    public static final String DB_ERROR_MSG = "DB error";
     public static final String DEFAULT_USER = "PAP";
 
     /**
@@ -235,11 +234,8 @@ public abstract class ProviderBase {
      * @param policyType the policy type of interest
      * @return the matching PDP group, or {@code null} if no active group supports the
      *         given PDP types
-     * @throws PfModelException if an error occurred
      */
-    private Collection<PdpGroup> getGroups(SessionData data, ToscaConceptIdentifier policyType)
-            throws PfModelException {
-
+    private Collection<PdpGroup> getGroups(SessionData data, ToscaConceptIdentifier policyType) {
         return data.getActivePdpGroupsByPolicyType(policyType);
     }
 
@@ -334,7 +330,7 @@ public abstract class ProviderBase {
     }
 
     @FunctionalInterface
-    public static interface BiConsumerWithEx<F, S> {
+    public interface BiConsumerWithEx<F, S> {
         /**
          * Performs this operation on the given arguments.
          *
@@ -346,7 +342,7 @@ public abstract class ProviderBase {
     }
 
     @FunctionalInterface
-    public static interface Updater {
+    public interface Updater {
         boolean apply(PdpGroup group, PdpSubGroup subgroup) throws PfModelException;
     }
 }

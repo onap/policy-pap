@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022 Nordix Foundation.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,8 @@
 
 package org.onap.policy.pap.main.rest;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -30,15 +32,20 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.onap.policy.common.utils.resources.PrometheusUtils;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
+import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +63,33 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteControllerV1.class);
 
     private final PdpGroupDeleteProvider provider;
+    private Timer undeploySuccessTimer;
+    private Timer undeployFailureTimer;
+
+
+    @Autowired
+    public PdpGroupDeleteControllerV1(PdpGroupDeleteProvider provider, MeterRegistry meterRegistry) {
+        this.provider = provider;
+        initMetrics(meterRegistry);
+    }
+
+    /**
+     * Initializes the metrics for delete operation.
+     *
+     * @param meterRegistry spring bean for MeterRegistry to add the new metric
+     */
+    public void initMetrics(MeterRegistry meterRegistry) {
+        String metricName = String.join(".", "pap", "policy", "deployments");
+        String description = "Timer for HTTP request to deploy/undeploy a policy";
+        undeploySuccessTimer = Timer.builder(metricName).description(description)
+            .tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.UNDEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, PdpPolicyStatus.State.SUCCESS.name())
+            .register(meterRegistry);
+        undeployFailureTimer = Timer.builder(metricName).description(description)
+            .tags(PrometheusUtils.OPERATION_METRIC_LABEL, PrometheusUtils.UNDEPLOY_OPERATION,
+                PrometheusUtils.STATUS_METRIC_LABEL, PdpPolicyStatus.State.FAILURE.name())
+            .register(meterRegistry);
+    }
 
     /**
      * Deletes a PDP group.
@@ -98,7 +132,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
             required = false,
             value = REQUEST_ID_NAME) final UUID requestId,
         @ApiParam(value = "PDP Group Name") @PathVariable("name") String groupName) {
-        return doOperation(requestId, "delete group failed", () -> provider.deleteGroup(groupName));
+        return doOperation(requestId, () -> provider.deleteGroup(groupName));
     }
 
     /**
@@ -143,7 +177,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
             value = REQUEST_ID_NAME) final UUID requestId,
         @ApiParam(value = "PDP Policy Name") @PathVariable("name") String policyName) {
 
-        return doUndeployOperation(requestId, "undeploy policy failed",
+        return doUndeployOperation(requestId,
             () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, null), getPrincipal()));
     }
 
@@ -191,7 +225,7 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
         @ApiParam(value = "PDP Policy Name") @PathVariable("name") String policyName,
         @ApiParam(value = "PDP Policy Version") @PathVariable("version") String version) {
 
-        return doUndeployOperation(requestId, "undeploy policy failed",
+        return doUndeployOperation(requestId,
             () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, version), getPrincipal()));
     }
 
@@ -199,19 +233,17 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
      * Invokes an operation.
      *
      * @param requestId request ID
-     * @param errmsg error message to log if the operation throws an exception
      * @param runnable operation to invoke
      * @return a {@link PdpGroupDeleteResponse} response entity
      */
-    private ResponseEntity<PdpGroupDeleteResponse> doOperation(UUID requestId, String errmsg,
-        RunnableWithPfEx runnable) {
+    private ResponseEntity<PdpGroupDeleteResponse> doOperation(UUID requestId, RunnableWithPfEx runnable) {
         try {
             runnable.run();
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
                 .body(new PdpGroupDeleteResponse());
 
         } catch (PfModelException | PfModelRuntimeException e) {
-            logger.warn(errmsg, e);
+            logger.warn("delete group failed", e);
             var resp = new PdpGroupDeleteResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
             return addLoggingHeaders(
@@ -224,22 +256,23 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
      * Invokes the undeployment operation.
      *
      * @param requestId request ID
-     * @param errmsg error message to log if the operation throws an exception
      * @param runnable operation to invoke
      * @return a {@link PdpGroupDeployResponse} response entity
      */
-    private ResponseEntity<PdpGroupDeployResponse> doUndeployOperation(UUID requestId, String errmsg,
-        RunnableWithPfEx runnable) {
+    private ResponseEntity<PdpGroupDeployResponse> doUndeployOperation(UUID requestId, RunnableWithPfEx runnable) {
+        Instant start = Instant.now();
         try {
             runnable.run();
+            undeploySuccessTimer.record(Duration.between(start, Instant.now()));
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.accepted()), requestId)
                 .body(new PdpGroupDeployResponse(PdpGroupDeployControllerV1.DEPLOYMENT_RESPONSE_MSG,
                     PdpGroupDeployControllerV1.POLICY_STATUS_URI));
 
         } catch (PfModelException | PfModelRuntimeException e) {
-            logger.warn(errmsg, e);
+            logger.warn("undeploy policy failed", e);
             var resp = new PdpGroupDeployResponse();
             resp.setErrorDetails(e.getErrorResponse().getErrorMessage());
+            undeployFailureTimer.record(Duration.between(start, Instant.now()));
             return addLoggingHeaders(
                 addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
                 requestId).body(resp);
