@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021 Nordix Foundation.
+ *  Copyright (C) 2019-2022 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -28,6 +28,7 @@ import io.swagger.annotations.SecurityDefinition;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
+import java.util.Objects;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import org.onap.policy.models.base.PfModelException;
@@ -110,12 +111,9 @@ public class PapRestControllerV1 {
      * @return the response builder, with version logging
      */
     public static BodyBuilder addLoggingHeaders(BodyBuilder respBuilder, UUID requestId) {
-        if (requestId == null) {
-            // Generate a random uuid if client does not embed requestId in rest request
-            return respBuilder.header(REQUEST_ID_NAME, UUID.randomUUID().toString());
-        }
-
-        return respBuilder.header(REQUEST_ID_NAME, requestId.toString());
+        // Generate a random uuid if client does not embed requestId in rest request
+        return respBuilder.header(REQUEST_ID_NAME,
+            Objects.requireNonNullElseGet(requestId, UUID::randomUUID).toString());
     }
 
     /**
@@ -134,7 +132,7 @@ public class PapRestControllerV1 {
      * Functions that throw {@link PfModelException}.
      */
     @FunctionalInterface
-    public static interface RunnableWithPfEx {
-        public void run() throws PfModelException;
+    public interface RunnableWithPfEx {
+        void run() throws PfModelException;
     }
 }
