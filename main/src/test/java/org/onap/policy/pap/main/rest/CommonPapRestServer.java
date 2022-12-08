@@ -145,7 +145,7 @@ public abstract class CommonPapRestServer {
      */
     protected void testSwagger(final String endpoint) throws Exception {
         final Invocation.Builder invocationBuilder =
-                        sendFqeRequest(httpsPrefix + "v2/api-docs", true, MediaType.APPLICATION_JSON);
+                        sendFqeRequest(httpsPrefix + "v3/api-docs", true, MediaType.APPLICATION_JSON);
         final String resp = invocationBuilder.get(String.class);
         assertTrue(resp.contains(ENDPOINT_PREFIX + endpoint));
     }

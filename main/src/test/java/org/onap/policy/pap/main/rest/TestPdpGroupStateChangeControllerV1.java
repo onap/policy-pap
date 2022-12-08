@@ -28,7 +28,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 /**

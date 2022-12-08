@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 /**

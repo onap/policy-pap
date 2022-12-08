@@ -22,15 +22,14 @@ package org.onap.policy.pap.main;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSerializer;
+import java.time.Instant;
 import org.onap.policy.common.gson.GsonMessageBodyHandler;
+import org.onap.policy.common.gson.InstantTypeAdapter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import springfox.documentation.spring.web.json.Json;
 
 @SpringBootApplication(exclude = {JacksonAutoConfiguration.class})
 @EntityScan(
@@ -50,9 +49,7 @@ public class PolicyPapApplication {
     @Bean
     public Gson gson() {
         GsonBuilder gsonBuilder = GsonMessageBodyHandler.configBuilder(new GsonBuilder());
-        JsonSerializer<Json> serializer =
-            (json, type, jsonSerializationContext) -> JsonParser.parseString(json.value());
-        gsonBuilder.registerTypeAdapter(Json.class, serializer);
+        gsonBuilder.registerTypeAdapter(Instant.class, new InstantTypeAdapter());
         return gsonBuilder.create();
     }
 }
