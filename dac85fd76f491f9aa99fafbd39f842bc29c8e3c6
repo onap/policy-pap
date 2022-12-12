@@ -22,6 +22,30 @@
       "revId": "dac85fd76f491f9aa99fafbd39f842bc29c8e3c6",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67e2799b_a5acd4c1",
+        "filename": "main/src/main/resources/application.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2022-12-12T15:19:33Z",
+      "side": 1,
+      "message": "On a recent update of spring libs, sometimes the metrics endpoint is not available to be used as prometheus because it\u0027s by default the list of metrics from spring actuator. so the /metrics endpoint needs to be assigned to something else, then it can be used to override the /prometheus one. csit had to use that https://github.com/onap/policy-docker/blob/master/csit/config/api/apiParameters.yaml and https://github.com/onap/policy-docker/blob/master/csit/config/pap/papParameters.yaml",
+      "parentUuid": "f26890bf_f8179841",
+      "range": {
+        "startLine": 93,
+        "startChar": 6,
+        "endLine": 93,
+        "endChar": 41
+      },
+      "revId": "dac85fd76f491f9aa99fafbd39f842bc29c8e3c6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
