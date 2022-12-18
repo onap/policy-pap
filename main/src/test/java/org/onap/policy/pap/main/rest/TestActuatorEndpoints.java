@@ -58,9 +58,6 @@ public class TestActuatorEndpoints {
     private WebApplicationContext context;
 
     @Autowired
-    private TestSecurityConfig securityConfig;
-
-    @Autowired
     private MockMvc mock;
 
     @BeforeClass
