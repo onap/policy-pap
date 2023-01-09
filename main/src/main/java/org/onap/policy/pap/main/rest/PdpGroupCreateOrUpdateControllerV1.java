@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019,2021 Nordix Foundation.
+ * Copyright (C) 2019-2023 Nordix Foundation.
  * Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,14 +22,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
@@ -39,19 +31,16 @@ import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to create or update PDP groups.
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class PdpGroupCreateOrUpdateControllerV1 extends PapRestControllerV1 {
+public class PdpGroupCreateOrUpdateControllerV1 extends PapRestControllerV1
+    implements PdpGroupCreateOrUpdateControllerV1Api {
+
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupCreateOrUpdateControllerV1.class);
 
     private final PdpGroupCreateOrUpdateProvider provider;
@@ -63,41 +52,8 @@ public class PdpGroupCreateOrUpdateControllerV1 extends PapRestControllerV1 {
      * @param groups PDP group configuration
      * @return a response
      */
-    // @formatter:off
-    @PostMapping("pdps/groups/batch")
-    @ApiOperation(value = "Create or update PDP Groups",
-        notes = "Create or update one or more PDP Groups, returning optional error details",
-        response = PdpGroupUpdateResponse.class,
-        tags = {"PdpGroup Create/Update"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
-    public ResponseEntity<PdpGroupUpdateResponse> createOrUpdateGroups(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "List of PDP Group Configuration", required = true) @RequestBody PdpGroups groups) {
+    @Override
+    public ResponseEntity<PdpGroupUpdateResponse> createOrUpdateGroups(UUID requestId, PdpGroups groups) {
 
         return doOperation(requestId, "create groups failed", () -> provider.createOrUpdateGroups(groups));
     }

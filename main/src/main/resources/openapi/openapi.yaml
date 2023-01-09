@@ -1,24 +1,63 @@
+#  ============LICENSE_START=======================================================
+#  Copyright (C) 2022-2023 Nordix Foundation
+#  ================================================================================
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#  ============LICENSE_END=========================================================
 openapi: 3.0.3
 info:
-  title: Api Documentation
-  description: Api Documentation
+  title: Policy Administration Documentation
+  description: Policy Administration is responsible for the deployment life cycle of policies as well as
+    interworking with the mechanisms required to orchestrate the nodes and containers on which
+    policies run. It is also responsible for the administration of policies at run time;
+    ensuring that policies are available to users, that policies are executing correctly,
+    and that the state and status of policies is monitored
   termsOfService: urn:tos
-  contact: {}
+  contact:
+    name: ONAP Support
+    url: https://lists.onap.org/g/onap-discuss
+    email: onap-discuss@lists.onap.org
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0
   version: '1.0'
+externalDocs:
+  description: Policy Framework Documentation
+  url: https://docs.onap.org/projects/onap-policy-parent/en/latest
 servers:
-  - url: http://localhost:30442
-    description: Inferred Url
+  - url: https://{server}
+    variables:
+      server:
+        default: policy/pap/v1
+        description: This value is assigned by the service provider
 tags:
-  - name: pdp-group-controller
-    description: Pdp Group Controller
+  - name: HealthCheckRestControllerV1
+  - name: PdpGroupCreateOrUpdateControllerV1
+  - name: PdpGroupDeleteControllerV1
+  - name: PdpGroupDeployControllerV1
+  - name: PdpGroupHealthCheckControllerV1
+  - name: PdpGroupQueryControllerV1
+  - name: PdpGroupStateChangeControllerV1
+  - name: PolicyAuditControllerV1
+  - name: PolicyComponentsHealthCheckControllerV1
+  - name: PolicyStatusControllerV1
+  - name: StatisticsRestControllerV1
 paths:
-  /policy/pap/v1/healthcheck:
+  /healthcheck:
     get:
       tags:
-        - pdp-group-controller
+        - HealthCheckRestControllerV1
       summary: Perform healthcheck
       description: Returns healthy status of the Policy Administration component
       operationId: healthcheck
@@ -57,10 +96,10 @@ paths:
           description: Internal Server Error
       security:
         - basicAuth: []
-  /policy/pap/v1/pdps/healthcheck:
+  /pdps/healthcheck:
     get:
       tags:
-        - pdp-group-controller
+        - PdpGroupHealthCheckControllerV1
       summary: Returns health status of all PDPs registered with PAP
       description: Queries health status of all PDPs, returning all pdps health status
       operationId: pdpGroupHealthCheck
@@ -177,10 +216,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/groups/batch:
+  /pdps/groups/batch:
     post:
       tags:
-        - pdp-group-controller
+        - PdpGroupCreateOrUpdateControllerV1
       summary: Create or update PDP Groups
       description: >-
         Create or update one or more PDP Groups, returning optional error
@@ -319,10 +358,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/groups/{name}:
+  /pdps/groups/{name}:
     put:
       tags:
-        - pdp-group-controller
+        - PdpGroupStateChangeControllerV1
       summary: Change state of a PDP Group
       description: Changes state of PDP Group, returning optional error details
       operationId: changeGroupState
@@ -466,7 +505,7 @@ paths:
         last-mod-release: Dublin
     delete:
       tags:
-        - pdp-group-controller
+        - PdpGroupDeleteControllerV1
       summary: Delete PDP Group
       description: Deletes a PDP Group, returning optional error details
       operationId: deleteGroup
@@ -590,10 +629,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/policies/{name}:
+  /pdps/policies/{name}:
     delete:
       tags:
-        - pdp-group-controller
+        - PdpGroupDeleteControllerV1
       summary: Undeploy a PDP Policy from PDPs
       description: >-
         Undeploys the latest version of a policy from the PDPs, returning
@@ -719,10 +758,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/policies/{name}/versions/{version}:
+  /pdps/policies/{name}/versions/{version}:
     delete:
       tags:
-        - pdp-group-controller
+        - PdpGroupDeleteControllerV1
       summary: Undeploy version of a PDP Policy from PDPs
       description: >-
         Undeploys a specific version of a policy from the PDPs, returning
@@ -855,10 +894,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/deployments/batch:
+  /pdps/deployments/batch:
     post:
       tags:
-        - pdp-group-controller
+        - PdpGroupDeployControllerV1
       summary: Updates policy deployments within specific PDP groups
       description: >-
         Updates policy deployments within specific PDP groups, returning
@@ -989,10 +1028,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/policies:
+  /pdps/policies:
     post:
       tags:
-        - pdp-group-controller
+        - PdpGroupDeployControllerV1
       summary: Deploy or update PDP Policies
       description: Deploys or updates PDP Policies, returning optional error details
       operationId: deployPolicies
@@ -1121,10 +1160,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps:
+  /pdps:
     get:
       tags:
-        - pdp-group-controller
+        - PdpGroupQueryControllerV1
       summary: Query details of all PDP groups
       description: Queries details of all PDP groups, returning all group details
       operationId: queryGroupDetails
@@ -1241,10 +1280,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/audit:
+  /policies/audit:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyAuditControllerV1
       summary: Queries audit information for all the policies
       description: >-
         Queries audit information for all the policies, returning audit
@@ -1265,7 +1304,10 @@ paths:
           style: form
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -1391,10 +1433,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/audit/{pdpGroupName}:
+  /policies/audit/{pdpGroupName}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyAuditControllerV1
       summary: Queries audit information for all the policies in a PdpGroup
       description: >-
         Queries audit information for all the policies in a PdpGroup, returning
@@ -1415,7 +1457,10 @@ paths:
           style: form
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -1446,14 +1491,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyAudit'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyAudit'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -1548,10 +1589,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/audit/{pdpGroupName}/{policyName}/{policyVersion}:
+  /policies/audit/{pdpGroupName}/{policyName}/{policyVersion}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyAuditControllerV1
       summary: >-
         Queries audit information for a specific version of a policy in a
         PdpGroup
@@ -1575,7 +1616,10 @@ paths:
           style: form
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -1620,14 +1664,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyAudit'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyAudit'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -1722,10 +1762,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/audit/{policyName}/{policyVersion}:
+  /policies/audit/{policyName}/{policyVersion}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyAuditControllerV1
       summary: Queries audit information for a specific version of a policy
       description: >-
         Queries audit information for a specific version of a policy, returning
@@ -1746,7 +1786,10 @@ paths:
           style: form
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -1784,14 +1827,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyAudit'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyAudit'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -1886,10 +1925,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/components/healthcheck:
+  /components/healthcheck:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyComponentsHealthCheckControllerV1
       summary: >-
         Returns health status of all policy components, including PAP, API,
         Distribution, and PDPs
@@ -1915,12 +1954,12 @@ paths:
               schema:
                 type: string
                 additionalProperties:
-                  $ref: '#/components/schemas/HealthCheckReport'
+                  type: object
             application/yaml:
               schema:
                 type: string
                 additionalProperties:
-                  $ref: '#/components/schemas/HealthCheckReport'
+                  type: object
         401:
           description: Authentication Error
           headers:
@@ -2015,10 +2054,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/deployed:
+  /policies/deployed:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: Queries status of all deployed policies
       description: >-
         Queries status of all deployed policies, returning success and failure
@@ -2046,14 +2085,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2148,10 +2183,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/deployed/{name}:
+  /policies/deployed/{name}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: Queries status of specific deployed policies
       description: >-
         Queries status of specific deployed policies, returning success and
@@ -2179,14 +2214,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2281,10 +2312,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/deployed/{name}/{version}:
+  /policies/deployed/{name}/{version}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: Queries status of a specific deployed policy
       description: >-
         Queries status of a specific deployed policy, returning success and
@@ -2319,14 +2350,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2421,10 +2448,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/status:
+  /policies/status:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: Queries status of policies in all PdpGroups
       description: >-
         Queries status of policies in all PdpGroups, returning status of
@@ -2445,14 +2472,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2547,10 +2570,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/status/{pdpGroupName}:
+  /policies/status/{pdpGroupName}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: Queries status of policies in a specific PdpGroup
       description: >-
         Queries status of policies in a specific PdpGroup, returning status of
@@ -2585,14 +2608,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2687,10 +2706,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/status/{pdpGroupName}/{policyName}:
+  /policies/status/{pdpGroupName}/{policyName}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: >-
         Queries status of all versions of a specific policy in a specific
         PdpGroup
@@ -2728,14 +2747,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2830,10 +2845,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/policies/status/{pdpGroupName}/{policyName}/{policyVersion}:
+  /policies/status/{pdpGroupName}/{policyName}/{policyVersion}:
     get:
       tags:
-        - pdp-group-controller
+        - PolicyStatusControllerV1
       summary: >-
         Queries status of a specific version of a specific policy in a specific
         PdpGroup
@@ -2878,14 +2893,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
             application/yaml:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PolicyStatus'
+                type: object
         401:
           description: Authentication Error
           headers:
@@ -2979,11 +2990,11 @@ paths:
         - basicAuth: []
       x-interface info:
         api-version: 1.0.0
-        last-mod-release: Dublin
-  /policy/pap/v1/pdps/statistics:
+        last-mod-release: Dublin  
+  /pdps/statistics:
     get:
       tags:
-        - pdp-group-controller
+        - StatisticsRestControllerV1
       summary: Fetch  statistics for all PDP Groups and subgroups in the system
       description: >-
         Returns for all PDP Groups and subgroups statistics of the Policy
@@ -3005,6 +3016,7 @@ paths:
           schema:
             type: integer
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -3030,10 +3042,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PdpStatistics'
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
             application/yaml:
               schema:
-                $ref: '#/components/schemas/PdpStatistics'
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
         401:
           description: Authentication Error
           headers:
@@ -3128,10 +3152,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/statistics/{group}:
+  /pdps/statistics/{group}:
     get:
       tags:
-        - pdp-group-controller
+        - StatisticsRestControllerV1
       summary: Fetch current statistics for given PDP Group
       description: >-
         Returns statistics for given PDP Group of the Policy Administration
@@ -3160,6 +3184,7 @@ paths:
           schema:
             type: integer
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -3295,10 +3320,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/statistics/{group}/{type}:
+  /pdps/statistics/{group}/{type}:
     get:
       tags:
-        - pdp-group-controller
+        - StatisticsRestControllerV1
       summary: Fetch statistics for the specified subgroup
       description: >-
         Returns  statistics for the specified subgroup of the Policy
@@ -3334,6 +3359,7 @@ paths:
           schema:
             type: integer
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -3359,10 +3385,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PdpStatistics'
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
             application/yaml:
               schema:
-                $ref: '#/components/schemas/PdpStatistics'
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
         401:
           description: Authentication Error
           headers:
@@ -3457,10 +3495,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/pdps/statistics/{group}/{type}/{pdp}:
+  /pdps/statistics/{group}/{type}/{pdp}:
     get:
       tags:
-        - pdp-group-controller
+        - StatisticsRestControllerV1
       summary: Fetch statistics for the specified pdp
       description: >-
         Returns  statistics for the specified pdp of the Policy Administration
@@ -3503,6 +3541,7 @@ paths:
           schema:
             type: integer
             format: int32
+            default: 10
         - name: startTime
           in: query
           description: Start time in epoch timestamp
@@ -3528,10 +3567,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PdpStatistics'
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
             application/yaml:
               schema:
-                $ref: '#/components/schemas/PdpStatistics'
+                type: string
+                additionalProperties:
+                  type: string
+                  additionalProperties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PdpStatistics'
         401:
           description: Authentication Error
           headers:
@@ -3626,10 +3677,10 @@ paths:
       x-interface info:
         api-version: 1.0.0
         last-mod-release: Dublin
-  /policy/pap/v1/statistics:
+  /statistics:
     get:
       tags:
-        - pdp-group-controller
+        - StatisticsRestControllerV1
       summary: Fetch current statistics
       description: Returns current statistics of the Policy Administration component
       operationId: statistics
@@ -3676,7 +3727,7 @@ components:
       type: object
     PdpState:
       title: PdpState
-      type: string
+      type: object
     PdpGroupUpdateResponse:
       title: PdpGroupUpdateResponse
       type: object

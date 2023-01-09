@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019,2021 Nordix Foundation.
+ *  Copyright (C) 2019-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,14 +22,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
@@ -39,9 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -50,9 +39,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
+public class PdpGroupQueryControllerV1 extends PapRestControllerV1 implements PdpGroupQueryControllerV1Api {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupQueryControllerV1.class);
 
@@ -65,43 +53,11 @@ public class PdpGroupQueryControllerV1 extends PapRestControllerV1 {
      * @return a response
      * @throws PfModelException the exception
      */
-    // @formatter:off
-    @GetMapping("pdps")
-    @ApiOperation(value = "Query details of all PDP groups",
-        notes = "Queries details of all PDP groups, returning all group details",
-        response = PdpGroups.class,
-        tags = {"PdpGroup Query"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-    public ResponseEntity<PdpGroups> queryGroupDetails(@ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-        required = false,
-        value = REQUEST_ID_NAME) final UUID requestId) throws PfModelException {
-
+    @Override
+    public ResponseEntity<PdpGroups> queryGroupDetails(UUID requestId) {
         final var pdpGroups = new PdpGroups();
         pdpGroups.setGroups(pdpGroupService.getPdpGroups());
         LOGGER.debug("PdpGroup Query Response - {}", pdpGroups);
-
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.OK)), requestId)
             .body(pdpGroups);
     }
