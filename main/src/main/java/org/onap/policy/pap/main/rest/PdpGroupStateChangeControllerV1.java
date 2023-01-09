@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021 Nordix Foundation.
+ *  Copyright (C) 2019-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,27 +22,16 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.enums.PdpState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -51,10 +40,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
+public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 implements PdpGroupStateChangeControllerV1Api {
 
+    private static final Logger logger = LoggerFactory.getLogger(PdpGroupHealthCheckControllerV1.class);
     private final PdpGroupStateChangeProvider provider;
 
     /**
@@ -64,45 +53,18 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 {
      * @param groupName name of the PDP group to be deleted
      * @param state state of the PDP group
      * @return a response
-     * @throws PfModelException the exception
+     * @throws PfModelException Exception thrown by changeGroupState
      */
-    // @formatter:off
-    @PutMapping("pdps/groups/{name}")
-    @ApiOperation(value = "Change state of a PDP Group",
-        notes = "Changes state of PDP Group, returning optional error details",
-        response = PdpGroupStateChangeResponse.class,
-        tags = {"PdpGroup State Change"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {@Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
+    @Override
     public ResponseEntity<PdpGroupStateChangeResponse> changeGroupState(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "PDP Group Name") @PathVariable("name") String groupName,
-        @ApiParam(value = "PDP Group State") @RequestParam("state") final PdpState state) throws PfModelException {
-
-        final Pair<HttpStatus, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
-        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
-            .body(pair.getRight());
+        String groupName, PdpState state, UUID requestId) {
+        try {
+            final Pair<HttpStatus, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
+                .body(pair.getRight());
+        } catch (PfModelException e) {
+            logger.warn("changeGroupState failed", e);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

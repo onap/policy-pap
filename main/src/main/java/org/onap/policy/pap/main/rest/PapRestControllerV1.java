@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2022 Nordix Foundation.
+ *  Copyright (C) 2019-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,40 +22,21 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.BasicAuthDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.SecurityDefinition;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
 import java.net.HttpURLConnection;
 import java.util.Objects;
 import java.util.UUID;
-import javax.ws.rs.core.MediaType;
 import org.onap.policy.models.base.PfModelException;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Version v1 common superclass to provide REST endpoints for PAP component.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-// @formatter:off
-@SwaggerDefinition(
-    info = @Info(description =
-                    "Policy Administration is responsible for the deployment life cycle of policies as well as "
-                    + "interworking with the mechanisms required to orchestrate the nodes and containers on which "
-                    + "policies run. It is also responsible for the administration of policies at run time;"
-                    + " ensuring that policies are available to users, that policies are executing correctly,"
-                    + " and that the state and status of policies is monitored", version = "v1.0",
-                    title = "Policy Administration"),
-    consumes = {MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML},
-    produces = {MediaType.APPLICATION_JSON, PapRestControllerV1.APPLICATION_YAML},
-    schemes = {SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS},
-    tags = {@Tag(name = "policy-administration", description = "Policy Administration Service Operations")},
-    securityDefinition = @SecurityDefinition(basicAuthDefinitions = {@BasicAuthDefinition(key = "basicAuth")}))
-// @formatter:on
+@RequestMapping(value = "/policy/pap/v1")
 public class PapRestControllerV1 {
     public static final String APPLICATION_YAML = "application/yaml";
 
