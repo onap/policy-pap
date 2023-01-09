@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021 Nordix Foundation.
+ *  Copyright (C) 2019-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,14 +22,6 @@
 
 package org.onap.policy.pap.main.rest;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +30,6 @@ import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.pap.main.service.PdpStatisticsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -51,9 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class StatisticsRestControllerV1 extends PapRestControllerV1 {
+public class StatisticsRestControllerV1 extends PapRestControllerV1
+    implements StatisticsRestControllerV1Api {
 
     private final PdpStatisticsService pdpStatisticsService;
 
@@ -63,18 +50,8 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      *
      * @return a response
      */
-    @GetMapping("statistics")
-    @ApiOperation(value = "Fetch current statistics",
-            notes = "Returns current statistics of the Policy Administration component",
-            response = StatisticsReport.class, authorizations = @Authorization(value = AUTHORIZATION_TYPE))
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)})
-    public ResponseEntity<StatisticsReport> statistics(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId) {
+    @Override
+    public ResponseEntity<StatisticsReport> statistics(UUID requestId) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
             .body(pdpStatisticsService.fetchCurrentStatistics());
     }
@@ -84,49 +61,17 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      *
      * @return a response
      */
-    @GetMapping("pdps/statistics")
-    @ApiOperation(value = "Fetch  statistics for all PDP Groups and subgroups in the system",
-            notes = "Returns for all PDP Groups and subgroups statistics of the Policy Administration component",
-            response = Map.class, tags = {"PDP Statistics"},
-                    authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-                    responseHeaders = {
-                        @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                                    response = String.class),
-                        @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                                    response = String.class),
-                        @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                                    response = String.class),
-                        @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                                    response = UUID.class)},
-                    extensions = {
-                        @Extension(name = EXTENSION_NAME,
-                            properties = {
-                                @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                                @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                            })
-                        })
-
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
+    @Override
     public ResponseEntity<Map<String, Map<String, List<PdpStatistics>>>> pdpStatistics(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-            @ApiParam(value = "Record Count") @RequestParam(
-                defaultValue = "10", required = false,
-                value = "recordCount") final int recordCount,
-            @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "startTime") final Long startTime,
-            @ApiParam(value = "End time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "endTime") final Long endTime) {
+            UUID requestId,
+            Integer recordCount,
+            Long startTime,
+            Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(pdpStatisticsService
-            .fetchDatabaseStatistics(recordCount, convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
+            .fetchDatabaseStatistics(recordCount.intValue(), convertEpochtoInstant(startTime),
+                    convertEpochtoInstant(endTime)));
     }
+
 
     /**
      * get all statistics of a PDP group.
@@ -134,49 +79,16 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      * @param groupName name of the PDP group
      * @return a response
      */
-    @GetMapping("pdps/statistics/{group}")
-    @ApiOperation(value = "Fetch current statistics for given PDP Group",
-            notes = "Returns statistics for given PDP Group of the Policy Administration component",
-            response = Map.class, tags = {"PDP Statistics"},
-            authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-            responseHeaders = {
-                @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-            extensions = {
-                @Extension(name = EXTENSION_NAME,
-                    properties = {
-                        @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                        @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                    })
-                })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
+    @Override
     public ResponseEntity<Map<String, Map<String, List<PdpStatistics>>>> pdpGroupStatistics(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-            @ApiParam(value = "PDP Group Name") @PathVariable("group") final String groupName,
-            @ApiParam(value = "Record Count") @RequestParam(
-                defaultValue = "10", required = false,
-                value = "recordCount") final int recordCount,
-            @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "startTime") final Long startTime,
-            @ApiParam(value = "End time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "endTime") final Long endTime) {
+            String groupName,
+            UUID requestId,
+            Integer recordCount,
+            Long startTime,
+            Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, recordCount, convertEpochtoInstant(startTime),
-                convertEpochtoInstant(endTime)));
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, recordCount.intValue(),
+                    convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     /**
@@ -186,49 +98,16 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      * @param subType type of the sub PDP group
      * @return a response
      */
-    @GetMapping("pdps/statistics/{group}/{type}")
-    @ApiOperation(value = "Fetch statistics for the specified subgroup",
-            notes = "Returns  statistics for the specified subgroup of the Policy Administration component",
-            response = Map.class, tags = {"PDP Statistics"},
-            authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-            responseHeaders = {
-                @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-            extensions = {
-                @Extension(name = EXTENSION_NAME,
-                    properties = {
-                        @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                        @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                    })
-                })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
+    @Override
     public ResponseEntity<Map<String, Map<String, List<PdpStatistics>>>> pdpSubGroupStatistics(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-            @ApiParam(value = "PDP Group Name") @PathVariable("group") final String groupName,
-            @ApiParam(value = "PDP SubGroup type") @PathVariable("type") final String subType,
-            @ApiParam(value = "Record Count") @RequestParam(
-                defaultValue = "10", required = false,
-                value = "recordCount") final int recordCount,
-            @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "startTime") final Long startTime,
-            @ApiParam(value = "End time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "endTime") final Long endTime) {
+            String groupName,
+            String subType,
+            UUID requestId,
+            Integer recordCount,
+            Long startTime,
+            Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, recordCount,
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, recordCount.intValue(),
                 convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
@@ -241,55 +120,22 @@ public class StatisticsRestControllerV1 extends PapRestControllerV1 {
      * @param recordCount the count of the query response, optional, default return all statistics stored
      * @return a response
      */
-    @GetMapping("pdps/statistics/{group}/{type}/{pdp}")
-    @ApiOperation(value = "Fetch statistics for the specified pdp",
-            notes = "Returns  statistics for the specified pdp of the Policy Administration component",
-            response = Map.class,
-            tags = {"PDP Statistics"},
-            authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-            responseHeaders = {
-                @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-                @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-            extensions = {
-                @Extension(name = EXTENSION_NAME,
-                    properties = {
-                        @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                        @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                    })
-                })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
+    @Override
     public ResponseEntity<Map<String, Map<String, List<PdpStatistics>>>> pdpInstanceStatistics(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-            @ApiParam(value = "PDP Group Name") @PathVariable("group") final String groupName,
-            @ApiParam(value = "PDP SubGroup type") @PathVariable("type") final String subType,
-            @ApiParam(value = "PDP Instance name") @PathVariable("pdp") final String pdpName,
-            @ApiParam(value = "Record Count") @RequestParam(
-                defaultValue = "10", required = false,
-                value = "recordCount") final int recordCount,
-            @ApiParam(value = "Start time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "startTime") final Long startTime,
-            @ApiParam(value = "End time in epoch timestamp") @RequestParam(
-                                required = false,
-                                value = "endTime") final Long endTime) {
+            String groupName,
+            String subType,
+            String pdpName,
+            UUID requestId,
+            Integer recordCount,
+            Long startTime,
+            Long endTime) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, pdpName, recordCount,
+            .body(pdpStatisticsService.fetchDatabaseStatistics(groupName, subType, pdpName, recordCount.intValue(),
                 convertEpochtoInstant(startTime), convertEpochtoInstant(endTime)));
     }
 
     private Instant convertEpochtoInstant(Long epochSecond) {
         return (epochSecond == null ? null : Instant.ofEpochSecond(epochSecond));
     }
+
 }

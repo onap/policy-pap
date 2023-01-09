@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,14 +23,6 @@
 package org.onap.policy.pap.main.rest;
 
 import com.google.re2j.PatternSyntaxException;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -54,9 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
  * policies.
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class PolicyStatusControllerV1 extends PapRestControllerV1 {
+public class PolicyStatusControllerV1 extends PapRestControllerV1 implements PolicyStatusControllerV1Api {
     private static final String EMPTY_REGEX_ERROR_MESSAGE = "An empty string passed as a regex is not allowed";
     private static final String EMPTY_REGEX_WARNING = ". Empty string passed as Regex.";
     private static final String GET_DEPLOYMENTS_FAILED = "get deployments failed";
@@ -73,41 +59,8 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param regex regex for a policy name
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/deployed")
-    @ApiOperation(value = "Queries status of all deployed policies",
-        notes = "Queries status of all deployed policies, returning success and failure counts of the PDPs",
-        responseContainer = "List", response = PolicyStatus.class,
-        tags = {"Policy Deployment Status"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
-    public ResponseEntity<Object> queryAllDeployedPolicies(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "Regex for a policy name") @RequestParam(required = false, value = "regex") String regex) {
+    @Override
+    public ResponseEntity<Object> queryAllDeployedPolicies(UUID requestId, String regex) {
         try {
             final Collection<PolicyStatus> result;
             if (regex == null) {
@@ -137,41 +90,8 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param requestId request ID used in ONAP logging
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/deployed/{name}")
-    @ApiOperation(value = "Queries status of specific deployed policies",
-        notes = "Queries status of specific deployed policies, returning success and failure counts of the PDPs",
-        responseContainer = "List", response = PolicyStatus.class,
-        tags = {"Policy Deployment Status"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
-    public ResponseEntity<Object> queryDeployedPolicies(
-                    @ApiParam(value = "Policy Id") @PathVariable("name") String name,
-                    @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-                        required = false,
-                        value = REQUEST_ID_NAME) final UUID requestId) {
+    @Override
+    public ResponseEntity<Object> queryDeployedPolicies(String name, UUID requestId) {
 
         try {
             Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
@@ -197,41 +117,8 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param requestId request ID used in ONAP logging
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/deployed/{name}/{version}")
-    @ApiOperation(value = "Queries status of a specific deployed policy",
-        notes = "Queries status of a specific deployed policy, returning success and failure counts of the PDPs",
-        response = PolicyStatus.class,
-        tags = {"Policy Deployment Status"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
-    public ResponseEntity<Object> queryDeployedPolicy(@ApiParam(value = "Policy Id") @PathVariable("name") String name,
-                    @ApiParam(value = "Policy Version") @PathVariable("version") String version,
-                    @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-                        required = false,
-                        value = REQUEST_ID_NAME) final UUID requestId) {
+    @Override
+    public ResponseEntity<Object> queryDeployedPolicy(String name, String version, UUID requestId) {
 
         try {
             Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
@@ -258,41 +145,8 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param requestId request ID used in ONAP logging
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/status")
-    @ApiOperation(value = "Queries status of policies in all PdpGroups",
-        notes = "Queries status of policies in all PdpGroups, "
-            + "returning status of policies in all the PDPs belonging to all PdpGroups",
-        responseContainer = "List", response = PdpPolicyStatus.class,
-        tags = {"Policy Status"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
-    public ResponseEntity<Object> getStatusOfAllPolicies(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId) {
+    @Override
+    public ResponseEntity<Object> getStatusOfAllPolicies(UUID requestId) {
 
         try {
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
@@ -315,43 +169,11 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param regex regex for a policy name
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/status/{pdpGroupName}")
-    @ApiOperation(value = "Queries status of policies in a specific PdpGroup",
-        notes = "Queries status of policies in a specific PdpGroup, "
-            + "returning status of policies in all the PDPs belonging to the PdpGroup",
-        responseContainer = "List", response = PdpPolicyStatus.class,
-        tags = {"Policy Status"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
+    @Override
     public ResponseEntity<Object> getStatusOfPoliciesByGroup(
-        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "Regex for a policy name") @RequestParam(required = false, value = "regex") String regex) {
+        String pdpGroupName,
+        UUID requestId,
+        String regex) {
 
         try {
             final Collection<PdpPolicyStatus> result;
@@ -384,43 +206,11 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param requestId request ID used in ONAP logging
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/status/{pdpGroupName}/{policyName}")
-    @ApiOperation(value = "Queries status of all versions of a specific policy in a specific PdpGroup",
-        notes = "Queries status of all versions of a specific policy in a specific PdpGroup,"
-            + " returning status of all versions of the policy in the PDPs belonging to the PdpGroup",
-        responseContainer = "List", response = PdpPolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-
+    @Override
     public ResponseEntity<Object> getStatusOfPolicies(
-        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
-        @ApiParam(value = "Policy Id") @PathVariable("policyName") String policyName,
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId) {
+        String pdpGroupName,
+        String policyName,
+        UUID requestId) {
 
         try {
             Collection<PdpPolicyStatus> result =
@@ -451,44 +241,13 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 {
      * @param requestId request ID used in ONAP logging
      * @return a response
      */
-    // @formatter:off
-    @GetMapping("policies/status/{pdpGroupName}/{policyName}/{policyVersion}")
-    @ApiOperation(value = "Queries status of a specific version of a specific policy in a specific PdpGroup",
-        notes = "Queries status of a specific version of a specific policy in a specific PdpGroup,"
-            + " returning status of the policy in the PDPs belonging to the PdpGroup",
-        response = PdpPolicyStatus.class,
-        tags = {"Policy Administration (PAP) API"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
 
+    @Override
     public ResponseEntity<Object> getStatusOfPolicy(
-        @ApiParam(value = "PDP Group Name") @PathVariable("pdpGroupName") String pdpGroupName,
-        @ApiParam(value = "Policy Id") @PathVariable("policyName") String policyName,
-        @ApiParam(value = "Policy Version") @PathVariable("policyVersion") String policyVersion,
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId) {
+            String pdpGroupName,
+            String policyName,
+            String policyVersion,
+            UUID requestId) {
 
         try {
             Collection<PdpPolicyStatus> result = provider.getPolicyStatus(pdpGroupName,

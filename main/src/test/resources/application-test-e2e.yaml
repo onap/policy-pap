@@ -22,6 +22,8 @@ spring:
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
 server:
   port: 6969
+  servlet:
+    context-path: /policy/pap/v1
 
 pap:
   name: "PapGroupE2E"
