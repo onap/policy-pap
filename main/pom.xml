@@ -176,6 +176,9 @@
                                 PolicyAudit=org.onap.policy.models.pap.concepts.PolicyAudit,
                                 PolicyStatus=org.onap.policy.models.pap.concepts.PolicyStatus
                             </importMappings>
+                            <typeMappings>
+                                PdpStatistics=org.onap.policy.models.pdp.concepts.PdpStatistics
+                            </typeMappings>
                             <configOptions>
                                 <sourceFolder>src/gen/java</sourceFolder>
                                 <dateLibrary>java11</dateLibrary>

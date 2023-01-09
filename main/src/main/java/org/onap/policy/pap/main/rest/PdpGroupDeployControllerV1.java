@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,6 @@ package org.onap.policy.pap.main.rest;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -47,19 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to deploy a PDP group.
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
+public class PdpGroupDeployControllerV1 extends PapRestControllerV1 implements PdpGroupDeployControllerV1Api {
     public static final String POLICY_STATUS_URI = "/policy/pap/v1/policies/status";
 
     public static final String DEPLOYMENT_RESPONSE_MSG = "Use the policy status url to fetch the latest status. "
@@ -104,40 +91,8 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      * @param groups PDP group configuration
      * @return a response
      */
-    // @formatter:off
-    @PostMapping("pdps/deployments/batch")
-    @ApiOperation(value = "Updates policy deployments within specific PDP groups",
-        notes = "Updates policy deployments within specific PDP groups, returning optional error details",
-        response = PdpGroupDeployResponse.class,
-        tags = {"Deployments Update"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-    public ResponseEntity<PdpGroupDeployResponse> updateGroupPolicies(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "List of PDP Group Deployments", required = true) @RequestBody DeploymentGroups groups) {
+    @Override
+    public ResponseEntity<PdpGroupDeployResponse> updateGroupPolicies(UUID requestId, DeploymentGroups groups) {
         return doOperation(requestId, "update policy deployments failed",
             () -> provider.updateGroupPolicies(groups, getPrincipal()));
     }
@@ -149,40 +104,8 @@ public class PdpGroupDeployControllerV1 extends PapRestControllerV1 {
      * @param policies PDP policies
      * @return a response
      */
-    // @formatter:off
-    @PostMapping("pdps/policies")
-    @ApiOperation(value = "Deploy or update PDP Policies",
-        notes = "Deploys or updates PDP Policies, returning optional error details",
-        response = PdpGroupDeployResponse.class,
-        tags = {"Deployments Update"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-    public ResponseEntity<PdpGroupDeployResponse> deployPolicies(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "PDP Policies; only the name is required") @RequestBody PdpDeployPolicies policies) {
+    @Override
+    public ResponseEntity<PdpGroupDeployResponse> deployPolicies(UUID requestId, PdpDeployPolicies policies) {
         return doOperation(requestId, "deploy policies failed",
             () -> provider.deployPolicies(policies, getPrincipal()));
     }

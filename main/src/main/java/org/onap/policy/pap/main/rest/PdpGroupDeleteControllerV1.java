@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2022 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2023 Nordix Foundation.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,14 +24,6 @@ package org.onap.policy.pap.main.rest;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -47,19 +39,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Class to provide REST end points for PAP component to delete a PDP group.
  */
 @RestController
-@RequestMapping(path = "/policy/pap/v1")
 @RequiredArgsConstructor
-public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
+public class PdpGroupDeleteControllerV1 extends PapRestControllerV1
+    implements PdpGroupDeleteControllerV1Api {
+
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupDeleteControllerV1.class);
 
     private final PdpGroupDeleteProvider provider;
@@ -98,40 +87,8 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
      * @param groupName name of the PDP group to be deleted
      * @return a response
      */
-    // @formatter:off
-    @DeleteMapping("pdps/groups/{name}")
-    @ApiOperation(value = "Delete PDP Group",
-        notes = "Deletes a PDP Group, returning optional error details",
-        response = PdpGroupDeleteResponse.class,
-        tags = {"PdpGroup Delete"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-    public ResponseEntity<PdpGroupDeleteResponse> deleteGroup(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "PDP Group Name") @PathVariable("name") String groupName) {
+    @Override
+    public ResponseEntity<PdpGroupDeleteResponse> deleteGroup(String groupName, UUID requestId) {
         return doOperation(requestId, () -> provider.deleteGroup(groupName));
     }
 
@@ -142,41 +99,8 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
      * @param policyName name of the PDP Policy to be deleted
      * @return a response
      */
-    // @formatter:off
-    @DeleteMapping("pdps/policies/{name}")
-    @ApiOperation(value = "Undeploy a PDP Policy from PDPs",
-        notes = "Undeploys the latest version of a policy from the PDPs, returning optional error details",
-        response = PdpGroupDeployResponse.class,
-        tags = {"PdpGroup Delete"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
-    public ResponseEntity<PdpGroupDeployResponse> deletePolicy(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "PDP Policy Name") @PathVariable("name") String policyName) {
-
+    @Override
+    public ResponseEntity<PdpGroupDeployResponse> deletePolicy(String policyName, UUID requestId) {
         return doUndeployOperation(requestId,
             () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, null), getPrincipal()));
     }
@@ -189,42 +113,11 @@ public class PdpGroupDeleteControllerV1 extends PapRestControllerV1 {
      * @param version version to be deleted
      * @return a response
      */
-    // @formatter:off
-    @DeleteMapping("pdps/policies/{name}/versions/{version}")
-    @ApiOperation(value = "Undeploy version of a PDP Policy from PDPs",
-        notes = "Undeploys a specific version of a policy from the PDPs, returning optional error details",
-        response = PdpGroupDeployResponse.class,
-        tags = {"PdpGroup Delete"},
-        authorizations = @Authorization(value = AUTHORIZATION_TYPE),
-        responseHeaders = {
-            @ResponseHeader(name = VERSION_MINOR_NAME, description = VERSION_MINOR_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_PATCH_NAME, description = VERSION_PATCH_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = VERSION_LATEST_NAME, description = VERSION_LATEST_DESCRIPTION,
-                            response = String.class),
-            @ResponseHeader(name = REQUEST_ID_NAME, description = REQUEST_ID_HDR_DESCRIPTION,
-                            response = UUID.class)},
-        extensions = {
-            @Extension(name = EXTENSION_NAME,
-                properties = {
-                    @ExtensionProperty(name = API_VERSION_NAME, value = API_VERSION),
-                    @ExtensionProperty(name = LAST_MOD_NAME, value = LAST_MOD_RELEASE)
-                })
-            })
-    @ApiResponses(value = {
-        @ApiResponse(code = AUTHENTICATION_ERROR_CODE, message = AUTHENTICATION_ERROR_MESSAGE),
-        @ApiResponse(code = AUTHORIZATION_ERROR_CODE, message = AUTHORIZATION_ERROR_MESSAGE),
-        @ApiResponse(code = SERVER_ERROR_CODE, message = SERVER_ERROR_MESSAGE)
-    })
-    // @formatter:on
+    @Override
     public ResponseEntity<PdpGroupDeployResponse> deletePolicyVersion(
-        @ApiParam(REQUEST_ID_PARAM_DESCRIPTION) @RequestHeader(
-            required = false,
-            value = REQUEST_ID_NAME) final UUID requestId,
-        @ApiParam(value = "PDP Policy Name") @PathVariable("name") String policyName,
-        @ApiParam(value = "PDP Policy Version") @PathVariable("version") String version) {
-
+            String policyName,
+            String version,
+            UUID requestId) {
         return doUndeployOperation(requestId,
             () -> provider.undeploy(new ToscaConceptIdentifierOptVersion(policyName, version), getPrincipal()));
     }

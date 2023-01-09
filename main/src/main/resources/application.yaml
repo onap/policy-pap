@@ -23,7 +23,8 @@ spring:
 
 server:
   port: 6969
-
+  servlet:
+    context-path: /policy/pap
 pap:
   name: PapGroup
   aaf: false
