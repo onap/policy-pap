@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a9c0cd8_939a7c42",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2023-01-12T15:26:04Z",
+      "side": 1,
+      "message": "Should this be parameterized, should it be set in application.yaml?",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 1
+      },
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81a82020_8d24ea18",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2023-01-12T15:26:04Z",
+      "side": 1,
+      "message": "So the only change in the methods is the order of the parameters?",
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c66b5d8_83051e19",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2023-01-12T15:26:04Z",
+      "side": 1,
+      "message": "Although it makes no difference, maybe move this into the catch block just to improve readability.",
+      "range": {
+        "startLine": 66,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 7
+      },
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
