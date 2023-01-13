@@ -84,6 +84,24 @@
     },
     {
       "key": {
+        "uuid": "dcc72c88_77d56e7e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2787
+      },
+      "writtenOn": "2023-01-13T17:31:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e9d013bc_dfe7799e",
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2c66b5d8_83051e19",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupHealthCheckControllerV1.java",
         "patchSetId": 1
