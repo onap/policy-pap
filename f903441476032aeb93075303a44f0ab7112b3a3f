@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f3d137f0_9a79582f",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PapRestControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 7629
+      },
+      "writtenOn": "2023-01-13T09:16:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a9c0cd8_939a7c42",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 1
+      },
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81a82020_8d24ea18",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
         "patchSetId": 1
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "e9d013bc_dfe7799e",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupDeleteControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 7629
+      },
+      "writtenOn": "2023-01-13T09:16:42Z",
+      "side": 1,
+      "message": "Yes",
+      "parentUuid": "81a82020_8d24ea18",
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2c66b5d8_83051e19",
         "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupHealthCheckControllerV1.java",
         "patchSetId": 1
@@ -53,6 +95,30 @@
       "writtenOn": "2023-01-12T15:26:04Z",
       "side": 1,
       "message": "Although it makes no difference, maybe move this into the catch block just to improve readability.",
+      "range": {
+        "startLine": 66,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 7
+      },
+      "revId": "f903441476032aeb93075303a44f0ab7112b3a3f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af6f25ec_61d77d64",
+        "filename": "main/src/main/java/org/onap/policy/pap/main/rest/PdpGroupHealthCheckControllerV1.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7629
+      },
+      "writtenOn": "2023-01-13T09:16:42Z",
+      "side": 1,
+      "message": "The method has to return a ResponseEntity, so we need a return outside the try catch",
+      "parentUuid": "2c66b5d8_83051e19",
       "range": {
         "startLine": 66,
         "startChar": 0,
