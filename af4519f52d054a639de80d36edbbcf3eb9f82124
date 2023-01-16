@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e959e323_049f3d5c",
+        "filename": "main/src/main/resources/openapi/openapi.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 1307,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2023-01-16T15:57:21Z",
+      "side": 1,
+      "message": "Maybe it would be a good idea to add `minimum: 1` and `maximum: 100` annotations here, judging from the parameter description",
+      "revId": "af4519f52d054a639de80d36edbbcf3eb9f82124",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
