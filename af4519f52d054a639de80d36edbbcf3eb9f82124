@@ -16,6 +16,24 @@
       "revId": "af4519f52d054a639de80d36edbbcf3eb9f82124",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bbb32802_0e908b2a",
+        "filename": "main/src/main/resources/openapi/openapi.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 1307,
+      "author": {
+        "id": 7629
+      },
+      "writtenOn": "2023-01-17T09:18:29Z",
+      "side": 1,
+      "message": "Thank you, added in patchset 4",
+      "parentUuid": "e959e323_049f3d5c",
+      "revId": "af4519f52d054a639de80d36edbbcf3eb9f82124",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
