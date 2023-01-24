@@ -59,7 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.yaml.snakeyaml.Yaml;
 
-@ActiveProfiles("test-e2e")
+@ActiveProfiles({ "test-e2e", "default" })
 public abstract class End2EndBase extends CommonPapRestServer {
     private static final Logger logger = LoggerFactory.getLogger(End2EndBase.class);
 

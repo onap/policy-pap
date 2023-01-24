@@ -42,7 +42,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * @author Yehui Wang (yehui.wang@est.tech)
  */
-@ActiveProfiles("test")
+@ActiveProfiles({ "test", "default" })
 public class TestPolicyComponentsHealthCheckControllerV1 extends CommonPapRestServer {
 
     private static final String ENDPOINT = "components/healthcheck";

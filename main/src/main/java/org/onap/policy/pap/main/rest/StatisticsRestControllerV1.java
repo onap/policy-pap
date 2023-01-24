@@ -29,6 +29,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.pap.main.service.PdpStatisticsService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Profile("default")
 public class StatisticsRestControllerV1 extends PapRestControllerV1
     implements StatisticsRestControllerV1Api {
 

@@ -35,7 +35,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@ActiveProfiles("test")
+@ActiveProfiles({ "test", "default" })
 public class TestPdpGroupQueryControllerV1 extends CommonPapRestServer {
 
     private static final String GROUP_ENDPOINT = "pdps";

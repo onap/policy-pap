@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.pap.main.service.PolicyAuditService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Profile("default")
 public class PolicyAuditControllerV1 extends PapRestControllerV1 implements PolicyAuditControllerV1Api {
 
     public static final String NO_AUDIT_RECORD_FOUND = "No records found matching the input parameters";

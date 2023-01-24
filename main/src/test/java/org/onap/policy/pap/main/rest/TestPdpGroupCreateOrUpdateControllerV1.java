@@ -38,7 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
-@ActiveProfiles("test")
+@ActiveProfiles({ "test", "default" })
 public class TestPdpGroupCreateOrUpdateControllerV1 extends CommonPapRestServer {
 
     private static final String CREATEORUPDATE_GROUPS_ENDPOINT = "pdps/groups/batch";

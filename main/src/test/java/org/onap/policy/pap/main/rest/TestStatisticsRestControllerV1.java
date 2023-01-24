@@ -34,7 +34,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@ActiveProfiles("test")
+@ActiveProfiles({ "test", "default" })
 public class TestStatisticsRestControllerV1 extends CommonPapRestServer {
 
     private static final String STATISTICS_ENDPOINT = "statistics";

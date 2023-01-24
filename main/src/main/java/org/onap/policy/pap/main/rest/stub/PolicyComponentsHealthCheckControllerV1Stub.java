@@ -1,8 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019,2021 Nordix Foundation.
- *  Modifications Copyright (C) 2020 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,42 +18,28 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.stub;
 
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
+import org.onap.policy.pap.main.rest.PapRestControllerV1;
+import org.onap.policy.pap.main.rest.PolicyComponentsHealthCheckControllerV1Api;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Class to provide REST end point for PAP component to fetch all policy components, including PAP,
- * API, Distribution, and PDPs.
- *
- * @author Yehui Wang (yehui.wang@est.tech)
- */
 @RestController
 @RequiredArgsConstructor
-@Profile("default")
-public class PolicyComponentsHealthCheckControllerV1 extends PapRestControllerV1
+@Profile("stub")
+public class PolicyComponentsHealthCheckControllerV1Stub extends PapRestControllerV1
     implements PolicyComponentsHealthCheckControllerV1Api {
 
-    private final PolicyComponentsHealthCheckProvider provider;
+    private final StubUtils stubsUtils;
 
-
-    /**
-     * Returns health status of all Policy components, including PAP, API, Distribution, and PDPs.
-     *
-     * @param requestId request ID used in ONAP logging
-     * @return a response
-     */
     @Override
     public ResponseEntity<Map<String, Object>> policyComponentsHealthCheck(UUID requestId) {
-        final Pair<HttpStatus, Map<String, Object>> pair = provider.fetchPolicyComponentsHealthStatus();
-        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
-            .body(pair.getRight());
+        return stubsUtils.getStubbedResponseMap();
     }
+
 }

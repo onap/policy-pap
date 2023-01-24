@@ -1,8 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2023 Nordix Foundation.
- *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
+ *  Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,30 +18,32 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.policy.pap.main.rest;
+package org.onap.policy.pap.main.rest.stub;
 
+import java.util.UUID;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
+import org.onap.policy.models.pdp.enums.PdpState;
+import org.onap.policy.pap.main.rest.PapRestControllerV1;
+import org.onap.policy.pap.main.rest.PdpGroupStateChangeControllerV1Api;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Class to provide REST endpoints for PAP component health check.
- *
- * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
- */
 @RestController
 @RequiredArgsConstructor
-@Profile("default")
-public class HealthCheckRestControllerV1  extends PapRestControllerV1 implements HealthCheckRestControllerV1Api {
+@Profile("stub")
+public class PdpGroupStateChangeControllerV1Stub extends PapRestControllerV1
+    implements PdpGroupStateChangeControllerV1Api {
 
-    private final HealthCheckProvider provider;
+    private final StubUtils stubUtils;
 
     @Override
-    public ResponseEntity<HealthCheckReport> healthcheck() {
-        var report = provider.performHealthCheck(true);
-        return ResponseEntity.status(report.getCode()).body(report);
+    public ResponseEntity<PdpGroupStateChangeResponse> changeGroupState(
+            String name, @NotNull @Valid PdpState state, UUID requestId) {
+        return stubUtils.getStubbedResponse(PdpGroupStateChangeResponse.class);
     }
 
 }

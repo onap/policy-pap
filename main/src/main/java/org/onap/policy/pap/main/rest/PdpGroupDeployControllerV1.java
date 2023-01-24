@@ -38,6 +38,7 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Profile("default")
 public class PdpGroupDeployControllerV1 extends PapRestControllerV1 implements PdpGroupDeployControllerV1Api {
     public static final String POLICY_STATUS_URI = "/policy/pap/v1/policies/status";
 
