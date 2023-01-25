@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a5809ff6_6e6a9a4c",
+        "filename": "main/src/main/resources/application-stub.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2023-01-25T18:56:25Z",
+      "side": 1,
+      "message": "should this be \"pap\"?",
+      "range": {
+        "startLine": 3,
+        "startChar": 22,
+        "endLine": 3,
+        "endChar": 25
+      },
+      "revId": "179fd9a931127160fb08aca517083de59c3e0c73",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
