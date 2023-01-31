@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2022 Nordix Foundation.
+ *  Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,7 @@ import org.onap.policy.common.utils.services.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,25 +69,18 @@ public class TestActuatorEndpoints {
 
     @Test
     public void testMetricsEndpoint() throws Exception {
-        mock.perform(get("/plain-metrics")).andDo(print())
+        mock.perform(get("/plain-metrics").with(SecurityMockMvcRequestPostProcessors.httpBasic(
+            "policyAdmin", "zb!XztG34")))
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
     @Test
     public void testPrometheusEndpoint() throws Exception {
-        mock.perform(get("/metrics")).andDo(print())
+        mock.perform(get("/metrics").with(SecurityMockMvcRequestPostProcessors.httpBasic("policyAdmin", "zb!XztG34")))
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty());
-    }
-
-    @TestConfiguration
-    @Order(1)
-    public static class TestSecurityConfig extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity httpSecurity) throws Exception {
-            httpSecurity.csrf().disable()
-                .authorizeRequests().anyRequest().permitAll();
-        }
     }
 }

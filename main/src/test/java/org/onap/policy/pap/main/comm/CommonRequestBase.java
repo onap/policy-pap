@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2022 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -112,20 +112,20 @@ public class CommonRequestBase {
         listener = mock(RequestListener.class);
         PdpParameters pdpParams = mock(PdpParameters.class);
 
-        doAnswer((Answer<Object>) invocation -> {
+        lenient().doAnswer((Answer<Object>) invocation -> {
             queue.add(invocation.getArgument(0, QueueToken.class));
             return null;
         }).when(publisher).enqueue(any());
 
-        when(timers.register(any(), any())).thenReturn(timer);
+        lenient().when(timers.register(any(), any())).thenReturn(timer);
 
         PdpStateChangeParameters stateParams = mock(PdpStateChangeParameters.class);
-        when(stateParams.getMaxRetryCount()).thenReturn(RETRIES);
-        when(pdpParams.getStateChangeParameters()).thenReturn(stateParams);
+        lenient().when(stateParams.getMaxRetryCount()).thenReturn(RETRIES);
+        lenient().when(pdpParams.getStateChangeParameters()).thenReturn(stateParams);
 
         PdpUpdateParameters updateParams = mock(PdpUpdateParameters.class);
-        when(updateParams.getMaxRetryCount()).thenReturn(RETRIES);
-        when(pdpParams.getUpdateParameters()).thenReturn(updateParams);
+        lenient().when(updateParams.getMaxRetryCount()).thenReturn(RETRIES);
+        lenient().when(pdpParams.getUpdateParameters()).thenReturn(updateParams);
 
         reqParams = new RequestParams().setMaxRetryCount(RETRIES).setModifyLock(lock).setPdpPublisher(publisher)
                         .setResponseDispatcher(dispatcher).setTimers(timers);

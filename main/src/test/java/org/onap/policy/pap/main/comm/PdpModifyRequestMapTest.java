@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021,2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,7 +73,7 @@ import org.onap.policy.pap.main.comm.msgdata.RequestListener;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
 import org.onap.policy.pap.main.service.PdpGroupService;
 import org.onap.policy.pap.main.service.PolicyStatusService;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PdpModifyRequestMapTest extends CommonRequestBase {
@@ -148,8 +148,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
     @Test
     public void testPdpModifyRequestMap() {
-        assertSame(mapParams, Whitebox.getInternalState(map, "params"));
-        assertSame(lock, Whitebox.getInternalState(map, "modifyLock"));
+        assertSame(mapParams, ReflectionTestUtils.getField(map, "params"));
+        assertSame(lock, ReflectionTestUtils.getField(map, "modifyLock"));
     }
 
     @Test
@@ -726,7 +726,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * @return the request's listener
      */
     private RequestListener getListener(Request request) {
-        return Whitebox.getInternalState(request, "listener");
+        return (RequestListener) ReflectionTestUtils.getField(request, "listener");
     }
 
     private PdpGroup makeGroup(String name) {

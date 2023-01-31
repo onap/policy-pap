@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +21,30 @@
 
 package org.onap.policy.pap.main.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Configure how access to this module's REST end points is secured.
+ */
 @Configuration
-@EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers().authenticated().anyRequest().authenticated().and().httpBasic();
-        // disable csrf as the endpoints are meant for non browser clients
-        http.csrf().disable();
+public class WebSecurityConfig {
+    /**
+     * Return the configuration of how access to this module's REST end points is secured.
+     *
+     * @param http the HTTP security settings
+     * @return the HTTP security settings
+     */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .httpBasic()
+            .and()
+            .authorizeHttpRequests().anyRequest().authenticated()
+            .and()
+            .csrf().disable();
+        return http.build();
     }
-
 }

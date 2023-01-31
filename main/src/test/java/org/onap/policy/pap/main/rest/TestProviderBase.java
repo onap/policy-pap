@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021,2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.PapConstants;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class TestProviderBase extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
@@ -92,8 +92,8 @@ public class TestProviderBase extends ProviderSuper {
 
     @Test
     public void testProviderBase() {
-        assertSame(lockit, Whitebox.getInternalState(prov, "updateLock"));
-        assertSame(reqmap, Whitebox.getInternalState(prov, "requestMap"));
+        assertSame(lockit, ReflectionTestUtils.getField(prov, "updateLock"));
+        assertSame(reqmap, ReflectionTestUtils.getField(prov, "requestMap"));
     }
 
     @Test

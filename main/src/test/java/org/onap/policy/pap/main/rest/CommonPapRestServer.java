@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019,2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -55,14 +55,14 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.PolicyPapApplication;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.startstop.PapActivator;
-import org.powermock.reflect.Whitebox;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Class to perform unit test of {@link PapRestControllerV1}.
@@ -174,8 +174,8 @@ public abstract class CommonPapRestServer {
     }
 
     private void markActivator(boolean wasAlive) {
-        Object manager = Whitebox.getInternalState(papActivator, "serviceManager");
-        AtomicBoolean running = Whitebox.getInternalState(manager, "running");
+        Object manager = ReflectionTestUtils.getField(papActivator, "serviceManager");
+        AtomicBoolean running = (AtomicBoolean) ReflectionTestUtils.getField(manager, "running");
         running.set(wasAlive);
     }
 
