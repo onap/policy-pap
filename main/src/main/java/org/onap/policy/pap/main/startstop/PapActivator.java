@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -136,6 +136,9 @@ public class PapActivator extends ServiceManagerContainer {
         final AtomicReference<PdpModifyRequestMap> requestMap = new AtomicReference<>();
 
         // @formatter:off
+
+        // Note: This class is not Thread Safe. If more than one PAP component is started, the code below overwrites
+        //       the parameter service and registry entries.
 
         addAction("Meter Registry",
             () -> Registry.register(PapConstants.REG_METER_REGISTRY, meterRegistry),
