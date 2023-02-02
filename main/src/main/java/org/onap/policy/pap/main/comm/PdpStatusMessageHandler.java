@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -131,8 +130,8 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
             } catch (final PolicyPapException exp) {
                 LOGGER.error("Operation Failed", exp);
             } catch (final Exception exp) {
-                if (isDuplicateKeyException(exp)) {
-                    /*
+                if (isDuplicateKeyException(exp, Exception.class)) {
+                    /*                    /*
                      * this is to be expected, if multiple PAPs are processing the same
                      * heartbeat at a time, thus we log the exception at a trace level
                      * instead of an error level.
@@ -151,17 +150,17 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
      * Determines if the exception indicates a duplicate key.
      *
      * @param thrown exception to check
+     * @param exceptionClazz the class to check against
      * @return {@code true} if the exception occurred due to a duplicate key
      */
-    protected static boolean isDuplicateKeyException(Throwable thrown) {
+    protected static boolean isDuplicateKeyException(Throwable thrown, Class<? extends Throwable> exceptionClazz) {
         while (thrown != null) {
             if (thrown instanceof SQLIntegrityConstraintViolationException) {
                 return true;
             }
 
-            if (thrown instanceof EclipseLinkException) {
-                EclipseLinkException ele = (EclipseLinkException) thrown;
-                if (isDuplicateKeyException(ele.getInternalException())) {
+            if (exceptionClazz.isInstance(thrown)) {
+                if (isDuplicateKeyException(thrown.getCause(), exceptionClazz)) {
                     return true;
                 }
             }

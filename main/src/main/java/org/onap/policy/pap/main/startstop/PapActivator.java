@@ -137,6 +137,9 @@ public class PapActivator extends ServiceManagerContainer {
 
         // @formatter:off
 
+        // Note: This class is not Thread Safe. If more than one PAP component is started, the code below overwrites
+        //       the parameter service and registry entries.
+
         addAction("Meter Registry",
             () -> Registry.register(PapConstants.REG_METER_REGISTRY, meterRegistry),
             () -> Registry.unregister(PapConstants.REG_METER_REGISTRY));
