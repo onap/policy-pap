@@ -52,7 +52,6 @@
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
-                <version>2.1.1</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -144,9 +143,6 @@
                             <goal>build</goal>
                             <goal>push</goal>
                         </goals>
-                        <configuration>
-                            <image>onap/policy-pap</image>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
