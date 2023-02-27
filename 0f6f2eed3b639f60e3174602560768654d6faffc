@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c4f1576_d3303c9f",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/service/PolicyStatusServiceTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 3239
+      },
+      "writtenOn": "2023-02-27T21:43:26Z",
+      "side": 1,
+      "message": "I think you can add it to the line number 3 itself",
+      "range": {
+        "startLine": 5,
+        "startChar": 4,
+        "endLine": 5,
+        "endChar": 49
+      },
+      "revId": "0f6f2eed3b639f60e3174602560768654d6faffc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
