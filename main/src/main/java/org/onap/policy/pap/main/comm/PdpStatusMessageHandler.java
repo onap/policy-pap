@@ -159,10 +159,8 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 return true;
             }
 
-            if (exceptionClazz.isInstance(thrown)) {
-                if (isDuplicateKeyException(thrown.getCause(), exceptionClazz)) {
-                    return true;
-                }
+            if (exceptionClazz.isInstance(thrown) && isDuplicateKeyException(thrown.getCause(), exceptionClazz)) {
+                return true;
             }
 
             thrown = thrown.getCause();

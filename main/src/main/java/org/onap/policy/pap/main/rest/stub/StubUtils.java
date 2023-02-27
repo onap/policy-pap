@@ -44,6 +44,9 @@ import org.springframework.stereotype.Service;
 @Profile("stub")
 class StubUtils {
     private static final Logger log = LoggerFactory.getLogger(StubUtils.class);
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String SERIALIZE_RESPONSE_FAILURE_MSG =
+            "Couldn't serialize response for content type application/json";
     private final HttpServletRequest request;
     private static final String ACCEPT = "Accept";
     private static final String PAP_DB =
@@ -52,14 +55,14 @@ class StubUtils {
 
     <T> ResponseEntity<T> getStubbedResponse(Class<T> clazz) {
         var accept = request.getHeader(ACCEPT);
-        if (accept != null && accept.contains("application/json")) {
+        if (accept != null && accept.contains(APPLICATION_JSON)) {
             final var resource = new ClassPathResource(PAP_DB);
             try (var inputStream = resource.getInputStream()) {
                 final var string = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                 var targetObject = JSON_TRANSLATOR.fromJson(string, clazz);
                 return new ResponseEntity<>(targetObject, HttpStatus.OK);
             } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
+                log.error(SERIALIZE_RESPONSE_FAILURE_MSG, e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -68,14 +71,14 @@ class StubUtils {
 
     <T> ResponseEntity<List<T>> getStubbedResponseList(Class<T> clazz) {
         var accept = request.getHeader(ACCEPT);
-        if (accept != null && accept.contains("application/json")) {
+        if (accept != null && accept.contains(APPLICATION_JSON)) {
             final var resource = new ClassPathResource(PAP_DB);
             try (var inputStream = resource.getInputStream()) {
                 final var string = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                 var targetObject = Arrays.asList(JSON_TRANSLATOR.fromJson(string, clazz));
                 return new ResponseEntity<>(targetObject, HttpStatus.OK);
             } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
+                log.error(SERIALIZE_RESPONSE_FAILURE_MSG, e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -84,7 +87,7 @@ class StubUtils {
 
     ResponseEntity<Map<String, Object>> getStubbedResponseMap() {
         var accept = request.getHeader(ACCEPT);
-        if (accept != null && accept.contains("application/json")) {
+        if (accept != null && accept.contains(APPLICATION_JSON)) {
             final var resource = new ClassPathResource(PAP_DB);
             try (var inputStream = resource.getInputStream()) {
                 Map<String, Object> map = new HashMap<>();
@@ -93,7 +96,7 @@ class StubUtils {
                         JSON_TRANSLATOR.fromJson(string, Object.class));
                 return new ResponseEntity<>(map, HttpStatus.OK);
             } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
+                log.error(SERIALIZE_RESPONSE_FAILURE_MSG, e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -102,7 +105,7 @@ class StubUtils {
 
     ResponseEntity<Map<String, Map<String, List<PdpStatistics>>>> getStubbedResponseStatistics() {
         var accept = request.getHeader(ACCEPT);
-        if (accept != null && accept.contains("application/json")) {
+        if (accept != null && accept.contains(APPLICATION_JSON)) {
             Map<String, Map<String, List<PdpStatistics>>> map = new HashMap<>();
             return new ResponseEntity<>(map, HttpStatus.OK);
         }

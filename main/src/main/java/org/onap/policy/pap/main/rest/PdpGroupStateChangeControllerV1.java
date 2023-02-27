@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("default")
 public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 implements PdpGroupStateChangeControllerV1Api {
 
-    private static final Logger logger = LoggerFactory.getLogger(PdpGroupHealthCheckControllerV1.class);
+    private static final Logger logger = LoggerFactory.getLogger(PdpGroupStateChangeControllerV1.class);
     private final PdpGroupStateChangeProvider provider;
 
     /**

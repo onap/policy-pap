@@ -141,7 +141,7 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
 
         // Test delete
         policyStatusService.cudPolicyStatus(null, null, List.of(status));
-        assertThat(policyStatusService.getAllPolicyStatus()).hasSize(0);
+        assertThat(policyStatusService.getAllPolicyStatus()).isEmpty();
     }
 
     private List<PdpPolicyStatus> createStatusList() {
