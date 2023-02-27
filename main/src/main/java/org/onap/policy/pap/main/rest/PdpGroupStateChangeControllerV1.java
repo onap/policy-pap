@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021, 2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("default")
 public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 implements PdpGroupStateChangeControllerV1Api {
 
-    private static final Logger logger = LoggerFactory.getLogger(PdpGroupHealthCheckControllerV1.class);
+    private static final Logger logger = LoggerFactory.getLogger(PdpGroupStateChangeControllerV1.class);
     private final PdpGroupStateChangeProvider provider;
 
     /**
