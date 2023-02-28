@@ -22,6 +22,30 @@
       "revId": "0f6f2eed3b639f60e3174602560768654d6faffc",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b63a9e7c_90529c70",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/service/PolicyStatusServiceTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 7889
+      },
+      "writtenOn": "2023-02-28T01:07:38Z",
+      "side": 1,
+      "message": "My bad. I didn\u0027t notice that. Fixed it.",
+      "parentUuid": "0c4f1576_d3303c9f",
+      "range": {
+        "startLine": 5,
+        "startChar": 4,
+        "endLine": 5,
+        "endChar": 49
+      },
+      "revId": "0f6f2eed3b639f60e3174602560768654d6faffc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
