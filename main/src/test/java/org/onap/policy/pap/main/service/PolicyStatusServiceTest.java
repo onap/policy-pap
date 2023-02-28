@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Copyright (C) 2022-2023 Bell Canada. All rights reserved.
  *  Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,7 +141,7 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
 
         // Test delete
         policyStatusService.cudPolicyStatus(null, null, List.of(status));
-        assertThat(policyStatusService.getAllPolicyStatus()).hasSize(0);
+        assertThat(policyStatusService.getAllPolicyStatus()).isEmpty();
     }
 
     private List<PdpPolicyStatus> createStatusList() {
