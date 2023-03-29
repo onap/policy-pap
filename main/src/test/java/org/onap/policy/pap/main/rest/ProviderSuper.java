@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Nordix Foundation.
- * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,6 @@ public class ProviderSuper {
     protected Object lockit;
     protected PdpModifyRequestMap reqmap;
     protected ToscaPolicy policy1;
-    protected PapStatisticsManager statsmanager;
     protected MeterRegistry meterRegistry;
 
     /**
@@ -110,7 +109,6 @@ public class ProviderSuper {
 
         lockit = new Object();
         policy1 = loadPolicy("policy.json");
-        statsmanager = mock(PapStatisticsManager.class);
 
         meterRegistry = mock(MeterRegistry.class);
 
@@ -123,7 +121,6 @@ public class ProviderSuper {
 
         Registry.register(PapConstants.REG_PDP_MODIFY_LOCK, lockit);
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);
-        Registry.register(PapConstants.REG_STATISTICS_MANAGER, statsmanager);
         Registry.register(PapConstants.REG_METER_REGISTRY, meterRegistry);
 
     }

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
- *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.notification.PolicyNotifier;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams;
-import org.onap.policy.pap.main.rest.PapStatisticsManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -172,10 +171,6 @@ public class PapActivator extends ServiceManagerContainer {
             TopicEndpointManager.getManager()::start,
             TopicEndpointManager.getManager()::shutdown);
 
-        addAction("PAP statistics",
-            () -> Registry.register(PapConstants.REG_STATISTICS_MANAGER, new PapStatisticsManager()),
-            () -> Registry.unregister(PapConstants.REG_STATISTICS_MANAGER));
-
         addAction("PAP Activator",
             () -> Registry.register(PapConstants.REG_PAP_ACTIVATOR, this),
             () -> Registry.unregister(PapConstants.REG_PAP_ACTIVATOR));
@@ -224,7 +219,6 @@ public class PapActivator extends ServiceManagerContainer {
                     .responseDispatcher(responseReqIdDispatcher)
                     .stateChangeTimers(pdpStChgTimers.get())
                     .updateTimers(pdpUpdTimers.get())
-                    .savePdpStatistics(papParameterGroup.isSavePdpStatisticsInDb())
                     .build());
                 requestMap.set(pdpModifyRequestMap);
                 Registry.register(PapConstants.REG_PDP_MODIFY_MAP, requestMap.get());

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2022-2023 Bell Canada. All rights reserved.
  * Modifications Copyright (C) 2022 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,6 @@ public final class PapConstants {
 
     // Registry keys
     public static final String REG_PAP_ACTIVATOR = "object:activator/pap";
-    public static final String REG_STATISTICS_MANAGER = "object:manager/statistics";
     public static final String REG_PDP_MODIFY_LOCK = "lock:pdp";
     public static final String REG_PDP_MODIFY_MAP = "object:pdp/modify/map";
     public static final String REG_METER_REGISTRY = "object:meter/registry";
