@@ -38,7 +38,6 @@ import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
-import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.pdp.enums.PdpState;
@@ -48,7 +47,6 @@ import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.onap.policy.pap.main.parameters.PdpParameters;
 import org.onap.policy.pap.main.service.PdpGroupService;
-import org.onap.policy.pap.main.service.PdpStatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -66,11 +64,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
 
     private final PdpParameters params;
 
-    private final boolean savePdpStatistics;
-
     private final PdpGroupService pdpGroupService;
-
-    private final PdpStatisticsService pdpStatisticsService;
 
     /**
      * List to store policies present in db.
@@ -92,15 +86,11 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
      *
      * @param parameterGroup the parameterGroup
      * @param pdpGroupService the pdpGroupService
-     * @param pdpStatisticsService the pdpStatisticsService
      */
-    public PdpStatusMessageHandler(PapParameterGroup parameterGroup, PdpGroupService pdpGroupService,
-        PdpStatisticsService pdpStatisticsService) {
+    public PdpStatusMessageHandler(PapParameterGroup parameterGroup, PdpGroupService pdpGroupService) {
         super(true);
         this.params = parameterGroup.getPdpParameters();
-        this.savePdpStatistics = parameterGroup.isSavePdpStatisticsInDb();
         this.pdpGroupService = pdpGroupService;
-        this.pdpStatisticsService = pdpStatisticsService;
     }
 
     /**
@@ -294,29 +284,12 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         } else if (validatePdpDetails(message, pdpGroup, pdpSubGroup, pdpInstance)) {
             LOGGER.debug("PdpInstance details are correct. Saving current state in DB - {}", pdpInstance);
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup);
-
-            if (savePdpStatistics) {
-                processPdpStatistics(message, pdpSubGroup, pdpInstance, pdpGroup);
-            } else {
-                LOGGER.debug("Not processing PdpStatistics - {}", message.getStatistics());
-            }
         } else {
             LOGGER.debug("PdpInstance details are not correct. Sending PdpUpdate message - {}", pdpInstance);
             LOGGER.debug("Policy list in DB - {}. Policy list in heartbeat - {}", pdpSubGroup.getPolicies(),
                 message.getPolicies());
             updatePdpHealthStatus(message, pdpSubGroup, pdpInstance, pdpGroup);
             sendPdpMessage(pdpGroup.getName(), pdpSubGroup, pdpInstance.getInstanceId(), pdpInstance.getPdpState());
-        }
-    }
-
-    private void processPdpStatistics(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-                    final PdpGroup pdpGroup) {
-        if (validatePdpStatisticsDetails(message, pdpInstance, pdpGroup, pdpSubGroup)) {
-            LOGGER.debug("PdpStatistics details are correct. Saving current statistics in DB - {}",
-                    message.getStatistics());
-            createPdpStatistics(message.getStatistics());
-        } else {
-            LOGGER.debug("PdpStatistics details are not correct - {}", message.getStatistics());
         }
     }
 
@@ -343,28 +316,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                 .append(subGroup.getPolicies().containsAll(message.getPolicies()), true).build();
     }
 
-    private boolean validatePdpStatisticsDetails(final PdpStatus message, final Pdp pdpInstanceDetails,
-            final PdpGroup pdpGroup, final PdpSubGroup pdpSubGroup) {
-        if (message.getStatistics() != null) {
-            return new EqualsBuilder()
-                    .append(message.getStatistics().getPdpInstanceId(), pdpInstanceDetails.getInstanceId())
-                    .append(message.getStatistics().getPdpGroupName(), pdpGroup.getName())
-                    .append(message.getStatistics().getPdpSubGroupName(), pdpSubGroup.getPdpType())
-                    .append(message.getStatistics().getPolicyDeployCount() < 0, false)
-                    .append(message.getStatistics().getPolicyDeployFailCount() < 0, false)
-                    .append(message.getStatistics().getPolicyDeploySuccessCount() < 0, false)
-                    .append(message.getStatistics().getPolicyUndeployCount() < 0, false)
-                    .append(message.getStatistics().getPolicyUndeployFailCount() < 0, false)
-                    .append(message.getStatistics().getPolicyUndeploySuccessCount() < 0, false)
-                    .append(message.getStatistics().getPolicyExecutedCount() < 0, false)
-                    .append(message.getStatistics().getPolicyExecutedFailCount() < 0, false)
-                    .append(message.getStatistics().getPolicyExecutedSuccessCount() < 0, false).build();
-        } else {
-            LOGGER.debug("PdpStatistics is null");
-            return false;
-        }
-    }
-
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
             final PdpGroup pdpGroup) {
         pdpInstance.setHealthy(message.getHealthy());
@@ -373,11 +324,6 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         pdpGroupService.updatePdp(pdpGroup.getName(), pdpSubgroup.getPdpType(), pdpInstance);
 
         LOGGER.debug("Updated Pdp in DB - {}", pdpInstance);
-    }
-
-    private void createPdpStatistics(final PdpStatistics pdpStatistics) {
-        pdpStatisticsService.createPdpStatistics(Arrays.asList(pdpStatistics));
-        LOGGER.debug("Created PdpStatistics in DB - {}", pdpStatistics);
     }
 
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
