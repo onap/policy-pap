@@ -41,7 +41,6 @@ pap:
       maxWaitMs: 3000
     heartBeatMs: 6000
     maxMessageAgeMs: 20000
-  savePdpStatisticsInDb: true
   topicParameterGroup:
     topicSources:
     - topic: ${pap.topic.pdp-pap.name}
