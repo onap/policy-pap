@@ -40,7 +40,6 @@ pap:
     stateChangeParameters:
       maxRetryCount: 1
       maxWaitMs: 30000
-  savePdpStatisticsInDb: true
   topicParameterGroup:
     topicSources:
     - topic: ${pap.topic.pdp-pap.name}
