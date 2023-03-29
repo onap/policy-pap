@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.pap.main.rest.PapRestControllerV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,15 +99,6 @@ class StubUtils {
                 log.error(SERIALIZE_RESPONSE_FAILURE_MSG, e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    ResponseEntity<Map<String, Map<String, List<PdpStatistics>>>> getStubbedResponseStatistics() {
-        var accept = request.getHeader(ACCEPT);
-        if (accept != null && accept.contains(APPLICATION_JSON)) {
-            Map<String, Map<String, List<PdpStatistics>>> map = new HashMap<>();
-            return new ResponseEntity<>(map, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
