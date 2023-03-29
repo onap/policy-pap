@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2019-2020, 2022 Nordix Foundation.
- * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 import org.junit.After;
@@ -43,14 +42,12 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
-import org.onap.policy.models.pdp.concepts.PdpStatistics;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
 import org.onap.policy.models.tosca.simple.concepts.JpaToscaServiceTemplate;
 import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.repository.ToscaServiceTemplateRepository;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.onap.policy.pap.main.service.PdpGroupService;
-import org.onap.policy.pap.main.service.PdpStatisticsService;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.onap.policy.pap.main.service.ToscaServiceTemplateService;
 import org.slf4j.Logger;
@@ -73,9 +70,6 @@ public abstract class End2EndBase extends CommonPapRestServer {
 
     @Autowired
     public PdpGroupService pdpGroupService;
-
-    @Autowired
-    public PdpStatisticsService pdpStatisticsService;
 
     @Autowired
     private ToscaServiceTemplateRepository serviceTemplateRepository;
@@ -184,18 +178,6 @@ public abstract class End2EndBase extends CommonPapRestServer {
      */
     public List<PdpGroup> fetchGroups(final String name) {
         return pdpGroupService.getPdpGroups(name);
-    }
-
-    /**
-     * Fetch PDP statistics from the DB.
-     *
-     * @param instanceId name of the pdpStatistics
-     * @param groupName name of the pdpGroup
-     * @param subGroupName name of the pdpSubGroup
-     */
-    public Map<String, Map<String, List<PdpStatistics>>> fetchPdpStatistics(final String instanceId,
-        final String groupName, final String subGroupName) {
-        return pdpStatisticsService.fetchDatabaseStatistics(groupName, subGroupName, instanceId, 100, null, null);
     }
 
     /**

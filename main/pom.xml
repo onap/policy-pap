@@ -2,7 +2,7 @@
   ============LICENSE_START=======================================================
    Copyright (C) 2019,2023 Nordix Foundation.
    Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
-   Modifications Copyright (C) 2020-2022 Bell Canada.
+   Modifications Copyright (C) 2020-2023 Bell Canada.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -170,8 +170,6 @@
                             <generateSupportingFiles>false</generateSupportingFiles>
                             <importMappings>
                                 HealthCheckReport=org.onap.policy.common.endpoints.report.HealthCheckReport,
-                                StatisticsReport=org.onap.policy.pap.main.rest.StatisticsReport,
-                                PdpStatistics=org.onap.policy.models.pdp.concepts.PdpStatistics,
                                 Pdps=org.onap.policy.models.pdp.concepts.Pdps,
                                 PdpState=org.onap.policy.models.pdp.enums.PdpState,
                                 PdpGroupUpdateResponse=org.onap.policy.models.pap.concepts.PdpGroupUpdateResponse,
@@ -184,9 +182,6 @@
                                 PolicyAudit=org.onap.policy.models.pap.concepts.PolicyAudit,
                                 PolicyStatus=org.onap.policy.models.pap.concepts.PolicyStatus
                             </importMappings>
-                            <typeMappings>
-                                PdpStatistics=org.onap.policy.models.pdp.concepts.PdpStatistics
-                            </typeMappings>
                             <configOptions>
                                 <sourceFolder>src/gen/java</sourceFolder>
                                 <dateLibrary>java11</dateLibrary>

@@ -37,7 +37,6 @@ pap:
     stateChangeParameters:
       maxRetryCount: 1
       maxWaitMs: 30000
-  savePdpStatisticsInDb: false
   topicParameterGroup:
     topicSources:
     - topic: POLICY-PDP-PAP
