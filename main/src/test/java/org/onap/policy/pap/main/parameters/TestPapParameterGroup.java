@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  *  Modification Copyright 2022. Nordix Foundation.
@@ -24,11 +24,12 @@
 package org.onap.policy.pap.main.parameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.parameters.TopicParameterGroup;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
@@ -40,42 +41,42 @@ import org.onap.policy.common.utils.coder.StandardCoder;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class TestPapParameterGroup {
+class TestPapParameterGroup {
     private static final Coder coder = new StandardCoder();
 
     CommonTestData commonTestData = new CommonTestData();
 
     @Test
-    public void testPapParameterGroup_Named() {
+    void testPapParameterGroup_Named() {
         final PapParameterGroup papParameters = new PapParameterGroup("my-name");
         assertEquals("my-name", papParameters.getName());
     }
 
     @Test
-    public void testPapParameterGroup() {
+    void testPapParameterGroup() {
         final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(1);
         validateParameters(papParameters);
     }
 
     @Test
-    public void testPapParameterGroup_Postgres() throws CoderException {
+    void testPapParameterGroup_Postgres() throws CoderException {
         String json = commonTestData.getPapPostgresParameterGroupAsString(1);
         final PapParameterGroup papPostgresParameters = coder.decode(json, PapParameterGroup.class);
         validateParameters(papPostgresParameters);
     }
 
     @Test
-    public void testPapParameterGroup_NullName() throws Exception {
+    void testPapParameterGroup_NullName() throws Exception {
         String json = commonTestData.getPapParameterGroupAsString(1).replace("\"PapGroup\"", "null");
         final PapParameterGroup papParameters = coder.decode(json, PapParameterGroup.class);
         final ValidationResult validationResult = papParameters.validate();
         assertFalse(validationResult.isValid());
-        assertEquals(null, papParameters.getName());
+        assertNull(papParameters.getName());
         assertThat(validationResult.getResult()).contains("is null");
     }
 
     @Test
-    public void testPapParameterGroup_EmptyName() throws Exception {
+    void testPapParameterGroup_EmptyName() throws Exception {
         String json = commonTestData.getPapParameterGroupAsString(1).replace(CommonTestData.PAP_GROUP_NAME, "");
         final PapParameterGroup papParameters = coder.decode(json, PapParameterGroup.class);
         final ValidationResult validationResult = papParameters.validate();
@@ -85,7 +86,7 @@ public class TestPapParameterGroup {
     }
 
     @Test
-    public void testPapParameterGroup_SetName() {
+    void testPapParameterGroup_SetName() {
         final PapParameterGroup papParameters = commonTestData.getPapParameterGroup(1);
         papParameters.setName("PapNewGroup");
         final ValidationResult validationResult = papParameters.validate();

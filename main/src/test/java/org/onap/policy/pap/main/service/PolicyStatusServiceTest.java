@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022-2023 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-public class PolicyStatusServiceTest extends CommonPapRestServer {
+class PolicyStatusServiceTest extends CommonPapRestServer {
 
     private static final String GROUP_A = "groupA";
     private static final String GROUP_B = "groupB";
@@ -55,7 +55,7 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
      * @throws Exception the exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         ToscaConceptIdentifier policyType = new ToscaConceptIdentifier("MyPolicyType", "1.2.4");
@@ -65,7 +65,7 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testGetAllPolicyStatus() {
+    void testGetAllPolicyStatus() {
         assertThat(policyStatusService.getAllPolicyStatus()).isEmpty();
 
         var statusList = createStatusList();
@@ -75,11 +75,10 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testGetAllPolicyStatusPfDaoToscaConceptIdentifierOptVersion() {
+    void testGetAllPolicyStatusPfDaoToscaConceptIdentifierOptVersion() {
 
-        assertThatThrownBy(() -> {
-            policyStatusService.getAllPolicyStatus(null);
-        }).hasMessageContaining("policy").hasMessageContaining("null");
+        assertThatThrownBy(() -> policyStatusService.getAllPolicyStatus(null)).hasMessageContaining("policy")
+            .hasMessageContaining("null");
 
         assertThat(policyStatusService.getAllPolicyStatus(new ToscaConceptIdentifierOptVersion("somePdp", null)))
             .isEmpty();
@@ -95,11 +94,10 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testGetGroupPolicyStatus() {
+    void testGetGroupPolicyStatus() {
 
-        assertThatThrownBy(() -> {
-            policyStatusService.getGroupPolicyStatus(null);
-        }).hasMessage("pdpGroup is marked non-null but is null");
+        assertThatThrownBy(() -> policyStatusService.getGroupPolicyStatus(null))
+            .hasMessage("pdpGroup is marked non-null but is null");
 
         assertThat(policyStatusService.getGroupPolicyStatus("PdpGroup0")).isEmpty();
 
@@ -110,17 +108,18 @@ public class PolicyStatusServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testCudPolicyStatus() {
-        assertThatCode(() -> policyStatusService.cudPolicyStatus(null, null, null)).doesNotThrowAnyException();
+    void testCudPolicyStatus() {
+        assertThatCode(() -> policyStatusService.cudPolicyStatus(null, null, null))
+            .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> {
-            policyStatusService.cudPolicyStatus(List.of(new PdpPolicyStatus()), null, null);
-        }).isInstanceOf(PfModelRuntimeException.class);
-        PdpPolicyStatus invalidStatus = statusBuilder.state(PdpPolicyStatus.State.WAITING).deploy(false).pdpGroup(null)
-            .pdpId("pdp1").policy(MY_POLICY).build();
-        assertThatThrownBy(() -> {
-            policyStatusService.cudPolicyStatus(List.of(invalidStatus), null, null);
-        }).isInstanceOf(PfModelRuntimeException.class)
+        var listOfNew = List.of(new PdpPolicyStatus());
+        assertThatThrownBy(() -> policyStatusService.cudPolicyStatus(listOfNew, null, null))
+            .isInstanceOf(PfModelRuntimeException.class);
+
+        var invalidStatusList = List.of(statusBuilder.state(PdpPolicyStatus.State.WAITING).deploy(false).pdpGroup(null)
+            .pdpId("pdp1").policy(MY_POLICY).build());
+        assertThatThrownBy(() -> policyStatusService.cudPolicyStatus(invalidStatusList, null, null))
+            .isInstanceOf(PfModelRuntimeException.class)
             .hasMessageContaining("item \"pdpGroup\" value \"null\" INVALID, is null");
 
         // Test create

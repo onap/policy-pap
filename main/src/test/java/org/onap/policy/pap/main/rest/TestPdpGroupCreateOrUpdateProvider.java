@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2021 Nordix Foundation.
+ * Copyright (C) 2019-2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021 AT&T Intellectual Property.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,24 +23,24 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import javax.ws.rs.core.Response.Status;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -61,8 +61,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     private PdpGroupCreateOrUpdateProvider prov;
 
 
-
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -72,16 +71,18 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     @Override
-    public void setUp() throws Exception {        super.setUp();
+    public void setUp() throws Exception {
+        super.setUp();
         prov = new PdpGroupCreateOrUpdateProvider();
         super.initialize(prov);
         when(toscaService.getPolicyTypeList("typeA", "100.2.3"))
-            .thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));    }
+            .thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
+    }
 
     @Test
-    public void testCreateOrUpdateGroups() throws Exception {
+    void testCreateOrUpdateGroups() throws Exception {
         prov.createOrUpdateGroups(loadPdpGroups("emptyGroups.json"));
 
         // no groups, so no action should have been taken
@@ -89,7 +90,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testCreateOrUpdateGroups_InvalidRequest() throws Exception {
+    void testCreateOrUpdateGroups_InvalidRequest() throws Exception {
         assertThatThrownBy(() -> prov.createOrUpdateGroups(new PdpGroups())).isInstanceOf(PfModelException.class)
             .hasMessageContaining("is null");
 
@@ -97,7 +98,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testCreateOrUpdate_Invalid() throws Exception {
+    void testCreateOrUpdate_Invalid() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
@@ -108,7 +109,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddGroup() throws Exception {
+    void testAddGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup group = groups.getGroups().get(0);
         group.setPdpGroupState(PdpState.PASSIVE);
@@ -122,7 +123,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddGroup_Invalid() throws Exception {
+    void testAddGroup_Invalid() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
@@ -133,7 +134,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddGroup_InvalidSubGroup() throws Exception {
+    void testAddGroup_InvalidSubGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
 
         groups.getGroups().get(0).getPdpSubgroups().get(0).getSupportedPolicyTypes().get(0).setVersion("99.99.99");
@@ -145,28 +146,28 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testValidateGroupOnly_NullState() {
+    void testValidateGroupOnly_NullState() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(null);
         Assertions.assertThatCode(() -> prov.createOrUpdateGroups(groups)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testValidateGroupOnly_Active() {
+    void testValidateGroupOnly_Active() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.ACTIVE);
         Assertions.assertThatCode(() -> prov.createOrUpdateGroups(groups)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testValidateGroupOnly_Passive() {
+    void testValidateGroupOnly_Passive() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.PASSIVE);
         Assertions.assertThatCode(() -> prov.createOrUpdateGroups(groups)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testValidateGroupOnly_Invalid() {
+    void testValidateGroupOnly_Invalid() {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         groups.getGroups().get(0).setPdpGroupState(PdpState.TERMINATED);
 
@@ -175,7 +176,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup() throws Exception {
+    void testUpdateGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
 
         // DB group = new group
@@ -188,7 +189,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_PropertiesChanged() throws Exception {
+    void testUpdateGroup_PropertiesChanged() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
 
         PdpGroup group = new PdpGroup(groups.getGroups().get(0));
@@ -203,7 +204,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_NewDescription() throws Exception {
+    void testUpdateGroup_NewDescription() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -219,7 +220,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_NewState() throws Exception {
+    void testUpdateGroup_NewState() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -235,7 +236,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_NewSubGroup() throws Exception {
+    void testUpdateGroup_NewSubGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(pdpGroupService.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
@@ -248,7 +249,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_UpdatedSubGroup() throws Exception {
+    void testUpdateGroup_UpdatedSubGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -264,7 +265,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateGroup_notifyPdpsDelSubGroups() throws Exception {
+    void testUpdateGroup_notifyPdpsDelSubGroups() throws Exception {
         PdpGroup dbgroup = new PdpGroup(loadPdpGroups("createGroupsDelSub.json").getGroups().get(0));
         when(pdpGroupService.getPdpGroups(dbgroup.getName())).thenReturn(Arrays.asList(dbgroup));
 
@@ -317,7 +318,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateField_Unchanged() throws Exception {
+    void testUpdateField_Unchanged() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -329,7 +330,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateField_WasNull() throws Exception {
+    void testUpdateField_WasNull() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -344,7 +345,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateField_NowNull() throws Exception {
+    void testUpdateField_NowNull() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -359,7 +360,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateField_Changed() throws Exception {
+    void testUpdateField_Changed() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -374,7 +375,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddSubGroup() throws Exception {
+    void testAddSubGroup() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(pdpGroupService.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
@@ -397,7 +398,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Test
-    public void testAddSubGroupWildCardPolicyType() throws Exception {
+    void testAddSubGroupWildCardPolicyType() throws Exception {
         when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyListWildCard.json"));
         when(toscaService.getPolicyTypeList("some.*", "2.3.4")).thenReturn(Collections.emptyList());
 
@@ -417,7 +418,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddSubGroup_ValidationPolicyTypeNotFound() throws Exception {
+    void testAddSubGroup_ValidationPolicyTypeNotFound() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(pdpGroupService.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
@@ -428,7 +429,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddSubGroup_ValidationPolicyTypeDaoEx() throws Exception {
+    void testAddSubGroup_ValidationPolicyTypeDaoEx() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("createGroups.json").getGroups().get(0);
         when(pdpGroupService.getPdpGroups(group.getName())).thenReturn(Arrays.asList(group));
@@ -440,7 +441,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testAddSubGroup_ValidateVersionPrefixMatch() throws Exception {
+    void testAddSubGroup_ValidateVersionPrefixMatch() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup dbgroup = new PdpGroup(newgrp);
@@ -460,7 +461,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateSubGroup_Invalid() throws Exception {
+    void testUpdateSubGroup_Invalid() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -476,7 +477,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateSubGroup_SupportedPolicies() throws Exception {
+    void testUpdateSubGroup_SupportedPolicies() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -495,7 +496,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateSubGroup_DesiredCount() throws Exception {
+    void testUpdateSubGroup_DesiredCount() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -510,7 +511,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testUpdateSubGroup_Unchanged() throws Exception {
+    void testUpdateSubGroup_Unchanged() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);
@@ -531,7 +532,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     }
 
     @Test
-    public void testValidateSubGroup_PropertiesMismatch() throws Exception {
+    void testValidateSubGroup_PropertiesMismatch() throws Exception {
         PdpGroups groups = loadPdpGroups("createGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
         PdpGroup group = new PdpGroup(newgrp);

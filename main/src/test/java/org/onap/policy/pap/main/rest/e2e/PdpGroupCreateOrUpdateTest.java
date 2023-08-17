@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019 Nordix Foundation.
+ * Copyright (C) 2019, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,18 +21,18 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Optional;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupUpdateResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
@@ -40,7 +40,7 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PdpGroupCreateOrUpdateTest extends End2EndBase {
+class PdpGroupCreateOrUpdateTest extends End2EndBase {
     private static final Logger logger = LoggerFactory.getLogger(PdpGroupCreateOrUpdateTest.class);
 
     private static final String CREATEORUPDATE_GROUPS_ENDPOINT = "pdps/groups/batch";
@@ -52,7 +52,7 @@ public class PdpGroupCreateOrUpdateTest extends End2EndBase {
      * Sets up.
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         addToscaPolicyTypes("monitoring.policy-type.yaml");
         super.setUp();
@@ -64,7 +64,7 @@ public class PdpGroupCreateOrUpdateTest extends End2EndBase {
      * Deletes the deployed group.
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         // delete the group that was inserted
         try {
@@ -77,13 +77,13 @@ public class PdpGroupCreateOrUpdateTest extends End2EndBase {
     }
 
     @Test
-    public void testCreateGroupsJson() throws Exception {
+    void testCreateGroupsJson() throws Exception {
 
         createPdpGroups("createGroups.json", MediaType.APPLICATION_JSON);
     }
 
     @Test
-    public void testCreateGroupsYaml() throws Exception {
+    void testCreateGroupsYaml() throws Exception {
 
         createPdpGroups("createGroups.yaml", "application/yaml");
     }

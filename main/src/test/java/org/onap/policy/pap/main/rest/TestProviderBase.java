@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021,2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,23 +23,22 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import javax.ws.rs.core.Response.Status;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -71,7 +70,7 @@ public class TestProviderBase extends ProviderSuper {
 
     private MyProvider prov;
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -82,7 +81,7 @@ public class TestProviderBase extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         prov = new MyProvider();
@@ -91,13 +90,13 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testProviderBase() {
+    void testProviderBase() {
         assertSame(lockit, ReflectionTestUtils.getField(prov, "updateLock"));
         assertSame(reqmap, ReflectionTestUtils.getField(prov, "requestMap"));
     }
 
     @Test
-    public void testProcess() throws Exception {
+    void testProcess() throws Exception {
         prov.process(loadRequest(), this::handle);
 
         assertGroup(getGroupUpdates(), GROUP1_NAME);
@@ -108,7 +107,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testProcess_PfRtEx() throws Exception {
+    void testProcess_PfRtEx() throws Exception {
         PfModelRuntimeException ex = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
         when(pdpGroupService.updatePdpGroups(any())).thenThrow(ex);
 
@@ -116,7 +115,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testProcess_RuntimeEx() throws Exception {
+    void testProcess_RuntimeEx() throws Exception {
         RuntimeException ex = new RuntimeException(EXPECTED_EXCEPTION);
         when(pdpGroupService.updatePdpGroups(any())).thenThrow(ex);
 
@@ -125,7 +124,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testProcessPolicy_NoGroups() throws Exception {
+    void testProcessPolicy_NoGroups() throws Exception {
         when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
 
         SessionData session =
@@ -137,7 +136,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicy() throws Exception {
+    void testGetPolicy() throws Exception {
         PfModelException exc = new PfModelException(Status.CONFLICT, EXPECTED_EXCEPTION);
         when(toscaService.getFilteredPolicyList(any())).thenThrow(exc);
 
@@ -147,7 +146,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicy_NotFound() throws Exception {
+    void testGetPolicy_NotFound() throws Exception {
         when(toscaService.getFilteredPolicyList(any())).thenReturn(Collections.emptyList());
 
         ToscaConceptIdentifierOptVersion req = loadRequest();
@@ -158,7 +157,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testGetGroup() throws Exception {
+    void testGetGroup() throws Exception {
         when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(loadGroups("getGroupDao.json"))
                         .thenReturn(loadGroups("groups.json"));
 
@@ -168,7 +167,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testUpgradeGroup() throws Exception {
+    void testUpgradeGroup() throws Exception {
         /*
          * Each subgroup has a different PDP type and name.
          *
@@ -196,7 +195,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testUpgradeGroup_Multiple() throws Exception {
+    void testUpgradeGroup_Multiple() throws Exception {
         /*
          * Policy data in the DB: policy1=type1, policy2=type2, policy3=type3,
          * policy4=type1
@@ -254,7 +253,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    public void testUpgradeGroup_NothingUpdated() throws Exception {
+    void testUpgradeGroup_NothingUpdated() throws Exception {
         prov.clear();
         prov.add(false);
 
@@ -319,8 +318,8 @@ public class TestProviderBase extends ProviderSuper {
 
     private static class MyProvider extends ProviderBase {
         /**
-         * Used to determine whether or not to make an update when
-         * {@link #makeUpdater(ToscaPolicy)} is called. The updater function removes an
+         * Used to determine whether to make an update when
+         * makeUpdater() is called. The updater function removes an
          * item from this queue each time it is invoked.
          */
         private final Queue<Boolean> shouldUpdate = new LinkedList<>();
@@ -339,7 +338,7 @@ public class TestProviderBase extends ProviderSuper {
         }
 
         public void add(Boolean... update) {
-            shouldUpdate.addAll(Arrays.asList(update));
+            shouldUpdate.addAll(List.of(update));
         }
 
         @Override

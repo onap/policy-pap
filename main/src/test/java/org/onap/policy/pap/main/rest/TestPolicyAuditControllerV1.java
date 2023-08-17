@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  * Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,23 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
-@ActiveProfiles({ "test", "default" })
-public class TestPolicyAuditControllerV1 extends CommonPapRestServer {
+@ActiveProfiles({"test", "default"})
+class TestPolicyAuditControllerV1 extends CommonPapRestServer {
 
     private static final String POLICY_AUDIT_ENDPOINT = "policies/audit";
 
     @Test
-    public void testSwagger() throws Exception {
-
+    void testSwagger() throws Exception {
         super.testSwagger(POLICY_AUDIT_ENDPOINT);
         super.testSwagger(POLICY_AUDIT_ENDPOINT + "/{pdpGroupName}");
         super.testSwagger(POLICY_AUDIT_ENDPOINT + "/{pdpGroupName}/{policyName}/{policyVersion}");
@@ -44,7 +43,7 @@ public class TestPolicyAuditControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testGetAllAuditRecords() throws Exception {
+    void testGetAllAuditRecords() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT;
 
         // verify it fails when no authorization info is included
@@ -52,12 +51,12 @@ public class TestPolicyAuditControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testGetAuditRecordsByGroup() throws Exception {
+    void testGetAuditRecordsByGroup() throws Exception {
         checkRequest(POLICY_AUDIT_ENDPOINT + "/my-group-name");
     }
 
     @Test
-    public void testGetAuditRecordsOfPolicy() throws Exception {
+    void testGetAuditRecordsOfPolicy() throws Exception {
         checkRequest(POLICY_AUDIT_ENDPOINT + "/my-group-name/my-name/1.2.3");
         checkRequest(POLICY_AUDIT_ENDPOINT + "/my-name/1.2.3");
     }

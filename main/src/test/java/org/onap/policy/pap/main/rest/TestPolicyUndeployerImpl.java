@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,20 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -66,7 +66,7 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
     private MyProvider prov;
 
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -77,7 +77,7 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         super.setUp();
@@ -96,15 +96,15 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
         Pdp pdp1 = new Pdp();
         pdp1.setInstanceId(PDP1);
 
-        subgroup.setPdpInstances(Arrays.asList(pdp1));
+        subgroup.setPdpInstances(List.of(pdp1));
 
         // this subgroup should never be touched
         PdpSubGroup subgroup0 = new PdpSubGroup();
         subgroup0.setPdpType(MY_SUBGROUP0);
-        subgroup0.setPolicies(Collections.unmodifiableList(Arrays.asList(ident1, ident2, ident3, ident4)));
-        subgroup.setPdpInstances(Arrays.asList(pdp1));
+        subgroup0.setPolicies(List.of(ident1, ident2, ident3, ident4));
+        subgroup.setPdpInstances(List.of(pdp1));
 
-        group.setPdpSubgroups(Arrays.asList(subgroup0, subgroup));
+        group.setPdpSubgroups(List.of(subgroup0, subgroup));
 
         when(session.getGroup(MY_GROUP)).thenReturn(group);
         when(session.getPolicy(any())).thenReturn(policy1);
@@ -113,16 +113,16 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
     }
 
     @Test
-    public void testUndeployPolicies() throws PfModelException {
-        subgroup.setPolicies(new LinkedList<>(Arrays.asList(ident1, ident2, ident3, ident4)));
+    void testUndeployPolicies() throws PfModelException {
+        subgroup.setPolicies(new LinkedList<>(List.of(ident1, ident2, ident3, ident4)));
 
-        prov.undeploy(MY_GROUP, MY_SUBGROUP, Arrays.asList(ident1, ident2));
+        prov.undeploy(MY_GROUP, MY_SUBGROUP, List.of(ident1, ident2));
 
         // group should have been updated
         verify(session).update(group);
 
         // subgroup should only have remaining policies
-        assertEquals(Arrays.asList(ident3, ident4).toString(), subgroup.getPolicies().toString());
+        assertEquals(List.of(ident3, ident4).toString(), subgroup.getPolicies().toString());
 
         // should have generated PDP-UPDATE for the PDP
         verify(session).addUpdate(any());
@@ -132,11 +132,11 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
      * Tests undeployPolicies() when the policies do not exist in the subgroup.
      */
     @Test
-    public void testUndeployPoliciesUnchanged() throws PfModelException {
-        List<ToscaConceptIdentifier> origlist = Arrays.asList(ident3, ident4);
+    void testUndeployPoliciesUnchanged() throws PfModelException {
+        List<ToscaConceptIdentifier> origlist = List.of(ident3, ident4);
         subgroup.setPolicies(new LinkedList<>(origlist));
 
-        prov.undeploy(MY_GROUP, MY_SUBGROUP, Arrays.asList(ident1, ident2));
+        prov.undeploy(MY_GROUP, MY_SUBGROUP, List.of(ident1, ident2));
 
         // group NOT should have been updated
         verify(session, never()).update(group);
@@ -152,13 +152,13 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
      * Tests undeployPolicies() when the group is not found.
      */
     @Test
-    public void testUndeployPoliciesGroupNotFound() throws PfModelException {
+    void testUndeployPoliciesGroupNotFound() throws PfModelException {
         // force exception to be thrown if the list is changed
-        subgroup.setPolicies(Collections.unmodifiableList(Arrays.asList(ident1, ident2, ident3, ident4)));
+        subgroup.setPolicies(List.of(ident1, ident2, ident3, ident4));
 
         when(session.getGroup(any())).thenReturn(null);
 
-        prov.undeploy(MY_GROUP, MY_SUBGROUP, Arrays.asList(ident1, ident2));
+        prov.undeploy(MY_GROUP, MY_SUBGROUP, List.of(ident1, ident2));
 
         // group should have been updated
         verify(session, never()).update(group);
@@ -171,13 +171,13 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
      * Tests undeployPolicies() when the subgroup is not found.
      */
     @Test
-    public void testUndeployPoliciesSubGroupNotFound() throws PfModelException {
+    void testUndeployPoliciesSubGroupNotFound() throws PfModelException {
         // force exception to be thrown if the list is changed
-        subgroup.setPolicies(Collections.unmodifiableList(Arrays.asList(ident1, ident2, ident3, ident4)));
+        subgroup.setPolicies(Collections.unmodifiableList(List.of(ident1, ident2, ident3, ident4)));
 
         subgroup.setPdpType(MY_SUBGROUP + "X");
 
-        prov.undeploy(MY_GROUP, MY_SUBGROUP, Arrays.asList(ident1, ident2));
+        prov.undeploy(MY_GROUP, MY_SUBGROUP, List.of(ident1, ident2));
 
         // group should have been updated
         verify(session, never()).update(group);
@@ -186,11 +186,10 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
         verify(session, never()).addUpdate(any());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testMakeUpdater() {
-        prov.makeUpdater(null, null, null);
+    @Test
+    void testMakeUpdater() {
+        assertThrows(UnsupportedOperationException.class, () -> prov.makeUpdater(null, null, null));
     }
-
 
     private class MyProvider extends PolicyUndeployerImpl {
 

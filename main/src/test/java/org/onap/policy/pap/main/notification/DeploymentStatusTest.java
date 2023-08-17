@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,24 +28,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.NonNull;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
@@ -55,7 +54,6 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 
-@RunWith(MockitoJUnitRunner.class)
 public class DeploymentStatusTest {
 
     private static final String VERSION = "1.2.3";
@@ -85,10 +83,12 @@ public class DeploymentStatusTest {
 
     private DeploymentStatus tracker;
 
+    AutoCloseable autoCloseable;
+
     /**
      * Set up the meter registry for tests.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() {
         Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
     }
@@ -96,7 +96,7 @@ public class DeploymentStatusTest {
     /**
      * Tear down the meter registry after tests.
      */
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.unregister(PapConstants.REG_METER_REGISTRY);
     }
@@ -104,8 +104,9 @@ public class DeploymentStatusTest {
     /**
      * Sets up.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
+        autoCloseable = MockitoAnnotations.openMocks(this);
         tracker = new DeploymentStatus(policyStatusService);
 
         // @formatter:off
@@ -121,8 +122,13 @@ public class DeploymentStatusTest {
 
     }
 
+    @AfterEach
+    void tearDown() throws Exception {
+        autoCloseable.close();
+    }
+
     @Test
-    public void testAddNotifications() {
+    void testAddNotifications() {
         PdpPolicyStatus create = builder.pdpId("created").state(State.FAILURE).build();
         PdpPolicyStatus update = builder.pdpId("updated").state(State.SUCCESS).build();
         PdpPolicyStatus delete = builder.pdpId("deleted").state(State.SUCCESS).build();
@@ -160,7 +166,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testLoadByGroup() throws PfModelException {
+    void testLoadByGroup() {
         PdpPolicyStatus status1 = builder.build();
         PdpPolicyStatus status2 = builder.policy(POLICY_B).build();
         PdpPolicyStatus status3 = builder.policy(POLICY_A).pdpId(PDP_B).build();
@@ -183,7 +189,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testFlushPdpNotification() {
+    void testFlushPdpNotification() {
         PdpPolicyStatus create = builder.pdpId("created").state(State.FAILURE).build();
         tracker.getRecordMap().putAll(makeMap(Action.CREATED, create));
 
@@ -196,7 +202,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testFlush() throws PfModelException {
+    void testFlush() {
         PdpPolicyStatus create1 = builder.pdpId("createA").build();
         PdpPolicyStatus create2 = builder.pdpId("createB").build();
         PdpPolicyStatus update1 = builder.pdpId("updateA").build();
@@ -240,7 +246,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testDeleteUndeployments() {
+    void testDeleteUndeployments() {
         builder.deploy(true);
         PdpPolicyStatus delete = builder.policy(POLICY_A).build();
         PdpPolicyStatus deployedComplete = builder.policy(POLICY_B).build();
@@ -283,7 +289,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testDeleteDeploymentString() {
+    void testDeleteDeploymentString() {
         PdpPolicyStatus statusaa = builder.pdpId(PDP_A).policy(POLICY_A).build();
         PdpPolicyStatus statusab = builder.pdpId(PDP_A).policy(POLICY_B).build();
         PdpPolicyStatus statusba = builder.pdpId(PDP_B).policy(POLICY_A).build();
@@ -311,7 +317,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testDeleteDeploymentToscaConceptIdentifierBoolean() {
+    void testDeleteDeploymentToscaConceptIdentifierBoolean() {
         PdpPolicyStatus deploy1A = builder.policy(POLICY_A).build();
         PdpPolicyStatus deploy2A = builder.policy(POLICY_A).pdpId(PDP_B).build();
         PdpPolicyStatus deployB = builder.policy(POLICY_B).pdpId(PDP_A).build();
@@ -356,7 +362,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testDeleteDeploymentBiPredicateOfStatusKeyStatusAction() {
+    void testDeleteDeploymentBiPredicateOfStatusKeyStatusAction() {
         PdpPolicyStatus create1 = builder.pdpId(PDP_A).build();
         PdpPolicyStatus delete = builder.pdpId(PDP_B).build();
         PdpPolicyStatus update = builder.pdpId(PDP_C).build();
@@ -386,7 +392,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testDeploy() {
+    void testDeploy() {
         tracker.deploy(PDP_A, POLICY_A, POLICY_TYPE, GROUP_A, PDP_TYPE, true);
 
         assertThat(tracker.getRecordMap()).hasSize(1);
@@ -450,7 +456,7 @@ public class DeploymentStatusTest {
     }
 
     @Test
-    public void testCompleteDeploy() {
+    void testCompleteDeploy() {
         tracker.deploy(PDP_A, POLICY_A, POLICY_TYPE, GROUP_A, PDP_TYPE, true);
         assertThat(tracker.getRecordMap()).hasSize(1);
 
@@ -503,7 +509,7 @@ public class DeploymentStatusTest {
     }
 
     private void checkCompleteDeploy(boolean deploy, Set<ToscaConceptIdentifier> expected,
-                    Set<ToscaConceptIdentifier> actual, Action action, State state) {
+                                     Set<ToscaConceptIdentifier> actual, Action action, State state) {
 
         StatusAction status = tracker.getRecordMap().values().iterator().next();
         status.getStatus().setDeploy(deploy);
@@ -518,7 +524,7 @@ public class DeploymentStatusTest {
 
     private List<PdpPolicyStatus> sort(List<PdpPolicyStatus> list) {
 
-        Collections.sort(list, (rec1, rec2) -> {
+        list.sort((rec1, rec2) -> {
 
             // @formatter:off
             return new CompareToBuilder()

@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,20 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 
-public class PolicyStatusTest extends End2EndBase {
+class PolicyStatusTest extends End2EndBase {
     private static final String POLICY_NAME = "onap.restart.tca";
     private static final String POLICY_TYPE_NAME = "onap.policies.monitoring.cdap.tca.hi.lo.app";
     private static final String VERSION = "1.0.0";
@@ -43,14 +43,14 @@ public class PolicyStatusTest extends End2EndBase {
     private static final String POLICY_DEPLOYMENT_STATUS_ENDPOINT = "policies/status";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         addPdpPolicyStatus("policyStatus.json");
         super.setUp();
     }
 
     @Test
-    public void testQueryAllDeployedPolicies() throws Exception {
+    void testQueryAllDeployedPolicies() throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(POLICY_STATUS_ENDPOINT);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
@@ -61,7 +61,7 @@ public class PolicyStatusTest extends End2EndBase {
     }
 
     @Test
-    public void testQueryDeployedPolicies() throws Exception {
+    void testQueryDeployedPolicies() throws Exception {
         String uri = POLICY_STATUS_ENDPOINT + "/onap.restart.tca";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -74,7 +74,7 @@ public class PolicyStatusTest extends End2EndBase {
     }
 
     @Test
-    public void testQueryDeployedPolicy() throws Exception {
+    void testQueryDeployedPolicy() throws Exception {
         String uri = POLICY_STATUS_ENDPOINT + "/onap.restart.tca/1.0.0";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -86,7 +86,7 @@ public class PolicyStatusTest extends End2EndBase {
     }
 
     @Test
-    public void testGetStatusOfAllDeployedPolicies() throws Exception {
+    void testGetStatusOfAllDeployedPolicies() throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT);
         Response rawresp = invocationBuilder.get();
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
@@ -97,7 +97,7 @@ public class PolicyStatusTest extends End2EndBase {
     }
 
     @Test
-    public void testGetStatusOfDeployedPolicies() throws Exception {
+    void testGetStatusOfDeployedPolicies() throws Exception {
         String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/policyStatus/onap.restart.tca";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -110,7 +110,7 @@ public class PolicyStatusTest extends End2EndBase {
     }
 
     @Test
-    public void testGetStatusOfDeployedPolicy() throws Exception {
+    void testGetStatusOfDeployedPolicy() throws Exception {
         String uri = POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/policyStatus/onap.restart.tca/1.0.0";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);

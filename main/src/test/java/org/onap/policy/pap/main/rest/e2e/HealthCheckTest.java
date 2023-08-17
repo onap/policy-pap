@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,19 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.ws.rs.client.Invocation;
 import java.net.HttpURLConnection;
-import javax.ws.rs.client.Invocation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 
-public class HealthCheckTest extends End2EndBase {
+class HealthCheckTest extends End2EndBase {
     private static final String HEALTHCHECK_ENDPOINT = "healthcheck";
 
     @Test
-    public void testHealthCheckSuccess() throws Exception {
+    void testHealthCheckSuccess() throws Exception {
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
 

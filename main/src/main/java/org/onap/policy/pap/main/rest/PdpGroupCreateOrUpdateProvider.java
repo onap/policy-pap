@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2021 Nordix Foundation.
+ * Copyright (C) 2019-2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,6 +22,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +32,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.Response.Status;
 import org.onap.policy.common.parameters.BeanValidationResult;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.parameters.ValidationStatus;
@@ -84,7 +84,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
         List<PdpSubGroup> subGroupsWithPolicies =
             groups.getGroups().parallelStream().flatMap(group -> group.getPdpSubgroups().parallelStream())
                 .filter(subGroup -> null != subGroup.getPolicies() && !subGroup.getPolicies().isEmpty())
-                .collect(Collectors.toList());
+                .toList();
         if (!subGroupsWithPolicies.isEmpty()) {
             logger.warn(
                 "Policies cannot be deployed during PdpGroup Create/Update operation. Ignoring the list of policies");
@@ -96,7 +96,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Creates or updates PDP groups. This is the method that does the actual work.
      *
-     * @param data session data
+     * @param data   session data
      * @param groups PDP group configurations
      * @throws PfModelException if an error occurred
      */
@@ -134,7 +134,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Adds a new group.
      *
-     * @param data session data
+     * @param data  session data
      * @param group the group to be added
      * @return the validation result
      * @throws PfModelException if an error occurred
@@ -166,7 +166,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Performs additional validations of a group, but does not examine the subgroups.
      *
-     * @param group the group to be validated
+     * @param group  the group to be validated
      * @param result the validation result
      */
     private void validateGroupOnly(PdpGroup group, BeanValidationResult result) {
@@ -174,24 +174,19 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
             return;
         }
 
-        switch (group.getPdpGroupState()) {
-            case ACTIVE:
-            case PASSIVE:
-                break;
-
-            default:
-                result.addResult("pdpGroupState", group.getPdpGroupState(),
-                                ValidationStatus.INVALID, "must be null, ACTIVE, or PASSIVE");
-                break;
+        PdpState pdpGroupState = group.getPdpGroupState();
+        if (pdpGroupState != PdpState.ACTIVE && pdpGroupState != PdpState.PASSIVE) {
+            result.addResult("pdpGroupState", group.getPdpGroupState(),
+                ValidationStatus.INVALID, "must be null, ACTIVE, or PASSIVE");
         }
     }
 
     /**
      * Updates an existing group.
      *
-     * @param data session data
+     * @param data    session data
      * @param dbgroup the group, as it appears within the DB
-     * @param group the group to be added
+     * @param group   the group to be added
      * @return the validation result
      * @throws PfModelException if an error occurred
      */
@@ -216,13 +211,12 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     }
 
     /**
-     * Updates a field, if the new value is different than the old value.
+     * Updates a field, if the new value is different from the old value.
      *
      * @param oldValue old value
      * @param newValue new value
-     * @param setter function to set the field to the new value
-     * @return {@code true} if the field was updated, {@code false} if it already matched
-     *         the new value
+     * @param setter   function to set the field to the new value
+     * @return {@code true} if the field was updated, {@code false} if it already matched the new value
      */
     private <T> boolean updateField(T oldValue, T newValue, Consumer<T> setter) {
         if (oldValue == newValue) {
@@ -240,15 +234,15 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Adds or updates subgroups within the group.
      *
-     * @param data session data
+     * @param data    session data
      * @param dbgroup the group, as it appears within the DB
-     * @param group the group to be added
-     * @param result the validation result
+     * @param group   the group to be added
+     * @param result  the validation result
      * @return {@code true} if the DB group was modified, {@code false} otherwise
      * @throws PfModelException if an error occurred
      */
     private boolean addOrUpdateSubGroups(SessionData data, PdpGroup dbgroup, PdpGroup group,
-        BeanValidationResult result) throws PfModelException {
+                                         BeanValidationResult result) throws PfModelException {
 
         // create a map of existing subgroups
         Map<String, PdpSubGroup> type2sub = new HashMap<>();
@@ -278,9 +272,9 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Notifies any PDPs whose subgroups are being removed.
      *
-     * @param data session data
+     * @param data    session data
      * @param dbgroup the group, as it appears within the DB
-     * @param group the group being updated
+     * @param group   the group being updated
      * @return {@code true} if a subgroup was removed, {@code false} otherwise
      * @throws PfModelException if an error occurred
      */
@@ -308,7 +302,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Notifies the PDPs that their subgroup is being removed.
      *
-     * @param data session data
+     * @param data   session data
      * @param subgrp subgroup that is being removed
      */
     private void notifyPdpsDelSubGroup(SessionData data, PdpSubGroup subgrp) {
@@ -333,9 +327,9 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Tracks PDP responses when their subgroup is removed.
      *
-     * @param data session data
+     * @param data     session data
      * @param pdpGroup PdpGroup name
-     * @param subgrp subgroup that is being removed
+     * @param subgrp   subgroup that is being removed
      * @throws PfModelException if an error occurred
      */
     private void trackPdpsDelSubGroup(SessionData data, String pdpGroup, PdpSubGroup subgrp) throws PfModelException {
@@ -349,9 +343,9 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Adds a new subgroup.
      *
-     * @param data session data
+     * @param data   session data
      * @param subgrp the subgroup to be added, updated to fully qualified versions upon
-     *        return
+     *               return
      * @return the validation result
      * @throws PfModelException if an error occurred
      */
@@ -368,12 +362,11 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Updates an existing subgroup.
      *
-     * @param dbsub the subgroup, from the DB
-     * @param subgrp the subgroup to be updated, updated to fully qualified versions upon
-     *        return
+     * @param dbsub     the subgroup, from the DB
+     * @param subgrp    the subgroup to be updated, updated to fully qualified versions upon
+     *                  return
      * @param container container for additional validation results
-     * @return {@code true} if the subgroup content was changed, {@code false} if there
-     *         were no changes
+     * @return {@code true} if the subgroup content was changed, {@code false} if there were no changes
      */
     private boolean updateSubGroup(PdpSubGroup dbsub, PdpSubGroup subgrp, BeanValidationResult container) {
 
@@ -399,9 +392,9 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Performs additional validations of a subgroup.
      *
-     * @param dbsub the subgroup, from the DB
-     * @param subgrp the subgroup to be validated, updated to fully qualified versions
-     *        upon return
+     * @param dbsub     the subgroup, from the DB
+     * @param subgrp    the subgroup to be validated, updated to fully qualified versions
+     *                  upon return
      * @param container container for additional validation results
      * @return {@code true} if the subgroup is valid, {@code false} otherwise
      */
@@ -421,7 +414,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
     /**
      * Performs validations of the supported policy types within a subgroup.
      *
-     * @param data session data
+     * @param data   session data
      * @param subgrp the subgroup to be validated
      * @return the validation result
      * @throws PfModelException if an error occurred
@@ -439,7 +432,7 @@ public class PdpGroupCreateOrUpdateProvider extends ProviderBase {
 
     @Override
     protected Updater makeUpdater(SessionData data, ToscaPolicy policy,
-            ToscaConceptIdentifierOptVersion desiredPolicy) {
+                                  ToscaConceptIdentifierOptVersion desiredPolicy) {
         throw new UnsupportedOperationException("makeUpdater should not be invoked");
     }
 }

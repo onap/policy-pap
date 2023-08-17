@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +21,22 @@
 
 package org.onap.policy.pap.main.comm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.pap.main.comm.TimerManager.Timer;
 
-public class TimerManagerTest extends Threaded {
+class TimerManagerTest extends Threaded {
     private static final String EXPECTED_EXCEPTION = "expected exception";
     private static final String MGR_NAME = "my-manager";
     private static final String NAME1 = "timer-A";
@@ -57,14 +58,14 @@ public class TimerManagerTest extends Threaded {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
         mgr = new MyManager(MGR_NAME, MGR_TIMEOUT_MS);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -78,7 +79,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testTimerManager_testStop() throws Exception {
+    void testTimerManager_testStop() throws Exception {
         startThread(mgr);
 
         mgr.stop();
@@ -89,7 +90,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testRegister() throws Exception {
+    void testRegister() throws Exception {
         mgr.register(NAME2, mgr::addToQueue);
         mgr.registerNewTime(NAME1, mgr::addToQueue);
 
@@ -105,7 +106,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testRun_Ex() throws Exception {
+    void testRun_Ex() throws Exception {
         startThread(mgr);
         mgr.register(NAME1, mgr::addToQueue);
 
@@ -118,7 +119,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testProcessTimers() throws Exception {
+    void testProcessTimers() throws Exception {
         startThread(mgr);
         mgr.register(NAME1, mgr::addToQueue);
         mgr.awaitSleep();
@@ -138,7 +139,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testGetNextTimer() throws Exception {
+    void testGetNextTimer() throws Exception {
         startThread(mgr);
         mgr.register(NAME1, mgr::addToQueue);
         mgr.awaitSleep();
@@ -149,7 +150,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testProcessTimer_StopWhileWaiting() throws Exception {
+    void testProcessTimer_StopWhileWaiting() throws Exception {
         startThread(mgr);
         mgr.register(NAME1, mgr::addToQueue);
         mgr.awaitSleep();
@@ -169,7 +170,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testProcessTimer_CancelWhileWaiting() throws Exception {
+    void testProcessTimer_CancelWhileWaiting() throws Exception {
         startThread(mgr);
         Timer timer = mgr.register(NAME1, mgr::addToQueue);
         mgr.awaitSleep();
@@ -190,7 +191,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testProcessTimer_TimerEx() throws Exception {
+    void testProcessTimer_TimerEx() throws Exception {
 
         mgr.register(NAME1, name -> {
             throw new RuntimeException(EXPECTED_EXCEPTION);
@@ -211,7 +212,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testTimerAwait() throws Exception {
+    void testTimerAwait() throws Exception {
         startThread(mgr);
 
         // same times - should only sleep once
@@ -236,7 +237,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testTimerCancel_WhileWaiting() throws Exception {
+    void testTimerCancel_WhileWaiting() throws Exception {
         startThread(mgr);
 
         Timer timer = mgr.register(NAME1, mgr::addToQueue);
@@ -255,7 +256,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testTimerCancel_ViaReplace() throws Exception {
+    void testTimerCancel_ViaReplace() throws Exception {
         startThread(mgr);
 
         mgr.register(NAME1, name -> mgr.addToQueue("hello"));
@@ -272,14 +273,14 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testTimerToString() {
+    void testTimerToString() {
         Timer timer = mgr.register(NAME1, mgr::addToQueue);
         assertNotNull(timer.toString());
         assertTrue(timer.toString().contains(NAME1));
     }
 
     @Test
-    public void testCurrentTimeMillis() {
+    void testCurrentTimeMillis() {
         long tbeg = System.currentTimeMillis();
         long tcur = new TimerManager(MGR_NAME, MGR_TIMEOUT_MS).currentTimeMillis();
         long tend = System.currentTimeMillis();
@@ -289,7 +290,7 @@ public class TimerManagerTest extends Threaded {
     }
 
     @Test
-    public void testSleep() throws Exception {
+    void testSleep() throws Exception {
         long tbeg = System.currentTimeMillis();
         new TimerManager(MGR_NAME, MGR_TIMEOUT_MS).sleep(10);
         long tend = System.currentTimeMillis();

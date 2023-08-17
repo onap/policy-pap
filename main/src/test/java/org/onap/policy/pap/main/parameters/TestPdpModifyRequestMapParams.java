@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +25,11 @@ package org.onap.policy.pap.main.parameters;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
@@ -36,7 +37,7 @@ import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 import org.onap.policy.pap.main.parameters.PdpModifyRequestMapParams.PdpModifyRequestMapParamsBuilder;
 
-public class TestPdpModifyRequestMapParams {
+class TestPdpModifyRequestMapParams {
     private static final long MAX_PDP_AGE_MS = 100;
     private PdpModifyRequestMapParamsBuilder builder;
     private Publisher<PdpMessage> pub;
@@ -49,7 +50,7 @@ public class TestPdpModifyRequestMapParams {
     /**
      * Sets up the objects and creates an empty {@link #builder}.
      */
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void setUp() {
         pub = mock(Publisher.class);
@@ -65,7 +66,7 @@ public class TestPdpModifyRequestMapParams {
     }
 
     @Test
-    public void testGettersSetters() {
+    void testGettersSetters() {
         PdpModifyRequestMapParams params = builder.build();
         assertThat(params.getMaxPdpAgeMs()).isEqualTo(MAX_PDP_AGE_MS);
         assertSame(pub, params.getPdpPublisher());
@@ -77,12 +78,12 @@ public class TestPdpModifyRequestMapParams {
     }
 
     @Test
-    public void testValidate() {
+    void testValidate() {
         assertThatCode(builder.build()::validate).doesNotThrowAnyException();
     }
 
     @Test
-    public void testValidate_InvalidMaxPdpAge() {
+    void testValidate_InvalidMaxPdpAge() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.maxPdpAgeMs(0).build().validate())
                         .withMessageContaining("maxPdpAgeMs");
         assertThatIllegalArgumentException().isThrownBy(() -> builder.maxPdpAgeMs(-1).build().validate())
@@ -92,37 +93,37 @@ public class TestPdpModifyRequestMapParams {
     }
 
     @Test
-    public void testValidate_MissingPublisher() {
+    void testValidate_MissingPublisher() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.pdpPublisher(null).build().validate())
                         .withMessageContaining("publisher");
     }
 
     @Test
-    public void testValidate_MissingDispatcher() {
+    void testValidate_MissingDispatcher() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.responseDispatcher(null).build().validate())
                         .withMessageContaining("Dispatch");
     }
 
     @Test
-    public void testValidate_MissingLock() {
+    void testValidate_MissingLock() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.modifyLock(null).build().validate())
                         .withMessageContaining("Lock");
     }
 
     @Test
-    public void testValidate_MissingPdpParams() {
+    void testValidate_MissingPdpParams() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.params(null).build().validate())
                         .withMessageContaining("PDP param");
     }
 
     @Test
-    public void testValidate_MissingStateChangeTimers() {
+    void testValidate_MissingStateChangeTimers() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.stateChangeTimers(null).build().validate())
                         .withMessageContaining("state");
     }
 
     @Test
-    public void testValidate_MissingUpdateTimers() {
+    void testValidate_MissingUpdateTimers() {
         assertThatIllegalArgumentException().isThrownBy(() -> builder.updateTimers(null).build().validate())
                         .withMessageContaining("update");
     }

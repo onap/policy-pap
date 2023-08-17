@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2019-2020, 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2019-2020, 2022-2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
@@ -56,7 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.yaml.snakeyaml.Yaml;
 
-@ActiveProfiles({ "test-e2e", "default" })
+@ActiveProfiles({"test-e2e", "default"})
 public abstract class End2EndBase extends CommonPapRestServer {
     private static final Logger logger = LoggerFactory.getLogger(End2EndBase.class);
 
@@ -99,7 +99,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Tears down.
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         if (context != null) {
             try {
@@ -194,7 +194,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Loads an object from a YAML file.
      *
      * @param fileName name of the file from which to load
-     * @param clazz the class of the object to be loaded
+     * @param clazz    the class of the object to be loaded
      * @return the object that was loaded from the file
      */
     protected static <T> T loadYamlFile(final String fileName, final Class<T> clazz) {
@@ -223,7 +223,7 @@ public abstract class End2EndBase extends CommonPapRestServer {
      * Loads an object from a JSON file.
      *
      * @param fileName name of the file from which to load
-     * @param clazz the class of the object to be loaded
+     * @param clazz    the class of the object to be loaded
      * @return the object that was loaded from the file
      */
     protected static <T> T loadJsonFile(final String fileName, final Class<T> clazz) {

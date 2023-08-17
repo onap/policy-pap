@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +22,19 @@
 package org.onap.policy.pap.main.parameters;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.listeners.RequestIdDispatcher;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.TimerManager;
 
-public class TestRequestParams {
+class TestRequestParams {
     private static final int RETRIES = 1;
 
     private RequestParams params;
@@ -45,7 +46,7 @@ public class TestRequestParams {
     /**
      * Sets up the objects and creates an empty {@link #params}.
      */
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void setUp() {
         pub = mock(Publisher.class);
@@ -58,7 +59,7 @@ public class TestRequestParams {
     }
 
     @Test
-    public void testGettersSetters() {
+    void testGettersSetters() {
         assertSame(params, params.setModifyLock(lock).setPdpPublisher(pub).setResponseDispatcher(disp));
 
         assertSame(pub, params.getPdpPublisher());
@@ -69,31 +70,31 @@ public class TestRequestParams {
     }
 
     @Test
-    public void testValidate() {
+    void testValidate() {
         // no exception
         params.validate();
     }
 
     @Test
-    public void testValidate_MissingLock() {
+    void testValidate_MissingLock() {
         assertThatIllegalArgumentException().isThrownBy(() -> params.setModifyLock(null).validate())
                         .withMessageContaining("Lock");
     }
 
     @Test
-    public void testValidate_MissingDispatcher() {
+    void testValidate_MissingDispatcher() {
         assertThatIllegalArgumentException().isThrownBy(() -> params.setResponseDispatcher(null).validate())
                         .withMessageContaining("Dispatcher");
     }
 
     @Test
-    public void testValidate_MissingPublisher() {
+    void testValidate_MissingPublisher() {
         assertThatIllegalArgumentException().isThrownBy(() -> params.setPdpPublisher(null).validate())
                         .withMessageContaining("publisher");
     }
 
     @Test
-    public void testValidate_MissingTimers() {
+    void testValidate_MissingTimers() {
         assertThatIllegalArgumentException().isThrownBy(() -> params.setTimers(null).validate())
                         .withMessageContaining("timer");
     }

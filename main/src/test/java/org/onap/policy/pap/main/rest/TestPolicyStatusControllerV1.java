@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2021-2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2021-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,25 +23,25 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.SyncInvoker;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
 @ActiveProfiles({ "test", "default" })
-public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
+class TestPolicyStatusControllerV1 extends CommonPapRestServer {
 
     private static final String POLICY_STATUS_ENDPOINT = "policies/deployed";
     private static final String POLICY_DEPLOYMENT_STATUS_ENDPOINT = "policies/status";
 
     @Test
-    public void testSwagger() throws Exception {
+    void testSwagger() throws Exception {
         super.testSwagger(POLICY_STATUS_ENDPOINT);
         super.testSwagger(POLICY_STATUS_ENDPOINT + "/{name}");
         super.testSwagger(POLICY_STATUS_ENDPOINT + "/{name}/{version}");
@@ -53,40 +53,40 @@ public class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testQueryAllDeployedPolicies() throws Exception {
+    void testQueryAllDeployedPolicies() throws Exception {
         // verify it fails when no authorization info is included
         checkUnauthRequest(POLICY_STATUS_ENDPOINT, SyncInvoker::get);
         checkRequest(POLICY_STATUS_ENDPOINT);
     }
 
     @Test
-    public void testQueryAllDeployedPoliciesWithRegex() throws Exception {
+    void testQueryAllDeployedPoliciesWithRegex() throws Exception {
         checkRequest(POLICY_STATUS_ENDPOINT + "?regex=my.(1)name");
         checkEmptyRegexRequest(POLICY_STATUS_ENDPOINT + "?regex=");
         checkInvalidRegexRequest(POLICY_STATUS_ENDPOINT + "?regex=my-(name");
     }
 
     @Test
-    public void testQueryDeployedPolicies() throws Exception {
+    void testQueryDeployedPolicies() throws Exception {
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name");
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name/1.2.3");
     }
 
     @Test
-    public void testGetStatusOfAllPolicies() throws Exception {
+    void testGetStatusOfAllPolicies() throws Exception {
         // verify it fails when no authorization info is included
         checkUnauthRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT, SyncInvoker::get);
     }
 
     @Test
-    public void testGetStatusOfPolicies() throws Exception {
+    void testGetStatusOfPolicies() throws Exception {
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name");
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name");
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name/1.2.3");
     }
 
     @Test
-    public void testGetStatusOfPoliciesWithRegex() throws Exception {
+    void testGetStatusOfPoliciesWithRegex() throws Exception {
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=my-%3F%5Bmn%5Da.%7B1%7De");
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name?regex=my.(1)name");
         // my-?[mna.{1}e

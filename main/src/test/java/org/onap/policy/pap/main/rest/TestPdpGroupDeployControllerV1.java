@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2022 Nordix Foundation.
+ *  Copyright (C) 2019-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,16 +21,16 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;
 import org.onap.policy.models.pdp.concepts.DeploymentGroup;
@@ -43,19 +43,19 @@ import org.springframework.test.context.ActiveProfiles;
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
 @ActiveProfiles({ "test", "default" })
-public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
+class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
 
     private static final String DEPLOY_GROUP_ENDPOINT = "pdps/deployments/batch";
     private static final String DEPLOY_POLICIES_ENDPOINT = "pdps/policies";
 
     @Test
-    public void testSwagger() throws Exception {
+    void testSwagger() throws Exception {
         super.testSwagger(DEPLOY_GROUP_ENDPOINT);
         super.testSwagger(DEPLOY_POLICIES_ENDPOINT);
     }
 
     @Test
-    public void testUpdateGroupPolicies() throws Exception {
+    void testUpdateGroupPolicies() throws Exception {
         Entity<DeploymentGroups> entgrp = makeDeploymentGroupsEntity();
 
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_GROUP_ENDPOINT);
@@ -74,7 +74,7 @@ public class TestPdpGroupDeployControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeployPolicies() throws Exception {
+    void testDeployPolicies() throws Exception {
         Entity<PdpDeployPolicies> entgrp = makePdpPoliciesEntity();
 
         Invocation.Builder invocationBuilder = sendRequest(DEPLOY_POLICIES_ENDPOINT);

@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  * Copyright (C) 2021-2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +21,15 @@ package org.onap.policy.pap.main.rest.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
@@ -38,7 +39,7 @@ import org.onap.policy.pap.main.rest.PolicyAuditControllerV1;
 import org.onap.policy.pap.main.service.PolicyAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PolicyAuditTest extends End2EndBase {
+class PolicyAuditTest extends End2EndBase {
     private static final String TEST_GROUP = "testGroup";
     private static final String TEST_PDP_TYPE = "testPdpType";
     private static final ToscaConceptIdentifier POLICY_A = new ToscaConceptIdentifier("PolicyA", "1.0.0");
@@ -49,8 +50,8 @@ public class PolicyAuditTest extends End2EndBase {
     private static final String QUERY_PARAMS_INVALID = "?recordCount=5&startTime=2021-07-25T01:25:15";
     private static final String QUERY_PARAMS_CORRECT = "?recordCount=5&startTime=1627219515&endTime=1627478715";
     private static final String QUERY_PARAMS_INCORRECT = "?recordCount=5&startTime=1627478715&endTime=1627565115";
-    private static int NOT_FOUND_STATUS_CODE = 404;
-    private static int BAD_REQUEST_STATUS_CODE = 400;
+    private static final int NOT_FOUND_STATUS_CODE = 404;
+    private static final int BAD_REQUEST_STATUS_CODE = 400;
     private static final String BAD_REQUEST_MSG = "NumberFormatException For";
 
     @Autowired
@@ -60,7 +61,7 @@ public class PolicyAuditTest extends End2EndBase {
     private PolicyAuditRepository policyAuditRepository;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         setupEnv();
@@ -70,7 +71,7 @@ public class PolicyAuditTest extends End2EndBase {
      * Teardown after tests.
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         policyAuditRepository.deleteAll();
         super.tearDown();
@@ -96,13 +97,13 @@ public class PolicyAuditTest extends End2EndBase {
     }
 
     @Test
-    public void testGetAllAuditRecords() throws Exception {
+    void testGetAllAuditRecords() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT;
         sendAndValidateSuccess(uri, 2);
     }
 
     @Test
-    public void testGetAllAuditRecordsWithParams() throws Exception {
+    void testGetAllAuditRecordsWithParams() throws Exception {
         // try with correct dates in query, should result in 2 records
         String uri = POLICY_AUDIT_ENDPOINT + QUERY_PARAMS_CORRECT;
         sendAndValidateSuccess(uri, 2);
@@ -117,13 +118,13 @@ public class PolicyAuditTest extends End2EndBase {
     }
 
     @Test
-    public void testGetAuditRecordsByGroup() throws Exception {
+    void testGetAuditRecordsByGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP;
         sendAndValidateSuccess(uri, 2);
     }
 
     @Test
-    public void testGetAuditRecordsByGroupWithParams() throws Exception {
+    void testGetAuditRecordsByGroupWithParams() throws Exception {
         // try with correct dates in query, should result in 2 records
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + QUERY_PARAMS_CORRECT;
         sendAndValidateSuccess(uri, 2);
@@ -138,14 +139,14 @@ public class PolicyAuditTest extends End2EndBase {
     }
 
     @Test
-    public void testGetAuditRecordsOfPolicyWithGroup() throws Exception {
+    void testGetAuditRecordsOfPolicyWithGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
                         + URI_SEPERATOR + POLICY_A.getVersion();
         sendAndValidateSuccess(uri, 1);
     }
 
     @Test
-    public void testGetAuditRecordsOfPolicyWithGroupWithParams() throws Exception {
+    void testGetAuditRecordsOfPolicyWithGroupWithParams() throws Exception {
         // try with correct dates in query, should result in 1 record
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + TEST_GROUP + URI_SEPERATOR + POLICY_A.getName()
                         + URI_SEPERATOR + POLICY_A.getVersion() + QUERY_PARAMS_CORRECT;
@@ -163,13 +164,13 @@ public class PolicyAuditTest extends End2EndBase {
     }
 
     @Test
-    public void testGetAuditRecordsOfPolicyWithoutGroup() throws Exception {
+    void testGetAuditRecordsOfPolicyWithoutGroup() throws Exception {
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion();
         sendAndValidateSuccess(uri, 1);
     }
 
     @Test
-    public void testGetAuditRecordsOfPolicyWithoutGroupWithParams() throws Exception {
+    void testGetAuditRecordsOfPolicyWithoutGroupWithParams() throws Exception {
         // try with correct dates in query, should result in 1 record
         String uri = POLICY_AUDIT_ENDPOINT + URI_SEPERATOR + POLICY_A.getName() + URI_SEPERATOR + POLICY_A.getVersion()
                         + QUERY_PARAMS_CORRECT;

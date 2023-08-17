@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,19 +22,19 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
@@ -43,7 +43,7 @@ import org.onap.policy.models.pdp.enums.PdpHealthStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
-public class PdpGroupQueryTest extends End2EndBase {
+class PdpGroupQueryTest extends End2EndBase {
     private static final String GROUP_ENDPOINT = "pdps";
 
     /**
@@ -52,7 +52,7 @@ public class PdpGroupQueryTest extends End2EndBase {
      * @throws Exception the exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         addToscaPolicyTypes("monitoring.policy-type.yaml");
@@ -63,7 +63,7 @@ public class PdpGroupQueryTest extends End2EndBase {
     }
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         Invocation.Builder invocationBuilder = sendRequest(GROUP_ENDPOINT);
         Response rawresp = invocationBuilder.get();
         PdpGroups resp = rawresp.readEntity(PdpGroups.class);

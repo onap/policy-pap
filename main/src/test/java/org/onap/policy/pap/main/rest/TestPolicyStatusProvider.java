@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,21 +23,20 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import lombok.NonNull;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.PdpPolicyStatusBuilder;
@@ -59,7 +58,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
 
     private PolicyStatusProvider prov;
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -70,7 +69,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         super.setUp();
@@ -79,12 +78,12 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetStatus_testAccumulate() throws PfModelException {
+    void testGetStatus_testAccumulate() {
 
         buildPolicyStatusToReturn1();
 
         List<PolicyStatus> result = new ArrayList<>(prov.getStatus());
-        Collections.sort(result, (rec1, rec2) -> rec1.getPolicy().compareTo(rec2.getPolicy()));
+        result.sort(Comparator.comparing(PolicyStatus::getPolicy));
 
         assertThat(result).hasSize(3);
 
@@ -113,7 +112,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetStatusToscaConceptIdentifierOptVersion() throws PfModelException {
+    void testGetStatusToscaConceptIdentifierOptVersion() {
 
         ToscaConceptIdentifierOptVersion optIdent = buildPolicyStatusToReturn2();
 
@@ -131,12 +130,12 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicyStatus() throws PfModelException {
+    void testGetPolicyStatus() {
 
         buildPolicyStatusToReturn1();
 
         List<PdpPolicyStatus> result = new ArrayList<>(prov.getPolicyStatus());
-        Collections.sort(result, (rec1, rec2) -> rec1.getPolicy().compareTo(rec2.getPolicy()));
+        result.sort(Comparator.comparing(PdpPolicyStatus::getPolicy));
 
         assertThat(result).hasSize(5);
         Iterator<PdpPolicyStatus> iter = result.iterator();
@@ -170,7 +169,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicyStatusByGroupAndPolicyIdVersion() throws PfModelException {
+    void testGetPolicyStatusByGroupAndPolicyIdVersion() {
 
         ToscaConceptIdentifierOptVersion optIdent = buildPolicyStatusToReturn2();
 
@@ -199,7 +198,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicyStatusByRegexNoMatch() throws PfModelException {
+    void testGetPolicyStatusByRegexNoMatch() {
         buildPolicyStatusToReturn1();
         final String pattern = "Hello";
 
@@ -208,7 +207,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicyStatusOneMatch() throws PfModelException {
+    void testGetPolicyStatusOneMatch() {
         buildPolicyStatusToReturn1();
         final String pattern = "My(We|Po)[li]{0,3}c.A";
 
@@ -220,7 +219,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     }
 
     @Test
-    public void testGetPolicyStatusAllMatch() throws PfModelException {
+    void testGetPolicyStatusAllMatch() {
         buildPolicyStatusToReturn1();
         final String pattern = "My(We|Po)[li]{0,3}c.{2}0*";
 
@@ -229,7 +228,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
         assertThat(actual).hasSize(3);
     }
 
-    private void buildPolicyStatusToReturn1() throws PfModelException {
+    private void buildPolicyStatusToReturn1() {
 
         PdpPolicyStatusBuilder builder = PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
             .policyType(POLICY_TYPE).state(State.WAITING);
@@ -250,7 +249,7 @@ public class TestPolicyStatusProvider extends ProviderSuper {
         // @formatter:on
     }
 
-    private ToscaConceptIdentifierOptVersion buildPolicyStatusToReturn2() throws PfModelException {
+    private ToscaConceptIdentifierOptVersion buildPolicyStatusToReturn2() {
         PdpPolicyStatusBuilder builder =
             PdpPolicyStatus.builder().pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE).policy(POLICY_A).policyType(POLICY_TYPE);
 

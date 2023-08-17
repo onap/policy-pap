@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +22,21 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
 
-public class PdpRequestsTest extends CommonRequestBase {
+class PdpRequestsTest extends CommonRequestBase {
 
     private PdpRequests data;
     private UpdateReq update;
@@ -44,7 +45,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     /**
      * Sets up.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         update = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
         change = makeStateChangeReq(PDP1, MY_STATE);
@@ -53,13 +54,13 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testPdpRequests_testGetLastGroupName() {
+    void testPdpRequests_testGetLastGroupName() {
         assertEquals(PDP1, data.getPdpName());
         assertSame(notifier, data.getNotifier());
     }
 
     @Test
-    public void testAddSingleton() {
+    void testAddSingleton() {
         data.addSingleton(update);
 
         verify(update).setNotifier(notifier);
@@ -67,7 +68,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testAddSingleton_SameAsExisting() {
+    void testAddSingleton_SameAsExisting() {
         data.addSingleton(update);
 
         // add duplicate update
@@ -82,7 +83,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testAddSingleton_AnotherRequest() {
+    void testAddSingleton_AnotherRequest() {
         data.addSingleton(update);
 
         // add another request
@@ -106,14 +107,14 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testAddSingleton_Broadcast() {
+    void testAddSingleton_Broadcast() {
         UpdateReq req = makeUpdateReq(null, MY_GROUP, MY_SUBGROUP);
         assertThatIllegalArgumentException().isThrownBy(() -> data.addSingleton(req))
-                        .withMessage("unexpected broadcast for pdp_1");
+            .withMessage("unexpected broadcast for pdp_1");
     }
 
     @Test
-    public void testStopPublishing() {
+    void testStopPublishing() {
         // nothing in the queue - nothing should happen
         data.stopPublishing();
 
@@ -133,7 +134,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStartNextRequest_NothingToStart() {
+    void testStartNextRequest_NothingToStart() {
         assertFalse(data.startNextRequest(update));
 
         // should not have published it
@@ -144,7 +145,7 @@ public class PdpRequestsTest extends CommonRequestBase {
      * Tests addSingleton() when only one request is in the queue.
      */
     @Test
-    public void testStartNextRequest_OneRequest() {
+    void testStartNextRequest_OneRequest() {
         data.addSingleton(update);
         assertFalse(data.startNextRequest(update));
 
@@ -159,7 +160,7 @@ public class PdpRequestsTest extends CommonRequestBase {
      * Tests addSingleton() when more than one request is in the queue.
      */
     @Test
-    public void testStartNextRequest_MultipleRequests() {
+    void testStartNextRequest_MultipleRequests() {
         data.addSingleton(update);
         data.addSingleton(change);
 
@@ -181,7 +182,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsFirstInQueue() {
+    void testIsFirstInQueue() {
         // test with empty queue
         assertFalse(data.isFirstInQueue(update));
 
@@ -194,7 +195,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     }
 
     @Test
-    public void testGetPdpName() {
+    void testGetPdpName() {
         assertEquals(PDP1, data.getPdpName());
     }
 }

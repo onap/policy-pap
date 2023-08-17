@@ -33,8 +33,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Consumer;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
@@ -89,7 +89,7 @@ public class CommonRequestBase {
     protected RequestParams reqParams;
     protected PdpModifyRequestMapParams mapParams;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupBeforeAll() {
         Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
     }
@@ -99,7 +99,7 @@ public class CommonRequestBase {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         publisher = mock(Publisher.class);

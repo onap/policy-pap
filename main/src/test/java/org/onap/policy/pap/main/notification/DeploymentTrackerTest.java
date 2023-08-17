@@ -3,6 +3,7 @@
  * ONAP
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
@@ -36,7 +37,7 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.PdpPolicyStatusBuilde
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
-public class DeploymentTrackerTest {
+class DeploymentTrackerTest {
     private static final String VERSION = "1.2.3";
     private static final String MY_GROUP = "MyGroup";
     private static final String MY_PDP_TYPE = "MyPdpType";
@@ -52,15 +53,15 @@ public class DeploymentTrackerTest {
     /**
      * Sets up test objects.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         tracker = new DeploymentTracker();
         builder = PdpPolicyStatus.builder().deploy(true).state(State.SUCCESS).pdpGroup(MY_GROUP).pdpType(MY_PDP_TYPE)
-                        .policy(POLICY_A).policyType(POLICY_TYPE).pdpId(PDP_A);
+            .policy(POLICY_A).policyType(POLICY_TYPE).pdpId(PDP_A);
     }
 
     @Test
-    public void testGetDeploymentStatus() {
+    void testGetDeploymentStatus() {
         assertThat(tracker.getDeploymentStatus()).isEmpty();
 
         tracker.add(builder.build());
@@ -71,7 +72,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testGetUndeploymentStatus() {
+    void testGetUndeploymentStatus() {
         builder.deploy(false);
 
         assertThat(tracker.getUndeploymentStatus()).isEmpty();
@@ -84,7 +85,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testAddNotifications() {
+    void testAddNotifications() {
         DeploymentTracker newTracker = new DeploymentTracker();
 
         newTracker.add(builder.build());
@@ -101,7 +102,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testMerge() {
+    void testMerge() {
         DeploymentTracker newTracker = new DeploymentTracker();
 
         // appears in both
@@ -122,7 +123,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testNeedNotification() {
+    void testNeedNotification() {
         final PolicyStatus oldStat = new PolicyStatus();
         final PolicyStatus newStat = new PolicyStatus();
 
@@ -168,7 +169,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testAddMissing() {
+    void testAddMissing() {
         DeploymentTracker newTracker = new DeploymentTracker();
 
         // appears in both, not waiting
@@ -197,7 +198,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testAddStatusAction() {
+    void testAddStatusAction() {
         tracker.add(new StatusAction(StatusAction.Action.DELETED, builder.build()));
         assertThat(tracker.getDeploymentStatus()).isEmpty();
 
@@ -212,7 +213,7 @@ public class DeploymentTrackerTest {
     }
 
     @Test
-    public void testAddPdpPolicyStatus() {
+    void testAddPdpPolicyStatus() {
         tracker.add(builder.build());
         Collection<PolicyStatus> result = tracker.getDeploymentStatus();
         assertThat(result).hasSize(1);
@@ -250,7 +251,7 @@ public class DeploymentTrackerTest {
         assertThat(result).hasSize(2);
 
         List<PolicyStatus> list = new ArrayList<>(result);
-        Collections.sort(list, (rec1, rec2) -> rec1.getPolicy().compareTo(rec2.getPolicy()));
+        list.sort(Comparator.comparing(PolicyStatus::getPolicy));
         Iterator<PolicyStatus> iter = list.iterator();
 
         status = iter.next();

@@ -20,33 +20,34 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
+import org.onap.policy.pap.main.PolicyPapApplication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = PolicyPapApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {"db.initialize=false"})
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@AutoConfigureObservability
 @ContextConfiguration
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestActuatorEndpoints {
@@ -57,7 +58,10 @@ public class TestActuatorEndpoints {
     @Autowired
     private MockMvc mock;
 
-    @BeforeClass
+    private final RequestPostProcessor mockSecurity = SecurityMockMvcRequestPostProcessors
+        .httpBasic("policyAdmin", "zb!XztG34");
+
+    @BeforeAll
     public static void setupClass() {
         Registry.newRegistry();
     }
@@ -68,17 +72,16 @@ public class TestActuatorEndpoints {
     }
 
     @Test
-    public void testMetricsEndpoint() throws Exception {
-        mock.perform(get("/plain-metrics").with(SecurityMockMvcRequestPostProcessors.httpBasic(
-            "policyAdmin", "zb!XztG34")))
+    void testMetricsEndpoint() throws Exception {
+        mock.perform(get("/plain-metrics").with(mockSecurity))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
     @Test
-    public void testPrometheusEndpoint() throws Exception {
-        mock.perform(get("/metrics").with(SecurityMockMvcRequestPostProcessors.httpBasic("policyAdmin", "zb!XztG34")))
+    void testPrometheusEndpoint() throws Exception {
+        mock.perform(get("/metrics").with(mockSecurity))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty());

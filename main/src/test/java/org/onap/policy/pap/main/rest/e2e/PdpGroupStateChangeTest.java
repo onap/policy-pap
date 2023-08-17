@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,22 +22,22 @@
 
 package org.onap.policy.pap.main.rest.e2e;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupStateChangeResponse;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
-public class PdpGroupStateChangeTest extends End2EndBase {
+class PdpGroupStateChangeTest extends End2EndBase {
     private static final String PDP1 = "pdpAA_1";
     private static final String PDP2 = "pdpAA_2";
     private static final String PDP3 = "pdpAB_1";
@@ -50,7 +50,7 @@ public class PdpGroupStateChangeTest extends End2EndBase {
      * Sets up.
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         addToscaPolicyTypes("monitoring.policy-type.yaml");
         addToscaPolicies("monitoring.policy.yaml");
@@ -60,7 +60,7 @@ public class PdpGroupStateChangeTest extends End2EndBase {
     }
 
     @Test
-    public void testMakePassive() throws Exception {
+    void testMakePassive() throws Exception {
         addGroups("stateChangeGroupDeactivate.json");
 
         ToscaConceptIdentifier policy =

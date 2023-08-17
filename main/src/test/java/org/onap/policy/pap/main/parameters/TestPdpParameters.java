@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,23 +22,23 @@
 package org.onap.policy.pap.main.parameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
 
-public class TestPdpParameters {
+class TestPdpParameters {
     private static final Coder coder = new StandardCoder();
     private static final CommonTestData testData = new CommonTestData();
 
     @Test
-    public void testGetters() {
+    void testGetters() {
         PdpParameters params = testData.getPapParameterGroup(1).getPdpParameters();
 
         PdpUpdateParameters update = params.getUpdateParameters();
@@ -57,7 +58,7 @@ public class TestPdpParameters {
     }
 
     @Test
-    public void testValidate() throws Exception {
+    void testValidate() throws Exception {
         String json = testData.getPapParameterGroupAsString(1);
 
         // valid

@@ -20,11 +20,11 @@
 
 package org.onap.policy.pap.main.rest.stub;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.pap.main.rest.PapRestControllerV1;

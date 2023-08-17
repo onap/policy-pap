@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021,2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ package org.onap.policy.pap.main.comm.msgdata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -40,10 +40,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -51,8 +49,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaPolicy;
 import org.onap.policy.pap.main.comm.CommonRequestBase;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UpdateReqTest extends CommonRequestBase {
+class UpdateReqTest extends CommonRequestBase {
 
     private UpdateReq data;
     private PdpUpdate update;
@@ -64,7 +61,7 @@ public class UpdateReqTest extends CommonRequestBase {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -76,21 +73,21 @@ public class UpdateReqTest extends CommonRequestBase {
         response.setPdpGroup(update.getPdpGroup());
         response.setPdpSubgroup(update.getPdpSubgroup());
         response.setPolicies(
-                        update.getPoliciesToBeDeployed().stream().map(ToscaPolicy::getIdentifier)
-                                .collect(Collectors.toList()));
+            update.getPoliciesToBeDeployed().stream().map(ToscaPolicy::getIdentifier)
+                .collect(Collectors.toList()));
 
         data = new UpdateReq(reqParams, MY_REQ_NAME, update);
         data.setNotifier(notifier);
     }
 
     @Test
-    public void testGetMessage() {
+    void testGetMessage() {
         assertEquals(MY_REQ_NAME, data.getName());
         assertSame(update, data.getMessage());
     }
 
     @Test
-    public void testCheckResponse() {
+    void testCheckResponse() {
         assertNull(data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
@@ -103,7 +100,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_NullName() {
+    void testCheckResponse_NullName() {
         response.setName(null);
 
         assertEquals("null PDP name", data.checkResponse(response));
@@ -112,16 +109,16 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_NullMsgName() {
+    void testCheckResponse_NullMsgName() {
         update.setName(null);
 
-        assertEquals(null, data.checkResponse(response));
+        assertNull(data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
     }
 
     @Test
-    public void testUpdateReqCheckResponse_MismatchedGroup() {
+    void testUpdateReqCheckResponse_MismatchedGroup() {
         response.setPdpGroup(DIFFERENT);
 
         assertEquals("group does not match", data.checkResponse(response));
@@ -130,7 +127,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testUpdateReqCheckResponse_MismatchedSubGroup() {
+    void testUpdateReqCheckResponse_MismatchedSubGroup() {
         response.setPdpSubgroup(DIFFERENT);
 
         assertEquals("subgroup does not match", data.checkResponse(response));
@@ -139,20 +136,20 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_NullSubGroup() {
+    void testCheckResponse_NullSubGroup() {
         update.setPdpSubgroup(null);
         response.setPdpSubgroup(null);
 
         // different policy list - should have no impact
         response.setPolicies(Collections.emptyList());
 
-        assertEquals(null, data.checkResponse(response));
+        assertNull(data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
         verifyNoResponse();
     }
 
     @Test
-    public void testUpdateReqCheckResponse_MismatchedPolicies() {
+    void testUpdateReqCheckResponse_MismatchedPolicies() {
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPoliciesToBeDeployed());
         policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
 
@@ -163,20 +160,20 @@ public class UpdateReqTest extends CommonRequestBase {
 
         // the first policy from the original update is all that should be undeployed
         assertEquals(Collections.singleton(update.getPoliciesToBeDeployed().get(0).getIdentifier()).toString(),
-                        data.getUndeployPolicies().toString());
+            data.getUndeployPolicies().toString());
     }
 
     @Test
-    public void testUpdateReqCheckResponse_MismatchedPolicies_Null_NotNull() {
+    void testUpdateReqCheckResponse_MismatchedPolicies_Null_NotNull() {
         update.setPoliciesToBeDeployed(null);
 
-        assertEquals(null, data.checkResponse(response));
+        assertNull(data.checkResponse(response));
         assertTrue(data.getUndeployPolicies().isEmpty());
         verifyResponse();
     }
 
     @Test
-    public void testUpdateReqCheckResponse_MismatchedPolicies_NotNull_Null() {
+    void testUpdateReqCheckResponse_MismatchedPolicies_NotNull_Null() {
         response.setPolicies(null);
 
         assertEquals("policies do not match", data.checkResponse(response));
@@ -184,12 +181,11 @@ public class UpdateReqTest extends CommonRequestBase {
 
         // all policies in the update should be undeployed
         assertEquals(update.getPoliciesToBeDeployed().stream().map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList())
-                        .toString(), new TreeSet<>(data.getUndeployPolicies()).toString());
+            .toList().toString(), new TreeSet<>(data.getUndeployPolicies()).toString());
     }
 
     @Test
-    public void testReconfigure() {
+    void testReconfigure() {
         // different message type should fail and leave message unchanged
         assertFalse(data.reconfigure(new PdpStateChange()));
         assertSame(update, data.getMessage());
@@ -216,7 +212,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testReconfigureIsFullSameAsDeployList() {
+    void testReconfigureIsFullSameAsDeployList() {
         PdpUpdate msg2 = new PdpUpdate(update);
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPoliciesToBeDeployed());
 
@@ -226,7 +222,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testListsNewVsResult() {
+    void testListsNewVsResult() {
         PdpUpdate msg2 = new PdpUpdate(update);
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPoliciesToBeDeployed());
 
@@ -246,8 +242,8 @@ public class UpdateReqTest extends CommonRequestBase {
         policies.clear();
         policies = new ArrayList<>(update.getPoliciesToBeDeployed());
         List<ToscaConceptIdentifier> polsToUndep = policies.parallelStream()
-                .map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
+            .map(ToscaPolicy::getIdentifier)
+            .collect(Collectors.toList());
         msg2.setPoliciesToBeUndeployed(polsToUndep);
 
         assertTrue(data.reconfigure(msg2));
@@ -261,7 +257,7 @@ public class UpdateReqTest extends CommonRequestBase {
 
         // some items in both undeploy and newMessage.undeploy
         List<ToscaConceptIdentifier> pols = policies.stream().map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
         msg2.setPoliciesToBeUndeployed(pols);
         pols.add(makePolicy("policy-zz-1", "1.1.0").getIdentifier());
         data.getMessage().setPoliciesToBeUndeployed(pols);
@@ -271,8 +267,8 @@ public class UpdateReqTest extends CommonRequestBase {
         // some items in both undeploy and newMessage.deploy
         policies = new ArrayList<>(update.getPoliciesToBeDeployed());
         List<ToscaConceptIdentifier> polsToUndep2 = policies.parallelStream()
-                .map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
+            .map(ToscaPolicy::getIdentifier)
+            .collect(Collectors.toList());
         data.getMessage().setPoliciesToBeUndeployed(polsToUndep2);
 
         List<ToscaPolicy> polsToDep2 = new LinkedList<>();
@@ -283,14 +279,14 @@ public class UpdateReqTest extends CommonRequestBase {
         assertTrue(data.reconfigure(msg2));
 
         List<ToscaConceptIdentifier> dataPols2 = data.getMessage().getPoliciesToBeDeployed().stream()
-                .map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
+            .map(ToscaPolicy::getIdentifier)
+            .collect(Collectors.toList());
         assertThat(data.getMessage().getPoliciesToBeUndeployed())
-                .doesNotContainAnyElementsOf(dataPols2);
+            .doesNotContainAnyElementsOf(dataPols2);
 
         // some items only in undeploy
         pols = policies.stream().map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
         msg2.setPoliciesToBeUndeployed(pols);
         data.getMessage().setPoliciesToBeUndeployed(new LinkedList<>());
         assertTrue(data.reconfigure(msg2));
@@ -298,7 +294,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent() {
+    void testIsSameContent() {
         data = new UpdateReq(reqParams, MY_REQ_NAME, update);
         data.setNotifier(notifier);
 
@@ -317,7 +313,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_BothGroupNamesNull() {
+    void testIsSameContent_BothGroupNamesNull() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
         update.setPdpGroup(null);
@@ -325,7 +321,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_BothSubGroupNamesNull() {
+    void testIsSameContent_BothSubGroupNamesNull() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
         update.setPdpSubgroup(null);
@@ -333,7 +329,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_DiffGroup() {
+    void testIsSameContent_DiffGroup() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpGroup(null);
         assertFalse(data.isSameContent(msg2));
@@ -346,7 +342,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_DiffSubGroup() {
+    void testIsSameContent_DiffSubGroup() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPdpSubgroup(null);
         assertFalse(data.isSameContent(msg2));
@@ -359,7 +355,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_DiffPolicies() {
+    void testIsSameContent_DiffPolicies() {
         PdpUpdate msg2 = new PdpUpdate(update);
 
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPoliciesToBeDeployed());
@@ -370,7 +366,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_DiffPolicies_NotNull_Null() {
+    void testIsSameContent_DiffPolicies_NotNull_Null() {
         PdpUpdate msg2 = new PdpUpdate(update);
         msg2.setPoliciesToBeDeployed(null);
 
@@ -378,7 +374,7 @@ public class UpdateReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsSameContent_DiffPolicies_Null_NotNull() {
+    void testIsSameContent_DiffPolicies_Null_NotNull() {
         final PdpUpdate msg2 = new PdpUpdate(update);
 
         update.setPoliciesToBeDeployed(null);

@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2020, 2022 Nordix Foundation.
+ *  Copyright (C) 2020, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Corp.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,24 +22,23 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
@@ -61,8 +60,7 @@ import org.onap.policy.pap.main.startstop.PapActivator;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TestPolicyComponentsHealthCheckProvider {
+class TestPolicyComponentsHealthCheckProvider {
 
     private static final String CLIENT_1 = "client1";
     private static final String PDP_GROUP_DATA_FILE = "rest/pdpGroup.json";
@@ -102,13 +100,16 @@ public class TestPolicyComponentsHealthCheckProvider {
 
     private PolicyComponentsHealthCheckProvider provider;
 
+    AutoCloseable autoCloseable;
+
     /**
      * Configures mocks and objects.
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
+        autoCloseable = MockitoAnnotations.openMocks(this);
         groups = loadPdpGroupsFromFile().getGroups();
         when(pdpGroupService.getPdpGroups()).thenReturn(groups);
 
@@ -155,26 +156,27 @@ public class TestPolicyComponentsHealthCheckProvider {
     /**
      * Tear down.
      */
-    @After
-    public void tearDown() {
+    @AfterEach
+    public void tearDown() throws Exception {
         if (savedPapParameterGroup != null) {
             ParameterService.register(savedPapParameterGroup, true);
         } else {
             ParameterService.deregister(PAP_GROUP_PARAMS_NAME);
         }
         provider.cleanup();
+        autoCloseable.close();
     }
 
 
     @Test
-    public void testFetchPolicyComponentsHealthStatus_allHealthy() {
+    void testFetchPolicyComponentsHealthStatus_allHealthy() {
         Pair<HttpStatus, Map<String, Object>> ret = provider.fetchPolicyComponentsHealthStatus();
         assertEquals(HttpStatus.OK, ret.getLeft());
         assertTrue((Boolean) ret.getRight().get(HEALTHY));
     }
 
     @Test
-    public void testFetchPolicyComponentsHealthStatus_unhealthyClient() {
+    void testFetchPolicyComponentsHealthStatus_unhealthyClient() {
         when(response1.getStatus()).thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
         when(response1.readEntity(HealthCheckReport.class))
             .thenReturn(createReport(HttpURLConnection.HTTP_INTERNAL_ERROR, false));
@@ -207,7 +209,7 @@ public class TestPolicyComponentsHealthCheckProvider {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFetchPolicyComponentsHealthStatus_unhealthyPdps() {
+    void testFetchPolicyComponentsHealthStatus_unhealthyPdps() {
         // Get a PDP and set it unhealthy
         groups.get(0).getPdpSubgroups().get(0).getPdpInstances().get(0).setHealthy(PdpHealthStatus.NOT_HEALTHY);
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
@@ -217,7 +219,7 @@ public class TestPolicyComponentsHealthCheckProvider {
     }
 
     @Test
-    public void testFetchPolicyComponentsHealthStatus_PdpDown() {
+    void testFetchPolicyComponentsHealthStatus_PdpDown() {
         // Set currentInstanceCount as 0 to simulate PDP down
         groups.get(0).getPdpSubgroups().get(0).setCurrentInstanceCount(0);
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
@@ -225,7 +227,7 @@ public class TestPolicyComponentsHealthCheckProvider {
     }
 
     @Test
-    public void testFetchPolicyComponentsHealthStatus_unhealthyPap() {
+    void testFetchPolicyComponentsHealthStatus_unhealthyPap() {
         when(papActivator.isAlive()).thenReturn(false);
         Map<String, Object> result = callFetchPolicyComponentsHealthStatus();
         assertFalse((Boolean) result.get(HEALTHY));

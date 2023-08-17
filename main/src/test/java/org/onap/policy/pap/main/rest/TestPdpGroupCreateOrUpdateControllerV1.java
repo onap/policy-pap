@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupUpdateResponse;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
@@ -39,17 +39,17 @@ import org.springframework.test.context.ActiveProfiles;
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
 @ActiveProfiles({ "test", "default" })
-public class TestPdpGroupCreateOrUpdateControllerV1 extends CommonPapRestServer {
+class TestPdpGroupCreateOrUpdateControllerV1 extends CommonPapRestServer {
 
     private static final String CREATEORUPDATE_GROUPS_ENDPOINT = "pdps/groups/batch";
 
     @Test
-    public void testSwagger() throws Exception {
+    void testSwagger() throws Exception {
         super.testSwagger(CREATEORUPDATE_GROUPS_ENDPOINT);
     }
 
     @Test
-    public void testCreateOrUpdateGroups() throws Exception {
+    void testCreateOrUpdateGroups() throws Exception {
         Entity<PdpGroups> entgrp = makePdpGroupsEntity();
 
         Invocation.Builder invocationBuilder = sendRequest(CREATEORUPDATE_GROUPS_ENDPOINT);

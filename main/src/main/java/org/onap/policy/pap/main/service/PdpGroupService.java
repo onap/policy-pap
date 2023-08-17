@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
+ *  Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +21,9 @@
 
 package org.onap.policy.pap.main.service;
 
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.common.parameters.BeanValidationResult;
@@ -151,11 +152,12 @@ public class PdpGroupService {
      * @param pdpGroup the name of the pdpGroup to delete
      */
     public void deletePdpGroup(String pdpGroup) {
-        try {
-            pdpGroupRepository.deleteById(new PfConceptKey(pdpGroup, "0.0.0"));
-        } catch (Exception exc) {
+        PfConceptKey groupKey = new PfConceptKey(pdpGroup, "0.0.0");
+        if (pdpGroupRepository.existsById(groupKey)) {
+            pdpGroupRepository.deleteById(groupKey);
+        } else {
             String errorMessage = "delete of PDP group \"" + pdpGroup + "\" failed, PDP group does not exist";
-            throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, errorMessage, exc);
+            throw new PfModelRuntimeException(Response.Status.BAD_REQUEST, errorMessage);
         }
     }
 

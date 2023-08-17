@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +22,28 @@
 package org.onap.policy.pap.main.parameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.parameters.ValidationResult;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.StandardCoder;
 
-public class TestPdpRequestParameters {
+class TestPdpRequestParameters {
     private static final Coder coder = new StandardCoder();
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         PdpRequestParameters params = makeParams(10, 20);
         assertEquals(10, params.getMaxRetryCount());
         assertEquals(20, params.getMaxWaitMs());
     }
 
     @Test
-    public void testValidate() throws Exception {
+    void testValidate() throws Exception {
         // valid, zeroes
         PdpRequestParameters params = makeParams(0, 0);
         ValidationResult result = params.validate();

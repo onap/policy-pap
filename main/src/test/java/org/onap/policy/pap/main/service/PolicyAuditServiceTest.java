@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ package org.onap.policy.pap.main.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-public class PolicyAuditServiceTest extends CommonPapRestServer {
+class PolicyAuditServiceTest extends CommonPapRestServer {
 
     private static final String FIELD_IS_NULL = "%s is marked .*ull but is null";
     private static final String GROUP_A = "groupA";
@@ -59,20 +59,20 @@ public class PolicyAuditServiceTest extends CommonPapRestServer {
      * Teardown after tests.
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         policyAuditRepository.deleteAll();
     }
 
     @Test
-    public void testCreateAuditRecordsSuccess() {
+    void testCreateAuditRecordsSuccess() {
         policyAuditService.createAuditRecords(generatePolicyAudits(Instant.now(), GROUP_A, MY_POLICY));
 
         assertThat(policyAuditService.getAuditRecords(NUMBER_RECORDS, null, null)).hasSize(2);
     }
 
     @Test
-    public void testCreatePolicyAuditFailure() {
+    void testCreatePolicyAuditFailure() {
         List<PolicyAudit> audits = List.of(
             PolicyAudit.builder().pdpType("pdpType").action(AuditAction.DEPLOYMENT).timestamp(Instant.now()).build());
 
@@ -86,7 +86,7 @@ public class PolicyAuditServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testGetAuditRecords() {
+    void testGetAuditRecords() {
         Instant startDate1 = Instant.now();
 
         policyAuditService.createAuditRecords(generatePolicyAudits(startDate1, GROUP_A, MY_POLICY));

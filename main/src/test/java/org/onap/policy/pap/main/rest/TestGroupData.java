@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +22,15 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 
-public class TestGroupData {
+class TestGroupData {
     private static final String NAME = "my-name";
 
     private PdpGroup oldGroup;
@@ -39,7 +40,7 @@ public class TestGroupData {
     /**
      * Sets up.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         oldGroup = new PdpGroup();
         oldGroup.setName(NAME);
@@ -50,7 +51,7 @@ public class TestGroupData {
     }
 
     @Test
-    public void testNew() {
+    void testNew() {
         data = new GroupData(oldGroup, true);
         assertSame(oldGroup, data.getGroup());
 
@@ -74,7 +75,7 @@ public class TestGroupData {
     }
 
     @Test
-    public void testUpdateOnly() {
+    void testUpdateOnly() {
         assertTrue(data.isUnchanged());
         assertFalse(data.isUpdated());
         assertSame(oldGroup, data.getGroup());

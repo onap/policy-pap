@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2023 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
@@ -22,17 +22,18 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.onap.policy.common.utils.coder.Coder;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
@@ -51,28 +52,34 @@ import org.springframework.http.HttpStatus;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TestPdpGroupHealthCheckProvider {
+class TestPdpGroupHealthCheckProvider {
 
     @Mock
     private PdpGroupService pdpGroupService;
     private List<PdpGroup> groups;
-    private Coder coder = new StandardCoder();
+    private final Coder coder = new StandardCoder();
+
+    AutoCloseable autoCloseable;
 
     /**
      * Configures DAO and mocks.
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-
+        autoCloseable = MockitoAnnotations.openMocks(this);
         Registry.newRegistry();
-        groups = loadFile("pdpGroup.json").getGroups();
+        groups = loadFile().getGroups();
 
         when(pdpGroupService.getPdpGroups()).thenReturn(groups);
     }
 
+    @AfterEach
+    public void tearDown() throws Exception {
+        autoCloseable.close();
+    }
+
     @Test
-    public void testFetchPdpGroupHealthStatus() throws Exception {
+    void testFetchPdpGroupHealthStatus() throws Exception {
         final PdpGroupHealthCheckProvider provider = new PdpGroupHealthCheckProvider(pdpGroupService);
         final Pair<HttpStatus, Pdps> pair = provider.fetchPdpGroupHealthStatus();
         assertEquals(HttpStatus.OK, pair.getLeft());
@@ -81,15 +88,21 @@ public class TestPdpGroupHealthCheckProvider {
 
     private void verifyPdps(final List<Pdp> pdpList, final List<PdpGroup> groups) {
         assertEquals(6, pdpList.size());
-        for (final PdpGroup group : groups) {
-            for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
-                pdpList.containsAll(subGroup.getPdpInstances());
+        boolean containsAll = false;
+
+        do {
+            for (final PdpGroup group : groups) {
+                for (final PdpSubGroup subGroup : group.getPdpSubgroups()) {
+                    containsAll = pdpList.containsAll(subGroup.getPdpInstances());
+                }
             }
-        }
+        } while (!containsAll);
+
+        assertTrue(containsAll);
     }
 
-    private PdpGroups loadFile(final String fileName) {
-        final File propFile = new File(ResourceUtils.getFilePath4Resource("rest/" + fileName));
+    private PdpGroups loadFile() {
+        final File propFile = new File(ResourceUtils.getFilePath4Resource("rest/" + "pdpGroup.json"));
         try {
             return coder.decode(propFile, PdpGroups.class);
 

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2022 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onap.policy.models.base.PfModelException;
@@ -123,14 +122,14 @@ public class SessionData {
     /**
      * Constructs the object.
      *
-     * @param user user triggering the request
-     * @param policyAuditService the policyAuditService
+     * @param user                user triggering the request
+     * @param policyAuditService  the policyAuditService
      * @param policyStatusService the policyStatusService
-     * @param pdpGroupService the pdpGroupService
-     * @param toscaService the toscaService
+     * @param pdpGroupService     the pdpGroupService
+     * @param toscaService        the toscaService
      */
     public SessionData(String user, ToscaServiceTemplateService toscaService, PdpGroupService pdpGroupService,
-        PolicyStatusService policyStatusService, PolicyAuditService policyAuditService) {
+                       PolicyStatusService policyStatusService, PolicyAuditService policyAuditService) {
         this.toscaService = toscaService;
         this.pdpGroupService = pdpGroupService;
         this.deployStatus = makeDeploymentStatus(policyStatusService);
@@ -197,11 +196,11 @@ public class SessionData {
     /**
      * Sets the "version" in a policy filter.
      *
-     * @param filterBuilder filter builder whose version should be set
+     * @param filterBuilder  filter builder whose version should be set
      * @param desiredVersion desired version
      */
     private void setPolicyFilterVersion(ToscaTypedEntityFilterBuilder<ToscaPolicy> filterBuilder,
-            String desiredVersion) {
+                                        String desiredVersion) {
 
         if (desiredVersion == null) {
             // no version specified - get the latest
@@ -239,7 +238,7 @@ public class SessionData {
         }
 
         logger.info("add update and state-change {} {} {} policies={}", update.getName(), update.getPdpGroup(),
-                update.getPdpSubgroup(), update.getPoliciesToBeDeployed().size());
+            update.getPdpSubgroup(), update.getPoliciesToBeDeployed().size());
         pdpRequests.put(update.getName(), Pair.of(update, change));
     }
 
@@ -250,7 +249,7 @@ public class SessionData {
      */
     public void addUpdate(PdpUpdate update) {
         logger.info("add update {} {} {} policies={}", update.getName(), update.getPdpGroup(), update.getPdpSubgroup(),
-                update.getPoliciesToBeDeployed().size());
+            update.getPoliciesToBeDeployed().size());
         pdpRequests.compute(update.getName(), (name, data) -> Pair.of(update, (data == null ? null : data.getRight())));
     }
 
@@ -288,8 +287,8 @@ public class SessionData {
      * @return the PDP requests
      */
     public List<PdpUpdate> getPdpUpdates() {
-        return pdpRequests.values().stream().filter(req -> req.getLeft() != null).map(Pair::getLeft)
-                .collect(Collectors.toList());
+        return pdpRequests.values().stream().filter(req -> req.getLeft() != null)
+            .map(Pair::getLeft).toList();
     }
 
     /**
@@ -298,8 +297,8 @@ public class SessionData {
      * @return the PDP requests
      */
     public List<PdpStateChange> getPdpStateChanges() {
-        return pdpRequests.values().stream().filter(req -> req.getRight() != null).map(Pair::getRight)
-                .collect(Collectors.toList());
+        return pdpRequests.values().stream().filter(req -> req.getRight() != null)
+            .map(Pair::getRight).toList();
     }
 
     /**
@@ -377,15 +376,15 @@ public class SessionData {
         List<GroupData> data = type2groups.get(type); // NOSONAR
         if (data == null) {
             PdpGroupFilter filter = PdpGroupFilter.builder().policyTypeList(Collections.singletonList(type))
-                    .groupState(PdpState.ACTIVE).build();
+                .groupState(PdpState.ACTIVE).build();
 
             List<PdpGroup> groups = pdpGroupService.getFilteredPdpGroups(filter);
 
-            data = groups.stream().map(this::addGroup).collect(Collectors.toList());
+            data = groups.stream().map(this::addGroup).toList();
             type2groups.put(type, data);
         }
 
-        return data.stream().map(GroupData::getGroup).collect(Collectors.toList());
+        return data.stream().map(GroupData::getGroup).toList();
     }
 
     /**
@@ -433,22 +432,22 @@ public class SessionData {
      */
     public void updateDb(PolicyNotification notification) {
         // create new groups
-        List<GroupData> created = groupCache.values().stream().filter(GroupData::isNew).collect(Collectors.toList());
+        List<GroupData> created = groupCache.values().stream().filter(GroupData::isNew).toList();
         if (!created.isEmpty()) {
             if (logger.isInfoEnabled()) {
                 created.forEach(group -> logger.info("creating DB group {}", group.getGroup().getName()));
             }
-            pdpGroupService.createPdpGroups(created.stream().map(GroupData::getGroup).collect(Collectors.toList()));
+            pdpGroupService.createPdpGroups(created.stream().map(GroupData::getGroup).toList());
         }
 
         // update existing groups
         List<GroupData> updated =
-                groupCache.values().stream().filter(GroupData::isUpdated).collect(Collectors.toList());
+            groupCache.values().stream().filter(GroupData::isUpdated).toList();
         if (!updated.isEmpty()) {
             if (logger.isInfoEnabled()) {
                 updated.forEach(group -> logger.info("updating DB group {}", group.getGroup().getName()));
             }
-            pdpGroupService.updatePdpGroups(updated.stream().map(GroupData::getGroup).collect(Collectors.toList()));
+            pdpGroupService.updatePdpGroups(updated.stream().map(GroupData::getGroup).toList());
         }
 
         // send audits records to DB
@@ -471,14 +470,14 @@ public class SessionData {
     /**
      * Adds policy deployment data.
      *
-     * @param policy policy being deployed
-     * @param pdps PDPs to which the policy is being deployed
+     * @param policy   policy being deployed
+     * @param pdps     PDPs to which the policy is being deployed
      * @param pdpGroup PdpGroup containing the PDP of interest
-     * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
+     * @param pdpType  PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
     protected void trackDeploy(ToscaPolicy policy, Collection<String> pdps, String pdpGroup, String pdpType)
-            throws PfModelException {
+        throws PfModelException {
         ToscaConceptIdentifier policyId = policy.getIdentifier();
         policiesToBeDeployed.put(policyId, policy);
 
@@ -490,13 +489,13 @@ public class SessionData {
      * Adds policy undeployment data.
      *
      * @param policyId ID of the policy being undeployed
-     * @param pdps PDPs to which the policy is being undeployed
+     * @param pdps     PDPs to which the policy is being undeployed
      * @param pdpGroup PdpGroup containing the PDP of interest
-     * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
+     * @param pdpType  PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
     protected void trackUndeploy(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup,
-            String pdpType) throws PfModelException {
+                                 String pdpType) throws PfModelException {
         policiesToBeUndeployed.add(policyId);
 
         addData(policyId, pdps, pdpGroup, pdpType, false);
@@ -507,14 +506,14 @@ public class SessionData {
      * Adds policy deployment/undeployment data.
      *
      * @param policyId ID of the policy being deployed/undeployed
-     * @param pdps PDPs to which the policy is being deployed/undeployed
-     * @param deploy {@code true} if the policy is being deployed, {@code false} if undeployed
+     * @param pdps     PDPs to which the policy is being deployed/undeployed
+     * @param deploy   {@code true} if the policy is being deployed, {@code false} if undeployed
      * @param pdpGroup PdpGroup containing the PDP of interest
-     * @param pdpType PDP type (i.e., PdpSubGroup) containing the PDP of interest
+     * @param pdpType  PDP type (i.e., PdpSubGroup) containing the PDP of interest
      * @throws PfModelException if an error occurred
      */
     private void addData(ToscaConceptIdentifier policyId, Collection<String> pdps, String pdpGroup, String pdpType,
-            boolean deploy) throws PfModelException {
+                         boolean deploy) throws PfModelException {
 
         // delete all records whose "deploy" flag is the opposite of what we want
         deployStatus.deleteDeployment(policyId, !deploy);

@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,17 @@ package org.onap.policy.pap.main.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.ws.rs.core.Response;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.onap.policy.common.utils.coder.CoderException;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.coder.StandardYamlCoder;
@@ -48,8 +48,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaServiceTemplate;
 import org.onap.policy.models.tosca.simple.concepts.JpaToscaServiceTemplate;
 import org.onap.policy.pap.main.repository.ToscaServiceTemplateRepository;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ToscaServiceTemplateServiceTest {
+class ToscaServiceTemplateServiceTest {
 
     private static final String VERSION_1 = "1.0.0";
 
@@ -72,22 +71,22 @@ public class ToscaServiceTemplateServiceTest {
     @Mock
     private ToscaNodeTemplateService nodeTemplateService;
 
-    private ToscaServiceTemplate serviceTemplate;
-
     private ToscaNodeTemplate nodeTemplate;
 
-    private StandardCoder coder = new StandardYamlCoder();
+    private final StandardCoder coder = new StandardYamlCoder();
+
+    AutoCloseable autoCloseable;
 
     /**
      * Set up for tests.
      *
      * @throws CoderException the exception
      */
-    @Before
+    @BeforeEach
     public void setup() throws CoderException {
-
+        autoCloseable = MockitoAnnotations.openMocks(this);
         coder.decode(ResourceUtils.getResourceAsString("e2e/policyMetadataSet.yaml"),
-            ToscaServiceTemplate.class).getToscaTopologyTemplate().getNodeTemplates()
+                ToscaServiceTemplate.class).getToscaTopologyTemplate().getNodeTemplates()
             .forEach((key, value) -> nodeTemplate = value);
 
         ToscaServiceTemplate toscaPolicyType =
@@ -100,7 +99,7 @@ public class ToscaServiceTemplateServiceTest {
         toscaPolicy.getToscaTopologyTemplate().getPolicies().forEach(e -> e.entrySet().iterator().next().getValue()
             .getMetadata().putAll(Map.of("metadataSetName", NODE_TEMPLATE_NAME,
                 "metadataSetVersion", NODE_TEMPLATE_VERSION)));
-        serviceTemplate = new ToscaServiceTemplate(toscaPolicyType);
+        ToscaServiceTemplate serviceTemplate = new ToscaServiceTemplate(toscaPolicyType);
         serviceTemplate.setToscaTopologyTemplate(toscaPolicy.getToscaTopologyTemplate());
         Mockito
             .when(toscaRepository.findById(
@@ -112,9 +111,13 @@ public class ToscaServiceTemplateServiceTest {
             .thenReturn(nodeTemplate);
     }
 
+    @AfterEach
+    public void tearDown() throws Exception {
+        autoCloseable.close();
+    }
 
     @Test
-    public void testGetPolicyList() throws PfModelException {
+    void testGetPolicyList() throws PfModelException {
         assertThatThrownBy(() -> toscaService.getPolicyList(NAME, VERSION))
             .isInstanceOf(PfModelRuntimeException.class).hasRootCauseMessage(INVALID_VERSION_ERR_MSG);
 
@@ -124,7 +127,7 @@ public class ToscaServiceTemplateServiceTest {
     }
 
     @Test
-    public void testPolicyForMetadataSet() throws PfModelException {
+    void testPolicyForMetadataSet() throws PfModelException {
         List<ToscaPolicy> policies = toscaService.getPolicyList("onap.restart.tca", VERSION_1);
 
         assertThat(policies.get(0).getMetadata()).containsEntry("metadataSet", nodeTemplate.getMetadata());
@@ -140,7 +143,7 @@ public class ToscaServiceTemplateServiceTest {
     }
 
     @Test
-    public void testGetPolicyTypeList() throws PfModelException {
+    void testGetPolicyTypeList() throws PfModelException {
         assertThatThrownBy(() -> toscaService.getPolicyTypeList(NAME, VERSION))
             .isInstanceOf(PfModelRuntimeException.class).hasRootCauseMessage(INVALID_VERSION_ERR_MSG);
 

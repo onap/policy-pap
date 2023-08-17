@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,12 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.SyncInvoker;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -34,22 +34,21 @@ import org.springframework.test.context.ActiveProfiles;
  * Note: this tests failure cases; success cases are tested by tests in the "e2e" package.
  */
 @ActiveProfiles({ "test", "default" })
-public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
+class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
 
     private static final String GROUP_NOT_FOUND = "group not found";
     private static final String DELETE_GROUP_ENDPOINT = "pdps/groups";
     private static final String DELETE_POLICIES_ENDPOINT = "pdps/policies";
 
     @Test
-    public void testSwagger() throws Exception {
+    void testSwagger() throws Exception {
         super.testSwagger(DELETE_GROUP_ENDPOINT + "/{name}");
-
         super.testSwagger(DELETE_POLICIES_ENDPOINT + "/{name}");
         super.testSwagger(DELETE_POLICIES_ENDPOINT + "/{name}/versions/{version}");
     }
 
     @Test
-    public void testDeleteGroup() throws Exception {
+    void testDeleteGroup() throws Exception {
         String uri = DELETE_GROUP_ENDPOINT + "/my-name";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -68,7 +67,7 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeletePolicy() throws Exception {
+    void testDeletePolicy() throws Exception {
         String uri = DELETE_POLICIES_ENDPOINT + "/my-name";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);
@@ -87,7 +86,7 @@ public class TestPdpGroupDeleteControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testDeletePolicyVersion() throws Exception {
+    void testDeletePolicyVersion() throws Exception {
         String uri = DELETE_POLICIES_ENDPOINT + "/my-name/versions/3";
 
         Invocation.Builder invocationBuilder = sendRequest(uri);

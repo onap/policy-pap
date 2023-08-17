@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,20 +23,20 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import jakarta.ws.rs.core.SecurityContext;
 import java.util.UUID;
-import javax.ws.rs.core.SecurityContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 
-public class PapRestControllerV1Test {
+class PapRestControllerV1Test {
 
     @Mock
     SecurityContext mockSecurityContext;
@@ -44,19 +44,19 @@ public class PapRestControllerV1Test {
     private AutoCloseable closeable;
     private BodyBuilder bldr;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         bldr = ResponseEntity.ok();
         closeable = MockitoAnnotations.openMocks(this);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         closeable.close();
     }
 
     @Test
-    public void testAddVersionControlHeaders() {
+    void testAddVersionControlHeaders() {
         ResponseEntity<Object> resp = PapRestControllerV1.addVersionControlHeaders(bldr).build();
         assertEquals("0", resp.getHeaders().get(PapRestControllerV1.VERSION_MINOR_NAME).get(0));
         assertEquals("0", resp.getHeaders().get(PapRestControllerV1.VERSION_PATCH_NAME).get(0));
@@ -64,20 +64,20 @@ public class PapRestControllerV1Test {
     }
 
     @Test
-    public void testAddLoggingHeaders_Null() {
+    void testAddLoggingHeaders_Null() {
         ResponseEntity<Object> resp = PapRestControllerV1.addLoggingHeaders(bldr, null).build();
         assertNotNull(resp.getHeaders().get(PapRestControllerV1.REQUEST_ID_NAME));
     }
 
     @Test
-    public void testAddLoggingHeaders_NonNull() {
+    void testAddLoggingHeaders_NonNull() {
         UUID uuid = UUID.randomUUID();
         ResponseEntity<Object> resp = PapRestControllerV1.addLoggingHeaders(bldr, uuid).build();
         assertEquals(uuid.toString(), resp.getHeaders().get(PapRestControllerV1.REQUEST_ID_NAME).get(0));
     }
 
     @Test
-    public void testGetPrincipal() {
+    void testGetPrincipal() {
         assertThat(new PapRestControllerV1().getPrincipal()).isEmpty();
     }
 }

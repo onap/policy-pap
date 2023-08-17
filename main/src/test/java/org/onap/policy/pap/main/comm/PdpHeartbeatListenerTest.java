@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021 Nordix Foundation.
+ *  Copyright (C) 2019-2021, 2023 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,18 +23,15 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
-import org.onap.policy.common.utils.coder.CoderException;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -54,7 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class PdpHeartbeatListenerTest extends End2EndBase {
+class PdpHeartbeatListenerTest extends End2EndBase {
 
     private static final String POLICY_VERSION = "1.0.0";
     private static final String POLICY_NAME = "onap.policies.controlloop.operational.common.apex.SampleDomain";
@@ -64,13 +61,11 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
     private static final CommInfrastructure INFRA = CommInfrastructure.NOOP;
     private static final String TOPIC = "my-topic";
 
-    private Instant timeStamp;
-
     @Autowired
     private PdpHeartbeatListener pdpHeartbeatListener;
 
     @Test
-    public void testPdpHeartbeatListener() throws CoderException, PfModelException {
+    void testPdpHeartbeatListener() {
         addGroups("PdpGroups.json");
         PapParameterGroup parameterGroup = new PapParameterGroup();
         parameterGroup.setPdpParameters(new PdpParameters());
@@ -82,11 +77,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status1.setPdpGroup(DEFAULT_GROUP);
         status1.setPdpType(APEX_TYPE);
         status1.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaConceptIdentifier> idents1 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents1 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status1.setPolicies(idents1);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status1);
-        verifyPdpGroup(DEFAULT_GROUP, 1);
+        verifyPdpGroup(1);
 
         // Testing pdp heartbeat success case
         final PdpStatus status2 = new PdpStatus();
@@ -96,11 +90,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status2.setPdpType(APEX_TYPE);
         status2.setHealthy(PdpHealthStatus.HEALTHY);
         status2.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaConceptIdentifier> idents2 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents2 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status2.setPolicies(idents2);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status2);
-        verifyPdpGroup(DEFAULT_GROUP, 1);
+        verifyPdpGroup(1);
 
         // Testing pdp heartbeat failure case with pdp missing
         final PdpStatus status3 = new PdpStatus();
@@ -110,11 +103,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status3.setPdpType(APEX_TYPE);
         status3.setHealthy(PdpHealthStatus.HEALTHY);
         status3.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaConceptIdentifier> idents3 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents3 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status3.setPolicies(idents3);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status3);
-        verifyPdpGroup(DEFAULT_GROUP, 2);
+        verifyPdpGroup(2);
 
         // Testing pdp registration failure case
         final PdpStatus status4 = new PdpStatus();
@@ -123,11 +115,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status4.setPdpGroup("wrongGroup");
         status4.setPdpType(APEX_TYPE);
         status4.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaConceptIdentifier> idents4 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents4 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status4.setPolicies(idents4);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status4);
-        verifyPdpGroup(DEFAULT_GROUP, 2);
+        verifyPdpGroup(2);
 
         // Testing pdp heartbeat failure case with pdp state mismatch
         final PdpStatus status5 = new PdpStatus();
@@ -137,11 +128,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status5.setPdpType(APEX_TYPE);
         status5.setHealthy(PdpHealthStatus.HEALTHY);
         status5.setPdpSubgroup(APEX_TYPE);
-        final List<ToscaConceptIdentifier> idents5 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents5 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status5.setPolicies(idents5);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status5);
-        verifyPdpGroup(DEFAULT_GROUP, 2);
+        verifyPdpGroup(2);
 
         // Testing pdp heartbeat failure case with pdp policies mismatch
         final PdpStatus status6 = new PdpStatus();
@@ -156,7 +146,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
                         new ToscaConceptIdentifier("onap.restart.tca", POLICY_VERSION));
         status6.setPolicies(idents6);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status6);
-        verifyPdpGroup(DEFAULT_GROUP, 2);
+        verifyPdpGroup(2);
 
         // Testing pdp heartbeat failure case with pdp no policies
         final PdpStatus status7 = new PdpStatus();
@@ -167,7 +157,7 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status7.setHealthy(PdpHealthStatus.HEALTHY);
         status7.setPdpSubgroup(APEX_TYPE);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7);
-        verifyPdpGroup(DEFAULT_GROUP, 2);
+        verifyPdpGroup(2);
 
         // Testing old message for pdp_1 - should have no effect
         final PdpStatus status7b = new PdpStatus();
@@ -178,11 +168,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status7b.setPdpType(APEX_TYPE);
         status7b.setPdpSubgroup(APEX_TYPE);
         status7b.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaConceptIdentifier> idents7b =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents7b = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status7b.setPolicies(idents7b);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status7b);
-        verifyPdpGroup(DEFAULT_GROUP, 2);
+        verifyPdpGroup(2);
 
         // Testing pdp termination case for pdp_1
         final PdpStatus status8 = new PdpStatus();
@@ -192,11 +181,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status8.setPdpType(APEX_TYPE);
         status8.setPdpSubgroup(APEX_TYPE);
         status8.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaConceptIdentifier> idents8 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents8 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status8.setPolicies(idents8);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status8);
-        verifyPdpGroup(DEFAULT_GROUP, 1);
+        verifyPdpGroup(1);
 
         // Testing pdp termination case for pdp_2
         final PdpStatus status9 = new PdpStatus();
@@ -206,11 +194,10 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         status9.setPdpType(APEX_TYPE);
         status9.setPdpSubgroup(APEX_TYPE);
         status9.setHealthy(PdpHealthStatus.HEALTHY);
-        final List<ToscaConceptIdentifier> idents9 =
-                Arrays.asList(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
+        final List<ToscaConceptIdentifier> idents9 = List.of(new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION));
         status9.setPolicies(idents9);
         pdpHeartbeatListener.onTopicEvent(INFRA, TOPIC, status9);
-        verifyPdpGroup(DEFAULT_GROUP, 0);
+        verifyPdpGroup(0);
 
         // Test policy lists updated in createUpdate
         ToscaPolicy polA = new ToscaPolicy();
@@ -233,8 +220,8 @@ public class PdpHeartbeatListenerTest extends End2EndBase {
         assertThat(update10.getPoliciesToBeDeployed()).isInstanceOf(List.class);
     }
   
-    private void verifyPdpGroup(final String name, final int count) throws PfModelException {
-        final List<PdpGroup> fetchedGroups = fetchGroups(name);
+    private void verifyPdpGroup(final int count) {
+        final List<PdpGroup> fetchedGroups = fetchGroups(PdpHeartbeatListenerTest.DEFAULT_GROUP);
         for (final PdpSubGroup subGroup : fetchedGroups.get(0).getPdpSubgroups()) {
             if (subGroup.getPdpType().equals(APEX_TYPE)) {
                 assertEquals(count, subGroup.getPdpInstances().size());

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,21 @@
 
 package org.onap.policy.pap.main.comm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.models.pdp.concepts.PdpResponseDetails;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 
-public class MultiPdpStatusListenerTest {
+class MultiPdpStatusListenerTest {
     private static final CommInfrastructure INFRA = CommInfrastructure.NOOP;
     private static final String TOPIC = "my-topic";
     private static final String ID1 = "request-1";
@@ -46,16 +46,16 @@ public class MultiPdpStatusListenerTest {
     private PdpStatus status;
 
     @Test
-    public void testMultiPdpStatusListenerString() throws Exception {
+    void testMultiPdpStatusListenerString() throws Exception {
         listener = new MyListener(ID1);
-        assertEquals(Arrays.asList(ID1).toString(), listener.getUnseenIds().toString());
+        assertEquals(List.of(ID1).toString(), listener.getUnseenIds().toString());
 
         // an ID is in the queue - not done yet
         assertFalse(doWait(0));
     }
 
     @Test
-    public void testMultiPdpStatusListenerCollectionOfString() throws Exception {
+    void testMultiPdpStatusListenerCollectionOfString() throws Exception {
         List<String> lst = ID_LIST;
 
         listener = new MyListener(lst);
@@ -73,7 +73,7 @@ public class MultiPdpStatusListenerTest {
     }
 
     @Test
-    public void testGetUnseenIds() {
+    void testGetUnseenIds() {
         List<String> lst = ID_LIST;
 
         listener = new MyListener(lst);
@@ -83,7 +83,7 @@ public class MultiPdpStatusListenerTest {
         status = new PdpStatus();
         status.setResponse(makeResponse(ID2));
         listener.onTopicEvent(INFRA, TOPIC, status);
-        assertEquals(Arrays.asList(ID1).toString(), listener.getUnseenIds().toString());
+        assertEquals(List.of(ID1).toString(), listener.getUnseenIds().toString());
 
         // receive message from the other PDP
         status = new PdpStatus();
@@ -93,7 +93,7 @@ public class MultiPdpStatusListenerTest {
     }
 
     @Test
-    public void testAwait() throws Exception {
+    void testAwait() throws Exception {
         // try with an empty list - should already be complete
         listener = new MyListener(new LinkedList<>());
         assertTrue(doWait(0));
@@ -120,7 +120,7 @@ public class MultiPdpStatusListenerTest {
     }
 
     @Test
-    public void testOnTopicEvent() throws Exception {
+    void testOnTopicEvent() throws Exception {
         listener = new MyListener(ID_LIST);
 
         // not done yet
@@ -181,17 +181,13 @@ public class MultiPdpStatusListenerTest {
     private boolean doWait(long millisec) throws InterruptedException {
         AtomicBoolean done = new AtomicBoolean(false);
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    done.set(listener.await(millisec, TimeUnit.MILLISECONDS));
-
-                } catch (InterruptedException expected) {
-                    return;
-                }
+        Thread thread = new Thread(() -> {
+            try {
+                done.set(listener.await(millisec, TimeUnit.MILLISECONDS));
+            } catch (InterruptedException expected) {
+                expected.printStackTrace();
             }
-        };
+        });
 
         thread.start();
         thread.join(5000);
