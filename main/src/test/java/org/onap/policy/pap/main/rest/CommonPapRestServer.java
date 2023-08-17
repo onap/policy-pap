@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019,2023 Nordix Foundation.
+ *  Copyright (C) 2019, 2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,28 +22,29 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.endpoints.http.server.YamlMessageBodyHandler;
@@ -61,7 +62,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -69,7 +69,6 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolicyPapApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"db.initialize=false"})
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
@@ -98,7 +97,7 @@ public abstract class CommonPapRestServer {
      *
      * @throws Exception if an error occurs
      */
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() throws Exception {
         keystore = new SelfSignedKeyStore();
         CommonTestData.newDb();
@@ -122,7 +121,7 @@ public abstract class CommonPapRestServer {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         httpsPrefix = "https://localhost:" + port + "/";
         papActivator = Registry.get(PapConstants.REG_PAP_ACTIVATOR, PapActivator.class);
@@ -132,9 +131,14 @@ public abstract class CommonPapRestServer {
     /**
      * Restores the activator's "alive" state.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         markActivator(activatorWasAlive);
+    }
+
+    @AfterAll
+    public static void cleanRegistry() {
+        Registry.newRegistry();
     }
 
     /**
@@ -145,7 +149,7 @@ public abstract class CommonPapRestServer {
      */
     protected void testSwagger(final String endpoint) throws Exception {
         final Invocation.Builder invocationBuilder = sendFqeRequest(httpsPrefix
-                + ENDPOINT_PREFIX + "v3/api-docs", true, MediaType.APPLICATION_JSON);
+            + ENDPOINT_PREFIX + "v3/api-docs", true, MediaType.APPLICATION_JSON);
         final String resp = invocationBuilder.get(String.class);
         assertTrue(resp.contains(endpoint));
     }
@@ -175,7 +179,8 @@ public abstract class CommonPapRestServer {
 
     private void markActivator(boolean wasAlive) {
         Object manager = ReflectionTestUtils.getField(papActivator, "serviceManager");
-        AtomicBoolean running = (AtomicBoolean) ReflectionTestUtils.getField(manager, "running");
+        AtomicBoolean running = (AtomicBoolean) ReflectionTestUtils
+            .getField(Objects.requireNonNull(manager), "running");
         running.set(wasAlive);
     }
 
@@ -183,13 +188,13 @@ public abstract class CommonPapRestServer {
      * Verifies that unauthorized requests fail.
      *
      * @param endpoint the target end point
-     * @param sender function that sends the requests to the target
+     * @param sender   function that sends the requests to the target
      * @throws Exception if an error occurs
      */
     protected void checkUnauthRequest(final String endpoint, Function<Invocation.Builder, Response> sender)
-                    throws Exception {
+        throws Exception {
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                        sender.apply(sendNoAuthRequest(endpoint)).getStatus());
+            sender.apply(sendNoAuthRequest(endpoint)).getStatus());
     }
 
     /**
@@ -206,7 +211,7 @@ public abstract class CommonPapRestServer {
     /**
      * Sends a request to an endpoint.
      *
-     * @param endpoint the target endpoint
+     * @param endpoint  the target endpoint
      * @param mediaType the media type for the request
      * @return a request builder
      * @throws Exception if an error occurs
@@ -230,21 +235,21 @@ public abstract class CommonPapRestServer {
      * Sends a request to a fully qualified endpoint.
      *
      * @param fullyQualifiedEndpoint the fully qualified target endpoint
-     * @param includeAuth if authorization header should be included
+     * @param includeAuth            if authorization header should be included
      * @return a request builder
      * @throws Exception if an error occurs
      */
     protected Invocation.Builder sendFqeRequest(final String fullyQualifiedEndpoint, boolean includeAuth,
-                    String mediaType) throws Exception {
+                                                String mediaType) throws Exception {
         final SSLContext sc = SSLContext.getInstance("TLSv1.2");
         sc.init(null, NetworkUtil.getAlwaysTrustingManager(), new SecureRandom());
         final ClientBuilder clientBuilder =
-                        ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
+            ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
         final Client client = clientBuilder.build();
 
         client.property(ClientProperties.METAINF_SERVICES_LOOKUP_DISABLE, "true");
         client.register((mediaType.equalsIgnoreCase(MediaType.APPLICATION_JSON) ? GsonMessageBodyHandler.class
-                        : YamlMessageBodyHandler.class));
+            : YamlMessageBodyHandler.class));
 
         if (includeAuth) {
             final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("policyadmin", "zb!XztG34");

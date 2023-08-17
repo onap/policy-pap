@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2021 Nordix Foundation.
+ * Copyright (C) 2019-2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021 AT&T Intellectual Property.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -31,16 +31,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import javax.ws.rs.core.Response.Status;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -61,8 +61,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     private PdpGroupCreateOrUpdateProvider prov;
 
 
-
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -72,13 +71,15 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     @Override
-    public void setUp() throws Exception {        super.setUp();
+    public void setUp() throws Exception {
+        super.setUp();
         prov = new PdpGroupCreateOrUpdateProvider();
         super.initialize(prov);
         when(toscaService.getPolicyTypeList("typeA", "100.2.3"))
-            .thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));    }
+            .thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
+    }
 
     @Test
     public void testCreateOrUpdateGroups() throws Exception {

@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2021 Nordix Foundation.
+ *  Copyright (C) 2021, 2023 Nordix Foundation.
  *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,13 +23,13 @@ package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
@@ -50,19 +50,19 @@ public class TestPolicyAuditManager extends ProviderSuper {
      * Setup the test variables.
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         auditManager = new PolicyAuditManager(policyAuditService);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
 
     @Test
-    public void testDeployments() {
+    void testDeployments() {
         auditManager.addDeploymentAudit(MY_POLICY, GROUP_A, PDP_TYPE, USER);
         auditManager.addUndeploymentAudit(MY_POLICY, GROUP_B, PDP_TYPE, USER);
 
@@ -76,15 +76,16 @@ public class TestPolicyAuditManager extends ProviderSuper {
     }
 
     @Test
-    public void testSaveRecordsToDb_EmptyList() {
-        assertThat(auditManager.getAuditRecords()).isEmpty();;
+    void testSaveRecordsToDb_EmptyList() {
+        assertThat(auditManager.getAuditRecords()).isEmpty();
+        ;
         auditManager.saveRecordsToDb();
 
         assertThatCode(() -> auditManager.saveRecordsToDb()).doesNotThrowAnyException();
     }
 
     @Test
-    public void testSaveRecordsToDb_Exception() {
+    void testSaveRecordsToDb_Exception() {
         auditManager.addDeploymentAudit(MY_POLICY, GROUP_A, PDP_TYPE, USER);
 
         assertThat(auditManager.getAuditRecords()).hasSize(1);

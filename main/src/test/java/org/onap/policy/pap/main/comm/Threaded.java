@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +21,8 @@
 
 package org.onap.policy.pap.main.comm;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Super class for tests that run a background thread.
@@ -44,7 +45,7 @@ public abstract class Threaded {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         thread = null;
     }
@@ -55,7 +56,7 @@ public abstract class Threaded {
      *
      * @throws Exception if an error occurs
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         stopThread();
         waitStop();

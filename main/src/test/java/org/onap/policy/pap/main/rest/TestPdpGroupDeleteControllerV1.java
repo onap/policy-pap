@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,10 +23,10 @@ package org.onap.policy.pap.main.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.SyncInvoker;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pap.concepts.PdpGroupDeleteResponse;
 import org.springframework.test.context.ActiveProfiles;
 

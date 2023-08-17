@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2021-2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2021-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,12 +23,12 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.SyncInvoker;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 /**

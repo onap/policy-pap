@@ -20,8 +20,8 @@
 
 package org.onap.policy.pap.main.rest.stub;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.pap.concepts.PdpDeployPolicies;
 import org.onap.policy.models.pap.concepts.PdpGroupDeployResponse;

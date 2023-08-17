@@ -19,28 +19,28 @@
 
 package org.onap.policy.pap.contract;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles({ "test", "stub" })
-public class PapContractTest extends CommonPapRestServer {
+@ActiveProfiles({"test", "stub"})
+class PapContractTest extends CommonPapRestServer {
 
     @Test
-    public void testStubsHealthcheck() throws Exception {
+    void testStubsHealthcheck() throws Exception {
         checkStubJsonGet("healthcheck");
         checkStubJsonGet("pdps/healthcheck");
         checkStubJsonGet("components/healthcheck");
     }
 
     @Test
-    public void testStubsPolicies() throws Exception {
+    void testStubsPolicies() throws Exception {
         checkStubJsonGet("policies/audit");
         checkStubJsonGet("policies/audit/group");
         checkStubJsonGet("policies/audit/group/name/version");
@@ -55,7 +55,7 @@ public class PapContractTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testStubsPdps() throws Exception {
+    void testStubsPdps() throws Exception {
         checkStubJsonGet("pdps");
 
         checkStubJsonPost("pdps/groups/batch");
@@ -79,8 +79,8 @@ public class PapContractTest extends CommonPapRestServer {
         var response = super.sendRequest(url);
         PdpGroups groups = new PdpGroups();
         assertEquals(Response.Status.OK.getStatusCode(), response
-                .post(Entity.entity(groups, MediaType.APPLICATION_JSON))
-                .getStatus());
+            .post(Entity.entity(groups, MediaType.APPLICATION_JSON))
+            .getStatus());
     }
 
     private void checkStubJsonPut(String url) throws Exception {

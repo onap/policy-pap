@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2022 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,12 +35,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import java.util.Set;
-import javax.ws.rs.core.Response.Status;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -71,7 +71,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private ToscaConceptIdentifier ident;
     private Updater updater;
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -81,7 +81,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -104,15 +104,15 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(session.getGroup(GROUP1_NAME)).thenReturn(group);
 
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
-                .hasMessage("group is still ACTIVE");
+            .hasMessage("group is still ACTIVE");
     }
 
     @Test
     public void testDeleteGroup_NotFound() {
         assertThatThrownBy(() -> prov.deleteGroup(GROUP1_NAME)).isInstanceOf(PfModelException.class)
-                .hasMessage("group not found")
-                .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
-                .isEqualTo(Status.NOT_FOUND);
+            .hasMessage("group not found")
+            .extracting(ex -> ((PfModelException) ex).getErrorResponse().getResponseCode())
+            .isEqualTo(Status.NOT_FOUND);
     }
 
     @Test
@@ -183,7 +183,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
         when(session.isUnchanged()).thenReturn(true);
 
         assertThatThrownBy(() -> prov.undeploy(optIdent, DEFAULT_USER)).isInstanceOf(PfModelException.class)
-                .hasMessage("policy does not appear in any PDP group: policyA null");
+            .hasMessage("policy does not appear in any PDP group: policyA null");
     }
 
     @Test
@@ -205,7 +205,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         // process method catches RuntimeException and re-throws as PfModelException
         assertThatThrownBy(() -> prov.undeploy(fullIdent, null)).isInstanceOf(PfModelException.class)
-                .hasRootCauseMessage(EXPECTED_EXCEPTION);
+            .hasRootCauseMessage(EXPECTED_EXCEPTION);
     }
 
     @Test
@@ -279,7 +279,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         @Override
         protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
-                throws PfModelException {
+            throws PfModelException {
             // do nothing
         }
     }

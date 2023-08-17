@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.pdp.concepts.Pdp;
@@ -40,10 +40,12 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.rest.CommonPapRestServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-public class PdpGroupServiceTest extends CommonPapRestServer {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+class PdpGroupServiceTest extends CommonPapRestServer {
 
     private static final String FIELD_IS_NULL = "%s is marked non-null but is null";
 
@@ -62,7 +64,7 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
 
     private PdpGroups groupsToCreate;
 
-    private StandardCoder coder = new StandardCoder();
+    private final StandardCoder coder = new StandardCoder();
 
     /**
      * Setup before tests.
@@ -70,7 +72,7 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
      * @throws Exception the exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         PdpGroups defaultGroup = coder.decode(ResourceUtils.getResourceAsString("e2e/PdpGroups.json"), PdpGroups.class);
@@ -79,7 +81,7 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testPdpGroupsCrudSuccess() {
+    void testPdpGroupsCrudSuccess() {
 
         List<PdpGroup> pdpGroups = pdpGroupService.getPdpGroups();
         assertThat(pdpGroups).hasSize(1);
@@ -118,7 +120,7 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testPdpGroupsCrudFailure() {
+    void testPdpGroupsCrudFailure() {
         PdpState pdpState = null;
         assertThatThrownBy(() -> pdpGroupService.getPdpGroups(pdpState))
             .hasMessage(String.format(FIELD_IS_NULL, "pdpState"));
@@ -140,23 +142,17 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testUpdatePdp() {
+    void testUpdatePdp() {
+        assertThatThrownBy(() -> pdpGroupService.updatePdp(null, null, new Pdp()))
+            .hasMessage(String.format(FIELD_IS_NULL, "pdpGroupName"));
 
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdp(null, null, new Pdp());
-        }).hasMessage(String.format(FIELD_IS_NULL, "pdpGroupName"));
+        assertThatThrownBy(() -> pdpGroupService.updatePdp(NAME, null, new Pdp()))
+            .hasMessage(String.format(FIELD_IS_NULL, "pdpSubGroup"));
 
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdp(NAME, null, new Pdp());
-        }).hasMessage(String.format(FIELD_IS_NULL, "pdpSubGroup"));
+        assertThatThrownBy(() -> pdpGroupService.updatePdp(NAME, TYPE, null))
+            .hasMessage(String.format(FIELD_IS_NULL, "pdp"));
 
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdp(NAME, TYPE, null);
-        }).hasMessage(String.format(FIELD_IS_NULL, "pdp"));
-
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdp(NAME, TYPE, new Pdp());
-        }).hasMessage(LOCALNAME_IS_NULL);
+        assertThatThrownBy(() -> pdpGroupService.updatePdp(NAME, TYPE, new Pdp())).hasMessage(LOCALNAME_IS_NULL);
 
         pdpGroupService.createPdpGroups(groupsToCreate.getGroups());
         assertThat(pdpGroupService.getPdpGroups()).hasSize(2);
@@ -174,18 +170,15 @@ public class PdpGroupServiceTest extends CommonPapRestServer {
     }
 
     @Test
-    public void testUpdateSubGroup() {
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdpSubGroup(null, null);
-        }).hasMessage(String.format(FIELD_IS_NULL, "pdpGroupName"));
+    void testUpdateSubGroup() {
+        assertThatThrownBy(() -> pdpGroupService.updatePdpSubGroup(null, null))
+            .hasMessage(String.format(FIELD_IS_NULL, "pdpGroupName"));
 
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdpSubGroup(NAME, null);
-        }).hasMessage(String.format(FIELD_IS_NULL, "pdpSubGroup"));
+        assertThatThrownBy(() -> pdpGroupService.updatePdpSubGroup(NAME, null))
+            .hasMessage(String.format(FIELD_IS_NULL, "pdpSubGroup"));
 
-        assertThatThrownBy(() -> {
-            pdpGroupService.updatePdpSubGroup(NAME, new PdpSubGroup());
-        }).hasMessage(LOCALNAME_IS_NULL);
+        assertThatThrownBy(() -> pdpGroupService.updatePdpSubGroup(NAME, new PdpSubGroup()))
+            .hasMessage(LOCALNAME_IS_NULL);
 
         pdpGroupService.createPdpGroups(groupsToCreate.getGroups());
         assertThat(pdpGroupService.getPdpGroups()).hasSize(2);

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020 Nordix Foundation.
+ * Modifications Copyright (C) 2020, 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ package org.onap.policy.pap.main.comm.msgdata;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -38,8 +38,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpResponseDetails;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
@@ -59,7 +59,7 @@ public class RequestImplTest extends CommonRequestBase {
      * Sets up.
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -120,8 +120,8 @@ public class RequestImplTest extends CommonRequestBase {
 
         // should only be one token in the queue
         QueueToken<PdpMessage> token = queue.poll();
-        assertNotNull(token);
-        assertSame(msg2, token.get());
+        org.junit.jupiter.api.Assertions.assertNotNull(token);
+        org.junit.jupiter.api.Assertions.assertSame(msg2, token.get());
 
         verify(dispatcher).register(eq(msg.getRequestId()), any());
         verify(timers).register(eq(msg.getRequestId()), any());
@@ -269,7 +269,7 @@ public class RequestImplTest extends CommonRequestBase {
     @Test
     public void testResetRetryCount_testBumpRetryCount() {
         req = new MyRequest(new RequestParams().setMaxRetryCount(2).setModifyLock(lock).setPdpPublisher(publisher)
-                        .setResponseDispatcher(dispatcher).setTimers(timers), MY_REQ_NAME, msg);
+            .setResponseDispatcher(dispatcher).setTimers(timers), MY_REQ_NAME, msg);
         req.setListener(listener);
 
         assertEquals(0, req.getRetryCount());
@@ -455,7 +455,7 @@ public class RequestImplTest extends CommonRequestBase {
         assertTrue(req.getUndeployPolicies().isEmpty());
     }
 
-    private class MyRequest extends RequestImpl {
+    private static class MyRequest extends RequestImpl {
 
         public MyRequest(RequestParams params, String name, PdpMessage message) {
             super(params, name, message);

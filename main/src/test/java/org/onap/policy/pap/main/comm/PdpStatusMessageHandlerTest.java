@@ -23,23 +23,32 @@ package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.Serial;
 import java.sql.SQLIntegrityConstraintViolationException;
 import org.hibernate.HibernateException;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.pap.main.PolicyPapApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
     classes = PolicyPapApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = {
-        "db.initialize=false"
-    })
+    properties = {"db.initialize=false"})
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+class PdpStatusMessageHandlerTest {
 
-public class PdpStatusMessageHandlerTest {
+    @BeforeAll
+    public static void setupClass() {
+        Registry.newRegistry();
+    }
 
     @Test
-    public void testIsDuplicateKeyException() {
+    void testIsDuplicateKeyException() {
 
         // @formatter:off
 
@@ -85,7 +94,7 @@ public class PdpStatusMessageHandlerTest {
                             new SQLIntegrityConstraintViolationException()), HibernateException.class))
             .isTrue();
 
-        // multiple cause both inside and outside of the eclipselink exception
+        // multiple cause both inside and outside the eclipselink exception
         assertThat(PdpStatusMessageHandler.isDuplicateKeyException(
                         new Exception(
                             new Exception(
@@ -98,6 +107,7 @@ public class PdpStatusMessageHandlerTest {
     }
 
     public static class MyHibernateException extends HibernateException {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public MyHibernateException() {

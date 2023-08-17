@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,12 +23,12 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.SyncInvoker;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.report.HealthCheckReport;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,8 +39,8 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@ActiveProfiles({ "test", "default" })
-public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
+@ActiveProfiles({"test", "default"})
+class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
 
     private static final String HEALTHCHECK_ENDPOINT = "healthcheck";
 
@@ -48,12 +48,12 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     private PolicyStatusProvider policyStatusProvider;
 
     @Test
-    public void testSwagger() throws Exception {
+    void testSwagger() throws Exception {
         super.testSwagger(HEALTHCHECK_ENDPOINT);
     }
 
     @Test
-    public void testHealthCheckSuccess() throws Exception {
+    void testHealthCheckSuccess() throws Exception {
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         final HealthCheckReport report = invocationBuilder.get(HealthCheckReport.class);
         validateHealthCheckReport(true, 200, ALIVE, report);
@@ -63,7 +63,7 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testHealthCheckActivatorFailure() throws Exception {
+    void testHealthCheckActivatorFailure() throws Exception {
 
         markActivatorDead();
 
@@ -75,7 +75,7 @@ public class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
     }
 
     @Test
-    public void testHealthCheckDbConnectionFailure() throws Exception {
+    void testHealthCheckDbConnectionFailure() throws Exception {
         when(policyStatusProvider.getPolicyStatus()).thenThrow(PfModelRuntimeException.class);
         final Invocation.Builder invocationBuilder = sendRequest(HEALTHCHECK_ENDPOINT);
         var response = invocationBuilder.get();

@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  * Copyright (C) 2021-2022 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +21,15 @@ package org.onap.policy.pap.main.rest.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
@@ -60,7 +61,7 @@ public class PolicyAuditTest extends End2EndBase {
     private PolicyAuditRepository policyAuditRepository;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         setupEnv();
@@ -70,7 +71,7 @@ public class PolicyAuditTest extends End2EndBase {
      * Teardown after tests.
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         policyAuditRepository.deleteAll();
         super.tearDown();

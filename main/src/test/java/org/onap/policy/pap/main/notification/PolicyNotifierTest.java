@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,15 +32,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Collections;
 import java.util.Set;
-import javax.ws.rs.core.Response.Status;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
@@ -55,7 +57,7 @@ import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PolicyNotifierTest {
+class PolicyNotifierTest {
     private static final String GROUP_A = "groupA";
     private static final String PDP1 = "pdp-1";
     private static final ToscaConceptIdentifier policy1 = new ToscaConceptIdentifier("policy1", "1.2.3");
@@ -70,28 +72,19 @@ public class PolicyNotifierTest {
     @Mock
     private DeploymentStatus tracker;
 
-    @Mock
-    private PolicyStatus status1;
-
-    @Mock
-    private PolicyStatus status2;
-
-    @Mock
-    private PolicyStatus status3;
-
-    @Mock
-    private PolicyStatus status4;
-
     @Captor
     ArgumentCaptor<QueueToken<PolicyNotification>> notifyCaptor;
 
     private MyNotifier notifier;
 
+    AutoCloseable closeable;
+
     /**
      * Creates various objects, including {@link #notifier}.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
+        closeable = MockitoAnnotations.openMocks(this);
         try {
             when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
             Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
@@ -102,8 +95,13 @@ public class PolicyNotifierTest {
         }
     }
 
+    @AfterEach
+    void tearDown() throws Exception {
+        closeable.close();
+    }
+
     @Test
-    public void testProcessResponseString() throws PfModelException {
+    void testProcessResponseString() {
         Set<ToscaConceptIdentifier> expected = Set.of(policy1);
         Set<ToscaConceptIdentifier> actual = Set.of(policy2);
 
@@ -124,7 +122,7 @@ public class PolicyNotifierTest {
     }
 
     @Test
-    public void testProcessResponseString_Ex() throws PfModelException {
+    void testProcessResponseString_Ex() {
         doThrow(new PfModelRuntimeException(Status.BAD_REQUEST, "expected exception")).when(tracker)
             .loadByGroup(anyString());
 
@@ -135,7 +133,7 @@ public class PolicyNotifierTest {
      * Tests publish(), when the notification is empty.
      */
     @Test
-    public void testPublishEmpty() {
+    void testPublishEmpty() {
         notifier.publish(new PolicyNotification());
         verify(publisher, never()).enqueue(any());
     }
@@ -144,7 +142,7 @@ public class PolicyNotifierTest {
      * Tests publish(), when the notification is NOT empty.
      */
     @Test
-    public void testPublishNotEmpty() {
+    void testPublishNotEmpty() {
         PolicyNotification notif = new PolicyNotification();
         notif.getAdded().add(new PolicyStatus());
 
@@ -154,7 +152,7 @@ public class PolicyNotifierTest {
     }
 
     @Test
-    public void testMakeDeploymentTracker() throws PfModelException {
+    void testMakeDeploymentTracker() {
         // make real object, which will invoke the real makeXxx() methods
         PolicyNotifier policyNotifier = new PolicyNotifier(policyStatusService);
         policyNotifier.setPublisher(publisher);

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,15 +31,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.Response.Status;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -72,7 +72,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
     private PdpGroupDeployProvider prov;
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -83,7 +83,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         super.setUp();
@@ -92,7 +92,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
 
         when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList2.json"));
         when(toscaService.getPolicyTypeList("typeA", "100.2.3"))
-            .thenReturn(Arrays.asList(loadPolicyType("daoPolicyType.json")));
+            .thenReturn(List.of(loadPolicyType("daoPolicyType.json")));
     }
 
     /**

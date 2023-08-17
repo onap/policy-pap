@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +22,17 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.pap.main.comm.msgdata.StateChangeReq;
 import org.onap.policy.pap.main.comm.msgdata.UpdateReq;
 
@@ -44,7 +45,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     /**
      * Sets up.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         update = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
         change = makeStateChangeReq(PDP1, MY_STATE);
@@ -109,7 +110,7 @@ public class PdpRequestsTest extends CommonRequestBase {
     public void testAddSingleton_Broadcast() {
         UpdateReq req = makeUpdateReq(null, MY_GROUP, MY_SUBGROUP);
         assertThatIllegalArgumentException().isThrownBy(() -> data.addSingleton(req))
-                        .withMessage("unexpected broadcast for pdp_1");
+            .withMessage("unexpected broadcast for pdp_1");
     }
 
     @Test

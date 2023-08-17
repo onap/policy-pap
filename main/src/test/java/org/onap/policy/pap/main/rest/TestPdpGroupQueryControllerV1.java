@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.SyncInvoker;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.models.pdp.concepts.PdpGroups;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -35,7 +35,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@ActiveProfiles({ "test", "default" })
+@ActiveProfiles({"test", "default"})
 public class TestPdpGroupQueryControllerV1 extends CommonPapRestServer {
 
     private static final String GROUP_ENDPOINT = "pdps";

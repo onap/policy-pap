@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,11 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -39,17 +39,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
@@ -90,7 +89,7 @@ public class TestSessionData extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -106,7 +105,7 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testGetPolicyType() throws Exception {
         ToscaPolicyType policy1 = makePolicyType(POLICY_TYPE, POLICY_TYPE_VERSION);
-        when(toscaService.getPolicyTypeList(POLICY_TYPE, POLICY_TYPE_VERSION)).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getPolicyTypeList(POLICY_TYPE, POLICY_TYPE_VERSION)).thenReturn(List.of(policy1));
 
         assertSame(policy1, session.getPolicyType(type));
 
@@ -132,7 +131,7 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testGetPolicy_NullVersion() throws Exception {
         ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         ident.setVersion(null);
         assertSame(policy1, session.getPolicy(ident));
@@ -140,7 +139,7 @@ public class TestSessionData extends ProviderSuper {
         ToscaTypedEntityFilter<ToscaPolicy> filter = getPolicyFilter();
         assertEquals(POLICY_NAME, filter.getName());
         assertEquals(ToscaTypedEntityFilter.LATEST_VERSION, filter.getVersion());
-        assertEquals(null, filter.getVersionPrefix());
+        assertNull(filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
         assertSame(policy1, session.getPolicy(new ToscaConceptIdentifierOptVersion(policy1.getIdentifier())));
@@ -150,7 +149,7 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testGetPolicy_MajorVersion() throws Exception {
         ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         ident.setVersion("1");
         assertSame(policy1, session.getPolicy(ident));
@@ -168,7 +167,7 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testGetPolicy_MajorMinorVersion() throws Exception {
         ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy1));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         ident.setVersion(POLICY_VERSION);
         assertSame(policy1, session.getPolicy(ident));
@@ -176,7 +175,7 @@ public class TestSessionData extends ProviderSuper {
         ToscaTypedEntityFilter<ToscaPolicy> filter = getPolicyFilter();
         assertEquals(POLICY_NAME, filter.getName());
         assertEquals(POLICY_VERSION, filter.getVersion());
-        assertEquals(null, filter.getVersionPrefix());
+        assertNull(filter.getVersionPrefix());
 
         // retrieve a second time using full version - should use cache
         assertSame(policy1, session.getPolicy(new ToscaConceptIdentifierOptVersion(policy1.getIdentifier())));
@@ -262,10 +261,10 @@ public class TestSessionData extends ProviderSuper {
         assertSame(change3, pair.getRight());
 
         // verify individual lists
-        List<PdpUpdate> updates = Arrays.asList(update, update2);
+        List<PdpUpdate> updates = List.of(update, update2);
         assertEquals(sort(updates, this::compare), sort(session.getPdpUpdates(), this::compare));
 
-        List<PdpStateChange> changes = Arrays.asList(change, change3);
+        List<PdpStateChange> changes = List.of(change, change3);
         assertEquals(sort(changes, this::compare), sort(session.getPdpStateChanges(), this::compare));
     }
 
@@ -290,14 +289,14 @@ public class TestSessionData extends ProviderSuper {
         session.addUpdate(update3);
 
         List<PdpUpdate> lst = sort(getUpdateRequests(), this::compare);
-        assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
+        assertEquals(List.of(update1, update2, update3).toString(), lst.toString());
 
         // overwrite one
         update2 = makeUpdate(PDP2);
         session.addUpdate(update2);
 
         lst = sort(getUpdateRequests(), this::compare);
-        assertEquals(Arrays.asList(update1, update2, update3).toString(), lst.toString());
+        assertEquals(List.of(update1, update2, update3).toString(), lst.toString());
     }
 
     @Test
@@ -313,14 +312,14 @@ public class TestSessionData extends ProviderSuper {
         session.addStateChange(change3);
 
         List<PdpStateChange> lst = sort(getStateChangeRequests(), this::compare);
-        assertEquals(Arrays.asList(change1, change2, change3).toString(), lst.toString());
+        assertEquals(List.of(change1, change2, change3).toString(), lst.toString());
 
         // overwrite one
         change2 = makeStateChange(PDP2);
         session.addStateChange(change2);
 
         lst = sort(getStateChangeRequests(), this::compare);
-        assertEquals(Arrays.asList(change1, change2, change3).toString(), lst.toString());
+        assertEquals(List.of(change1, change2, change3).toString(), lst.toString());
     }
 
     private ToscaPolicyType makePolicyType(String name, String version) {
@@ -365,13 +364,13 @@ public class TestSessionData extends ProviderSuper {
         assertTrue(session.isUnchanged());
 
         // force the groups into the cache
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1, group2));
         session.getActivePdpGroupsByPolicyType(type);
 
         /*
          * try group 1
          */
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1));
         PdpGroup newgrp = new PdpGroup(group1);
         session.update(newgrp);
         assertFalse(session.isUnchanged());
@@ -384,7 +383,7 @@ public class TestSessionData extends ProviderSuper {
         /*
          * try group 2
          */
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group2));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group2));
         newgrp = new PdpGroup(group2);
         session.update(newgrp);
         assertFalse(session.isUnchanged());
@@ -397,7 +396,7 @@ public class TestSessionData extends ProviderSuper {
 
     @Test
     public void testUpdate_NotInCache() throws Exception {
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1));
 
         assertThatIllegalStateException().isThrownBy(() -> session.update(new PdpGroup(group1)))
                 .withMessage("group not cached: groupA");
@@ -405,7 +404,7 @@ public class TestSessionData extends ProviderSuper {
 
     @Test
     public void testGetGroup() throws Exception {
-        when(pdpGroupService.getPdpGroups(GROUP_NAME)).thenReturn(Arrays.asList(group1));
+        when(pdpGroupService.getPdpGroups(GROUP_NAME)).thenReturn(List.of(group1));
 
         assertSame(group1, session.getGroup(GROUP_NAME));
         verify(pdpGroupService).getPdpGroups(any(String.class));
@@ -431,14 +430,14 @@ public class TestSessionData extends ProviderSuper {
         verify(pdpGroupService, times(2)).getPdpGroups(GROUP_NAME);
 
         // find it this time
-        when(pdpGroupService.getPdpGroups(GROUP_NAME)).thenReturn(Arrays.asList(group1));
+        when(pdpGroupService.getPdpGroups(GROUP_NAME)).thenReturn(List.of(group1));
         assertSame(group1, session.getGroup(GROUP_NAME));
         verify(pdpGroupService, times(3)).getPdpGroups(GROUP_NAME);
     }
 
     @Test
     public void testGetActivePdpGroupsByPolicyType() throws Exception {
-        List<PdpGroup> groups = Arrays.asList(group1, group2);
+        List<PdpGroup> groups = List.of(group1, group2);
         when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(groups);
 
         // repeat
@@ -452,7 +451,7 @@ public class TestSessionData extends ProviderSuper {
 
     @Test
     public void testAddGroup() throws Exception {
-        List<PdpGroup> groups = Arrays.asList(group1, group2);
+        List<PdpGroup> groups = List.of(group1, group2);
         when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(groups);
 
         // query by each type
@@ -472,7 +471,7 @@ public class TestSessionData extends ProviderSuper {
     public void testUpdateDb() throws Exception {
         // force the groups into the cache
         PdpGroup group3 = loadGroup("group3.json");
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2, group3));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1, group2, group3));
         session.getActivePdpGroupsByPolicyType(type);
 
         // create groups 4 & 5
@@ -483,7 +482,7 @@ public class TestSessionData extends ProviderSuper {
         session.create(group5);
 
         // update group 1
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1));
         PdpGroup newgrp1 = new PdpGroup(group1);
         session.update(newgrp1);
 
@@ -492,12 +491,12 @@ public class TestSessionData extends ProviderSuper {
         session.update(newgrp1);
 
         // update group 3
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group3));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group3));
         PdpGroup newgrp3 = new PdpGroup(group3);
         session.update(newgrp3);
 
         // update group 5
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group5));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group5));
         PdpGroup newgrp5 = new PdpGroup(group5);
         session.update(newgrp5);
 
@@ -522,7 +521,7 @@ public class TestSessionData extends ProviderSuper {
     @Test
     public void testUpdateDb_Empty() throws Exception {
         // force data into the cache
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Arrays.asList(group1, group2));
+        when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(List.of(group1, group2));
         session.getActivePdpGroupsByPolicyType(type);
 
         PolicyNotification notif = new PolicyNotification();
@@ -566,10 +565,10 @@ public class TestSessionData extends ProviderSuper {
         policy.setType(POLICY_TYPE);
         policy.setTypeVersion(POLICY_TYPE_VERSION);
 
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(Arrays.asList(policy));
+        when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy));
 
         ToscaConceptIdentifier policyId = new ToscaConceptIdentifier(POLICY_NAME, POLICY_VERSION);
-        List<String> pdps = Arrays.asList(PDP1, PDP2);
+        List<String> pdps = List.of(PDP1, PDP2);
 
         ToscaPolicy testPolicy = session.getPolicy(new ToscaConceptIdentifierOptVersion(policyId));
 
@@ -626,7 +625,7 @@ public class TestSessionData extends ProviderSuper {
 
     private <T> List<T> sort(Collection<T> collection, Comparator<T> comparator) {
         List<T> lst = new ArrayList<>(collection);
-        Collections.sort(lst, comparator);
+        lst.sort(comparator);
 
         return lst;
     }

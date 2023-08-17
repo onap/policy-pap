@@ -3,6 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +21,22 @@
 
 package org.onap.policy.pap.main.comm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class QueueTokenTest {
+class QueueTokenTest {
     private static final String STRING1 = "a string";
     private static final String STRING2 = "another string";
 
     private QueueToken<String> token;
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         token = new QueueToken<>(STRING1);
         assertEquals(STRING1, token.get());
 
@@ -42,13 +44,13 @@ public class QueueTokenTest {
         assertEquals(STRING2, token.get());
 
         assertEquals(STRING2, token.replaceItem(null));
-        assertEquals(null, token.get());
+        assertNull(token.get());
 
-        assertEquals(null, token.replaceItem(null));
-        assertEquals(null, token.get());
+        assertNull(token.replaceItem(null));
+        assertNull(token.get());
 
-        assertEquals(null, token.replaceItem(STRING1));
-        assertEquals(null, token.get());
+        assertNull(token.replaceItem(STRING1));
+        assertNull(token.get());
 
         /*
          * Now do some mult-threaded tests, hopefully causing some contention.
@@ -80,7 +82,7 @@ public class QueueTokenTest {
 
         for (int x = 0; x < threads.length; ++x) {
             String msg = "me-" + x;
-            assertTrue(msg, values.contains(msg));
+            assertTrue(values.contains(msg), msg);
         }
     }
 

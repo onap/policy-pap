@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2022 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2023 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,19 @@
 package org.onap.policy.pap.main.comm;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.event.comm.TopicListener;
@@ -82,9 +82,8 @@ public class PublisherTest extends Threaded {
 
     /**
      * Configures the topic and attaches a listener.
-     *
      */
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() {
         final PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
         TopicEndpointManager.getManager().shutdown();
@@ -93,7 +92,7 @@ public class PublisherTest extends Threaded {
         TopicEndpointManager.getManager().start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         TopicEndpointManager.getManager().shutdown();
     }
@@ -103,7 +102,7 @@ public class PublisherTest extends Threaded {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -118,7 +117,7 @@ public class PublisherTest extends Threaded {
      *
      * @throws Exception if an error occurs
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         TopicEndpointManager.getManager().getNoopTopicSink(PDP_PAP_TOPIC).unregister(listener);
 
@@ -238,9 +237,8 @@ public class PublisherTest extends Threaded {
         /**
          * Waits for a message to be published to the topic.
          *
-         * @param waitMs time to wait, in milli-seconds
-         * @return the next message in the queue, or {@code null} if there are no messages
-         *         or if the timeout was reached
+         * @param waitMs time to wait, in milliseconds
+         * @return the next message in the queue, or {@code null} if there are no messages/timeout was reached
          * @throws InterruptedException if this thread was interrupted while waiting
          */
         public String await(long waitMs) throws InterruptedException {

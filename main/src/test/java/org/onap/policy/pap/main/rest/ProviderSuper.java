@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2022 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2023 Nordix Foundation.
  * Modifications Copyright (C) 2022-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -37,7 +37,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -95,15 +96,17 @@ public class ProviderSuper {
     protected ToscaPolicy policy1;
     protected MeterRegistry meterRegistry;
 
+    AutoCloseable closeable;
+
     /**
      * Configures DAO, captors, and various mocks.
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         Registry.newRegistry();
 
-        MockitoAnnotations.openMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
 
         reqmap = mock(PdpModifyRequestMap.class);
 
@@ -123,6 +126,11 @@ public class ProviderSuper {
         Registry.register(PapConstants.REG_PDP_MODIFY_MAP, reqmap);
         Registry.register(PapConstants.REG_METER_REGISTRY, meterRegistry);
 
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        closeable.close();
     }
 
     /**
@@ -280,7 +288,7 @@ public class ProviderSuper {
      * Loads an object from a JSON file.
      *
      * @param fileName name of the file from which to load
-     * @param clazz the class of the object to be loaded
+     * @param clazz    the class of the object to be loaded
      * @return the object that was loaded from the file
      */
     protected <T> T loadFile(String fileName, Class<T> clazz) {

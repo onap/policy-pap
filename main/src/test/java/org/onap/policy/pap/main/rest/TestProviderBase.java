@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021,2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,23 +23,22 @@
 package org.onap.policy.pap.main.rest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import javax.ws.rs.core.Response.Status;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.services.Registry;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -71,7 +70,7 @@ public class TestProviderBase extends ProviderSuper {
 
     private MyProvider prov;
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() {
         Registry.newRegistry();
     }
@@ -82,7 +81,7 @@ public class TestProviderBase extends ProviderSuper {
      * @throws Exception if an error occurs
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         prov = new MyProvider();
@@ -319,8 +318,8 @@ public class TestProviderBase extends ProviderSuper {
 
     private static class MyProvider extends ProviderBase {
         /**
-         * Used to determine whether or not to make an update when
-         * {@link #makeUpdater(ToscaPolicy)} is called. The updater function removes an
+         * Used to determine whether to make an update when
+         * makeUpdater() is called. The updater function removes an
          * item from this queue each time it is invoked.
          */
         private final Queue<Boolean> shouldUpdate = new LinkedList<>();
@@ -339,7 +338,7 @@ public class TestProviderBase extends ProviderSuper {
         }
 
         public void add(Boolean... update) {
-            shouldUpdate.addAll(Arrays.asList(update));
+            shouldUpdate.addAll(List.of(update));
         }
 
         @Override

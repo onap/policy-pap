@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
@@ -23,21 +23,21 @@
 package org.onap.policy.pap.main.startstop;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.event.comm.TopicEndpointManager;
 import org.onap.policy.common.endpoints.http.server.HttpServletServerFactoryInstance;
 import org.onap.policy.common.utils.network.NetworkUtil;
@@ -63,8 +63,9 @@ public class TestPapActivator {
     /**
      * Allocates a new DB name, server port, and creates a config file.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() {
+        Registry.newRegistry();
         CommonTestData.newDb();
     }
 
@@ -73,7 +74,7 @@ public class TestPapActivator {
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Registry.newRegistry();
         TopicEndpointManager.getManager().shutdown();
@@ -102,20 +103,20 @@ public class TestPapActivator {
      *
      * @throws Exception if an error occurs
      */
-    @After
+    @AfterEach
     public void teardown() throws Exception {
         if (activator != null && activator.isAlive()) {
             activator.stop();
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         Registry.newRegistry();
     }
 
     @Test
-    public void testPapActivator() {
+    void testPapActivator() {
         assertFalse(activator.isAlive());
         activator.start();
         assertTrue(activator.isAlive());
@@ -133,7 +134,7 @@ public class TestPapActivator {
     }
 
     @Test
-    public void testTerminate() {
+    void testTerminate() {
         activator.start();
         activator.stop();
         assertFalse(activator.isAlive());

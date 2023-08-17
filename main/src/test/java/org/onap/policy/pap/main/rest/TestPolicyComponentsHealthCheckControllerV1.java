@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020, 2022 Nordix Foundation.
+ *  Copyright (C) 2019-2020, 2022-2023 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Inc.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,16 +22,16 @@
 
 package org.onap.policy.pap.main.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.policy.common.endpoints.parameters.RestClientParameters;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.springframework.beans.factory.annotation.Autowired;

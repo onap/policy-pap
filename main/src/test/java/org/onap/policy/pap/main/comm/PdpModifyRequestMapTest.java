@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021,2023 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,11 +25,11 @@ package org.onap.policy.pap.main.comm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -39,22 +39,25 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.Response.Status;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -76,7 +79,7 @@ import org.onap.policy.pap.main.service.PolicyStatusService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PdpModifyRequestMapTest extends CommonRequestBase {
+class PdpModifyRequestMapTest extends CommonRequestBase {
     private static final String MY_REASON = "my reason";
     private static final int EXPIRED_SECONDS = 100;
 
@@ -119,15 +122,18 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     private PdpStateChange change;
     private PdpStatus response;
 
+    AutoCloseable autoCloseable;
+
     /**
      * Sets up.
      *
      * @throws Exception if an error occurs
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        autoCloseable = MockitoAnnotations.openMocks(this);
 
         response = new PdpStatus();
 
@@ -146,14 +152,19 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         map = new MyMap(mapParams);
     }
 
+    @AfterEach
+    void tearDown() throws Exception {
+        autoCloseable.close();
+    }
+
     @Test
-    public void testPdpModifyRequestMap() {
+    void testPdpModifyRequestMap() {
         assertSame(mapParams, ReflectionTestUtils.getField(map, "params"));
         assertSame(lock, ReflectionTestUtils.getField(map, "modifyLock"));
     }
 
     @Test
-    public void testIsEmpty() {
+    void testIsEmpty() {
         assertTrue(map.isEmpty());
 
         map.addRequest(change);
@@ -167,7 +178,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStopPublishing() {
+    void testStopPublishing() {
         // try with non-existent PDP
         map.stopPublishing(PDP1);
 
@@ -182,13 +193,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange_BothNull() {
+    void testAddRequestPdpUpdatePdpStateChange_BothNull() {
         // nulls should be ok
         Assertions.assertThatCode(() -> map.addRequest(null, null)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange_NullUpdate() {
+    void testAddRequestPdpUpdatePdpStateChange_NullUpdate() {
         map.addRequest(null, change);
 
         Request req = getSingletons(1).get(0);
@@ -197,7 +208,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange_NullStateChange() {
+    void testAddRequestPdpUpdatePdpStateChange_NullStateChange() {
         map.addRequest(update, null);
 
         Request req = getSingletons(1).get(0);
@@ -210,7 +221,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * message.
      */
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange_BothProvided_Active() {
+    void testAddRequestPdpUpdatePdpStateChange_BothProvided_Active() {
         change.setState(PdpState.ACTIVE);
         map.addRequest(update, change);
 
@@ -235,7 +246,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * message.
      */
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange_BothProvided_Passive() {
+    void testAddRequestPdpUpdatePdpStateChange_BothProvided_Passive() {
         change.setState(PdpState.PASSIVE);
         map.addRequest(update, change);
 
@@ -256,7 +267,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testAddRequestPdpUpdatePdpStateChange() {
+    void testAddRequestPdpUpdatePdpStateChange() {
         // null should be ok
         map.addRequest(null, null);
 
@@ -269,11 +280,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // broadcast should throw an exception
         change.setName(null);
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(change))
-                        .withMessageStartingWith("unexpected broadcast message: PdpStateChange");
+            .withMessageStartingWith("unexpected broadcast message: PdpStateChange");
     }
 
     @Test
-    public void testAddRequestPdpUpdate() {
+    void testAddRequestPdpUpdate() {
         // null should be ok
         map.addRequest((PdpUpdate) null);
 
@@ -286,11 +297,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // broadcast should throw an exception
         update.setName(null);
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(update))
-                        .withMessageStartingWith("unexpected broadcast message: PdpUpdate");
+            .withMessageStartingWith("unexpected broadcast message: PdpUpdate");
     }
 
     @Test
-    public void testAddRequestPdpStateChange() {
+    void testAddRequestPdpStateChange() {
         // null should be ok
         map.addRequest((PdpStateChange) null);
 
@@ -303,11 +314,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         // broadcast should throw an exception
         change.setName(null);
         assertThatIllegalArgumentException().isThrownBy(() -> map.addRequest(change))
-                        .withMessageStartingWith("unexpected broadcast message: PdpStateChange");
+            .withMessageStartingWith("unexpected broadcast message: PdpStateChange");
     }
 
     @Test
-    public void testAddSingleton() {
+    void testAddSingleton() {
         map.addRequest(change);
         assertEquals(1, map.nalloc);
 
@@ -333,7 +344,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStartNextRequest_NoMore() {
+    void testStartNextRequest_NoMore() {
         map.addRequest(change);
 
         // indicate success
@@ -350,7 +361,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStartNextRequest_HaveMore() {
+    void testStartNextRequest_HaveMore() {
         map.addRequest(update);
         map.addRequest(change);
 
@@ -375,7 +386,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRemoveExpiredPdps() throws Exception {
+    void testRemoveExpiredPdps() {
         PdpGroup group1 = makeGroup(MY_GROUP);
         group1.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1)));
 
@@ -410,7 +421,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRemoveExpiredPdps_NothingExpired() throws Exception {
+    void testRemoveExpiredPdps_NothingExpired() {
         PdpGroup group1 = makeGroup(MY_GROUP);
         group1.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1)));
 
@@ -424,21 +435,21 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRemoveExpiredPdps_DaoEx() throws Exception {
+    void testRemoveExpiredPdps_DaoEx() {
         when(pdpGroupService.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
 
         assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
     }
 
     @Test
-    public void testRemoveExpiredPdps_DaoRtEx() throws Exception {
+    void testRemoveExpiredPdps_DaoRtEx() {
         when(pdpGroupService.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
 
         assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
     }
 
     @Test
-    public void testRemoveFromSubgroup() throws Exception {
+    void testRemoveFromSubgroup() {
         PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1, PDP2, PDP3)));
 
@@ -473,7 +484,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testMakePdpRequests() {
+    void testMakePdpRequests() {
         // this should invoke the real method without throwing an exception
         PdpModifyRequestMap reqMap =
             new PdpModifyRequestMap(pdpGroupService, policyStatusService, responseHandler, undeployer, notifier);
@@ -489,11 +500,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testSingletonListenerFailure() throws Exception {
+    void testSingletonListenerFailure() throws Exception {
         map.addRequest(change);
 
         // invoke the method
-        invokeFailureHandler(1);
+        invokeFailureHandler();
 
         verify(undeployer, never()).undeploy(any(), any(), any());
         verify(requests, never()).stopPublishing();
@@ -507,14 +518,14 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * Tests Listener.failure() when something has to be undeployed.
      */
     @Test
-    public void testSingletonListenerFailureUndeploy() throws Exception {
+    void testSingletonListenerFailureUndeploy() throws Exception {
 
         ToscaConceptIdentifier ident = new ToscaConceptIdentifier("undeployed", "2.3.4");
         ToscaPolicy policy = mock(ToscaPolicy.class);
         when(policy.getIdentifier()).thenReturn(ident);
 
         // add some policies to the update
-        update.setPoliciesToBeDeployed(Arrays.asList(policy));
+        update.setPoliciesToBeDeployed(List.of(policy));
 
         map.addRequest(update);
 
@@ -527,7 +538,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         doAnswer(ans -> {
             PdpUpdate update2 = new PdpUpdate(update);
             update2.setPoliciesToBeDeployed(Collections.emptyList());
-            update2.setPoliciesToBeUndeployed(Arrays.asList(policy.getIdentifier()));
+            update2.setPoliciesToBeUndeployed(List.of(policy.getIdentifier()));
             assertTrue(req.reconfigure(update2));
             throw makeException();
         }).when(undeployer).undeploy(any(), any(), any());
@@ -538,10 +549,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         req.checkResponse(response);
 
         // invoke the method
-        invokeFailureHandler(1);
+        invokeFailureHandler();
 
         verify(undeployer).undeploy(eq(MY_GROUP), eq(MY_SUBGROUP), undeployCaptor.capture());
-        assertEquals(Arrays.asList(ident).toString(), undeployCaptor.getValue().toString());
+        assertEquals(List.of(ident).toString(), undeployCaptor.getValue().toString());
 
         // no effect on the map
         map.addRequest(update);
@@ -553,14 +564,14 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * remains unchanged.
      */
     @Test
-    public void testSingletonListenerFailureUndeployMessageUnchanged() throws Exception {
+    void testSingletonListenerFailureUndeployMessageUnchanged() throws Exception {
 
         ToscaConceptIdentifier ident = new ToscaConceptIdentifier("msg-unchanged", "8.7.6");
         ToscaPolicy policy = mock(ToscaPolicy.class);
         when(policy.getIdentifier()).thenReturn(ident);
 
         // add some policies to the update
-        update.setPoliciesToBeDeployed(Arrays.asList(policy));
+        update.setPoliciesToBeDeployed(List.of(policy));
 
         map.addRequest(update);
 
@@ -571,10 +582,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
         req.checkResponse(response);
 
         // invoke the method
-        invokeFailureHandler(1);
+        invokeFailureHandler();
 
         verify(undeployer).undeploy(eq(MY_GROUP), eq(MY_SUBGROUP), undeployCaptor.capture());
-        assertEquals(Arrays.asList(ident).toString(), undeployCaptor.getValue().toString());
+        assertEquals(List.of(ident).toString(), undeployCaptor.getValue().toString());
 
         // requests should have been removed from the map so this should allocate another
         map.addRequest(update);
@@ -582,11 +593,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testSingletonListenerSuccess() throws Exception {
+    void testSingletonListenerSuccess() {
         map.addRequest(change);
 
         // invoke the method
-        invokeSuccessHandler(1);
+        invokeSuccessHandler();
 
         verify(requests, never()).stopPublishing();
 
@@ -596,11 +607,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRequestCompleted_LastRequest() throws Exception {
+    void testRequestCompleted_LastRequest() {
         map.addRequest(change);
 
         // invoke the method
-        invokeSuccessHandler(1);
+        invokeSuccessHandler();
 
         verify(requests, never()).stopPublishing();
 
@@ -610,7 +621,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRequestCompleted_NameMismatch() throws Exception {
+    void testRequestCompleted_NameMismatch() {
         // use a different name
         when(requests.getPdpName()).thenReturn(DIFFERENT);
 
@@ -618,10 +629,10 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         // put the PDP in a group
         PdpGroup group = makeGroup(MY_GROUP);
-        group.setPdpSubgroups(Arrays.asList(makeSubGroup(MY_SUBGROUP, PDP1, DIFFERENT)));
+        group.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1, DIFFERENT)));
 
         // invoke the method - with a different name (i.e., PDP1 instead of DIFFERENT)
-        invokeSuccessHandler(1);
+        invokeSuccessHandler();
 
         verify(requests, never()).stopPublishing();
 
@@ -634,13 +645,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRequestCompleted_AlreadyStopped() throws Exception {
+    void testRequestCompleted_AlreadyStopped() {
         map.addRequest(change);
 
         map.stopPublishing(PDP1);
 
         // invoke the method
-        invokeSuccessHandler(1);
+        invokeSuccessHandler();
 
         // should have called this a second time
         verify(requests, times(2)).stopPublishing();
@@ -651,13 +662,13 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRequestCompleted_NotFirstInQueue() throws Exception {
+    void testRequestCompleted_NotFirstInQueue() {
         map.addRequest(change);
 
         when(requests.isFirstInQueue(any())).thenReturn(false);
 
         // invoke the method
-        invokeSuccessHandler(1);
+        invokeSuccessHandler();
 
         // should not have called this
         verify(requests, never()).stopPublishing();
@@ -668,11 +679,11 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    public void testSingletonListenerRetryCountExhausted() throws Exception {
+    void testSingletonListenerRetryCountExhausted() {
         final var request = map.addRequest(change);
 
         // invoke the method
-        invokeLastRetryHandler(1, request);
+        invokeLastRetryHandler(request);
 
         verify(requests).stopPublishing();
     }
@@ -680,30 +691,25 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
     /**
      * Invokes the first request's listener.success() method.
-     *
-     * @param count expected number of requests
      */
-    private void invokeSuccessHandler(int count) {
-        getListener(getSingletons(count).get(0)).success(PDP1, response);
+    private void invokeSuccessHandler() {
+        getListener(getSingletons(1).get(0)).success(PDP1, response);
     }
 
     /**
      * Invokes the first request's listener.failure() method.
-     *
-     * @param count expected number of requests
      */
-    private void invokeFailureHandler(int count) {
-        getListener(getSingletons(count).get(0)).failure(PDP1, MY_REASON);
+    private void invokeFailureHandler() {
+        getListener(getSingletons(1).get(0)).failure(PDP1, MY_REASON);
     }
 
     /**
      * Invokes the first request's listener.retryCountExhausted() method.
      *
-     * @param count expected number of requests
      * @param request request whose count was exhausted
      */
-    private void invokeLastRetryHandler(int count, Request request) {
-        getListener(getSingletons(count).get(0)).retryCountExhausted(request);
+    private void invokeLastRetryHandler(Request request) {
+        getListener(getSingletons(1).get(0)).retryCountExhausted(request);
     }
 
     /**
@@ -742,7 +748,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         subgroup.setPdpType(pdpType);
         subgroup.setCurrentInstanceCount(pdpNames.length);
-        subgroup.setPdpInstances(Arrays.asList(pdpNames).stream().map(this::makePdp).collect(Collectors.toList()));
+        subgroup.setPdpInstances(Arrays.stream(pdpNames).map(this::makePdp).collect(Collectors.toList()));
 
         return subgroup;
     }
@@ -759,9 +765,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      * Gets the input to the method.
      *
      * @return the input that was passed to the dao.updatePdpGroups() method
-     * @throws Exception if an error occurred
      */
-    private List<PdpGroup> getGroupUpdates() throws Exception {
+    private List<PdpGroup> getGroupUpdates() {
         verify(pdpGroupService).updatePdpGroups(updateCaptor.capture());
 
         return copyList(updateCaptor.getValue());
@@ -775,7 +780,7 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
      */
     private List<PdpGroup> copyList(List<PdpGroup> source) {
         List<PdpGroup> newlst = new ArrayList<>(source);
-        Collections.sort(newlst, (left, right) -> left.getName().compareTo(right.getName()));
+        newlst.sort(Comparator.comparing(PdpGroup::getName));
         return newlst;
     }
 
@@ -787,7 +792,8 @@ public class PdpModifyRequestMapTest extends CommonRequestBase {
 
         public MyMap(PdpModifyRequestMapParams params) {
             super(pdpGroupService, policyStatusService, responseHandler, undeployer, notifier);
-            super.initialize(params);;
+            super.initialize(params);
+            ;
         }
 
         @Override

@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021, 2023 Nordix Foundation.
  * Modifications Copyright (C) 2021, 2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@
 package org.onap.policy.pap.main.rest;
 
 import com.google.gson.annotations.SerializedName;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.Response.Status;
 import lombok.Getter;
 import org.onap.policy.common.parameters.BeanValidationResult;
 import org.onap.policy.common.parameters.BeanValidator;

@@ -22,13 +22,12 @@
 package org.onap.policy.pap.main.rest.stub;
 
 import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.pap.main.rest.PapRestControllerV1;
 import org.slf4j.Logger;
@@ -75,7 +74,7 @@ class StubUtils {
             final var resource = new ClassPathResource(PAP_DB);
             try (var inputStream = resource.getInputStream()) {
                 final var string = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                var targetObject = Arrays.asList(JSON_TRANSLATOR.fromJson(string, clazz));
+                var targetObject = List.of(JSON_TRANSLATOR.fromJson(string, clazz));
                 return new ResponseEntity<>(targetObject, HttpStatus.OK);
             } catch (IOException e) {
                 log.error(SERIALIZE_RESPONSE_FAILURE_MSG, e);

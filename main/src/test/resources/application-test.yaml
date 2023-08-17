@@ -1,97 +1,13 @@
 spring:
-  security:
-    user:
-      name: policyadmin
-      password: zb!XztG34
-  http:
-    converters:
-      preferred-json-mapper: gson
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
   jpa:
-#    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-#        format_sql: true
     hibernate:
       ddl-auto: create-drop
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
-
-server:
-  port: 6969
-  servlet:
-    context-path: /policy/pap/v1
-pap:
-  name: "PapGroup"
-  aaf: false
-  topic:
-    pdp-pap.name: POLICY-PDP-PAP
-    notification.name: POLICY-NOTIFICATION
-    heartbeat.name: POLICY-HEARTBEAT
-  pdpParameters:
-    updateParameters:
-      maxRetryCount: 1
-      maxWaitMs: 3000
-    stateChangeParameters:
-      maxRetryCount: 1
-      maxWaitMs: 3000
-    heartBeatMs: 6000
-    maxMessageAgeMs: 20000
-  topicParameterGroup:
-    topicSources:
-    - topic: ${pap.topic.pdp-pap.name}
-      servers:
-      - message-router
-      topicCommInfrastructure: noop
-    - topic: ${pap.topic.heartbeat.name}
-      effectiveTopic: ${pap.topic.pdp-pap.name}
-      consumerGroup: policy-pap
-      servers:
-      - message-router
-      topicCommInfrastructure: noop
-    topicSinks:
-    - topic: ${pap.topic.pdp-pap.name}
-      servers:
-      - message-router
-      topicCommInfrastructure: noop
-    - topic: ${pap.topic.notification.name}
-      servers:
-      - message-router
-      topicCommInfrastructure: noop
-  healthCheckRestClientParameters:
-  - clientName: api
-    hostname: policy-api
-    port: 6969
-    userName: policyadmin
-    password: zb!XztG34
-    useHttps: true
-    basePath: policy/api/v1/healthcheck
-  - clientName: distribution
-    hostname: policy-distribution
-    port: 6969
-    userName: healthcheck
-    password: zb!XztG34
-    useHttps: true
-    basePath: healthcheck
-  - clientName: dmaap
-    hostname: message-router
-    port: 3905
-    useHttps: true
-    basePath: topics
-
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-  endpoints:
-    web:
-      base-path: /
-      exposure:
-        include: health, metrics, prometheus
-      path-mapping.metrics: plain-metrics
-      path-mapping.prometheus: metrics
