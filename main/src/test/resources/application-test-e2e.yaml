@@ -14,7 +14,6 @@ spring:
 
 pap:
   name: "PapGroupE2E"
-  aaf: false
   topic:
     pdp-pap.name: pdp-pap-topic
     notification.name: notification-topic

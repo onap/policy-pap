@@ -28,7 +28,6 @@ server:
 
 pap:
   name: PapGroup
-  aaf: false
   pdpParameters:
     heartBeatMs: 120000
     updateParameters:
