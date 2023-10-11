@@ -3,9 +3,6 @@ spring:
     user:
       name: policyadmin
       password: zb!XztG34
-  http:
-    converters:
-      preferred-json-mapper: gson
   datasource:
     url: jdbc:mariadb://mariadb:3306/policyadmin
     driverClassName: org.mariadb.jdbc.Driver
@@ -20,6 +17,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
+  mvc:
+    converters:
+      preferred-json-mapper: gson
 
 server:
   port: 6969
@@ -27,7 +27,6 @@ server:
     context-path: /policy/pap/v1
 pap:
   name: PapGroup
-  aaf: false
   topic:
     pdp-pap.name: POLICY-PDP-PAP
     notification.name: POLICY-NOTIFICATION
