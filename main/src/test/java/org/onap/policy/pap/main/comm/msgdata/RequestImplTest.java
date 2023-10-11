@@ -77,7 +77,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRequest_InvalidArgs() {
+    void testRequest_InvalidArgs() {
         // null params
         assertThatThrownBy(() -> new MyRequest(null, MY_REQ_NAME, msg)).isInstanceOf(NullPointerException.class);
 
@@ -92,13 +92,13 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testReconfigure2_WrongMsgClass() {
+    void testReconfigure2_WrongMsgClass() {
         assertThatIllegalArgumentException().isThrownBy(() -> req.reconfigure(new PdpUpdate()))
                         .withMessage("expecting PdpStateChange instead of PdpUpdate");
     }
 
     @Test
-    public void testReconfigure2_NotPublishing() {
+    void testReconfigure2_NotPublishing() {
 
         // replace the message with a new message
         req.reconfigure(new PdpStateChange());
@@ -108,7 +108,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testRequestImpl_testReconfigure2_Publishing() {
+    void testRequestImpl_testReconfigure2_Publishing() {
         req.startPublishing();
 
         // replace the message with a new message
@@ -135,7 +135,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testIsPublishing() {
+    void testIsPublishing() {
         assertFalse(req.isPublishing());
 
         req.startPublishing();
@@ -146,14 +146,14 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStartPublishingQueueToken_NoListener() {
+    void testStartPublishingQueueToken_NoListener() {
         req.setListener(null);
         assertThatIllegalStateException().isThrownBy(() -> req.startPublishing())
                         .withMessage("listener has not been set");
     }
 
     @Test
-    public void testStartPublishing() {
+    void testStartPublishing() {
         req.startPublishing();
 
         assertTrue(req.isPublishing());
@@ -176,7 +176,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStopPublishing() {
+    void testStopPublishing() {
         // not publishing yet
         req.stopPublishing();
         assertFalse(req.isPublishing());
@@ -197,13 +197,13 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testStopPublishingBoolean_NotPublishing() {
+    void testStopPublishingBoolean_NotPublishing() {
         // should not throw an exception
         Assertions.assertThatCode(() -> req.stopPublishing()).doesNotThrowAnyException();
     }
 
     @Test
-    public void testStopPublishingBoolean_TruePublishing() {
+    void testStopPublishingBoolean_TruePublishing() {
         req.startPublishing();
 
         req.stopPublishing();
@@ -225,7 +225,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testEnqueue() {
+    void testEnqueue() {
         req.startPublishing();
 
         // replace the message with a new message
@@ -267,7 +267,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testResetRetryCount_testBumpRetryCount() {
+    void testResetRetryCount_testBumpRetryCount() {
         req = new MyRequest(new RequestParams().setMaxRetryCount(2).setModifyLock(lock).setPdpPublisher(publisher)
             .setResponseDispatcher(dispatcher).setTimers(timers), MY_REQ_NAME, msg);
         req.setListener(listener);
@@ -287,7 +287,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testProcessResponse() {
+    void testProcessResponse() {
         req.startPublishing();
 
         invokeProcessResponse(response);
@@ -298,7 +298,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testProcessResponse_NotPublishing() {
+    void testProcessResponse_NotPublishing() {
         // force registration with the dispatcher - needed by invokeProcessResponse(response)
         req.startPublishing();
         req.stopPublishing();
@@ -310,7 +310,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testProcessResponse_WrongRequest() {
+    void testProcessResponse_WrongRequest() {
         req.startPublishing();
 
         response.getResponse().setResponseTo(DIFFERENT);
@@ -323,7 +323,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testProcessResponse_ResponseFailed() {
+    void testProcessResponse_ResponseFailed() {
         req.startPublishing();
 
         response.setName(DIFFERENT);
@@ -336,7 +336,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testHandleTimeout() {
+    void testHandleTimeout() {
         req.startPublishing();
 
         // remove it from the queue
@@ -352,7 +352,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testHandleTimeout_NotPublishing() {
+    void testHandleTimeout_NotPublishing() {
         req.startPublishing();
 
         req.stopPublishing();
@@ -365,7 +365,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testHandleTimeout_RetryExhausted() {
+    void testHandleTimeout_RetryExhausted() {
         req.startPublishing();
 
         // exhaust the count
@@ -385,7 +385,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_Matched() {
+    void testCheckResponse_Matched() {
         req.startPublishing();
 
         invokeProcessResponse(response);
@@ -395,7 +395,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_NullName() {
+    void testCheckResponse_NullName() {
         req.startPublishing();
 
         response.setName(null);
@@ -407,7 +407,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_MismatchedName() {
+    void testCheckResponse_MismatchedName() {
         req.startPublishing();
 
         response.setName(DIFFERENT);
@@ -419,7 +419,7 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testCheckResponse_MismatchedNameWithBroadcast() {
+    void testCheckResponse_MismatchedNameWithBroadcast() {
         msg.setName(null);
         req.startPublishing();
 
@@ -432,12 +432,12 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertEquals(MY_REQ_NAME, req.getName());
     }
 
     @Test
-    public void testGetMessage() {
+    void testGetMessage() {
         assertSame(msg, req.getMessage());
 
         PdpStateChange msg2 = new PdpStateChange();
@@ -446,12 +446,12 @@ class RequestImplTest extends CommonRequestBase {
     }
 
     @Test
-    public void testGetParams() {
+    void testGetParams() {
         assertSame(reqParams, req.getParams());
     }
 
     @Test
-    public void testGetUndeployPolicies() {
+    void testGetUndeployPolicies() {
         assertTrue(req.getUndeployPolicies().isEmpty());
     }
 

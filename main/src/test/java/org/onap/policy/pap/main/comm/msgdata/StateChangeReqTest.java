@@ -63,39 +63,39 @@ class StateChangeReqTest extends CommonRequestBase {
     }
 
     @Test
-    public void testGetMessage() {
+    void testGetMessage() {
         assertEquals(MY_REQ_NAME, data.getName());
         assertSame(msg, data.getMessage());
     }
 
     @Test
-    public void testCheckResponse() {
+    void testCheckResponse() {
         assertNull(data.checkResponse(response));
     }
 
     @Test
-    public void testCheckResponse_NullName() {
+    void testCheckResponse_NullName() {
         response.setName(null);
 
         assertEquals("null PDP name", data.checkResponse(response));
     }
 
     @Test
-    public void testCheckResponse_NullMsgName() {
+    void testCheckResponse_NullMsgName() {
         msg.setName(null);
 
         assertNull(data.checkResponse(response));
     }
 
     @Test
-    public void testCheckResponse_MismatchedState() {
+    void testCheckResponse_MismatchedState() {
         response.setState(DIFF_STATE);
 
         assertEquals("state is TERMINATED, but expected SAFE", data.checkResponse(response));
     }
 
     @Test
-    public void testReconfigure() {
+    void testReconfigure() {
         // different message type should fail and leave message unchanged
         assertFalse(data.reconfigure(new PdpUpdate()));
         assertSame(msg, data.getMessage());

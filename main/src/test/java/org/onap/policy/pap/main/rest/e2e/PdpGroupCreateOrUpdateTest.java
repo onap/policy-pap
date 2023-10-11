@@ -88,7 +88,7 @@ class PdpGroupCreateOrUpdateTest extends End2EndBase {
         createPdpGroups("createGroups.yaml", "application/yaml");
     }
 
-    private void createPdpGroups(String fileName, String mediaType) throws Exception, InterruptedException {
+    private void createPdpGroups(String fileName, String mediaType) throws Exception {
         context.addPdp("pdpAA_1", CREATE_SUBGROUP);
         context.addPdp("pdpAA_2", CREATE_SUBGROUP);
         context.addPdp("pdpAB_1", "pdpTypeB");
@@ -127,7 +127,7 @@ class PdpGroupCreateOrUpdateTest extends End2EndBase {
     }
 
     @Test
-    public void testCreateAndUpdate_MultipleGroups() throws Exception {
+    void testCreateAndUpdate_MultipleGroups() throws Exception {
 
         Invocation.Builder invocationBuilderForGroupUpdate = sendRequest(CREATEORUPDATE_GROUPS_ENDPOINT);
 
