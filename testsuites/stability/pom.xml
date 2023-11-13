@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.onap.policy.pap</groupId>
         <artifactId>pap-testsuites</artifactId>
-        <version>3.0.2-SNAPSHOT</version>
+        <version>3.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>pap-stability</artifactId>
     <build>
