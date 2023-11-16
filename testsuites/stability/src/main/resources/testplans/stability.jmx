@@ -11301,23 +11301,23 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     }
 
     def newSimpleDeployAPICount =  &apos;0&apos;;
-    if (res.contains(&apos;http_server_requests_seconds_count{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/policy/pap/v1/pdps/policies&quot;,} &apos;)) {
-    	newSimpleDeployAPICount = (res =~ /http_server_requests_seconds_count\{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/policy\/pap\/v1\/pdps\/policies&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
+    if (res.contains(&apos;http_server_requests_seconds_count{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/pdps/policies&quot;,} &apos;)) {
+    	newSimpleDeployAPICount = (res =~ /http_server_requests_seconds_count\{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/pdps\/policies&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
     }
     def newSimpleUndeployAPICount =  &apos;0&apos;;
-    if (res.contains(&apos;http_server_requests_seconds_count{exception=&quot;None&quot;,method=&quot;DELETE&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/policy/pap/v1/pdps/policies/{name}&quot;,} &apos;)) {
-    	newSimpleUndeployAPICount = (res =~ /http_server_requests_seconds_count\{exception=&quot;None&quot;,method=&quot;DELETE&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/policy\/pap\/v1\/pdps\/policies\/\{name\}&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
+    if (res.contains(&apos;http_server_requests_seconds_count{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;DELETE&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/pdps/policies/{name}&quot;,} &apos;)) {
+    	newSimpleUndeployAPICount = (res =~ /http_server_requests_seconds_count\{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;DELETE&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/pdps\/policies\/\{name\}&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
     }
     def newBatchDeploymentAPICount =  &apos;0&apos;;
-    if (res.contains(&apos;http_server_requests_seconds_count{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/policy/pap/v1/pdps/deployments/batch&quot;,} &apos;)) {
-    	newBatchDeploymentAPICount = (res =~ /http_server_requests_seconds_count\{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/policy\/pap\/v1\/pdps\/deployments\/batch&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
+    if (res.contains(&apos;http_server_requests_seconds_count{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/pdps/deployments/batch&quot;,} &apos;)) {
+    	newBatchDeploymentAPICount = (res =~ /http_server_requests_seconds_count\{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/pdps\/deployments\/batch&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
     }
     log.info(&quot;newDeploySuccessCount: &quot;+ newDeploySuccessCount);
     log.info(&quot;newUndeploySuccessCount: &quot;+ newUndeploySuccessCount);
     log.info(&quot;newBatchDeploymentAPICount: &quot;+ newBatchDeploymentAPICount);
     log.info(&quot;newSimpleDeployAPICount: &quot;+ newSimpleDeployAPICount);
     log.info(&quot;newSimpleUndeployAPICount: &quot;+ newSimpleUndeployAPICount);
-    
+
     assert Long.valueOf(vars.get(&quot;deployFailureCount&quot;)) == Long.valueOf(newDeployFailureCount);
     assert Long.valueOf(vars.get(&quot;undeployFailureCount&quot;)) == Long.valueOf(newUndeployFailureCount);
     // One policy is deployed/undeployed using batch API and the other one using simple APIs
@@ -11326,7 +11326,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     assert (Long.valueOf(vars.get(&quot;batchDeploymentAPICount&quot;))+2) &lt;= Long.valueOf(newBatchDeploymentAPICount);
     assert (Long.valueOf(vars.get(&quot;deploySuccessCount&quot;))+2) &lt;= Long.valueOf(newDeploySuccessCount);
     assert (Long.valueOf(vars.get(&quot;undeploySuccessCount&quot;))+2) &lt;= Long.valueOf(newUndeploySuccessCount);
-    
+
 }</stringProp>
           </JSR223Assertion>
           <hashTree/>
@@ -11563,7 +11563,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">/home/asreekumar/s3p/resultSummary.jtl</stringProp>
+        <stringProp name="filename">/home/ramesh/s3pTestResults.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -11637,7 +11637,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">/home/asreekumar/s3p/resultTable.log</stringProp>
+        <stringProp name="filename">/home/ramesh/s3pTestResults.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

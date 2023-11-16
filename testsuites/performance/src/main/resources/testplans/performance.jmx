@@ -1035,21 +1035,22 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <stringProp name="script">
 if (prev.getResponseCode() == &apos;200&apos;) {
     def res = prev.getResponseDataAsString();
-    assert res.contains(&apos;http_server_requests_seconds_count{exception=&quot;None&quot;,method=&quot;GET&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;200&quot;,uri=&quot;/policy/pap/v1/healthcheck&quot;,}&apos;);
+    assert res.contains(&apos;http_server_requests_seconds_count{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;GET&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;200&quot;,uri=&quot;/healthcheck&quot;,}&apos;);
 
+    
     def newSimpleDeployAPICount =  &apos;0&apos;;
-    if (res.contains(&apos;http_server_requests_seconds_count{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/policy/pap/v1/pdps/policies&quot;,} &apos;)) {
-    	newSimpleDeployAPICount = (res =~ /http_server_requests_seconds_count\{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/policy\/pap\/v1\/pdps\/policies&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
+    if (res.contains(&apos;http_server_requests_seconds_count{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/pdps/policies&quot;,} &apos;)) {
+    	newSimpleDeployAPICount = (res =~ /http_server_requests_seconds_count\{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/pdps\/policies&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
     }
 
     def newBatchDeploymentAPICount =  &apos;0&apos;;
-    if (res.contains(&apos;http_server_requests_seconds_count{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/policy/pap/v1/pdps/deployments/batch&quot;,} &apos;)) {
-    	newBatchDeploymentAPICount = (res =~ /http_server_requests_seconds_count\{exception=&quot;None&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/policy\/pap\/v1\/pdps\/deployments\/batch&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
+    if (res.contains(&apos;http_server_requests_seconds_count{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;/pdps/deployments/batch&quot;,} &apos;)) {
+    	newBatchDeploymentAPICount = (res =~ /http_server_requests_seconds_count\{error=&quot;none&quot;,exception=&quot;none&quot;,method=&quot;POST&quot;,outcome=&quot;SUCCESS&quot;,status=&quot;202&quot;,uri=&quot;\/pdps\/deployments\/batch&quot;,\} ([0-9]+)?([.]*[0-9]*)?/)[0][1]
     }
 
     assert Long.valueOf(vars.get(&quot;simpleDeployAPICount&quot;)) &lt; Long.valueOf(newSimpleDeployAPICount);
     assert Long.valueOf(vars.get(&quot;batchDeploymentAPICount&quot;)) &lt; Long.valueOf(newBatchDeploymentAPICount);
-    
+
 }</stringProp>
           </JSR223Assertion>
           <hashTree/>
@@ -1247,7 +1248,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">/home/asreekumar/s3p/resultTable.log</stringProp>
+        <stringProp name="filename">/home/ramesh/s3pTestResults.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>
