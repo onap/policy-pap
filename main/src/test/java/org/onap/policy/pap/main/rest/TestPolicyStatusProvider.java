@@ -47,14 +47,21 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierO
 public class TestPolicyStatusProvider extends ProviderSuper {
     private static final String MY_GROUP = "MyGroup";
     private static final String MY_PDP_TYPE = "MySubGroup";
-    private static final @NonNull String VERSION = "1.2.3";
+    private static final @NonNull String POLICY_TYPE_VERSION = "1.0.3";
+    private static final @NonNull String POLICY_A_VERSION = "1.2.3+1";
+    private static final @NonNull String POLICY_B_VERSION = "1.2.3-1";
+    private static final @NonNull String POLICY_C_VERSION = "1.2.3";
     private static final String PDP_A = "pdpA";
     private static final String PDP_B = "pdpB";
     private static final String PDP_C = "pdpC";
-    private static final ToscaConceptIdentifier POLICY_TYPE = new ToscaConceptIdentifier("MyPolicyType", VERSION);
-    private static final ToscaConceptIdentifier POLICY_A = new ToscaConceptIdentifier("MyPolicyA", VERSION);
-    private static final ToscaConceptIdentifier POLICY_B = new ToscaConceptIdentifier("MyPolicyB", VERSION);
-    private static final ToscaConceptIdentifier POLICY_C = new ToscaConceptIdentifier("MyPolicyC", VERSION);
+    private static final ToscaConceptIdentifier POLICY_TYPE =
+        new ToscaConceptIdentifier("MyPolicyType", POLICY_TYPE_VERSION);
+    private static final ToscaConceptIdentifier POLICY_A =
+        new ToscaConceptIdentifier("MyPolicyA", POLICY_A_VERSION);
+    private static final ToscaConceptIdentifier POLICY_B =
+        new ToscaConceptIdentifier("MyPolicyB", POLICY_B_VERSION);
+    private static final ToscaConceptIdentifier POLICY_C =
+        new ToscaConceptIdentifier("MyPolicyC", POLICY_C_VERSION);
 
     private PolicyStatusProvider prov;
 

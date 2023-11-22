@@ -82,8 +82,8 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
 
         super.setUp();
 
-        ident1 = new ToscaConceptIdentifier("ident-a", "2.3.1");
-        ident2 = new ToscaConceptIdentifier("ident-b", "2.3.2");
+        ident1 = new ToscaConceptIdentifier("ident-a", "2.3.1+1");
+        ident2 = new ToscaConceptIdentifier("ident-b", "2.3.2-1");
         ident3 = new ToscaConceptIdentifier("ident-c", "2.3.3");
         ident4 = new ToscaConceptIdentifier("ident-d", "2.3.4");
 

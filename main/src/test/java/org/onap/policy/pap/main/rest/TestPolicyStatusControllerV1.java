@@ -70,6 +70,7 @@ class TestPolicyStatusControllerV1 extends CommonPapRestServer {
     void testQueryDeployedPolicies() throws Exception {
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name");
         checkRequest(POLICY_STATUS_ENDPOINT + "/my-name/1.2.3");
+        checkRequest(POLICY_STATUS_ENDPOINT + "/my-name/1.2.3+425");
     }
 
     @Test
@@ -83,6 +84,7 @@ class TestPolicyStatusControllerV1 extends CommonPapRestServer {
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name");
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name");
         checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name/1.2.3");
+        checkRequest(POLICY_DEPLOYMENT_STATUS_ENDPOINT + "/my-group-name/my-name/1.2.3-2");
     }
 
     @Test

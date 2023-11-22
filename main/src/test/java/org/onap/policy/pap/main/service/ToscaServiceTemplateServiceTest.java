@@ -40,6 +40,7 @@ import org.onap.policy.common.utils.coder.StandardCoder;
 import org.onap.policy.common.utils.coder.StandardYamlCoder;
 import org.onap.policy.common.utils.resources.ResourceUtils;
 import org.onap.policy.models.base.PfConceptKey;
+import org.onap.policy.models.base.PfKey;
 import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaNodeTemplate;
@@ -52,12 +53,14 @@ class ToscaServiceTemplateServiceTest {
 
     private static final String VERSION_1 = "1.0.0";
 
+    private static final String VERSION_2 = "1.0.0+456";
+    private static final String VERSION_3 = "1.0.0-46";
     private static final String VERSION = "version";
 
     private static final String NAME = "name";
 
     private static final String INVALID_VERSION_ERR_MSG =
-        "parameter \"version\": value \"version\", does not match regular expression \"^(\\d+.){2}\\d+$\"";
+        "parameter \"version\": value \"version\", does not match regular expression \"" + PfKey.VERSION_REGEXP + "\"";
 
     private static final String NODE_TEMPLATE_NAME = "tca_metadata";
     private static final String NODE_TEMPLATE_VERSION = "1.0.0";
@@ -122,6 +125,10 @@ class ToscaServiceTemplateServiceTest {
             .isInstanceOf(PfModelRuntimeException.class).hasRootCauseMessage(INVALID_VERSION_ERR_MSG);
 
         assertThat(toscaService.getPolicyList(NAME, VERSION_1)).isEmpty();
+
+        assertThat(toscaService.getPolicyList(NAME, VERSION_2)).isEmpty();
+
+        assertThat(toscaService.getPolicyList(NAME, VERSION_3)).isEmpty();
 
         assertThat(toscaService.getPolicyList("onap.restart.tca", VERSION_1)).hasSize(1);
     }
