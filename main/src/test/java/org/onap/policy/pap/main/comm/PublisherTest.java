@@ -58,7 +58,7 @@ public class PublisherTest extends Threaded {
     private static final String JSON1;
     private static final String JSON2;
 
-    protected static final String PDP_PAP_TOPIC = "POLICY-PDP-PAP";
+    protected static final String PDP_PAP_TOPIC = "policy-pdp-pap";
 
     static {
         try {

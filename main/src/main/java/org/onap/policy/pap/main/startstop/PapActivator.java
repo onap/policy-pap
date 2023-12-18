@@ -68,15 +68,15 @@ public class PapActivator extends ServiceManagerContainer {
     // topic names
     @Getter
     @Value("${pap.topic.pdp-pap.name}")
-    private String topicPolicyPdpPap = "POLICY-PDP-PAP";
+    private String topicPolicyPdpPap = "policy-pdp-pap";
 
     @Getter
     @Value("${pap.topic.notification.name}")
-    private String topicPolicyNotification = "POLICY-NOTIFICATION";
+    private String topicPolicyNotification = "policy-notification";
 
     @Getter
     @Value("${pap.topic.heartbeat.name}")
-    private String topicPolicyHeartbeat = "POLICY-HEARTBEAT";
+    private String topicPolicyHeartbeat = "policy-heartbeat";
 
     private static final String[] MSG_TYPE_NAMES = { "messageName" };
     private static final String[] REQ_ID_NAMES = { "response", "responseTo" };
@@ -267,6 +267,7 @@ public class PapActivator extends ServiceManagerContainer {
      * @param topic topic of interest
      */
     private void registerMsgDispatcher(TopicListener dispatcher, String topic) {
+        topic = topic.toLowerCase();
         for (final TopicSource source : TopicEndpointManager.getManager().getTopicSources(List.of(topic))) {
             source.register(dispatcher);
         }
@@ -278,6 +279,7 @@ public class PapActivator extends ServiceManagerContainer {
      * @param topic topic of interest
      */
     private void unregisterMsgDispatcher(TopicListener dispatcher, String topic) {
+        topic = topic.toLowerCase();
         for (final TopicSource source : TopicEndpointManager.getManager().getTopicSources(List.of(topic))) {
             source.unregister(dispatcher);
         }

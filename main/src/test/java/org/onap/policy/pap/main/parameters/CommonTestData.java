@@ -25,7 +25,6 @@ package org.onap.policy.pap.main.parameters;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.onap.policy.common.utils.coder.Coder;
@@ -75,7 +74,7 @@ public class CommonTestData {
 
         try {
             File file = new File(getParamFile());
-            String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            String json = Files.readString(file.toPath());
 
             json = json.replace("${port}", String.valueOf(port));
             json = json.replace("${dbName}", "jdbc:h2:mem:testdb" + dbNum);
@@ -110,8 +109,8 @@ public class CommonTestData {
     }
 
     /**
-     * Gets the full path to the parameter file, which may vary depending on whether or
-     * not this is an end-to-end test.
+     * Gets the full path to the parameter file, which may vary depending on whether
+     * this is an end-to-end test.
      *
      * @return the parameter file name
      */
