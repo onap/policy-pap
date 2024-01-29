@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2020, 2022-2023 Nordix Foundation.
+ *  Copyright (C) 2020, 2022-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Corp.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -136,10 +136,10 @@ class TestPolicyComponentsHealthCheckProvider {
         when(response2.readEntity(HealthCheckReport.class)).thenReturn(createReport(HttpURLConnection.HTTP_OK, true));
         when(client2.get()).thenReturn(response2);
 
-        when(client3.getName()).thenReturn("dmaap");
-        when(client3.getBaseUrl()).thenReturn("message-router");
+        when(client3.getName()).thenReturn("kafka");
+        when(client3.getBaseUrl()).thenReturn("kafka");
         when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
-        when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(createDmaapResponse());
+        when(response3.readEntity(KafkaGetTopicResponse.class)).thenReturn(createKafkaResponse());
         when(client3.get()).thenReturn(response3);
         List<HttpClient> clients = new ArrayList<>();
         clients.add(client1);
@@ -193,17 +193,17 @@ class TestPolicyComponentsHealthCheckProvider {
         assertFalse(report2.isHealthy());
 
         when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(null);
+        when(response3.readEntity(KafkaGetTopicResponse.class)).thenReturn(null);
         Map<String, Object> result3 = callFetchPolicyComponentsHealthStatus();
         assertFalse((Boolean) result3.get(HEALTHY));
-        HealthCheckReport report3 = (HealthCheckReport) result3.get("dmaap");
+        HealthCheckReport report3 = (HealthCheckReport) result3.get("kafka");
         assertFalse(report3.isHealthy());
 
         when(response3.getStatus()).thenReturn(HttpURLConnection.HTTP_OK);
-        when(response3.readEntity(DmaapGetTopicResponse.class)).thenReturn(new DmaapGetTopicResponse());
+        when(response3.readEntity(KafkaGetTopicResponse.class)).thenReturn(new KafkaGetTopicResponse());
         Map<String, Object> result4 = callFetchPolicyComponentsHealthStatus();
         assertFalse((Boolean) result4.get(HEALTHY));
-        HealthCheckReport report4 = (HealthCheckReport) result4.get("dmaap");
+        HealthCheckReport report4 = (HealthCheckReport) result4.get("kafka");
         assertFalse(report4.isHealthy());
     }
 
@@ -260,8 +260,8 @@ class TestPolicyComponentsHealthCheckProvider {
         }
     }
 
-    private DmaapGetTopicResponse createDmaapResponse() {
-        DmaapGetTopicResponse response = new DmaapGetTopicResponse();
+    private KafkaGetTopicResponse createKafkaResponse() {
+        KafkaGetTopicResponse response = new KafkaGetTopicResponse();
         response.setTopics(List.of("POLICY-PDP-PAP"));
         return response;
     }

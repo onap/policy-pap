@@ -31,16 +31,16 @@
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
             "servers" : [ "localhost:3904" ],
-            "topicCommInfrastructure" : "dmaap"
+            "topicCommInfrastructure" : "NOOP"
         }],
         "topicSinks" : [{
             "topic" : "POLICY-PDP-PAP",
             "servers" : [ "localhost:3904" ],
-            "topicCommInfrastructure" : "dmaap"
+            "topicCommInfrastructure" : "NOOP"
         },{
             "topic" : "POLICY-NOTIFICATION",
             "servers" : [ "localhost:3904" ],
-            "topicCommInfrastructure" : "dmaap"
+            "topicCommInfrastructure" : "NOOP"
         }]
     },
     "healthCheckRestClientParameters":[{

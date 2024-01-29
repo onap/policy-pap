@@ -43,25 +43,25 @@ pap:
     topicSources:
     - topic: ${pap.topic.pdp-pap.name}
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
       fetchTimeout: 15000
     - topic: ${pap.topic.heartbeat.name}
       effectiveTopic: ${pap.topic.pdp-pap.name}
       consumerGroup: policy-pap
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
       fetchTimeout: 15000
     topicSinks:
     - topic: ${pap.topic.pdp-pap.name}
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
     - topic: ${pap.topic.notification.name}
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
   healthCheckRestClientParameters:
   - clientName: api
     hostname: policy-api
@@ -77,8 +77,8 @@ pap:
     password: zb!XztG34
     useHttps: true
     basePath: healthcheck
-  - clientName: dmaap
-    hostname: message-router
+  - clientName: kafka
+    hostname: kafka
     port: 3905
     useHttps: true
     basePath: topics

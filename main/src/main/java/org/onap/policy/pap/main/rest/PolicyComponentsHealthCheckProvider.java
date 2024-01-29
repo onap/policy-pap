@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020, 2022-2023 Nordix Foundation.
+ *  Copyright (C) 2019-2020, 2022-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -204,8 +204,8 @@ public class PolicyComponentsHealthCheckProvider {
         HealthCheckReport clientReport;
         try {
             Response resp = httpClient.get();
-            if (httpClient.getName().equalsIgnoreCase("dmaap")) {
-                clientReport = verifyDmaapClient(httpClient, resp);
+            if (httpClient.getName().equalsIgnoreCase("kafka")) {
+                clientReport = verifyKafkaClient(httpClient, resp);
             } else {
                 clientReport = replaceIpWithHostname(resp.readEntity(HealthCheckReport.class), httpClient.getBaseUrl());
             }
@@ -244,12 +244,12 @@ public class PolicyComponentsHealthCheckProvider {
         return report;
     }
 
-    private HealthCheckReport verifyDmaapClient(HttpClient httpClient, Response resp) {
-        DmaapGetTopicResponse dmaapResponse = resp.readEntity(DmaapGetTopicResponse.class);
-        var topicVerificationStatus = (dmaapResponse.getTopics() != null
-                        && dmaapResponse.getTopics().contains(topicPolicyPdpPap));
-        String message = (topicVerificationStatus ? "PAP to DMaaP connection check is successful"
-                        : "PAP to DMaaP connection check failed");
+    private HealthCheckReport verifyKafkaClient(HttpClient httpClient, Response resp) {
+        KafkaGetTopicResponse kafkaResponse = resp.readEntity(KafkaGetTopicResponse.class);
+        var topicVerificationStatus = (kafkaResponse.getTopics() != null
+                        && kafkaResponse.getTopics().contains(topicPolicyPdpPap));
+        String message = (topicVerificationStatus ? "PAP to Kafka connection check is successful"
+                        : "PAP to Kafka connection check failed");
         int code = (topicVerificationStatus ? resp.getStatus() : 503);
         return createHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(), code,
                         topicVerificationStatus, message);

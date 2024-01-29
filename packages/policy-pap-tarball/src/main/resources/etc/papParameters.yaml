@@ -40,25 +40,25 @@ pap:
     topicSources:
     - topic: POLICY-PDP-PAP
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
       fetchTimeout: 15000
     - topic: POLICY-HEARTBEAT
       effectiveTopic: POLICY-PDP-PAP
       consumerGroup: policy-pap
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
       fetchTimeout: 15000
     topicSinks:
     - topic: POLICY-PDP-PAP
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
     - topic: POLICY-NOTIFICATION
       servers:
-      - message-router
-      topicCommInfrastructure: dmaap
+      - kafka
+      topicCommInfrastructure: NOOP
   healthCheckRestClientParameters:
   - clientName: api
     hostname: policy-api
@@ -74,8 +74,8 @@ pap:
     password: zb!XztG34
     useHttps: true
     basePath: healthcheck
-  - clientName: dmaap
-    hostname: message-router
+  - clientName: kafka
+    hostname: kafka
     port: 3905
     useHttps: true
     basePath: topics

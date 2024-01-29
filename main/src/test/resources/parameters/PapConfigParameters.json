@@ -69,8 +69,8 @@
         "basePath": "healthcheck"
     },
     {
-        "clientName": "dmaap",
-        "hostname": "message-router",
+        "clientName": "kafka",
+        "hostname": "kafka",
         "port": 3905,
         "useHttps": true,
         "basePath": "topics"

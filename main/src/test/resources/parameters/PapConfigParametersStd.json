@@ -31,14 +31,14 @@
     "topicParameterGroup": {
         "topicSources" : [{
             "topic" : "POLICY-PDP-PAP",
-            "servers" : [ "message-router" ],
+            "servers" : [ "kafka" ],
             "topicCommInfrastructure" : "noop"
         },
         {
             "topic" : "POLICY-HEARTBEAT",
             "effectiveTopic": "POLICY-PDP-PAP",
             "consumerGroup": "policy-pap",
-            "servers" : [ "message-router" ],
+            "servers" : [ "kafka" ],
             "topicCommInfrastructure" : "noop"
         }],
         "topicSinks" : [{
@@ -70,8 +70,8 @@
         "basePath": "healthcheck"
     },
     {
-        "clientName": "dmaap",
-        "hostname": "message-router",
+        "clientName": "kafka",
+        "hostname": "kafka",
         "port": 3905,
         "useHttps": true,
         "basePath": "topics"

@@ -1,6 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2021 Bell Canada. All rights reserved.
+ * Modifications Copyright (C) 2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +27,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Class to capture get topic response from dmaap.
+ * Class to capture get topic response from kafka.
  */
 @Getter
 @Setter
 @ToString
-public class DmaapGetTopicResponse {
+public class KafkaGetTopicResponse {
 
     private List<String> topics;
 }
