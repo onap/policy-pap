@@ -12,3 +12,4 @@ target
 # IntelliJ files
 .idea/
 **/*.iml
+**/*.log
