@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b65e372_ee6e79ff",
+        "filename": "testsuites/stability/src/main/resources/testplans/stability.jmx",
+        "patchSetId": 1
+      },
+      "lineNbr": 9940,
+      "author": {
+        "id": 6070
+      },
+      "writtenOn": "2024-03-04T14:37:02Z",
+      "side": 1,
+      "message": "Do we require changes here to change it to kafka from RESTCLIENT?",
+      "range": {
+        "startLine": 9940,
+        "startChar": 41,
+        "endLine": 9940,
+        "endChar": 83
+      },
+      "revId": "765fe185d3422b0ecacdd914a416f977c4b44ee7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
