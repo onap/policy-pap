@@ -22,6 +22,30 @@
       },
       "revId": "765fe185d3422b0ecacdd914a416f977c4b44ee7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25d79072_23aa3934",
+        "filename": "testsuites/stability/src/main/resources/testplans/stability.jmx",
+        "patchSetId": 1
+      },
+      "lineNbr": 9940,
+      "author": {
+        "id": 6722
+      },
+      "writtenOn": "2024-03-05T09:13:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b65e372_ee6e79ff",
+      "range": {
+        "startLine": 9940,
+        "startChar": 41,
+        "endLine": 9940,
+        "endChar": 83
+      },
+      "revId": "765fe185d3422b0ecacdd914a416f977c4b44ee7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
