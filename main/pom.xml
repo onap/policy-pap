@@ -1,6 +1,6 @@
 <!--
   ============LICENSE_START=======================================================
-   Copyright (C) 2019, 2023 Nordix Foundation.
+   Copyright (C) 2019, 2023-2024 Nordix Foundation.
    Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
    Modifications Copyright (C) 2020-2023 Bell Canada.
   ================================================================================
@@ -60,7 +60,14 @@
             <version>${policy.common.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-fips</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -117,7 +124,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>${version.spring-security}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -133,6 +139,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
