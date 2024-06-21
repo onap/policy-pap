@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,11 +86,10 @@ class TestSessionData extends ProviderSuper {
     /**
      * Initializes mocks and a session.
      *
-     * @throws Exception if an error occurs
      */
     @Override
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
 
         ident = new ToscaConceptIdentifierOptVersion(POLICY_NAME, POLICY_VERSION);
@@ -104,7 +103,7 @@ class TestSessionData extends ProviderSuper {
 
     @Test
     void testGetPolicyType() throws Exception {
-        ToscaPolicyType policy1 = makePolicyType(POLICY_TYPE, POLICY_TYPE_VERSION);
+        ToscaPolicyType policy1 = makePolicyType();
         when(toscaService.getPolicyTypeList(POLICY_TYPE, POLICY_TYPE_VERSION)).thenReturn(List.of(policy1));
 
         assertSame(policy1, session.getPolicyType(type));
@@ -130,7 +129,7 @@ class TestSessionData extends ProviderSuper {
 
     @Test
     void testGetPolicy_NullVersion() throws Exception {
-        ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
+        ToscaPolicy policy1 = makePolicy();
         when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         ident.setVersion(null);
@@ -148,7 +147,7 @@ class TestSessionData extends ProviderSuper {
 
     @Test
     void testGetPolicy_MajorVersion() throws Exception {
-        ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
+        ToscaPolicy policy1 = makePolicy();
         when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         ident.setVersion("1");
@@ -166,7 +165,7 @@ class TestSessionData extends ProviderSuper {
 
     @Test
     void testGetPolicy_MajorMinorVersion() throws Exception {
-        ToscaPolicy policy1 = makePolicy(POLICY_NAME, POLICY_VERSION);
+        ToscaPolicy policy1 = makePolicy();
         when(toscaService.getFilteredPolicyList(any())).thenReturn(List.of(policy1));
 
         ident.setVersion(POLICY_VERSION);
@@ -322,20 +321,20 @@ class TestSessionData extends ProviderSuper {
         assertEquals(List.of(change1, change2, change3).toString(), lst.toString());
     }
 
-    private ToscaPolicyType makePolicyType(String name, String version) {
-        ToscaPolicyType type = new ToscaPolicyType();
+    private ToscaPolicyType makePolicyType() {
+        ToscaPolicyType newType = new ToscaPolicyType();
 
-        type.setName(name);
-        type.setVersion(version);
+        newType.setName(TestSessionData.POLICY_TYPE);
+        newType.setVersion(TestSessionData.POLICY_TYPE_VERSION);
 
-        return type;
+        return newType;
     }
 
-    private ToscaPolicy makePolicy(String name, String version) {
+    private ToscaPolicy makePolicy() {
         ToscaPolicy policy = new ToscaPolicy();
 
-        policy.setName(name);
-        policy.setVersion(version);
+        policy.setName(TestSessionData.POLICY_NAME);
+        policy.setVersion(TestSessionData.POLICY_VERSION);
 
         return policy;
     }
@@ -561,7 +560,7 @@ class TestSessionData extends ProviderSuper {
                 }
             };
 
-        ToscaPolicy policy = makePolicy(POLICY_NAME, POLICY_VERSION);
+        ToscaPolicy policy = makePolicy();
         policy.setType(POLICY_TYPE);
         policy.setTypeVersion(POLICY_TYPE_VERSION);
 

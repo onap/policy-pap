@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2023-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 package org.onap.policy.pap.main.exception;
 
 import jakarta.ws.rs.core.Response;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -37,13 +36,12 @@ public class ServiceExceptionHandler {
      * Handle any exceptions that are not already handled.
      * For e.g., runtime exceptions that could happen during SQL query execution related to data integrity etc.
      *
-     * @param joinPoint the point of execution
      * @param exception the exception
      */
     @AfterThrowing(pointcut = "execution(* org.onap.policy.pap.main.service.*.*(..))", throwing = "exception")
-    public void handleServiceException(JoinPoint joinPoint, RuntimeException exception) {
-        if (exception instanceof PfModelRuntimeException) {
-            throw (PfModelRuntimeException) exception;
+    public void handleServiceException(RuntimeException exception) {
+        if (exception instanceof PfModelRuntimeException pfModelException) {
+            throw pfModelException;
         } else {
             throw new PfModelRuntimeException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage(), exception);
         }
@@ -55,11 +53,10 @@ public class ServiceExceptionHandler {
      * Autowiring these service classes can cause TransactionException.
      * For e.g., JDBC connection failure occurs and failed to open transaction at service level
      *
-     * @param joinPoint the point of execution
      * @param exception the exception
      */
     @AfterThrowing(pointcut = "execution(* org.onap.policy.pap.main.*.*.*(..))", throwing = "exception")
-    public void handleTransactionException(JoinPoint joinPoint, TransactionException exception) {
+    public void handleTransactionException(TransactionException exception) {
         throw new PfModelRuntimeException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage(), exception);
     }
 }

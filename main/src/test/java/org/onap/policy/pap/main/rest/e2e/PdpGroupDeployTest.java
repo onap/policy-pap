@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2020 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,6 +129,7 @@ class PdpGroupDeployTest extends End2EndBase {
         resp = rawresp.readEntity(PdpGroupDeployResponse.class);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rawresp.getStatus());
         assertTrue(resp.getErrorDetails().contains("unknown group"));
+        rawresp.close();
     }
 
     @Test
@@ -205,5 +206,6 @@ class PdpGroupDeployTest extends End2EndBase {
         assertNull(resp.getErrorDetails());
 
         assertThat(meterRegistry.counter(deploymentsCounterName, deploymentSuccessTag).count()).isEqualTo(2);
+        rawresp.close();
     }
 }

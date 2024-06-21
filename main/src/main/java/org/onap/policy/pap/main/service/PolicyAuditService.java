@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2023-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import jakarta.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.common.parameters.BeanValidationResult;
@@ -55,7 +54,7 @@ public class PolicyAuditService {
      * @param audits list of policy audit
      */
     public void createAuditRecords(@NonNull final List<PolicyAudit> audits) {
-        List<JpaPolicyAudit> jpaAudits = audits.stream().map(JpaPolicyAudit::new).collect(Collectors.toList());
+        List<JpaPolicyAudit> jpaAudits = audits.stream().map(JpaPolicyAudit::new).toList();
 
         var result = new BeanValidationResult("createAuditRecords", jpaAudits);
 
@@ -186,6 +185,6 @@ public class PolicyAuditService {
     }
 
     private List<PolicyAudit> asPolicyAuditList(List<JpaPolicyAudit> jpaPolicyAuditList) {
-        return jpaPolicyAuditList.stream().map(JpaPolicyAudit::toAuthorative).collect(Collectors.toList());
+        return jpaPolicyAuditList.stream().map(JpaPolicyAudit::toAuthorative).toList();
     }
 }

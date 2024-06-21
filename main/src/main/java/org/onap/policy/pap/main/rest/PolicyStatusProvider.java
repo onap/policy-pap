@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ package org.onap.policy.pap.main.rest;
 import com.google.re2j.Pattern;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
@@ -126,8 +125,8 @@ public class PolicyStatusProvider {
      * @return the deployment status of the policy
      */
     public Collection<PdpPolicyStatus> getPolicyStatus(String pdpGroupName, ToscaConceptIdentifierOptVersion policy) {
-        return policyStatusService.getAllPolicyStatus(policy).stream().filter(p -> p.getPdpGroup().equals(pdpGroupName))
-            .collect(Collectors.toList());
+        return policyStatusService.getAllPolicyStatus(policy).stream()
+            .filter(p -> p.getPdpGroup().equals(pdpGroupName)).toList();
     }
 
     /**
@@ -154,7 +153,6 @@ public class PolicyStatusProvider {
                     .getPolicy()
                     .getName();
                 return pattern.matcher(policyName).matches();
-            })
-            .collect(Collectors.toList());
+            }).toList();
     }
 }
