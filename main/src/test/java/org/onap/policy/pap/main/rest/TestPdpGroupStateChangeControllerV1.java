@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022-2023 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.onap.policy.pap.main.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -55,12 +56,19 @@ class TestPdpGroupStateChangeControllerV1 extends CommonPapRestServer {
         assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
         assertNull(resp.getErrorDetails());
 
-        rawresp = invocationBuilder.put(Entity.json(""));
-        resp = rawresp.readEntity(PdpGroupStateChangeResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), rawresp.getStatus());
-        assertNull(resp.getErrorDetails());
-
         // verify it fails when no authorization info is included
         checkUnauthRequest(uri, req -> req.put(Entity.json("")));
+        rawresp.close();
+    }
+
+    @Test
+    void testChangeGroupState_Exception() throws Exception {
+        final String uri = GROUP_ENDPOINT + "/my-name?state=TEST";
+
+        final Invocation.Builder invocationBuilder = sendRequest(uri);
+        Response rawresp = invocationBuilder.put(Entity.json(""));
+        assertThat(rawresp.getStatusInfo().getStatusCode())
+            .isEqualTo(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        rawresp.close();
     }
 }

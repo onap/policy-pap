@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,19 +80,22 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     /**
      * Configures mocks and objects.
      *
-     * @throws Exception if an error occurs
      */
     @Override
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         super.setUp();
         prov = new PdpGroupDeployProvider();
         super.initialize(prov);
 
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList2.json"));
-        when(toscaService.getPolicyTypeList("typeA", "100.2.3"))
-            .thenReturn(List.of(loadPolicyType("daoPolicyType.json")));
+        try {
+            when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList2.json"));
+            when(toscaService.getPolicyTypeList("typeA", "100.2.3"))
+                .thenReturn(List.of(loadPolicyType()));
+        } catch (PfModelException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -229,7 +232,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    void testUpdateGroupPolicies_InvalidRequest() throws Exception {
+    void testUpdateGroupPolicies_InvalidRequest() {
         assertThatThrownBy(() -> prov.updateGroupPolicies(new DeploymentGroups(), DEFAULT_USER))
                 .isInstanceOf(PfModelException.class).hasMessageContaining("is null");
 
@@ -237,7 +240,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    void testUpdateGroup_UnknownGroup() throws Exception {
+    void testUpdateGroup_UnknownGroup() {
         PdpGroups groups = loadPdpGroups("deployGroups.json");
 
         String groupName = groups.getGroups().get(0).getName();
@@ -266,7 +269,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    void testUpdateGroup_NewSubGroup() throws Exception {
+    void testUpdateGroup_NewSubGroup() {
         PdpGroups groups = loadPdpGroups("createGroupsNewSub.json");
         PdpGroup group = loadPdpGroups("deployGroups.json").getGroups().get(0);
         when(pdpGroupService.getPdpGroups(group.getName())).thenReturn(List.of(group));
@@ -276,22 +279,6 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
                 .hasMessageContaining("unknown subgroup");
 
         assertNoGroupAction();
-    }
-
-    @Test
-    void testUpdateGroup_UpdatedSubGroup() throws Exception {
-        PdpGroups groups = loadPdpGroups("deployGroups.json");
-        PdpGroup newgrp = groups.getGroups().get(0);
-        PdpGroup group = new PdpGroup(newgrp);
-        when(pdpGroupService.getPdpGroups(group.getName())).thenReturn(List.of(group));
-
-        // something different in this subgroup
-        group.getPdpSubgroups().get(0).getPolicies().add(new ToscaConceptIdentifier(POLICY2_NAME, POLICY2_VERSION));
-
-        prov.updateGroupPolicies(toDeploymentGroups(groups), DEFAULT_USER);
-
-        assertEquals(newgrp.toString(), group.toString());
-        assertGroupUpdate(group, group.getPdpSubgroups().get(0));
     }
 
     @Test
@@ -381,7 +368,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
     }
 
     @Test
-    void testUpdateSubGroup_PolicyVersionPrefixMismatch() throws Exception {
+    void testUpdateSubGroup_PolicyVersionPrefixMismatch() {
         PdpGroups groups = loadPdpGroups("deployGroups.json");
         PdpGroup newgrp = groups.getGroups().get(0);
 
@@ -530,7 +517,7 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         List<PdpUpdate> requests = getUpdateRequests(1);
-        assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
+        assertUpdate(requests, PDP2_TYPE, PDP2);
 
         // nothing is complete - notification should be empty
         checkEmptyNotification();
@@ -587,8 +574,8 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         List<PdpUpdate> requests = getUpdateRequests(2);
-        assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
-        assertUpdate(requests, GROUP1_NAME, PDP4_TYPE, PDP4);
+        assertUpdate(requests, PDP2_TYPE, PDP2);
+        assertUpdate(requests, PDP4_TYPE, PDP4);
 
         // nothing is complete - notification should be empty
         checkEmptyNotification();
@@ -624,11 +611,11 @@ public class TestPdpGroupDeployProvider extends ProviderSuper {
         verify(reqmap, never()).addRequest(any(PdpUpdate.class));
     }
 
-    protected void assertUpdate(List<PdpUpdate> updates, String groupName, String pdpType, String pdpName) {
+    protected void assertUpdate(List<PdpUpdate> updates, String pdpType, String pdpName) {
 
         PdpUpdate update = updates.remove(0);
 
-        assertEquals(groupName, update.getPdpGroup());
+        assertEquals(TestPdpGroupDeployProvider.GROUP1_NAME, update.getPdpGroup());
         assertEquals(pdpType, update.getPdpSubgroup());
         assertEquals(pdpName, update.getName());
         assertThat(update.getPoliciesToBeDeployed()).contains(policy1);

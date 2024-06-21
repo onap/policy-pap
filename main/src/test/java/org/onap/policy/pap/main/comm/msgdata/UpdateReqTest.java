@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ class UpdateReqTest extends CommonRequestBase {
         response.setPdpSubgroup(update.getPdpSubgroup());
         response.setPolicies(
             update.getPoliciesToBeDeployed().stream().map(ToscaPolicy::getIdentifier)
-                .collect(Collectors.toList()));
+                .toList());
 
         data = new UpdateReq(reqParams, MY_REQ_NAME, update);
         data.setNotifier(notifier);
@@ -153,7 +153,7 @@ class UpdateReqTest extends CommonRequestBase {
         ArrayList<ToscaPolicy> policies = new ArrayList<>(update.getPoliciesToBeDeployed());
         policies.set(0, makePolicy(DIFFERENT, "10.0.0"));
 
-        response.setPolicies(policies.stream().map(ToscaPolicy::getIdentifier).collect(Collectors.toList()));
+        response.setPolicies(policies.stream().map(ToscaPolicy::getIdentifier).toList());
 
         assertEquals("policies do not match", data.checkResponse(response));
         verifyResponse();
@@ -243,7 +243,7 @@ class UpdateReqTest extends CommonRequestBase {
         policies = new ArrayList<>(update.getPoliciesToBeDeployed());
         List<ToscaConceptIdentifier> polsToUndep = policies.parallelStream()
             .map(ToscaPolicy::getIdentifier)
-            .collect(Collectors.toList());
+            .toList();
         msg2.setPoliciesToBeUndeployed(polsToUndep);
 
         assertTrue(data.reconfigure(msg2));
@@ -267,8 +267,7 @@ class UpdateReqTest extends CommonRequestBase {
         // some items in both undeploy and newMessage.deploy
         policies = new ArrayList<>(update.getPoliciesToBeDeployed());
         List<ToscaConceptIdentifier> polsToUndep2 = policies.parallelStream()
-            .map(ToscaPolicy::getIdentifier)
-            .collect(Collectors.toList());
+            .map(ToscaPolicy::getIdentifier).toList();
         data.getMessage().setPoliciesToBeUndeployed(polsToUndep2);
 
         List<ToscaPolicy> polsToDep2 = new LinkedList<>();
@@ -280,13 +279,12 @@ class UpdateReqTest extends CommonRequestBase {
 
         List<ToscaConceptIdentifier> dataPols2 = data.getMessage().getPoliciesToBeDeployed().stream()
             .map(ToscaPolicy::getIdentifier)
-            .collect(Collectors.toList());
+            .toList();
         assertThat(data.getMessage().getPoliciesToBeUndeployed())
             .doesNotContainAnyElementsOf(dataPols2);
 
         // some items only in undeploy
-        pols = policies.stream().map(ToscaPolicy::getIdentifier)
-            .collect(Collectors.toList());
+        pols = policies.stream().map(ToscaPolicy::getIdentifier).toList();
         msg2.setPoliciesToBeUndeployed(pols);
         data.getMessage().setPoliciesToBeUndeployed(new LinkedList<>());
         assertTrue(data.reconfigure(msg2));

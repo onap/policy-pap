@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,11 +74,10 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
     /**
      * Configures mocks and objects.
      *
-     * @throws Exception if an error occurs
      */
     @Override
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         super.setUp();
 
@@ -106,8 +105,12 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
 
         group.setPdpSubgroups(List.of(subgroup0, subgroup));
 
-        when(session.getGroup(MY_GROUP)).thenReturn(group);
-        when(session.getPolicy(any())).thenReturn(policy1);
+        try {
+            when(session.getGroup(MY_GROUP)).thenReturn(group);
+            when(session.getPolicy(any())).thenReturn(policy1);
+        } catch (PfModelException e) {
+            throw new RuntimeException(e);
+        }
 
         prov = new MyProvider();
     }

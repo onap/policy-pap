@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,25 +39,23 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 class PolicyNotifierTest {
     private static final String GROUP_A = "groupA";
     private static final String PDP1 = "pdp-1";
@@ -85,14 +84,9 @@ class PolicyNotifierTest {
     @BeforeEach
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        try {
-            when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
-            Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
-            notifier = new MyNotifier(publisher);
-
-        } catch (PfModelException e) {
-            throw new PolicyPapRuntimeException(e);
-        }
+        lenient().when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
+        Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
+        notifier = new MyNotifier(publisher);
     }
 
     @AfterEach
@@ -164,7 +158,7 @@ class PolicyNotifierTest {
 
     private class MyNotifier extends PolicyNotifier {
 
-        public MyNotifier(Publisher<PolicyNotification> publisher) throws PfModelException {
+        public MyNotifier(Publisher<PolicyNotification> publisher) {
             super(policyStatusService);
             super.setPublisher(publisher);
         }

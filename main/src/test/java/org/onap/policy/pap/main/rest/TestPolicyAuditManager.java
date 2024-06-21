@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2021, 2023 Nordix Foundation.
+ *  Copyright (C) 2021, 2023-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,11 +46,11 @@ public class TestPolicyAuditManager extends ProviderSuper {
     PolicyAuditManager auditManager;
 
     /**
-     * Setup the test variables.
+     * Set up the test variables.
      */
     @Override
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
         auditManager = new PolicyAuditManager(policyAuditService);
     }
@@ -77,9 +77,7 @@ public class TestPolicyAuditManager extends ProviderSuper {
     @Test
     void testSaveRecordsToDb_EmptyList() {
         assertThat(auditManager.getAuditRecords()).isEmpty();
-        ;
         auditManager.saveRecordsToDb();
-
         assertThatCode(() -> auditManager.saveRecordsToDb()).doesNotThrowAnyException();
     }
 

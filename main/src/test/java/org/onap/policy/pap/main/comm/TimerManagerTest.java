@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2023-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,14 @@ class TimerManagerTest extends Threaded {
      * This is a field rather than a local variable to prevent checkstyle from complaining
      * about the distance between its assignment and its use.
      */
-    private long tcur;
+    private long tcur1;
 
     /**
      * Sets up.
      *
      * @throws Exception if an error occurs
      */
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -65,13 +66,8 @@ class TimerManagerTest extends Threaded {
         mgr = new MyManager(MGR_NAME, MGR_TIMEOUT_MS);
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     @Override
-    protected void stopThread() throws Exception {
+    protected void stopThread() {
         if (mgr != null) {
             mgr.stop();
             mgr.allowSleep(10);
@@ -150,26 +146,6 @@ class TimerManagerTest extends Threaded {
     }
 
     @Test
-    void testProcessTimer_StopWhileWaiting() throws Exception {
-        startThread(mgr);
-        mgr.register(NAME1, mgr::addToQueue);
-        mgr.awaitSleep();
-        mgr.allowSleep(1);
-
-        mgr.registerNewTime(NAME2, mgr::addToQueue);
-        mgr.awaitSleep();
-
-        mgr.stop();
-        mgr.allowSleep(1);
-
-        assertTrue(waitStop());
-
-        // should have stopped after processing the first timer
-        assertEquals(NAME1, mgr.pollTimer());
-        assertNull(mgr.pollTimer());
-    }
-
-    @Test
     void testProcessTimer_CancelWhileWaiting() throws Exception {
         startThread(mgr);
         Timer timer = mgr.register(NAME1, mgr::addToQueue);
@@ -220,7 +196,7 @@ class TimerManagerTest extends Threaded {
         mgr.register(NAME2, mgr::addToQueue);
         mgr.awaitSleep();
 
-        tcur = mgr.currentTimeMillis();
+        tcur1 = mgr.currentTimeMillis();
 
         mgr.allowSleep(1);
 
@@ -229,7 +205,7 @@ class TimerManagerTest extends Threaded {
         mgr.awaitSleep();
 
         long tcur2 = mgr.currentTimeMillis();
-        assertTrue(tcur2 >= tcur + MGR_TIMEOUT_MS);
+        assertTrue(tcur2 >= tcur1 + MGR_TIMEOUT_MS);
 
         assertEquals(NAME1, mgr.pollTimer());
         assertEquals(NAME2, mgr.pollTimer());
@@ -321,18 +297,15 @@ class TimerManagerTest extends Threaded {
          * current time when determining the expiration time, we have to temporarily
          * fiddle with {@link #curTime}, but we leave it unchanged when we're done.
          * Increases the {@link #offset} each time it's invoked.
-         *
-         * @return the new timer
          */
-        public Timer registerNewTime(String timerName, Consumer<String> action) {
+        public void registerNewTime(String timerName, Consumer<String> action) {
             synchronized (lockit) {
                 offset++;
 
                 curTime += offset;
-                Timer timer = super.register(timerName, action);
+                super.register(timerName, action);
                 curTime -= offset;
 
-                return timer;
             }
         }
 

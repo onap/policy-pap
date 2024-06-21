@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2024 Nordix Foundation.
  * Modifications Copyright (C) 2022-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +102,7 @@ public class ProviderSuper {
      * Configures DAO, captors, and various mocks.
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         Registry.newRegistry();
 
@@ -111,7 +111,7 @@ public class ProviderSuper {
         reqmap = mock(PdpModifyRequestMap.class);
 
         lockit = new Object();
-        policy1 = loadPolicy("policy.json");
+        policy1 = loadPolicy();
 
         meterRegistry = mock(MeterRegistry.class);
 
@@ -267,21 +267,19 @@ public class ProviderSuper {
     /**
      * Loads a policy.
      *
-     * @param fileName name of the file from which to load
      * @return a policy
      */
-    protected ToscaPolicy loadPolicy(String fileName) {
-        return loadFile(fileName, ToscaPolicy.class);
+    protected ToscaPolicy loadPolicy() {
+        return loadFile("policy.json", ToscaPolicy.class);
     }
 
     /**
      * Loads a policy type.
      *
-     * @param fileName name of the file from which to load
      * @return a policy type
      */
-    protected ToscaPolicyType loadPolicyType(String fileName) {
-        return loadFile(fileName, ToscaPolicyType.class);
+    protected ToscaPolicyType loadPolicyType() {
+        return loadFile("daoPolicyType.json", ToscaPolicyType.class);
     }
 
     /**

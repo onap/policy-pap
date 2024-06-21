@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2023 Nordix Foundation.
+ *  Copyright (C) 2019, 2023-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -34,7 +34,6 @@ import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.service.PdpGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -52,8 +51,7 @@ public class PapDatabaseInitializer {
 
     private final StandardCoder standardCoder;
 
-    @Autowired
-    private PdpGroupService pdpGroupService;
+    private final PdpGroupService pdpGroupService;
 
     @Value("${group-config-file:PapDb.json}")
     private String groupConfigFile;
@@ -61,7 +59,8 @@ public class PapDatabaseInitializer {
     /**
      * Constructs the object.
      */
-    public PapDatabaseInitializer() {
+    public PapDatabaseInitializer(PdpGroupService pdpGroupService) {
+        this.pdpGroupService = pdpGroupService;
         standardCoder = new StandardCoder();
     }
 

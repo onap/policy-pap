@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2024 Nordix Foundation.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,16 @@
 
 package org.onap.policy.pap.main;
 
+import java.io.Serial;
+
 /**
  * This runtime exception will be called if a runtime error occurs when using policy pap.
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
 public class PolicyPapRuntimeException extends RuntimeException {
+
+    @Serial
     private static final long serialVersionUID = -8507246953751956974L;
 
     /**
