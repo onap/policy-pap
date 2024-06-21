@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.models.base.PfConceptKey;
 import org.onap.policy.models.base.PfModelException;
@@ -63,12 +62,11 @@ public class ToscaServiceTemplateService {
     /**
      * Get policies.
      *
-     * @param name the name of the policy to get, null to get all policies
+     * @param name    the name of the policy to get, null to get all policies
      * @param version the version of the policy to get, null to get all versions of a policy
      * @return the policies found
-     * @throws PfModelException on errors getting policies
      */
-    public List<ToscaPolicy> getPolicyList(final String name, final String version) throws PfModelException {
+    public List<ToscaPolicy> getPolicyList(final String name, final String version) {
 
         LOGGER.debug("->getPolicyList: name={}, version={}", name, version);
 
@@ -77,7 +75,7 @@ public class ToscaServiceTemplateService {
         try {
             List<Map<String, ToscaPolicy>> policies = getToscaServiceTemplate(name, version, "policy").toAuthorative()
                 .getToscaTopologyTemplate().getPolicies();
-            policyList = policies.stream().flatMap(policy -> policy.values().stream()).collect(Collectors.toList());
+            policyList = policies.stream().flatMap(policy -> policy.values().stream()).toList();
             populateMetadataSet(policyList);
         } catch (PfModelRuntimeException pfme) {
             return handlePfModelRuntimeException(pfme);
@@ -105,7 +103,7 @@ public class ToscaServiceTemplateService {
     /**
      * Get policy types.
      *
-     * @param name the name of the policy type to get, set to null to get all policy types
+     * @param name    the name of the policy type to get, set to null to get all policy types
      * @param version the version of the policy type to get, set to null to get all versions
      * @return the policy types found
      * @throws PfModelException on errors getting policy types
@@ -152,7 +150,8 @@ public class ToscaServiceTemplateService {
     }
 
     private JpaToscaServiceTemplate getToscaPolicies(final String name, final String version,
-        JpaToscaServiceTemplate dbServiceTemplate) throws PfModelException {
+                                                     JpaToscaServiceTemplate dbServiceTemplate)
+        throws PfModelException {
         if (!ToscaUtils.doPoliciesExist(dbServiceTemplate)) {
             throw new PfModelRuntimeException(Response.Status.NOT_FOUND,
                 "policies for " + name + ":" + version + " do not exist");
@@ -166,7 +165,8 @@ public class ToscaServiceTemplateService {
     }
 
     private JpaToscaServiceTemplate getToscaPolicyTypes(final String name, final String version,
-        JpaToscaServiceTemplate dbServiceTemplate) throws PfModelException {
+                                                        JpaToscaServiceTemplate dbServiceTemplate)
+        throws PfModelException {
         if (!ToscaUtils.doPolicyTypesExist(dbServiceTemplate)) {
             throw new PfModelRuntimeException(Response.Status.NOT_FOUND,
                 "policy types for " + name + ":" + version + " do not exist");

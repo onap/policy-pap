@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,7 +89,6 @@ public class PdpModifyRequestMap {
 
     /**
      * Used to undeploy policies from the system, when they cannot be deployed to a PDP.
-     *
      * <p/>
      * Note: The request map needs an undeployer during creation, and the undeployer
      * needs the request map when it's initialize method is called.
@@ -105,15 +104,15 @@ public class PdpModifyRequestMap {
     /**
      * Constructs the object.
      *
-     * @param pdpGroupService the pdpGroupService
-     * @param policyStatusService the policyStatusService
+     * @param pdpGroupService         the pdpGroupService
+     * @param policyStatusService     the policyStatusService
      * @param pdpStatusMessageHandler the pdpStatusMessageHandler
-     * @param policyUndeployer the policyUndeployer
-     * @param policyNotifier the policyNotifier
+     * @param policyUndeployer        the policyUndeployer
+     * @param policyNotifier          the policyNotifier
      */
     public PdpModifyRequestMap(PdpGroupService pdpGroupService, PolicyStatusService policyStatusService,
-        PdpStatusMessageHandler pdpStatusMessageHandler, PolicyUndeployer policyUndeployer,
-        PolicyNotifier policyNotifier) {
+                               PdpStatusMessageHandler pdpStatusMessageHandler, PolicyUndeployer policyUndeployer,
+                               PolicyNotifier policyNotifier) {
         this.pdpGroupService = pdpGroupService;
         this.policyStatusService = policyStatusService;
         this.pdpStatusMessageHandler = pdpStatusMessageHandler;
@@ -159,7 +158,7 @@ public class PdpModifyRequestMap {
     /**
      * Adds a pair of requests to the map.
      *
-     * @param update the UPDATE request or {@code null}
+     * @param update      the UPDATE request or {@code null}
      * @param stateChange the STATE-CHANGE request or {@code null}
      */
     public void addRequest(PdpUpdate update, PdpStateChange stateChange) {
@@ -189,11 +188,10 @@ public class PdpModifyRequestMap {
      * Adds an UPDATE request to the map.
      *
      * @param update the UPDATE request or {@code null}
-     * @return the new request (this should only be used by junit tests)
      */
-    public Request addRequest(PdpUpdate update) {
+    public void addRequest(PdpUpdate update) {
         if (update == null) {
-            return null;
+            return;
         }
 
         if (isBroadcast(update)) {
@@ -213,7 +211,6 @@ public class PdpModifyRequestMap {
         var request = new UpdateReq(reqparams, name, update);
 
         addSingleton(request);
-        return request;
     }
 
     /**
@@ -251,8 +248,7 @@ public class PdpModifyRequestMap {
      * Determines if a message is a broadcast message.
      *
      * @param message the message to examine
-     * @return {@code true} if the message is a broadcast message, {@code false} if
-     *         destined for a single PDP
+     * @return {@code true} if the message is a broadcast message, {@code false} if destined for a single PDP
      */
     private boolean isBroadcast(PdpMessage message) {
         return (message.getName() == null);
@@ -319,7 +315,7 @@ public class PdpModifyRequestMap {
      * Removes expired PDPs from a group.
      *
      * @param minAge minimum age for active PDPs
-     * @param group group from which expired PDPs should be removed
+     * @param group  group from which expired PDPs should be removed
      * @return the expired PDPs
      */
     private Set<String> removeFromGroup(Instant minAge, PdpGroup group) {
@@ -335,9 +331,9 @@ public class PdpModifyRequestMap {
      * Removes expired PDPs from a subgroup.
      *
      * @param minAge minimum age for active PDPs
-     * @param group group from which to attempt to remove the PDP
+     * @param group  group from which to attempt to remove the PDP
      * @param subgrp subgroup from which to attempt to remove the PDP
-     * @param pdps where to place the expired PDPs
+     * @param pdps   where to place the expired PDPs
      */
     private void removeFromSubgroup(Instant minAge, PdpGroup group, PdpSubGroup subgrp, Set<String> pdps) {
 
@@ -397,7 +393,7 @@ public class PdpModifyRequestMap {
 
             try {
                 logger.warn("undeploy policies from {}:{} that failed to deploy: {}", oldmsg.getPdpGroup(),
-                                oldmsg.getPdpSubgroup(), undeployPolicies);
+                    oldmsg.getPdpSubgroup(), undeployPolicies);
                 policyUndeployer.undeploy(oldmsg.getPdpGroup(), oldmsg.getPdpSubgroup(), undeployPolicies);
             } catch (PfModelException | RuntimeException e) {
                 logger.error("cannot undeploy policies {}", undeployPolicies, e);

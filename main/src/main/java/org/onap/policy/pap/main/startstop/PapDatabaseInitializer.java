@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2023 Nordix Foundation.
+ *  Copyright (C) 2019, 2023-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -52,8 +52,7 @@ public class PapDatabaseInitializer {
 
     private final StandardCoder standardCoder;
 
-    @Autowired
-    private PdpGroupService pdpGroupService;
+    private final PdpGroupService pdpGroupService;
 
     @Value("${group-config-file:PapDb.json}")
     private String groupConfigFile;
@@ -61,7 +60,9 @@ public class PapDatabaseInitializer {
     /**
      * Constructs the object.
      */
-    public PapDatabaseInitializer() {
+    @Autowired
+    public PapDatabaseInitializer(PdpGroupService pdpGroupService) {
+        this.pdpGroupService = pdpGroupService;
         standardCoder = new StandardCoder();
     }
 

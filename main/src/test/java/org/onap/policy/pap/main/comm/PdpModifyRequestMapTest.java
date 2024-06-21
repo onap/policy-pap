@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021, 2023-2024 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -439,13 +439,6 @@ class PdpModifyRequestMapTest extends CommonRequestBase {
     }
 
     @Test
-    void testRemoveExpiredPdps_DaoRtEx() {
-        when(pdpGroupService.getFilteredPdpGroups(any())).thenThrow(makeRuntimeException());
-
-        assertThatCode(map::removeExpiredPdps).doesNotThrowAnyException();
-    }
-
-    @Test
     void testRemoveFromSubgroup() {
         PdpGroup group = makeGroup(MY_GROUP);
         group.setPdpSubgroups(List.of(makeSubGroup(MY_SUBGROUP, PDP1, PDP2, PDP3)));
@@ -591,20 +584,6 @@ class PdpModifyRequestMapTest extends CommonRequestBase {
 
     @Test
     void testSingletonListenerSuccess() {
-        map.addRequest(change);
-
-        // invoke the method
-        invokeSuccessHandler();
-
-        verify(requests, never()).stopPublishing();
-
-        // requests should have been removed from the map so this should allocate another
-        map.addRequest(update);
-        assertEquals(2, map.nalloc);
-    }
-
-    @Test
-    void testRequestCompleted_LastRequest() {
         map.addRequest(change);
 
         // invoke the method
@@ -790,7 +769,6 @@ class PdpModifyRequestMapTest extends CommonRequestBase {
         public MyMap(PdpModifyRequestMapParams params) {
             super(pdpGroupService, policyStatusService, responseHandler, undeployer, notifier);
             super.initialize(params);
-            ;
         }
 
         @Override

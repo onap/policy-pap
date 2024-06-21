@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2022 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2022, 2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,6 @@ import java.util.List;
 import lombok.Getter;
 import org.onap.policy.common.parameters.ParameterService;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pdp.concepts.PdpStateChange;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
@@ -88,7 +87,7 @@ public class PdpMessageGenerator {
      * Constructs the object.
      *
      * @param includeHeartBeat if the heart beat interval is to be included in any
-     *        PDP-UPDATE messages
+     *                         PDP-UPDATE messages
      */
     public PdpMessageGenerator(boolean includeHeartBeat) {
         this.includeHeartBeat = includeHeartBeat;
@@ -112,9 +111,8 @@ public class PdpMessageGenerator {
     }
 
     protected PdpUpdate createPdpUpdateMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId,
-                    final List<ToscaPolicy> policiesToBeDeployed,
-                    final List<ToscaConceptIdentifier> policiesToBeUndeployed) {
+                                               final String pdpInstanceId, final List<ToscaPolicy> policiesToBeDeployed,
+                                               final List<ToscaConceptIdentifier> policiesToBeUndeployed) {
 
         final var update = new PdpUpdate();
 
@@ -135,9 +133,8 @@ public class PdpMessageGenerator {
      *
      * @param subGroup PdpSubGroup to retrieve policies from
      * @return a list of ToscaPolicy
-     * @throws PfModelException the exception
      **/
-    public List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup) throws PfModelException {
+    public List<ToscaPolicy> getToscaPolicies(final PdpSubGroup subGroup) {
 
         final List<ToscaPolicy> policies = new LinkedList<>();
         for (final ToscaConceptIdentifier policyIdentifier : subGroup.getPolicies()) {
@@ -149,7 +146,7 @@ public class PdpMessageGenerator {
     }
 
     protected PdpStateChange createPdpStateChangeMessage(final String pdpGroupName, final PdpSubGroup subGroup,
-                    final String pdpInstanceId, final PdpState pdpState) {
+                                                         final String pdpInstanceId, final PdpState pdpState) {
 
         final var stateChange = new PdpStateChange();
         stateChange.setSource(PapConstants.PAP_NAME);
@@ -166,14 +163,14 @@ public class PdpMessageGenerator {
      * If group state=ACTIVE AND updateMsg has policiesToDeploy, then make sure deployment status is updated
      * If group state=PASSIVE, then delete any deployment information for a PDP.
      *
-     * @param pdpGroupName the group name
-     * @param pdpType the pdp type
+     * @param pdpGroupName  the group name
+     * @param pdpType       the pdp type
      * @param pdpInstanceId the pdp instance
-     * @param pdpState the new state as per the PDP_STATE_CHANGE change message
-     * @param policies list of policies as per the PDP_UPDATE message
+     * @param pdpState      the new state as per the PDP_STATE_CHANGE change message
+     * @param policies      list of policies as per the PDP_UPDATE message
      */
     protected void updateDeploymentStatus(final String pdpGroupName, final String pdpType, final String pdpInstanceId,
-        PdpState pdpState, List<ToscaPolicy> policies) {
+                                          PdpState pdpState, List<ToscaPolicy> policies) {
         var deploymentStatus = new DeploymentStatus(policyStatusService);
         deploymentStatus.loadByGroup(pdpGroupName);
         if (pdpState.equals(PdpState.PASSIVE)) {

@@ -87,6 +87,8 @@ public abstract class CommonPapRestServer {
     private boolean activatorWasAlive;
     protected String httpsPrefix;
 
+    protected Client client;
+
     @LocalServerPort
     private int port;
 
@@ -134,6 +136,9 @@ public abstract class CommonPapRestServer {
     @AfterEach
     public void tearDown() {
         markActivator(activatorWasAlive);
+        if (client != null) {
+            client.close();
+        }
     }
 
     @AfterAll
@@ -181,6 +186,7 @@ public abstract class CommonPapRestServer {
         Object manager = ReflectionTestUtils.getField(papActivator, "serviceManager");
         AtomicBoolean running = (AtomicBoolean) ReflectionTestUtils
             .getField(Objects.requireNonNull(manager), "running");
+        assert running != null;
         running.set(wasAlive);
     }
 
@@ -193,8 +199,10 @@ public abstract class CommonPapRestServer {
      */
     protected void checkUnauthRequest(final String endpoint, Function<Invocation.Builder, Response> sender)
         throws Exception {
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-            sender.apply(sendNoAuthRequest(endpoint)).getStatus());
+        var resp = sender.apply(sendNoAuthRequest(endpoint));
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), resp.getStatus());
+        resp.close();
+
     }
 
     /**
@@ -245,7 +253,7 @@ public abstract class CommonPapRestServer {
         sc.init(null, NetworkUtil.getAlwaysTrustingManager(), new SecureRandom());
         final ClientBuilder clientBuilder =
             ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier((host, session) -> true);
-        final Client client = clientBuilder.build();
+        client = clientBuilder.build();
 
         client.property(ClientProperties.METAINF_SERVICES_LOOKUP_DISABLE, "true");
         client.register((mediaType.equalsIgnoreCase(MediaType.APPLICATION_JSON) ? GsonMessageBodyHandler.class

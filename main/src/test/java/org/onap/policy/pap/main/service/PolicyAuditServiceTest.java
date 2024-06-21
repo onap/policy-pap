@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ class PolicyAuditServiceTest extends CommonPapRestServer {
             NUMBER_RECORDS, null, null)).hasSize(2);
         assertThat(
             policyAuditService.getAuditRecords(GROUP_A, MY_POLICY.getName(), "9.9.9", NUMBER_RECORDS, null, null))
-                .isEmpty();
+            .isEmpty();
         assertThat(policyAuditService.getAuditRecords(GROUP_B, MY_POLICY.getName(), MY_POLICY.getVersion(),
             NUMBER_RECORDS, null, null)).isEmpty();
         assertThat(policyAuditService.getAuditRecords(GROUP_B, MY_POLICY2.getName(), MY_POLICY2.getVersion(),
@@ -119,8 +119,56 @@ class PolicyAuditServiceTest extends CommonPapRestServer {
             null, null)).hasSize(2);
         assertThat(
             policyAuditService.getAuditRecords(MY_POLICY.getName(), MY_POLICY.getVersion(), NUMBER_RECORDS, null, null))
-                .hasSize(2);
+            .hasSize(2);
 
+    }
+
+    @Test
+    void testGetAuditRecords_ForCoverage() {
+        Instant startDate1 = Instant.now();
+
+        policyAuditService.createAuditRecords(generatePolicyAudits(startDate1, GROUP_A, MY_POLICY));
+        assertThat(policyAuditService.getAuditRecords(NUMBER_RECORDS, null, startDate1)).hasSize(1);
+        assertThat(policyAuditService.getAuditRecords(GROUP_A, NUMBER_RECORDS, null, startDate1)).hasSize(1);
+        assertThat(policyAuditService.getAuditRecords(GROUP_A, NUMBER_RECORDS, startDate1, null)).hasSize(1);
+
+        var listByPolicy = policyAuditService.getAuditRecords(GROUP_A, MY_POLICY.getName(), MY_POLICY.getVersion(),
+            NUMBER_RECORDS, startDate1, null);
+        assertThat(listByPolicy).hasSize(1);
+        listByPolicy = policyAuditService.getAuditRecords(MY_POLICY.getName(), MY_POLICY.getVersion(),
+            NUMBER_RECORDS, null, startDate1);
+        assertThat(listByPolicy).hasSize(1);
+
+        listByPolicy = policyAuditService.getAuditRecords(GROUP_A, MY_POLICY.getName(), MY_POLICY.getVersion(),
+            NUMBER_RECORDS, startDate1, null);
+        assertThat(listByPolicy).hasSize(1);
+        listByPolicy = policyAuditService.getAuditRecords(MY_POLICY.getName(), MY_POLICY.getVersion(),
+            NUMBER_RECORDS, startDate1, null);
+        assertThat(listByPolicy).hasSize(1);
+
+
+        listByPolicy = policyAuditService.getAuditRecords(MY_POLICY.getName(), MY_POLICY.getVersion(),
+            0, null, null);
+        assertThat(listByPolicy).hasSize(2);
+
+        listByPolicy = policyAuditService.getAuditRecords(GROUP_A, MY_POLICY.getName(), MY_POLICY.getVersion(),
+            NUMBER_RECORDS, null, startDate1);
+        assertThat(listByPolicy).hasSize(1);
+
+        listByPolicy = policyAuditService.getAuditRecords(GROUP_A, MY_POLICY.getName(), MY_POLICY.getVersion(),
+            NUMBER_RECORDS, startDate1, startDate1.plusSeconds(10));
+        assertThat(listByPolicy).hasSize(1);
+    }
+
+    @Test
+    void testPageable() {
+        Instant startDate1 = Instant.now();
+
+        policyAuditService.createAuditRecords(generatePolicyAudits(startDate1, GROUP_A, MY_POLICY));
+        policyAuditService.createAuditRecords(generatePolicyAudits(startDate1, GROUP_B, MY_POLICY2));
+
+        assertThat(policyAuditService.getAuditRecords(-1, null, null)).hasSize(4);
+        assertThat(policyAuditService.getAuditRecords(Integer.MAX_VALUE, null, null)).hasSize(4);
     }
 
     private List<PolicyAudit> generatePolicyAudits(Instant date, String group, ToscaConceptIdentifier policy) {
