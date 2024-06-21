@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022-2023 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.onap.policy.models.base.PfModelRuntimeException;
@@ -49,6 +51,8 @@ class PolicyStatusServiceTest extends CommonPapRestServer {
 
     private PdpPolicyStatus.PdpPolicyStatusBuilder statusBuilder;
 
+    private List<PdpPolicyStatus> statusList = new ArrayList<>();
+
     /**
      * Setup before tests.
      *
@@ -64,14 +68,20 @@ class PolicyStatusServiceTest extends CommonPapRestServer {
             .policyType(policyType).state(PdpPolicyStatus.State.SUCCESS);
     }
 
+    @AfterEach
+    void after() {
+        if (!statusList.isEmpty()) {
+            policyStatusService.cudPolicyStatus(null, null, statusList);
+        }
+    }
+
     @Test
     void testGetAllPolicyStatus() {
         assertThat(policyStatusService.getAllPolicyStatus()).isEmpty();
 
-        var statusList = createStatusList();
+        statusList = createStatusList();
         policyStatusService.cudPolicyStatus(statusList, null, null);
         assertThat(policyStatusService.getAllPolicyStatus()).hasSize(5);
-        policyStatusService.cudPolicyStatus(null, null, statusList);
     }
 
     @Test
@@ -83,14 +93,14 @@ class PolicyStatusServiceTest extends CommonPapRestServer {
         assertThat(policyStatusService.getAllPolicyStatus(new ToscaConceptIdentifierOptVersion("somePdp", null)))
             .isEmpty();
 
-        var statusList = createStatusList();
+        statusList = createStatusList();
         policyStatusService.cudPolicyStatus(statusList, null, null);
 
         assertThat(policyStatusService.getAllPolicyStatus(new ToscaConceptIdentifierOptVersion(MY_POLICY))).hasSize(2);
-        assertThat(
-            policyStatusService.getAllPolicyStatus(new ToscaConceptIdentifierOptVersion(MY_POLICY.getName(), null)))
-                .hasSize(3);
-        policyStatusService.cudPolicyStatus(null, null, statusList);
+
+        var toscaConceptIdentifierOptVersion = new ToscaConceptIdentifierOptVersion(MY_POLICY.getName(), null);
+        assertThat(policyStatusService.getAllPolicyStatus(toscaConceptIdentifierOptVersion))
+            .hasSize(3);
     }
 
     @Test
@@ -101,10 +111,15 @@ class PolicyStatusServiceTest extends CommonPapRestServer {
 
         assertThat(policyStatusService.getGroupPolicyStatus("PdpGroup0")).isEmpty();
 
-        var statusList = createStatusList();
+        statusList = createStatusList();
         policyStatusService.cudPolicyStatus(statusList, null, null);
         assertThat(policyStatusService.getGroupPolicyStatus(GROUP_A)).hasSize(3);
-        policyStatusService.cudPolicyStatus(null, null, statusList);
+
+        assertThat(policyStatusService.getAllPolicyStatus(GROUP_A, new ToscaConceptIdentifierOptVersion(MY_POLICY)))
+            .hasSize(1);
+
+        var myOtherPolicy = new ToscaConceptIdentifierOptVersion("myOtherPolicy", null);
+        assertThat(policyStatusService.getAllPolicyStatus(GROUP_A, myOtherPolicy)).isEmpty();
     }
 
     @Test

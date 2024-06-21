@@ -1,0 +1,53 @@
+{
+  "groups": [
+    {
+      "name": "groupA",
+      "version": "200.2.3",
+      "description": "my description",
+      "pdpGroupState": "ACTIVE",
+      "properties": {
+        "hello": "world"
+      },
+      "pdpSubgroups": [
+        {
+          "pdpType": "pdpTypeA",
+          "desiredInstanceCount": 1,
+          "properties": {
+            "abc": "def"
+          },
+          "supportedPolicyTypes": [
+            {
+              "name": "typeA",
+              "version": "100.2.3"
+            }
+          ],
+          "pdpInstances": [
+            {
+              "instanceId": "pdpA"
+            }
+          ],
+          "policies": []
+        },
+        {
+          "pdpType": "pdpTypeA",
+          "desiredInstanceCount": 1,
+          "properties": {
+            "abc": "def"
+          },
+          "supportedPolicyTypes": [
+            {
+              "name": "typeA",
+              "version": "100.2.3"
+            }
+          ],
+          "pdpInstances": [
+            {
+              "instanceId": "pdpA"
+            }
+          ],
+          "policies": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2023-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.onap.policy.common.parameters.BeanValidationResult;
@@ -70,11 +69,9 @@ public class PolicyStatusService {
      * @return the policy status list found
      */
     public List<PdpPolicyStatus> getAllPolicyStatus(@NonNull ToscaConceptIdentifierOptVersion policy) {
-
         if (policy.getVersion() != null) {
             return asPolicyStatusList(policyStatusRepository
                 .findByKeyParentKeyNameAndKeyParentKeyVersion(policy.getName(), policy.getVersion()));
-
         } else {
             return asPolicyStatusList(policyStatusRepository.findByKeyParentKeyName(policy.getName()));
         }
@@ -84,11 +81,11 @@ public class PolicyStatusService {
      * Gets all status for a policy in a group.
      *
      * @param pdpGroup the group's name
-     * @param policy the policy
+     * @param policy   the policy
      * @return the policy status list found
      */
     public List<PdpPolicyStatus> getAllPolicyStatus(@NonNull String pdpGroup,
-        @NonNull ToscaConceptIdentifierOptVersion policy) {
+                                                    @NonNull ToscaConceptIdentifierOptVersion policy) {
         if (policy.getVersion() != null) {
             return asPolicyStatusList(policyStatusRepository.findByPdpGroupAndKeyParentKeyNameAndKeyParentKeyVersion(
                 pdpGroup, policy.getName(), policy.getVersion()));
@@ -106,7 +103,7 @@ public class PolicyStatusService {
      * @param deleteObjs the objects to delete
      */
     public void cudPolicyStatus(Collection<PdpPolicyStatus> createObjs, Collection<PdpPolicyStatus> updateObjs,
-        Collection<PdpPolicyStatus> deleteObjs) {
+                                Collection<PdpPolicyStatus> deleteObjs) {
         try {
             policyStatusRepository.deleteAll(fromAuthorativeStatus(deleteObjs, "deletePdpPolicyStatusList"));
             policyStatusRepository.saveAll(fromAuthorativeStatus(createObjs, "createPdpPolicyStatusList"));
@@ -121,7 +118,7 @@ public class PolicyStatusService {
      * Converts a collection of authorative policy status to a collection of JPA policy
      * status. Validates the resulting list.
      *
-     * @param objs authorative policy status to convert
+     * @param objs      authorative policy status to convert
      * @param fieldName name of the field containing the collection
      * @return a list of JPA policy status
      */
@@ -130,7 +127,7 @@ public class PolicyStatusService {
             return Collections.emptyList();
         }
 
-        List<JpaPdpPolicyStatus> jpas = objs.stream().map(JpaPdpPolicyStatus::new).collect(Collectors.toList());
+        List<JpaPdpPolicyStatus> jpas = objs.stream().map(JpaPdpPolicyStatus::new).toList();
 
         // validate the objects
         var result = new BeanValidationResult(fieldName, jpas);
@@ -148,6 +145,6 @@ public class PolicyStatusService {
     }
 
     private List<PdpPolicyStatus> asPolicyStatusList(List<JpaPdpPolicyStatus> jpaPdpPolicyStatusList) {
-        return jpaPdpPolicyStatusList.stream().map(JpaPdpPolicyStatus::toAuthorative).collect(Collectors.toList());
+        return jpaPdpPolicyStatusList.stream().map(JpaPdpPolicyStatus::toAuthorative).toList();
     }
 }

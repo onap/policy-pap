@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2023 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,12 +78,10 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
     /**
      * Configures mocks and objects.
-     *
-     * @throws Exception if an error occurs
      */
     @BeforeEach
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
         prov = new MyProvider();
         super.initialize(prov);
@@ -187,7 +185,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    void testUndeployPolicy_DaoEx() throws Exception {
+    void testUndeployPolicy_DaoEx() throws PfModelException {
         PfModelException exc = new PfModelException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
 
         prov = spy(prov);
@@ -197,7 +195,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     }
 
     @Test
-    void testUndeployPolicy_RtEx() throws Exception {
+    void testUndeployPolicy_RtEx() throws PfModelException {
         RuntimeException exc = new RuntimeException(EXPECTED_EXCEPTION);
 
         prov = spy(prov);
@@ -279,7 +277,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
 
         @Override
         protected void processPolicy(SessionData data, ToscaConceptIdentifierOptVersion desiredPolicy)
-            throws PfModelException {
+            throws PfModelException { // NOSONAR
             // do nothing
         }
     }

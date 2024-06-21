@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2023 Nordix Foundation.
+ *  Copyright (C) 2019-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021, 2023 Bell Canada. All rights reserved.
  * ================================================================================
@@ -53,13 +53,12 @@ public class PdpGroupStateChangeControllerV1 extends PapRestControllerV1 impleme
      *
      * @param requestId request ID used in ONAP logging
      * @param groupName name of the PDP group to be deleted
-     * @param state state of the PDP group
+     * @param state     state of the PDP group
      * @return a response
-     * @throws PfModelException Exception thrown by changeGroupState
      */
     @Override
-    public ResponseEntity<PdpGroupStateChangeResponse> changeGroupState(
-        String groupName, PdpState state, UUID requestId) {
+    public ResponseEntity<PdpGroupStateChangeResponse> changeGroupState(String groupName, PdpState state,
+                                                                        UUID requestId) {
         try {
             final Pair<HttpStatus, PdpGroupStateChangeResponse> pair = provider.changeGroupState(groupName, state);
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(pair.getLeft())), requestId)
