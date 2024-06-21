@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021, 2023 Nordix Foundation.
+ *  Copyright (C) 2019-2021, 2023-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -50,43 +50,40 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdpGroupStateChangeProvider.class);
 
-    @Autowired
-    private PdpGroupService pdpGroupService;
+    private final PdpGroupService pdpGroupService;
 
     /**
      * Constructs the object.
      */
-    public PdpGroupStateChangeProvider() {
+    @Autowired
+    public PdpGroupStateChangeProvider(PdpGroupService pdpGroupService) {
         super(false);
+        this.pdpGroupService = pdpGroupService;
     }
 
     /**
      * Changes state of a PDP group.
      *
-     * @param groupName name of the PDP group
+     * @param groupName     name of the PDP group
      * @param pdpGroupState state of the PDP group
      * @return a pair containing the status and the response
      * @throws PfModelException in case of errors
      */
     public Pair<HttpStatus, PdpGroupStateChangeResponse> changeGroupState(final String groupName,
-            final PdpState pdpGroupState) throws PfModelException {
+                                                                          final PdpState pdpGroupState)
+        throws PfModelException {
         synchronized (updateLock) {
             switch (pdpGroupState) {
-                case ACTIVE:
-                    handleActiveState(groupName);
-                    break;
-                case PASSIVE:
-                    handlePassiveState(groupName);
-                    break;
-                default:
-                    throw new PfModelException(Response.Status.BAD_REQUEST,
-                            "Only ACTIVE or PASSIVE state changes are allowed");
+                case ACTIVE -> handleActiveState(groupName);
+                case PASSIVE -> handlePassiveState(groupName);
+                default -> throw new PfModelException(Response.Status.BAD_REQUEST,
+                    "Only ACTIVE or PASSIVE state changes are allowed");
             }
             return Pair.of(HttpStatus.OK, new PdpGroupStateChangeResponse());
         }
     }
 
-    private void handleActiveState(final String groupName) throws PfModelException {
+    private void handleActiveState(final String groupName) {
         final List<PdpGroup> pdpGroups = pdpGroupService.getPdpGroups(groupName);
         if (!pdpGroups.isEmpty() && !PdpState.ACTIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
             updatePdpGroupAndPdp(pdpGroups, PdpState.ACTIVE);
@@ -94,7 +91,7 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
         }
     }
 
-    private void handlePassiveState(final String groupName) throws PfModelException {
+    private void handlePassiveState(final String groupName) {
         final List<PdpGroup> pdpGroups = pdpGroupService.getPdpGroups(groupName);
         if (!pdpGroups.isEmpty() && !PdpState.PASSIVE.equals(pdpGroups.get(0).getPdpGroupState())) {
             updatePdpGroupAndPdp(pdpGroups, PdpState.PASSIVE);
@@ -114,21 +111,21 @@ public class PdpGroupStateChangeProvider extends PdpMessageGenerator {
         LOGGER.debug("Updated PdpGroup and Pdp in DB - {} ", pdpGroups);
     }
 
-    private void sendPdpMessage(final PdpGroup pdpGroup, final PdpState pdpState) throws PfModelException {
+    private void sendPdpMessage(final PdpGroup pdpGroup, final PdpState pdpState) {
         String pdpGroupName = pdpGroup.getName();
         for (final PdpSubGroup subGroup : pdpGroup.getPdpSubgroups()) {
             List<ToscaPolicy> policies = getToscaPolicies(subGroup);
             for (final Pdp pdp : subGroup.getPdpInstances()) {
                 String pdpInstanceId = pdp.getInstanceId();
-                final var pdpUpdatemessage =
+                final var pdpUpdateMessage =
                     createPdpUpdateMessage(pdpGroup.getName(), subGroup, pdp.getInstanceId(),
-                                policies, null);
+                        policies, null);
                 final var pdpStateChangeMessage =
                     createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
                 updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId,
-                    pdpStateChangeMessage.getState(), pdpUpdatemessage.getPoliciesToBeDeployed());
-                requestMap.addRequest(pdpUpdatemessage, pdpStateChangeMessage);
-                LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdatemessage);
+                    pdpStateChangeMessage.getState(), pdpUpdateMessage.getPoliciesToBeDeployed());
+                requestMap.addRequest(pdpUpdateMessage, pdpStateChangeMessage);
+                LOGGER.debug("Sent PdpUpdate message - {}", pdpUpdateMessage);
                 LOGGER.debug("Sent PdpStateChange message - {}", pdpStateChangeMessage);
             }
         }

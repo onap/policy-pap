@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019 Nordix Foundation.
+ *  Copyright (C) 2019, 2024 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Intellectual Property. All rights reserved.
  *  Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -22,7 +22,6 @@
 
 package org.onap.policy.pap.main.comm;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.onap.policy.common.endpoints.event.comm.Topic.CommInfrastructure;
 import org.onap.policy.common.endpoints.listeners.TypedMessageListener;
@@ -35,13 +34,16 @@ import org.springframework.stereotype.Component;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-@AllArgsConstructor
 @NoArgsConstructor
 @Component
 public class PdpHeartbeatListener implements TypedMessageListener<PdpStatus> {
 
-    @Autowired
     private PdpStatusMessageHandler pdpStatusMessageHandler;
+
+    @Autowired
+    public PdpHeartbeatListener(PdpStatusMessageHandler pdpStatusMessageHandler) {
+        this.pdpStatusMessageHandler = pdpStatusMessageHandler;
+    }
 
 
     @Override

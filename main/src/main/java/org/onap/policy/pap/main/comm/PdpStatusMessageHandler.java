@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2021,2023 Nordix Foundation.
+ *  Copyright (C) 2019-2021, 2023-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2019-2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
@@ -26,6 +26,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpGroupFilter;
@@ -83,7 +83,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     /**
      * Constructs the object.
      *
-     * @param parameterGroup the parameterGroup
+     * @param parameterGroup  the parameterGroup
      * @param pdpGroupService the pdpGroupService
      */
     public PdpStatusMessageHandler(PapParameterGroup parameterGroup, PdpGroupService pdpGroupService) {
@@ -126,7 +126,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
                      * instead of an error level.
                      */
                     LOGGER.info("Failed updating PDP information for {} - may have been added by another PAP",
-                                    message.getName());
+                        message.getName());
                     LOGGER.trace("Failed updating PDP information for {}", message.getName(), exp);
                 } else {
                     LOGGER.error("Failed connecting to database provider", exp);
@@ -138,7 +138,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     /**
      * Determines if the exception indicates a duplicate key.
      *
-     * @param thrown exception to check
+     * @param thrown         exception to check
      * @param exceptionClazz the class to check against
      * @return {@code true} if the exception occurred due to a duplicate key
      */
@@ -158,7 +158,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         return false;
     }
 
-    private void handlePdpRegistration(final PdpStatus message) throws PfModelException, PolicyPapException {
+    private void handlePdpRegistration(final PdpStatus message) throws PolicyPapException {
         if (!findAndUpdatePdpGroup(message)) {
             final var errorMessage = "Failed to register PDP. No matching PdpGroup/SubGroup Found - ";
             LOGGER.debug("{}{}", errorMessage, message);
@@ -166,11 +166,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         }
     }
 
-    private boolean findAndUpdatePdpGroup(final PdpStatus message)
-            throws PfModelException {
+    private boolean findAndUpdatePdpGroup(final PdpStatus message) {
         var pdpGroupFound = false;
         final PdpGroupFilter filter =
-                PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
+            PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
 
         final List<PdpGroup> pdpGroups = pdpGroupService.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
@@ -179,7 +178,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         return pdpGroupFound;
     }
 
-    private boolean registerPdp(final PdpStatus message, final PdpGroup finalizedPdpGroup) throws PfModelException {
+    private boolean registerPdp(final PdpStatus message, final PdpGroup finalizedPdpGroup) {
         Optional<PdpSubGroup> subGroup;
         var pdpGroupFound = false;
         subGroup = findPdpSubGroup(message, finalizedPdpGroup);
@@ -187,7 +186,7 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         if (subGroup.isPresent()) {
             policies = getToscaPolicies(subGroup.get());
             policiesToBeDeployed = policies.stream().collect(Collectors
-                    .toMap(ToscaPolicy::getIdentifier, policy -> policy));
+                .toMap(ToscaPolicy::getIdentifier, policy -> policy));
             policiesToBeUndeployed = null;
 
             LOGGER.debug("Found pdpGroup - {}, going for registration of PDP - {}", finalizedPdpGroup, message);
@@ -220,10 +219,10 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         LOGGER.debug("Updated PdpSubGroup in DB - {} belonging to PdpGroup - {}", pdpSubGroup, pdpGroup.getName());
     }
 
-    private void handlePdpHeartbeat(final PdpStatus message) throws PfModelException {
+    private void handlePdpHeartbeat(final PdpStatus message) {
 
         final PdpGroupFilter filter =
-                PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
+            PdpGroupFilter.builder().name(message.getPdpGroup()).groupState(PdpState.ACTIVE).build();
         final List<PdpGroup> pdpGroups = pdpGroupService.getFilteredPdpGroups(filter);
         if (!pdpGroups.isEmpty()) {
             var pdpGroup = pdpGroups.get(0);
@@ -263,20 +262,20 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void processPdpDetails(final PdpStatus message, final PdpSubGroup pdpSubGroup, final Pdp pdpInstance,
-            final PdpGroup pdpGroup) throws PfModelException {
+                                   final PdpGroup pdpGroup) {
         // all policies
         policies = getToscaPolicies(pdpSubGroup);
 
         Map<ToscaConceptIdentifier, ToscaPolicy> policyMap =
-                        policies.stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
+            policies.stream().collect(Collectors.toMap(ToscaPolicy::getIdentifier, policy -> policy));
 
         // policies that the PDP already has (-) all
-        policiesToBeUndeployed = message.getPolicies().stream().filter(policyId -> !policyMap.containsKey(policyId))
-                        .collect(Collectors.toList());
+        policiesToBeUndeployed = message.getPolicies().stream()
+            .filter(policyId -> !policyMap.containsKey(policyId)).toList();
 
         // all (-) policies that the PDP already has
         policiesToBeDeployed = policyMap;
-        policiesToBeDeployed.keySet().removeAll(message.getPolicies());
+        message.getPolicies().forEach(policiesToBeDeployed.keySet()::remove);
 
         if (PdpState.TERMINATED.equals(message.getState())) {
             processPdpTermination(pdpSubGroup, pdpInstance, pdpGroup);
@@ -298,25 +297,25 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
         pdpGroupService.updatePdpSubGroup(pdpGroup.getName(), pdpSubGroup);
 
         LOGGER.debug("Deleted PdpInstance - {} belonging to PdpSubGroup - {} and PdpGroup - {}", pdpInstance,
-                pdpSubGroup, pdpGroup);
+            pdpSubGroup, pdpGroup);
     }
 
     private boolean validatePdpDetails(final PdpStatus message, final PdpGroup pdpGroup, final PdpSubGroup subGroup,
-            final Pdp pdpInstanceDetails) {
+                                       final Pdp pdpInstanceDetails) {
         /*
          * "EqualsBuilder" is a bit of a misnomer, as it uses containsAll() to check policies. Nevertheless, it does the
          * job and provides a convenient way to build a bunch of comparisons.
          */
         return new EqualsBuilder().append(message.getPdpGroup(), pdpGroup.getName())
-                .append(message.getPdpSubgroup(), subGroup.getPdpType())
-                .append(message.getPdpType(), subGroup.getPdpType())
-                .append(message.getState(), pdpInstanceDetails.getPdpState())
-                .append(message.getPolicies().containsAll(subGroup.getPolicies()), true)
-                .append(subGroup.getPolicies().containsAll(message.getPolicies()), true).build();
+            .append(message.getPdpSubgroup(), subGroup.getPdpType())
+            .append(message.getPdpType(), subGroup.getPdpType())
+            .append(message.getState(), pdpInstanceDetails.getPdpState())
+            .append(new HashSet<>(message.getPolicies()).containsAll(subGroup.getPolicies()), true)
+            .append(new HashSet<>(subGroup.getPolicies()).containsAll(message.getPolicies()), true).build();
     }
 
     private void updatePdpHealthStatus(final PdpStatus message, final PdpSubGroup pdpSubgroup, final Pdp pdpInstance,
-            final PdpGroup pdpGroup) {
+                                       final PdpGroup pdpGroup) {
         pdpInstance.setHealthy(message.getHealthy());
         pdpInstance.setMessage(message.getDescription());
         pdpInstance.setLastUpdate(Instant.now());
@@ -326,11 +325,11 @@ public class PdpStatusMessageHandler extends PdpMessageGenerator {
     }
 
     private void sendPdpMessage(final String pdpGroupName, final PdpSubGroup subGroup, final String pdpInstanceId,
-            final PdpState pdpState) {
+                                final PdpState pdpState) {
         final List<ToscaPolicy> polsToBeDeployed = new LinkedList<>(policiesToBeDeployed.values());
         final var pdpUpdatemessage =
             createPdpUpdateMessage(pdpGroupName, subGroup, pdpInstanceId,
-                        polsToBeDeployed, policiesToBeUndeployed);
+                polsToBeDeployed, policiesToBeUndeployed);
         final var pdpStateChangeMessage =
             createPdpStateChangeMessage(pdpGroupName, subGroup, pdpInstanceId, pdpState);
         updateDeploymentStatus(pdpGroupName, subGroup.getPdpType(), pdpInstanceId, pdpStateChangeMessage.getState(),

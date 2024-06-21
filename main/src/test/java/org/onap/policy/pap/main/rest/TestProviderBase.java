@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,15 +78,18 @@ public class TestProviderBase extends ProviderSuper {
     /**
      * Configures mocks and objects.
      *
-     * @throws Exception if an error occurs
      */
     @Override
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
         prov = new MyProvider();
         super.initialize(prov);
-        when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
+        try {
+            when(toscaService.getFilteredPolicyList(any())).thenReturn(loadPolicies("daoPolicyList.json"));
+        } catch (PfModelException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -101,13 +104,13 @@ public class TestProviderBase extends ProviderSuper {
 
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
-        assertUpdate(getUpdateRequests(1), GROUP1_NAME, PDP1_TYPE, PDP1);
+        assertUpdate(getUpdateRequests(1), PDP1_TYPE, PDP1);
 
         checkEmptyNotification();
     }
 
     @Test
-    void testProcess_PfRtEx() throws Exception {
+    void testProcess_PfRtEx() {
         PfModelRuntimeException ex = new PfModelRuntimeException(Status.BAD_REQUEST, EXPECTED_EXCEPTION);
         when(pdpGroupService.updatePdpGroups(any())).thenThrow(ex);
 
@@ -115,7 +118,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    void testProcess_RuntimeEx() throws Exception {
+    void testProcess_RuntimeEx() {
         RuntimeException ex = new RuntimeException(EXPECTED_EXCEPTION);
         when(pdpGroupService.updatePdpGroups(any())).thenThrow(ex);
 
@@ -124,7 +127,7 @@ public class TestProviderBase extends ProviderSuper {
     }
 
     @Test
-    void testProcessPolicy_NoGroups() throws Exception {
+    void testProcessPolicy_NoGroups() {
         when(pdpGroupService.getFilteredPdpGroups(any())).thenReturn(Collections.emptyList());
 
         SessionData session =
@@ -190,8 +193,8 @@ public class TestProviderBase extends ProviderSuper {
         assertGroup(getGroupUpdates(), GROUP1_NAME);
 
         List<PdpUpdate> requests = getUpdateRequests(2);
-        assertUpdate(requests, GROUP1_NAME, PDP2_TYPE, PDP2);
-        assertUpdate(requests, GROUP1_NAME, PDP4_TYPE, PDP4);
+        assertUpdate(requests, PDP2_TYPE, PDP2);
+        assertUpdate(requests, PDP4_TYPE, PDP4);
     }
 
     @Test
@@ -265,12 +268,12 @@ public class TestProviderBase extends ProviderSuper {
     }
 
 
-    protected void assertUpdate(List<PdpUpdate> updates, String groupName, String pdpType, String pdpName) {
+    protected void assertUpdate(List<PdpUpdate> updates, String pdpType, String pdpName) {
 
         PdpUpdate update = updates.remove(0);
 
         assertEquals(PapConstants.PAP_NAME, update.getSource());
-        assertEquals(groupName, update.getPdpGroup());
+        assertEquals(TestProviderBase.GROUP1_NAME, update.getPdpGroup());
         assertEquals(pdpType, update.getPdpSubgroup());
         assertEquals(pdpName, update.getName());
         assertTrue(update.getPoliciesToBeDeployed().contains(policy1));

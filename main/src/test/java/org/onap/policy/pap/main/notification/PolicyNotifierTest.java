@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,13 +45,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.policy.common.utils.services.Registry;
-import org.onap.policy.models.base.PfModelException;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyNotification;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
-import org.onap.policy.pap.main.PolicyPapRuntimeException;
 import org.onap.policy.pap.main.comm.Publisher;
 import org.onap.policy.pap.main.comm.QueueToken;
 import org.onap.policy.pap.main.service.PolicyStatusService;
@@ -85,14 +83,9 @@ class PolicyNotifierTest {
     @BeforeEach
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        try {
-            when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
-            Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
-            notifier = new MyNotifier(publisher);
-
-        } catch (PfModelException e) {
-            throw new PolicyPapRuntimeException(e);
-        }
+        when(policyStatusService.getGroupPolicyStatus(anyString())).thenReturn(Collections.emptyList());
+        Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
+        notifier = new MyNotifier(publisher);
     }
 
     @AfterEach
@@ -164,7 +157,7 @@ class PolicyNotifierTest {
 
     private class MyNotifier extends PolicyNotifier {
 
-        public MyNotifier(Publisher<PolicyNotification> publisher) throws PfModelException {
+        public MyNotifier(Publisher<PolicyNotification> publisher) {
             super(policyStatusService);
             super.setPublisher(publisher);
         }

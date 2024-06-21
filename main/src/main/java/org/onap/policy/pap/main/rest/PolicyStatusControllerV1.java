@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2023 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2024 Nordix Foundation.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,6 @@ import com.google.re2j.PatternSyntaxException;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyStatus;
 import org.onap.policy.models.pdp.concepts.PdpPolicyStatus;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
@@ -58,7 +57,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      * policies that match regex
      *
      * @param requestId request ID used in ONAP logging
-     * @param regex regex for a policy name
+     * @param regex     regex for a policy name
      * @return a response
      */
     @Override
@@ -74,11 +73,6 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
             }
             return makeListOrNotFoundResponse(requestId, result);
 
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
         } catch (PatternSyntaxException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.BAD_REQUEST)), requestId)
@@ -94,21 +88,12 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      */
     @Override
     public ResponseEntity<Object> queryDeployedPolicies(String name, UUID requestId) {
+        Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
+        if (result.isEmpty()) {
+            return makeNotFoundResponse(requestId);
 
-        try {
-            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, null));
-            if (result.isEmpty()) {
-                return makeNotFoundResponse(requestId);
-
-            } else {
-                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
-            }
-
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
+        } else {
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
         }
     }
 
@@ -121,22 +106,13 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      */
     @Override
     public ResponseEntity<Object> queryDeployedPolicy(String name, String version, UUID requestId) {
+        Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
+        if (result.isEmpty()) {
+            return makeNotFoundResponse(requestId);
 
-        try {
-            Collection<PolicyStatus> result = provider.getStatus(new ToscaConceptIdentifierOptVersion(name, version));
-            if (result.isEmpty()) {
-                return makeNotFoundResponse(requestId);
-
-            } else {
-                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-                    .body(result.iterator().next());
-            }
-
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
+        } else {
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+                .body(result.iterator().next());
         }
     }
 
@@ -149,17 +125,8 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      */
     @Override
     public ResponseEntity<Object> getStatusOfAllPolicies(UUID requestId) {
-
-        try {
-            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-                .body(provider.getPolicyStatus());
-
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
-        }
+        return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+            .body(provider.getPolicyStatus());
     }
 
     /**
@@ -167,16 +134,12 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      * policies that match regex
      *
      * @param pdpGroupName name of the PdpGroup
-     * @param requestId request ID used in ONAP logging
-     * @param regex regex for a policy name
+     * @param requestId    request ID used in ONAP logging
+     * @param regex        regex for a policy name
      * @return a response
      */
     @Override
-    public ResponseEntity<Object> getStatusOfPoliciesByGroup(
-        String pdpGroupName,
-        UUID requestId,
-        String regex) {
-
+    public ResponseEntity<Object> getStatusOfPoliciesByGroup(String pdpGroupName, UUID requestId, String regex) {
         try {
             final Collection<PdpPolicyStatus> result;
             if (regex == null) {
@@ -188,11 +151,6 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
             }
             return makeListOrNotFoundResponse(requestId, result);
 
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
         } catch (PatternSyntaxException e) {
             logger.warn(GET_DEPLOYMENTS_FAILED, e);
             return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.BAD_REQUEST)), requestId)
@@ -204,32 +162,18 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      * Queries status of all versions of a specific policy in a specific PdpGroup.
      *
      * @param pdpGroupName name of the PdpGroup
-     * @param policyName name of the Policy
-     * @param requestId request ID used in ONAP logging
+     * @param policyName   name of the Policy
+     * @param requestId    request ID used in ONAP logging
      * @return a response
      */
     @Override
-    public ResponseEntity<Object> getStatusOfPolicies(
-        String pdpGroupName,
-        String policyName,
-        UUID requestId) {
-
-        try {
-            Collection<PdpPolicyStatus> result =
-                provider.getPolicyStatus(pdpGroupName, new ToscaConceptIdentifierOptVersion(policyName, null));
-            if (result.isEmpty()) {
-                return makeNotFoundResponse(requestId);
-
-            } else {
-                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-                    .body(result);
-            }
-
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
+    public ResponseEntity<Object> getStatusOfPolicies(String pdpGroupName, String policyName, UUID requestId) {
+        Collection<PdpPolicyStatus> result =
+            provider.getPolicyStatus(pdpGroupName, new ToscaConceptIdentifierOptVersion(policyName, null));
+        if (result.isEmpty()) {
+            return makeNotFoundResponse(requestId);
+        } else {
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId).body(result);
         }
     }
 
@@ -237,36 +181,24 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
     /**
      * Queries status of a specific version of a specific policy in a specific PdpGroup.
      *
-     * @param pdpGroupName name of the PdpGroup
-     * @param policyName name of the Policy
+     * @param pdpGroupName  name of the PdpGroup
+     * @param policyName    name of the Policy
      * @param policyVersion version of the Policy
-     * @param requestId request ID used in ONAP logging
+     * @param requestId     request ID used in ONAP logging
      * @return a response
      */
 
     @Override
-    public ResponseEntity<Object> getStatusOfPolicy(
-            String pdpGroupName,
-            String policyName,
-            String policyVersion,
-            UUID requestId) {
+    public ResponseEntity<Object> getStatusOfPolicy(String pdpGroupName, String policyName, String policyVersion,
+                                                    UUID requestId) {
+        Collection<PdpPolicyStatus> result = provider.getPolicyStatus(pdpGroupName,
+            new ToscaConceptIdentifierOptVersion(policyName, policyVersion));
+        if (result.isEmpty()) {
+            return makeNotFoundResponse(requestId);
 
-        try {
-            Collection<PdpPolicyStatus> result = provider.getPolicyStatus(pdpGroupName,
-                new ToscaConceptIdentifierOptVersion(policyName, policyVersion));
-            if (result.isEmpty()) {
-                return makeNotFoundResponse(requestId);
-
-            } else {
-                return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
-                    .body(result.iterator().next());
-            }
-
-        } catch (PfModelRuntimeException e) {
-            logger.warn(GET_DEPLOYMENTS_FAILED, e);
-            return addLoggingHeaders(
-                addVersionControlHeaders(ResponseEntity.status(e.getErrorResponse().getResponseCode().getStatusCode())),
-                requestId).body(e.getErrorResponse().getErrorMessage());
+        } else {
+            return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.ok()), requestId)
+                .body(result.iterator().next());
         }
     }
 
@@ -278,7 +210,7 @@ public class PolicyStatusControllerV1 extends PapRestControllerV1 implements Pol
      */
     private ResponseEntity<Object> makeNotFoundResponse(final UUID requestId) {
         return addLoggingHeaders(addVersionControlHeaders(ResponseEntity.status(HttpStatus.NOT_FOUND)), requestId)
-                        .build();
+            .build();
     }
 
     private ResponseEntity<Object> makeRegexNotFoundResponse(UUID requestId) {
