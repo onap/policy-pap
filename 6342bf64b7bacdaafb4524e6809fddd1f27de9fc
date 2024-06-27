@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d69544f_bfa043f7",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/PdpModifyRequestMapTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 442,
+      "author": {
+        "id": 6070
+      },
+      "writtenOn": "2024-06-27T06:50:04Z",
+      "side": 0,
+      "message": "Any reason for removal of these tests?",
+      "range": {
+        "startLine": 442,
+        "startChar": 9,
+        "endLine": 442,
+        "endChar": 38
+      },
+      "revId": "6342bf64b7bacdaafb4524e6809fddd1f27de9fc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
