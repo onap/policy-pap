@@ -18,6 +18,23 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "36ca9de9_61b89a55",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2024-07-01T12:25:05Z",
+      "side": 1,
+      "message": "pushing patch",
+      "revId": "96ef6a455e647ae8d7949fa9b02950acebcd8f1d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2e511893_dde0f5b4",
@@ -31,6 +48,30 @@
       "writtenOn": "2024-07-01T11:48:03Z",
       "side": 1,
       "message": "Do we need to @override these?",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 5
+      },
+      "revId": "96ef6a455e647ae8d7949fa9b02950acebcd8f1d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2321f6d_6e655a64",
+        "filename": "main/src/test/java/org/onap/policy/pap/main/comm/TimerManagerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2024-07-01T12:25:05Z",
+      "side": 1,
+      "message": "just setup, teardown can be deleted. will update.",
+      "parentUuid": "2e511893_dde0f5b4",
       "range": {
         "startLine": 61,
         "startChar": 0,
