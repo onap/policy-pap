@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  *  Copyright (C) 2022 Bell Canada. All rights reserved.
- *  Modifications Copyright (C) 2022-2023 Nordix Foundation.
+ *  Modifications Copyright (C) 2022-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ class ToscaServiceTemplateServiceTest {
     }
 
     @Test
-    void testGetPolicyList() throws PfModelException {
+    void testGetPolicyList() {
         assertThatThrownBy(() -> toscaService.getPolicyList(NAME, VERSION))
             .isInstanceOf(PfModelRuntimeException.class).hasRootCauseMessage(INVALID_VERSION_ERR_MSG);
 
@@ -134,7 +134,7 @@ class ToscaServiceTemplateServiceTest {
     }
 
     @Test
-    void testPolicyForMetadataSet() throws PfModelException {
+    void testPolicyForMetadataSet() {
         List<ToscaPolicy> policies = toscaService.getPolicyList("onap.restart.tca", VERSION_1);
 
         assertThat(policies.get(0).getMetadata()).containsEntry("metadataSet", nodeTemplate.getMetadata());
