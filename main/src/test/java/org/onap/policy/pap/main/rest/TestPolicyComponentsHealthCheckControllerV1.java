@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019-2020, 2022-2023 Nordix Foundation.
+ *  Copyright (C) 2019-2020, 2022-2024 Nordix Foundation.
  *  Modifications Copyright (C) 2020-2021 AT&T Inc.
  *  Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
  * ================================================================================
@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.onap.policy.common.endpoints.parameters.RestClientParameters;
+import org.onap.policy.common.parameters.rest.RestClientParameters;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;

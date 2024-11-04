@@ -46,8 +46,8 @@ import org.onap.policy.common.endpoints.http.client.HttpClient;
 import org.onap.policy.common.endpoints.http.client.HttpClientConfigException;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactory;
 import org.onap.policy.common.endpoints.http.client.HttpClientFactoryInstance;
-import org.onap.policy.common.endpoints.parameters.RestClientParameters;
-import org.onap.policy.common.endpoints.report.HealthCheckReport;
+import org.onap.policy.common.parameters.rest.RestClientParameters;
+import org.onap.policy.common.utils.report.HealthCheckReport;
 import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pdp.concepts.Pdp;
 import org.onap.policy.models.pdp.concepts.PdpGroup;
@@ -162,7 +162,7 @@ public class PolicyComponentsHealthCheckProvider {
             List<PdpGroup> groups = pdpGroupService.getPdpGroups();
             Map<String, List<Pdp>> pdpListWithType = fetchPdpsHealthStatus(groups);
             if (isHealthy && (!verifyNumberOfPdps(groups) || pdpListWithType.values().stream().flatMap(List::stream)
-                            .anyMatch(pdp -> !PdpHealthStatus.HEALTHY.equals(pdp.getHealthy())))) {
+                .anyMatch(pdp -> !PdpHealthStatus.HEALTHY.equals(pdp.getHealthy())))) {
                 isHealthy = false;
             }
             result.put(PapConstants.POLICY_PDPS, pdpListWithType);
@@ -219,13 +219,13 @@ public class PolicyComponentsHealthCheckProvider {
         } catch (RuntimeException e) {
             LOGGER.warn("{} connection error", httpClient.getName());
             clientReport = createHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(),
-                            HttpURLConnection.HTTP_INTERNAL_ERROR, false, e.getMessage());
+                HttpURLConnection.HTTP_INTERNAL_ERROR, false, e.getMessage());
         }
         return clientReport;
     }
 
     private HealthCheckReport createHealthCheckReport(String name, String url, int code, boolean status,
-                    String message) {
+                                                      String message) {
         var report = new HealthCheckReport();
         report.setName(name);
         report.setUrl(url);
@@ -247,12 +247,12 @@ public class PolicyComponentsHealthCheckProvider {
     private HealthCheckReport verifyKafkaClient(HttpClient httpClient, Response resp) {
         KafkaGetTopicResponse kafkaResponse = resp.readEntity(KafkaGetTopicResponse.class);
         var topicVerificationStatus = (kafkaResponse.getTopics() != null
-                        && kafkaResponse.getTopics().contains(topicPolicyPdpPap));
+            && kafkaResponse.getTopics().contains(topicPolicyPdpPap));
         String message = (topicVerificationStatus ? "PAP to Kafka connection check is successful"
-                        : "PAP to Kafka connection check failed");
+            : "PAP to Kafka connection check failed");
         int code = (topicVerificationStatus ? resp.getStatus() : 503);
         return createHealthCheckReport(httpClient.getName(), httpClient.getBaseUrl(), code,
-                        topicVerificationStatus, message);
+            topicVerificationStatus, message);
     }
 
 }
