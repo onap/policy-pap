@@ -78,6 +78,10 @@
               "version": "1.0.0"
             },
             {
+              "name": "onap.policies.native.ToscaXacml",
+              "version": "1.0.0"
+            },
+            {
               "name": "onap.policies.Naming",
               "version": "1.0.0"
             },
