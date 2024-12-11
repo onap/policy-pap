@@ -1,7 +1,7 @@
 /*-
  * ============LICENSE_START=======================================================
  * Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2022-2023 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2024 Nordix Foundation.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.onap.policy.pap.main.rest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.SyncInvoker;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -44,10 +45,9 @@ class TestPolicyAuditControllerV1 extends CommonPapRestServer {
 
     @Test
     void testGetAllAuditRecords() throws Exception {
-        String uri = POLICY_AUDIT_ENDPOINT;
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(POLICY_AUDIT_ENDPOINT, SyncInvoker::get);
     }
 
     @Test
@@ -67,6 +67,6 @@ class TestPolicyAuditControllerV1 extends CommonPapRestServer {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), rawresp.getStatus());
 
         // verify it fails when no authorization info is included
-        checkUnauthRequest(uri, req -> req.get());
+        checkUnauthRequest(uri, SyncInvoker::get);
     }
 }
