@@ -61,8 +61,3 @@ pap:
     password: zb!XztG34
     useHttps: true
     basePath: healthcheck
-  - clientName: kafka
-    hostname: kafka
-    port: 3905
-    useHttps: true
-    basePath: topics
