@@ -1,6 +1,6 @@
 <!--
   ============LICENSE_START=======================================================
-   Copyright (C) 2019, 2023-2024 Nordix Foundation.
+   Copyright (C) 2019, 2023-2025 Nordix Foundation.
    Modifications Copyright (C) 2019-2020 AT&T Intellectual Property.
    Modifications Copyright (C) 2020-2023 Bell Canada.
   ================================================================================
@@ -145,8 +145,8 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty.toolchain</groupId>
-            <artifactId>jetty-jakarta-servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
