@@ -152,7 +152,12 @@
               "version": "1.0.0"
             }
           ],
-          "policies": []
+          "policies": [
+	    {
+              "name": "slice.capacity.check",
+	      "version": "1.0.0"
+            }
+	  ]
         }
       ]
     }
