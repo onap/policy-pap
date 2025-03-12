@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f2e9e7a_93fdde28",
+        "filename": "packages/policy-pap-docker/src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 7625
+      },
+      "writtenOn": "2025-03-12T14:14:08Z",
+      "side": 1,
+      "message": "remove snapshot?",
+      "range": {
+        "startLine": 29,
+        "startChar": 34,
+        "endLine": 29,
+        "endChar": 42
+      },
+      "revId": "64b3305bf322b280b1148938fd488f25ecaab8c1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
