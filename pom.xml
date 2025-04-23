@@ -3,7 +3,7 @@
   ONAP Policy PAP
   ================================================================================
   Copyright (C) 2017-2021 AT&T Intellectual Property. All rights reserved.
-  Copyright (C) 2019, 2021, 2023-2025 Nordix Foundation.
+  Copyright (C) 2019, 2021, 2023-2025 OpenInfra Foundation Europe. All rights reserved.
   Modifications Copyright (C) 2020 Bell Canada. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.policy.parent</groupId>
         <artifactId>integration</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.2</version>
         <relativePath />
     </parent>
 
@@ -43,8 +43,8 @@
     <description>Code that implements the Policy Administration Backend.</description>
 
     <properties>
-        <policy.common.version>3.1.2-SNAPSHOT</policy.common.version>
-        <policy.models.version>4.1.2-SNAPSHOT</policy.models.version>
+        <policy.common.version>3.1.2</policy.common.version>
+        <policy.models.version>4.1.2</policy.models.version>
     </properties>
 
     <modules>
