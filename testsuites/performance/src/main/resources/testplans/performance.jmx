@@ -4,7 +4,7 @@
   ONAP Policy PAP
   ================================================================================
   Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
-  Modifications Copyright (C) 2020-2021,2023-2024 Nordix Foundation.
+  Modifications Copyright (C) 2020-2021,2023-2025 OpenInfra Foundation Europe. All rights reserved.
   Modifications Copyright (C) 2020,2022 Bell Canada. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -434,7 +434,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     res = jsonSlurper.parseText(prev.getResponseDataAsString());
 
     assert res instanceof Map;
-    assert res.groups.size &gt;= 2;
+    assert res.groups.size &gt;= 3;
     assert res.groups[0].pdpGroupState== &apos;ACTIVE&apos;;
     assert res.groups[1].pdpGroupState== &apos;ACTIVE&apos;;
 }
@@ -626,7 +626,7 @@ if (prev.getResponseCode() == &apos;200&apos;) {
     res = jsonSlurper.parseText(prev.getResponseDataAsString());
 
     assert res instanceof Map;
-    assert res.groups.size &gt;= 2;
+    assert res.groups.size &gt;= 3;
 
     for(int groupSize=0;groupSize&lt;res.groups.size;groupSize++){
 
