@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2022-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2022-2025 OpenInfra Foundation Europe. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import org.onap.policy.pap.main.PolicyPapException;
 import org.onap.policy.pap.main.parameters.CommonTestData;
 import org.onap.policy.pap.main.parameters.PapParameterGroup;
 
-public class PublisherTest extends Threaded {
+class PublisherTest extends Threaded {
 
     // these messages will have different request IDs
     private static final PdpStateChange MSG1 = new PdpStateChange();
@@ -84,7 +84,7 @@ public class PublisherTest extends Threaded {
      * Configures the topic and attaches a listener.
      */
     @BeforeAll
-    public static void setUpBeforeClass() {
+    static void setUpBeforeClass() {
         final PapParameterGroup parameterGroup = new CommonTestData().getPapParameterGroup(6969);
         TopicEndpointManager.getManager().shutdown();
 
@@ -93,7 +93,7 @@ public class PublisherTest extends Threaded {
     }
 
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         TopicEndpointManager.getManager().shutdown();
     }
 

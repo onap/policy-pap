@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2021, 2023-2024 Nordix Foundation.
+ *  Copyright (C) 2021, 2023-2025 OpenInfra Foundation Europe. All rights reserved.
  *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ import org.onap.policy.models.base.PfModelRuntimeException;
 import org.onap.policy.models.pap.concepts.PolicyAudit.AuditAction;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
-public class TestPolicyAuditManager extends ProviderSuper {
+class TestPolicyAuditManager extends ProviderSuper {
 
     private static final ToscaConceptIdentifier MY_POLICY = new ToscaConceptIdentifier("myPolicy", "1.0.0");
     private static final String GROUP_A = "pdpGroup-A";
@@ -56,7 +56,7 @@ public class TestPolicyAuditManager extends ProviderSuper {
     }
 
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         Registry.newRegistry();
     }
 

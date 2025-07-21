@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2024 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2024-2025 OpenInfra Foundation Europe. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.onap.policy.models.pdp.concepts.PdpMessage;
 import org.onap.policy.models.pdp.concepts.PdpStatus;
 import org.onap.policy.models.pdp.concepts.PdpUpdate;
@@ -85,11 +85,11 @@ public class UpdateReq extends RequestImpl {
 
         PdpUpdate message = getMessage();
 
-        if (!StringUtils.equals(message.getPdpGroup(), response.getPdpGroup())) {
+        if (!Strings.CS.equals(message.getPdpGroup(), response.getPdpGroup())) {
             return "group does not match";
         }
 
-        if (!StringUtils.equals(message.getPdpSubgroup(), response.getPdpSubgroup())) {
+        if (!Strings.CS.equals(message.getPdpSubgroup(), response.getPdpSubgroup())) {
             return "subgroup does not match";
         }
 
@@ -169,11 +169,11 @@ public class UpdateReq extends RequestImpl {
     protected final boolean isSameContent(PdpUpdate second) {
         PdpUpdate first = getMessage();
 
-        if (!StringUtils.equals(first.getPdpGroup(), second.getPdpGroup())) {
+        if (!Strings.CS.equals(first.getPdpGroup(), second.getPdpGroup())) {
             return false;
         }
 
-        if (!StringUtils.equals(first.getPdpSubgroup(), second.getPdpSubgroup())) {
+        if (!Strings.CS.equals(first.getPdpSubgroup(), second.getPdpSubgroup())) {
             return false;
         }
 

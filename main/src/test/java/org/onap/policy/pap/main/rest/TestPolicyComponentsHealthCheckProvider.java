@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2020, 2022-2024 Nordix Foundation.
+ *  Copyright (C) 2020, 2022-2025 OpenInfra Foundation Europe. All rights reserved.
  *  Modifications Copyright (C) 2020-2021 AT&T Corp.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -108,7 +108,7 @@ class TestPolicyComponentsHealthCheckProvider {
      * @throws Exception if an error occurs
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         autoCloseable = MockitoAnnotations.openMocks(this);
         groups = loadPdpGroupsFromFile().getGroups();
         when(pdpGroupService.getPdpGroups()).thenReturn(groups);
@@ -157,7 +157,7 @@ class TestPolicyComponentsHealthCheckProvider {
      * Tear down.
      */
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         if (savedPapParameterGroup != null) {
             ParameterService.register(savedPapParameterGroup, true);
         } else {

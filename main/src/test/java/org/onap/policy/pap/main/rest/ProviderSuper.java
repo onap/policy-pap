@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2022 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2025 OpenInfra Foundation Europe. All rights reserved.
  * Modifications Copyright (C) 2022-2023 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +102,7 @@ public class ProviderSuper {
      * Configures DAO, captors, and various mocks.
      */
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         Registry.newRegistry();
 
@@ -129,7 +129,7 @@ public class ProviderSuper {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         closeable.close();
     }
 

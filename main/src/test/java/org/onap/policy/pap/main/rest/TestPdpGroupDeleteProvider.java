@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2025 OpenInfra Foundation Europe. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 import org.onap.policy.pap.main.rest.ProviderBase.Updater;
 
-public class TestPdpGroupDeleteProvider extends ProviderSuper {
+class TestPdpGroupDeleteProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
     private static final String GROUP1_NAME = "groupA";
 
@@ -72,7 +72,7 @@ public class TestPdpGroupDeleteProvider extends ProviderSuper {
     private Updater updater;
 
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         Registry.newRegistry();
     }
 

@@ -1,6 +1,6 @@
 /*
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022-2024 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2025 OpenInfra Foundation Europe. All rights reserved.
  *  Modifications Copyright (C) 2019 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -31,8 +31,8 @@ import jakarta.ws.rs.client.SyncInvoker;
 import org.junit.jupiter.api.Test;
 import org.onap.policy.common.utils.report.HealthCheckReport;
 import org.onap.policy.models.base.PfModelRuntimeException;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Class to perform unit test of {@link HealthCheckRestControllerV1}.
@@ -44,7 +44,7 @@ class TestHealthCheckRestControllerV1 extends CommonPapRestServer {
 
     private static final String HEALTHCHECK_ENDPOINT = "healthcheck";
 
-    @MockBean
+    @MockitoBean
     private PolicyStatusProvider policyStatusProvider;
 
     @Test

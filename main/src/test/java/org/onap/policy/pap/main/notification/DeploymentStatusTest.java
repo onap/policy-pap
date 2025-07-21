@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2023 Nordix Foundation.
+ * Modifications Copyright (C) 2023, 2025 OpenInfra Foundation Europe. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ import org.onap.policy.pap.main.PapConstants;
 import org.onap.policy.pap.main.notification.StatusAction.Action;
 import org.onap.policy.pap.main.service.PolicyStatusService;
 
-public class DeploymentStatusTest {
+class DeploymentStatusTest {
 
     private static final String VERSION = "1.2.3";
     private static final @NonNull String GROUP_A = "groupA";
@@ -89,7 +89,7 @@ public class DeploymentStatusTest {
      * Set up the meter registry for tests.
      */
     @BeforeAll
-    public static void setUpBeforeClass() {
+    static void setUpBeforeClass() {
         Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
     }
 
@@ -97,7 +97,7 @@ public class DeploymentStatusTest {
      * Tear down the meter registry after tests.
      */
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         Registry.unregister(PapConstants.REG_METER_REGISTRY);
     }
 
@@ -105,7 +105,7 @@ public class DeploymentStatusTest {
      * Sets up.
      */
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
         tracker = new DeploymentStatus(policyStatusService);
 

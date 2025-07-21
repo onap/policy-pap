@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2022-2024 Nordix Foundation.
+ *  Copyright (C) 2019, 2022-2025 OpenInfra Foundation Europe. All rights reserved.
  *  Modifications Copyright (C) 2019, 2021 AT&T Intellectual Property.
  *  Modifications Copyright (C) 2021-2023 Bell Canada. All rights reserved.
  * ================================================================================
@@ -55,7 +55,7 @@ import org.onap.policy.pap.main.parameters.PapParameterGroup;
  *
  * @author Ram Krishna Verma (ram.krishna.verma@est.tech)
  */
-public class TestPapActivator {
+class TestPapActivator {
     private static final String CONFIG_FILE = "src/test/resources/parameters/TestConfigParams.json";
 
     private PapActivator activator;
@@ -64,7 +64,7 @@ public class TestPapActivator {
      * Allocates a new DB name, server port, and creates a config file.
      */
     @BeforeAll
-    public static void setUpBeforeClass() {
+    static void setUpBeforeClass() {
         Registry.newRegistry();
         CommonTestData.newDb();
     }
@@ -75,7 +75,7 @@ public class TestPapActivator {
      * @throws Exception if an error occurs
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Registry.newRegistry();
         TopicEndpointManager.getManager().shutdown();
         HttpServletServerFactoryInstance.getServerFactory().destroy();
@@ -104,14 +104,14 @@ public class TestPapActivator {
      * @throws Exception if an error occurs
      */
     @AfterEach
-    public void teardown() throws Exception {
+    void teardown() throws Exception {
         if (activator != null && activator.isAlive()) {
             activator.stop();
         }
     }
 
     @AfterAll
-    public static void afterClass() {
+    static void afterClass() {
         Registry.newRegistry();
     }
 

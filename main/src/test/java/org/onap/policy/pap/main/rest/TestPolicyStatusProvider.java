@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
- * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2025 OpenInfra Foundation Europe. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import org.onap.policy.models.pdp.concepts.PdpPolicyStatus.State;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifierOptVersion;
 
-public class TestPolicyStatusProvider extends ProviderSuper {
+class TestPolicyStatusProvider extends ProviderSuper {
     private static final String MY_GROUP = "MyGroup";
     private static final String MY_PDP_TYPE = "MySubGroup";
     private static final @NonNull String POLICY_TYPE_VERSION = "1.0.3";
@@ -66,13 +66,12 @@ public class TestPolicyStatusProvider extends ProviderSuper {
     private PolicyStatusProvider prov;
 
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         Registry.newRegistry();
     }
 
     /**
      * Configures mocks and objects.
-     *
      */
     @Override
     @BeforeEach

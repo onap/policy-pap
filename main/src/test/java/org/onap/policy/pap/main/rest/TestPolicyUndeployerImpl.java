@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021, 2023-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2021, 2023-2025 OpenInfra Foundation Europe. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import org.onap.policy.models.pdp.concepts.PdpGroup;
 import org.onap.policy.models.pdp.concepts.PdpSubGroup;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 
-public class TestPolicyUndeployerImpl extends ProviderSuper {
+class TestPolicyUndeployerImpl extends ProviderSuper {
     private static final String MY_GROUP = "my-group";
     private static final String MY_SUBGROUP = "my-subgroup";
     private static final String MY_SUBGROUP0 = "my-subgroup-0";
@@ -67,7 +67,7 @@ public class TestPolicyUndeployerImpl extends ProviderSuper {
 
 
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         Registry.newRegistry();
     }
 

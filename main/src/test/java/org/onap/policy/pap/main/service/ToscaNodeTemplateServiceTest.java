@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2022-2023 Nordix Foundation. All rights reserved.
+ * Copyright (C) 2022-2023, 2025 OpenInfra Foundation Europe. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class ToscaNodeTemplateServiceTest {
      * Set up for tests.
      */
     @BeforeEach
-    public void setup() throws CoderException {
+    void setup() throws CoderException {
         autoCloseable = MockitoAnnotations.openMocks(this);
         coder.decode(ResourceUtils.getResourceAsString("e2e/policyMetadataSet.yaml"),
                 ToscaServiceTemplate.class).getToscaTopologyTemplate().getNodeTemplates()
@@ -75,7 +75,7 @@ class ToscaNodeTemplateServiceTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         autoCloseable.close();
     }
 

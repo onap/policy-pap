@@ -1,6 +1,6 @@
 /*-
  * ============LICENSE_START=======================================================
- *  Copyright (C) 2019, 2023-2024 Nordix Foundation.
+ *  Copyright (C) 2019, 2023-2025 OpenInfra Foundation Europe. All rights reserved.
  *  Modifications Copyright (C) 2020-2022 Bell Canada. All rights reserved.
  *  Modifications Copyright (C) 2021 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
@@ -65,7 +65,7 @@ class TestPdpGroupHealthCheckProvider {
      * Configures DAO and mocks.
      */
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
         Registry.newRegistry();
         groups = loadFile().getGroups();
@@ -74,7 +74,7 @@ class TestPdpGroupHealthCheckProvider {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         autoCloseable.close();
     }
 

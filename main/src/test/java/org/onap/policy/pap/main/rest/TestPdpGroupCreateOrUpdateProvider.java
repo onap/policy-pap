@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP PAP
  * ================================================================================
- * Copyright (C) 2019-2021, 2023-2024 Nordix Foundation.
+ * Copyright (C) 2019-2021, 2023-2025 OpenInfra Foundation Europe. All rights reserved.
  * Modifications Copyright (C) 2021 AT&T Intellectual Property.
  * Modifications Copyright (C) 2021-2022 Bell Canada. All rights reserved.
  * ================================================================================
@@ -51,7 +51,7 @@ import org.onap.policy.models.pdp.enums.PdpState;
 import org.onap.policy.models.tosca.authorative.concepts.ToscaConceptIdentifier;
 import org.onap.policy.pap.main.PapConstants;
 
-public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
+class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
     private static final String EXPECTED_EXCEPTION = "expected exception";
 
     private static final String PDP2 = "pdpB";
@@ -61,7 +61,7 @@ public class TestPdpGroupCreateOrUpdateProvider extends ProviderSuper {
 
 
     @AfterAll
-    public static void tearDownAfterClass() {
+    static void tearDownAfterClass() {
         Registry.newRegistry();
     }
 
