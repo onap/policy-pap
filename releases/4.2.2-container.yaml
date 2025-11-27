@@ -1,0 +1,8 @@
+distribution_type: 'container'
+container_release_tag: '4.2.2'
+project: 'policy-pap'
+log_dir: 'policy-pap-maven-docker-stage-master/1150'
+ref: 31e67da5746ef50760131ebc93214533da85167b
+containers:
+    - name: 'policy-pap'
+      version: '4.2.2-20251126T1603'
