@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2023-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2023-2025 OpenInfra Foundation Europe.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ class PdpRequestsTest extends CommonRequestBase {
     @Override
     @BeforeEach
     public void setUp() {
-        update = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
-        change = makeStateChangeReq(PDP1, MY_STATE);
+        update = makeUpdateReq(PDP1);
+        change = makeStateChangeReq();
 
         data = new PdpRequests(PDP1, notifier);
     }
@@ -73,7 +73,7 @@ class PdpRequestsTest extends CommonRequestBase {
         data.addSingleton(update);
 
         // add duplicate update
-        UpdateReq req2 = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
+        UpdateReq req2 = makeUpdateReq(PDP1);
         data.addSingleton(req2);
 
         // should not publish duplicate
@@ -91,11 +91,11 @@ class PdpRequestsTest extends CommonRequestBase {
         data.addSingleton(change);
 
         // add duplicate requests
-        StateChangeReq change2 = makeStateChangeReq(PDP1, MY_STATE);
+        StateChangeReq change2 = makeStateChangeReq();
         when(change.reconfigure(change2.getMessage())).thenReturn(true);
         data.addSingleton(change2);
 
-        UpdateReq update2 = makeUpdateReq(PDP1, MY_GROUP, MY_SUBGROUP);
+        UpdateReq update2 = makeUpdateReq(PDP1);
         when(update.reconfigure(update2.getMessage())).thenReturn(true);
         data.addSingleton(update2);
 
@@ -109,7 +109,7 @@ class PdpRequestsTest extends CommonRequestBase {
 
     @Test
     void testAddSingleton_Broadcast() {
-        UpdateReq req = makeUpdateReq(null, MY_GROUP, MY_SUBGROUP);
+        UpdateReq req = makeUpdateReq(null);
         assertThatIllegalArgumentException().isThrownBy(() -> data.addSingleton(req))
             .withMessage("unexpected broadcast for pdp_1");
     }

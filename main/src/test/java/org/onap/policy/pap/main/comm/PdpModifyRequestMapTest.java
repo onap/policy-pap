@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019, 2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2020-2021, 2023-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2020-2021, 2023-2025 OpenInfra Foundation Europe.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -134,8 +134,8 @@ class PdpModifyRequestMapTest extends CommonRequestBase {
 
         response = new PdpStatus();
 
-        update = makeUpdate(PDP1, MY_GROUP, MY_SUBGROUP);
-        change = makeStateChange(PDP1, MY_STATE);
+        update = makeUpdate(PDP1);
+        change = makeStateChange(PDP1);
 
         when(requests.getPdpName()).thenReturn(PDP1);
         when(requests.isFirstInQueue(any())).thenReturn(true);
@@ -323,7 +323,7 @@ class PdpModifyRequestMapTest extends CommonRequestBase {
         getSingletons(1);
 
         // add another request with the same PDP
-        map.addRequest(makeStateChange(PDP1, MY_STATE));
+        map.addRequest(makeStateChange(PDP1));
         assertEquals(1, map.nalloc);
 
         // should now have another singleton
@@ -331,7 +331,7 @@ class PdpModifyRequestMapTest extends CommonRequestBase {
 
 
         // add another request with a different PDP
-        map.addRequest(makeStateChange(DIFFERENT, MY_STATE));
+        map.addRequest(makeStateChange(DIFFERENT));
 
         // should now have another allocation
         assertEquals(2, map.nalloc);

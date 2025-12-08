@@ -3,7 +3,7 @@
  * ONAP PAP
  * ================================================================================
  * Copyright (C) 2019-2021 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2021-2024 Nordix Foundation.
+ * Modifications Copyright (C) 2021-2025 OpenInfra Foundation Europe. All rights reserved.
  * Modifications Copyright (C) 2022 Bell Canada. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,8 @@ import org.onap.policy.pap.main.parameters.RequestParams;
 /**
  * Common base class for request tests.
  */
-public class CommonRequestBase {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class CommonRequestBase { // NOSONAR - class is being extended by other test classes
     protected static final String PDP1 = "pdp_1";
     protected static final String PDP2 = "pdp_2";
     protected static final String PDP3 = "pdp_3";
@@ -90,7 +91,7 @@ public class CommonRequestBase {
     protected PdpModifyRequestMapParams mapParams;
 
     @BeforeAll
-    public static void setupBeforeAll() {
+    public static void setupBeforeAll() { // NOSONAR - class is being extended by other test classes
         Registry.registerOrReplace(PapConstants.REG_METER_REGISTRY, new SimpleMeterRegistry());
     }
 
@@ -100,8 +101,7 @@ public class CommonRequestBase {
      * @throws Exception if an error occurs
      */
     @BeforeEach
-    @SuppressWarnings("unchecked")
-    public void setUp() throws Exception {
+    public void setUp() throws Exception { // NOSONAR - class is being extended by other test classes
         publisher = mock(Publisher.class);
         notifier = mock(PolicyNotifier.class);
         dispatcher = mock(RequestIdDispatcher.class);
@@ -141,9 +141,7 @@ public class CommonRequestBase {
      *
      * @param response the response to pass to the listener
      */
-    @SuppressWarnings("unchecked")
     protected void invokeProcessResponse(PdpStatus response) {
-        @SuppressWarnings("rawtypes")
         ArgumentCaptor<TypedMessageListener> processResp = ArgumentCaptor.forClass(TypedMessageListener.class);
 
         verify(dispatcher).register(any(), processResp.capture());
@@ -154,9 +152,7 @@ public class CommonRequestBase {
     /**
      * Gets the timeout handler that was registered with the timer manager and invokes it.
      */
-    @SuppressWarnings("unchecked")
     protected void invokeTimeoutHandler() {
-        @SuppressWarnings("rawtypes")
         ArgumentCaptor<Consumer> timeoutHdlr = ArgumentCaptor.forClass(Consumer.class);
 
         verify(timers).register(any(), timeoutHdlr.capture());
@@ -184,15 +180,14 @@ public class CommonRequestBase {
      * Makes an update request with a new message.
      *
      * @param pdpName PDP name
-     * @param group group name
-     * @param subgroup subgroup name
      * @return a new update request
      */
-    protected UpdateReq makeUpdateReq(String pdpName, String group, String subgroup) {
+    protected UpdateReq makeUpdateReq(String pdpName) {
         UpdateReq req = mock(UpdateReq.class);
 
         when(req.getName()).thenReturn(MY_REQ_NAME);
-        when(req.getMessage()).thenReturn(makeUpdate(pdpName, group, subgroup));
+        when(req.getMessage()).thenReturn(
+            makeUpdate(pdpName));
 
         return req;
     }
@@ -201,18 +196,16 @@ public class CommonRequestBase {
      * Makes an update message.
      *
      * @param pdpName PDP name
-     * @param group group name
-     * @param subgroup subgroup name
      * @return a new update message
      */
-    protected PdpUpdate makeUpdate(String pdpName, String group, String subgroup) {
+    protected PdpUpdate makeUpdate(String pdpName) {
         PdpUpdate message = new PdpUpdate();
 
         message.setName(pdpName);
         message.setPoliciesToBeDeployed(Collections.emptyList());
         message.setPoliciesToBeUndeployed(Collections.emptyList());
-        message.setPdpGroup(group);
-        message.setPdpSubgroup(subgroup);
+        message.setPdpGroup(CommonRequestBase.MY_GROUP);
+        message.setPdpSubgroup(CommonRequestBase.MY_SUBGROUP);
 
         return message;
     }
@@ -220,15 +213,13 @@ public class CommonRequestBase {
     /**
      * Makes a state-change request with a new message.
      *
-     * @param pdpName PDP name
-     * @param state desired PDP state
      * @return a new state-change request
      */
-    protected StateChangeReq makeStateChangeReq(String pdpName, PdpState state) {
+    protected StateChangeReq makeStateChangeReq() {
         StateChangeReq req = mock(StateChangeReq.class);
 
         when(req.getName()).thenReturn(MY_REQ_NAME);
-        when(req.getMessage()).thenReturn(makeStateChange(pdpName, state));
+        when(req.getMessage()).thenReturn(makeStateChange(CommonRequestBase.PDP1));
 
         return req;
     }
@@ -237,14 +228,13 @@ public class CommonRequestBase {
      * Makes a state-change message.
      *
      * @param pdpName PDP name
-     * @param state desired PDP state
      * @return a new state-change message
      */
-    protected PdpStateChange makeStateChange(String pdpName, PdpState state) {
+    protected PdpStateChange makeStateChange(String pdpName) {
         PdpStateChange message = new PdpStateChange();
 
         message.setName(pdpName);
-        message.setState(state);
+        message.setState(CommonRequestBase.MY_STATE);
 
         return message;
     }
