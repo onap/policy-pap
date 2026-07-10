@@ -9,3 +9,7 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
     open-in-view: false
+
+management:
+  tracing:
+    enabled: false

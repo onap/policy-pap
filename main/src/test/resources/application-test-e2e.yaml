@@ -10,6 +10,10 @@ spring:
         implicit-strategy: org.onap.policy.common.spring.utils.CustomImplicitNamingStrategy
     open-in-view: false
 
+management:
+  tracing:
+    enabled: false
+
 pap:
   name: "PapGroupE2E"
   topic:
