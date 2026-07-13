@@ -22,6 +22,30 @@
       },
       "revId": "7b32588137ebf612c4452f06d8beb0495512e01d",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc15ab0e_246f77c6",
+        "filename": "packages/policy-pap-docker/pom.xml.versionsBackup",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6070
+      },
+      "writtenOn": "2026-07-13T13:43:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52d3cd47_d5e8b41d",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 9
+      },
+      "revId": "7b32588137ebf612c4452f06d8beb0495512e01d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
