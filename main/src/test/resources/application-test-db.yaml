@@ -12,7 +12,8 @@ spring:
 
 management:
   tracing:
-    enabled: false
+    export:
+      enabled: false
 
 pap:
   name: "PapGroupDB"
